@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.idea/
+*.sqlite*
+*.htaccess
+shopelectro/robots.txt
+shopelectro/*.xml
+shopelectro/sitemap*
+shopelectro/*.html
+shopelectro/*.xls
+shopelectro/*.yml
+shopelectro/xls/price-list-shopelectro.ru.xlsx
+shopelectro/css/
+shopelectro/js/
