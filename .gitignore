@@ -2,8 +2,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea/
+src/
 *.sqlite*
 *.htaccess
+local_settings.py
 shopelectro/robots.txt
 shopelectro/*.xml
 shopelectro/sitemap*
