@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'catalog',
-    'mptt'
+    'mptt',
+    'shopelectro'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'shopelectro.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, '../../templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -136,3 +137,5 @@ APP_BLOG_POST_TYPES = {
     'news': {'name': 'Новости', 'alias': 'news'},
     'navigation': {'name': 'Навигация', 'alias': 'navigation'},
 }
+
+from .local_settings import *
