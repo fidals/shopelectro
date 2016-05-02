@@ -1,3 +1,5 @@
+{% load catalog_extras %}
+{% roots as root_categories %}
 <div class="footer">
   <div class="top-footer">
     <div class="container">
@@ -37,7 +39,7 @@
           <ul class="list-unstyled">
             {% for root in root_categories %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'catalog:category' root.id %}">{{ root.name }}</a>
+                <a class="footer-list-link" href="{% url 'category' root.slug %}">{{ root.name }}</a>
               </li>
             {% endfor %}
           </ul>
@@ -90,8 +92,8 @@
         <div class="col-xs-3">
           <a href="//clck.yandex.ru/redir/dtype=stred/pid=47/cid=2508/*http://market.yandex.ru/shop/103499/reviews">
             <img
-              src="//clck.yandex.ru/redir/dtype=stred/pid=47/cid=2507/*https://grade.market.yandex.ru/?id=103499&action=image&size=2"
-              height="90" alt="Читайте отзывы покупателей и оценивайте качество магазина на Яндекс.Маркете">
+                src="//clck.yandex.ru/redir/dtype=stred/pid=47/cid=2507/*https://grade.market.yandex.ru/?id=103499&action=image&size=2"
+                height="90" alt="Читайте отзывы покупателей и оценивайте качество магазина на Яндекс.Маркете">
           </a>
         </div>
         <div class="col-xs-3">

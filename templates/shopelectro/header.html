@@ -1,3 +1,5 @@
+{% load catalog_extras %}
+{% roots as root_categories %}
 <div class="header">
   <div class="wrapper-container">
     <div class="top-header">
@@ -5,7 +7,8 @@
         <a href="/" class="header-logo"><img src="{{ STATIC_URL }}images/logo.png" alt=""></a>
 
         <div class="header-price-wrapper">
-          <a href="{{ STATIC_URL }}price-list-shopelectro.ru.xlsx" id="download-pricelist-header" class="download">Скачать прайс-лист</a>
+          <a href="{{ STATIC_URL }}price-list-shopelectro.ru.xlsx" id="download-pricelist-header" class="download">Скачать
+            прайс-лист</a>
         </div>
 
         <div class="header-sub-wrapper-left">
@@ -129,12 +132,12 @@
         <ul class="nav-category list-unstyled clearfix">
           {% for root in root_categories %}
             <li class="nav-category-item">
-              <a class="nav-category-link" href="{% url 'catalog:category' root.id %}">{{ root.menu_title }}</a>
+              <a class="nav-category-link" href="{% url 'category' root.slug %}">{{ root.menu_title }}</a>
               {% if root.get_children %}
                 <div class="nav-menu-dropdown">
                   <ul class="list-unstyled">
                     {% for child in root.get_children %}
-                      <li><a href="{% url 'catalog:category' child.id %}" class="nav-menu-dropdown-link">
+                      <li><a href="{% url 'category' child.slug %}" class="nav-menu-dropdown-link">
                         {{ child.name }}
                       </a></li>
                     {% endfor %}

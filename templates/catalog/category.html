@@ -1,0 +1,70 @@
+{% extends "shopelectro/base.html" %}
+{% load static %}
+{% block title %}{{ category.title }}{% endblock %}
+{% block description %}{{ category.description }}{% endblock %}
+{% block uniqueURL %}{% url 'catalog:category' category.id %}{% endblock %}
+{% block uniqueImg %}{% url 'index' %}{% endblock %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
+{% endblock %}
+
+{% block canonical %}
+  <link rel="canonical" href="{% url 'category' category.name %}"/>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="col-xs-12">
+      <p>{% include 'seo/breadcrumbs.html' %}</p>
+      <h1 class="category-title">{{ category.name }}</h1>
+    </div>
+
+    <div class="col-xs-3 category-left">
+      <div class="block">
+        {% if category.get_children %}
+          <ul class="subcategory-list list-unstyled">
+            {% for child in category.get_children %}
+              <li class="subcategory-list-item">
+                <a class="subcategory-list-link" href="{% url 'category' child.slug %}">
+                  {{ child.name }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-xs-9 category-right view-mode-{{ view_type }}" id="category-right">
+      {% if category.spam_text %}
+        <div class="category-text" id="category-text">{{ category.spam_text }}</div>
+      {% endif %}
+
+      {% include "catalog/category_navigation.html" %}
+
+      <p class="products-showed">
+        Показано товаров <span class="font-bold js-products-showed-count">{{ products|length }}</span> из <span
+          class="font-bold js-total-products">{{ total_products }}</span>.
+      </p>
+
+      <div class="product-card-wrapper clearfix" id="products-wrapper" data-sorting-index=""
+           data-category-id="{{ category.id }}">
+        {% include "catalog/category_products.html" %}
+      </div>
+
+      <div class="text-center">
+        <button class="btn-blue btn btn-primary js-load-more" data-url="{% url 'category' category.slug %}"
+                id="btn-load-products" type="button">
+          Загрузить ещё
+        </button>
+        <p class="products-showed-text">Показанно товаров
+          <span class="js-products-showed-count">{{ products|length }}</span> из
+          <span class="js-total-products">{{ total_products }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+  </div>
+{% endblock %}
+
