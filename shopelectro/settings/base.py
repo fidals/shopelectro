@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'blog',
     'catalog',
     'mptt',
+    'seo',
+    'macros',
     'shopelectro',
 ]
 
@@ -137,6 +139,12 @@ APP_BLOG_POST_TYPES = {
     'article': {'name': 'Статьи', 'alias': '', 'default': True},
     'news': {'name': 'Новости', 'alias': 'news'},
     'navigation': {'name': 'Навигация', 'alias': 'navigation'},
+}
+
+CRUMBS = {
+    'main': 'Главная',
+    'catalog': 'Каталог',
+    'blog': 'Список страниц',
 }
 
 from .local import *
