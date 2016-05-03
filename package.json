@@ -1,0 +1,31 @@
+{
+  "name": "shopelectro",
+  "version": "1.0.0",
+  "description": "shopelectro.ru site's code",
+  "main": "index.js",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-less": "^3.1.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3",
+    "run-sequence": "^1.1.5"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fidals/shopelectro.git"
+  },
+  "author": "fidals.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fidals/shopelectro/issues"
+  },
+  "homepage": "https://github.com/fidals/shopelectro#readme",
+  "dependencies": {}
+}

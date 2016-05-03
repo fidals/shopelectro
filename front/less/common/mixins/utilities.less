@@ -1,0 +1,90 @@
+// ================================================================
+// MIXINS
+// ================================================================
+.font-anti (@val: antialiased) {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: @val;
+}
+
+.font-bold {
+  .font-anti;
+  font-family: @proxima-bold;
+  font-weight: normal;
+}
+
+.font-light {
+  .font-anti;
+  font-family: @proxima-light;
+  font-weight: normal;
+}
+
+.image-plate (
+  @border-radius : 4px,
+  @background    : @c-white,
+  @border-color  : @c-stuff-link-border
+) {
+  background: @background;
+  border: 1px solid @border-color;
+  border-radius: @border-radius;
+}
+
+.link-dotted {
+  border-bottom: 1px dotted @c-grey-text-main;
+  color: @c-grey-text-main;
+  cursor: pointer;
+  text-decoration: none !important; // Prevent double lines;
+
+  &:visited {
+    color: @c-grey-text-main;
+  }
+
+  &:hover,
+  &:active {
+    border-bottom-style: solid;
+  }
+}
+
+.link-style {
+  border-bottom: 1px solid @c-head-mail-border;
+  color: @c-black-lighter-x;
+  display: inline;
+  text-decoration: none !important; // Prevent double lines;
+
+  &:hover {
+    border-color: transparent;
+  }
+
+  &:visited {
+    color: @c-black-lighter-x;
+  }
+}
+
+.transition (
+  @property : all,
+  @duration : 0.3s,
+  @style    : ease
+) {
+  transition: @property @duration @style;
+}
+
+// ================================================================
+// PLACEHOLDERS
+// ================================================================
+.link-style {
+  border-bottom: 1px solid @c-head-mail-border;
+  color: @c-black-lighter-x;
+  display: inline;
+  text-decoration: none !important; // Prevent double lines;
+
+  &:hover {
+    border-color: transparent;
+  }
+
+  &:visited {
+    color: @c-black-lighter-x;
+  }
+}
+
+.teaser-shadow {
+  box-shadow: 0 1px 2px fadeout(@c-block-link-shadow, 85%);
+}

@@ -1,0 +1,168 @@
+<div class="header">
+  <div class="wrapper-container">
+    <div class="top-header">
+      <div class="container">
+        <a href="/" class="header-logo"><img src="{{ STATIC_URL }}images/logo.png" alt=""></a>
+
+        <div class="header-price-wrapper">
+          <a href="{{ STATIC_URL }}price-list-shopelectro.ru.xlsx" id="download-pricelist-header" class="download">Скачать прайс-лист</a>
+        </div>
+
+        <div class="header-sub-wrapper-left">
+          <div class="header-sub">
+            <span class="header-sub-text">Санкт-Петербург</span>
+            <span title="м. Автово"><img src="{{ STATIC_URL }}images/metro_red.png" alt="м. Автово">
+              <a class="subway-contact-link" rel="nofollow"
+                 href="#yunona"> Ярмарка «Юнона», пав. 660, 662</a></span>
+            <span class="header-sub-text">пн-вс 10:00-18:00</span>
+          </div>
+          <div class="header-sub">
+            <span title="м. Елизаровская"><img src="{{ STATIC_URL }}images/metro_green.png" alt="м.
+            Елизаровская">
+              <a class="subway-contact-link" rel="nofollow" href="#elizarova"> пр-т Елизарова 38А, офис 312</a></span>
+            <span class="header-sub-text">пн-чт 10:00-18:00, пт 10:00-17:00</span>
+          </div>
+        </div>
+
+        <div class="header-sub-wrapper-right">
+          <ul class="navbar navbar-default hed-mnu">
+            <li><a href="#">Доставка</a></li>
+            <li><a href="#">Оплата</a></li>
+            <li><a href="#">Новости</a></li>
+            <li><a href="#">Контакты</a></li>
+          </ul>
+        </div>
+
+        <div class="header-call clearfix">
+          <div class="header-phone">
+            <span class="header-phone-cifre">
+              <span class="cifre-span">+7 (812)</span> <span class="ya-opt-phone">416-32-00</span>
+            </span>
+            <p class="mail-wrapper">
+              <a href="mailto:info@shopelectro.ru" class="mail">info@shopelectro.ru</a>
+            </p>
+          </div>
+          <noindex>
+            <div class="feedback-but" data-toggle="modal" data-target="#back-call-modal">
+              <i class="fa fa-mobile"></i>
+              <span class="feedback-but-btn">Заказать звонок</span>
+            </div>
+          </noindex>
+        </div>
+      </div>
+    </div>
+
+    <div class="middle-header">
+      <div class="container">
+        <div class="middle-header-inner">
+          <div class="row">
+            <div class="col-xs-8">
+              <form class="navbar-form search-form" action="/search/" method="get">
+                <div class="row">
+                  <div class="col-xs-11">
+                    <div class="form-group search-area">
+                      <div class="row">
+                        <div class="col-xs-7">
+                          <input class="form-control js-search-input" type="text" name="search"
+                                 placeholder="Поиск по названию, артикулу, производителю">
+                        </div>
+                        <div class="col-xs-5">
+                          <div class="example">например, <span class="search-example-text" id="search-example-text">Батарейка MINAMOTO 3R12, 4.5 В</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xs-1">
+                    <button type="submit" class="form-btn btn fa fa-search" id="search-submit"></button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="basket-parent col-xs-4">
+              <div class="col-xs-8 col-xs-offset-4">
+                <div class="hed-cart">
+                  <span class="basket-products-count js-products-size">0</span>
+                  <span class="cart-is-empty" id="cart-is-empty">Корзина пуста</span>
+                  <a class="price-in-cart hidden" id="price-in-cart" href="#"></a>
+                  <a href="#" class="opener"><i class="fa fa-chevron-down"></i></a>
+                </div>
+              </div>
+              <div class="basket-wrapper">
+                <p>В корзине <span class="js-basket-amount-count">нет</span> позиций</p>
+                <div class="scroll-wrapper" id="scroll-wrapper">
+                  <ul class="basket-list list-unstyled" id="basket-list"></ul>
+                </div>
+
+                <div class="basket-calculations text-right hidden js-basket-calculations">
+                  <p class="basket-price-sum">
+                    Итого:
+                    <span class="js-basket-price-sum">0</span>
+                    <span class="table-units"> руб.</span>
+                  </p>
+                  <p class="basket-info">без учета стоимости доставки</p>
+                </div>
+
+                <div class="basket-is-empty text-right js-basket-is-empty">
+                  <p class="basket-price-sum">Корзина пуста</p>
+                </div>
+
+                <div class="text-center">
+                  <button class="btn btn-pink btn-to-order js-submit-order" type="button" disabled>
+                    Оформить заказ сейчас
+                  </button>
+                  <p>
+                    <span class="basket-reset hidden">Очистить корзину</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-header">
+      <div class="container">
+        <div class="nav-category-wrapper">
+          <ul class="nav-category list-unstyled clearfix">
+            {% for root in root_categories %}
+              <li class="nav-category-item">
+                <a class="nav-category-link" href="{% url 'catalog:category' root.id %}">{{ root.name }}</a>
+                {% if root.get_children %}
+                  <div class="nav-menu-dropdown">
+                    <ul>
+                      {% for child in root.get_children %}
+                        <li><a href="{% url 'catalog:category' child.id %}">{{ child.name }}</a></li>
+                      {% endfor %}
+                    </ul>
+
+{#                    <div class="popular-product">#}
+{#                      <a class="popular-product-link"#}
+{#                         href="#">#}
+{#                        <div class="label">Популярный товар</div>#}
+{#                        <div class="popular-product-image-wrapper">#}
+{#                          <img class="img-responsive" src="#" alt="">#}
+{#                        </div>#}
+{#                        <div class="text">#}
+{#                          <div class="price"> руб.</div>#}
+{#                          <div class="desc"><span></span></div>#}
+{#                        </div>#}
+{#                      </a>#}
+{#                    </div>#}
+                  </div>
+                {% endif %}
+              </li>
+            {% endfor %}
+
+            <li class="nav-category-item">
+              <a class="nav-category-link" href="#" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
