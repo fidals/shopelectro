@@ -1,0 +1,235 @@
+// Default custom select styles
+.cs-select {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    text-align: left;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    z-index: 100;
+}
+
+div.cs-select:focus {
+    outline: none; // For better accessibility add a style for this in your skin
+}
+
+.cs-select select {
+    display: none;
+}
+
+.cs-select span {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    padding: 4px 0 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+// Placeholder and selected option
+.cs-select > span {
+    .font-anti;
+    border-bottom: 1px dotted @c-order-blue-text;
+    color: @c-order-blue-text;
+    text-align: center;
+    z-index: 100;
+}
+
+.cs-select:after,
+.cs-selected span:before {
+    speak: none;
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-30%);
+            transform: translateY(-30%);
+}
+
+.cs-select:after {
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+    background: @sp-main;
+    .sprite(@18);
+    content: "";
+    right: -14px;
+}
+
+.cs-select .cs-selected span:before {
+    background: @c-btn-red-focused;
+    content: "";
+    height: 7px;
+    left: 0;
+    margin: -1px 0 0 14px;
+    top: 50%;
+    width: 7px;
+}
+
+.cs-select.cs-active:after {
+    -webkit-transform: translateY(-50%) rotate(90deg);
+            transform: translateY(-50%) rotate(90deg);
+}
+
+div.cs-active {
+    z-index: 200;
+}
+
+// Options
+.cs-options {
+    opacity: 1;
+    padding: 10px 0;
+    position: absolute;
+    pointer-events: none;
+    top: 40px;
+
+    &:after,
+    &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 50%;
+    }
+
+    &:before {
+        .cs-active & {
+            border-color: transparent transparent @c-basket-border;
+            border-style: solid;
+            border-width: 8px;
+            margin: -15px 0 0;
+            -webkit-transform: translateX(2px);
+                    transform: translateX(2px);
+        }
+    }
+
+    &:after {
+        .cs-active & {
+            border-color: transparent transparent @c-white;
+            border-style: solid;
+            border-width: 7px;
+            margin: -13px 0 0;
+            -webkit-transform: translateX(1px);
+                    transform: translateX(1px);
+        }
+    }
+}
+
+.cs-select.cs-active .cs-options {
+    visibility: visible;
+}
+
+.cs-select ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.cs-select ul span {
+    font-family: @proxima-light;
+    font-size: 18px;
+    margin: 0 1px;
+    padding: 13px 25px 10px 35px;
+}
+
+// Optgroup and optgroup label
+.cs-select li.cs-optgroup ul {
+    padding-left: 1em;
+}
+
+.cs-select li.cs-optgroup > span {
+    cursor: default;
+}
+
+@media screen and (max-width: 30em) {
+    .cs-skin-elastic {
+        font-size: 1em;
+    }
+}
+
+.cs-skin-elastic.cs-active .cs-options {
+    pointer-events: auto;
+}
+
+.cs-skin-elastic .cs-options > ul:before {
+    border-radius: 3px;;
+    .box-shadow(0 0 13px rgba(0,0,0,.3));
+    background: @c-white;
+    border: 1px solid @c-basket-border;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    -webkit-transform: scale3d(1,0,1);
+            transform: scale3d(1,0,1);
+    -webkit-transform-origin: 50% 0%;
+            transform-origin: 50% 0%;
+    -webkit-transition: -webkit-transform 0.3s;
+            transition:         transform 0.3s;
+}
+
+.cs-skin-elastic.cs-active .cs-options > ul:before {
+    -webkit-transform: scale3d(1,1,1);
+            transform: scale3d(1,1,1);
+    -webkit-transition: none;
+            transition: none;
+    -webkit-animation: expand 0.6s ease-out;
+            animation: expand 0.6s ease-out;
+}
+
+.cs-skin-elastic .cs-options ul li {
+    opacity: 0;
+    -webkit-transform: translate3d(0,-25px,0);
+            transform: translate3d(0,-25px,0);
+    -webkit-transition: opacity 0.15s, -webkit-transform 0.15s;
+            transition: opacity 0.15s,         transform 0.15s;
+}
+
+.cs-skin-elastic.cs-active .cs-options ul li {
+    opacity: 1;
+    -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+    -webkit-transition: none;
+            transition: none;
+    -webkit-animation: bounce 0.6s ease-out;
+            animation: bounce 0.6s ease-out;
+}
+
+.cs-options span:hover,
+.cs-options .cs-focus span {
+    background: @c-blue-table-fill;
+}
+
+@-webkit-keyframes expand {
+    0%   { -webkit-transform: scale3d(1,0,1); }
+    25%  { -webkit-transform: scale3d(1,1.2,1); }
+    50%  { -webkit-transform: scale3d(1,0.85,1); }
+    75%  { -webkit-transform: scale3d(1,1.05,1) }
+    100% { -webkit-transform: scale3d(1,1,1); }
+}
+
+@keyframes expand {
+    0%   { -webkit-transform: scale3d(1,0,1);    transform: scale3d(1,0,1); }
+    25%  { -webkit-transform: scale3d(1,1.2,1);  transform: scale3d(1,1.2,1); }
+    50%  { -webkit-transform: scale3d(1,0.85,1); transform: scale3d(1,0.85,1); }
+    75%  { -webkit-transform: scale3d(1,1.05,1); transform: scale3d(1,1.05,1); }
+    100% { -webkit-transform: scale3d(1,1,1);    transform: scale3d(1,1,1); }
+}
+
+@-webkit-keyframes bounce {
+    0%   { -webkit-transform: translate3d(0,-25px,0); opacity:0; }
+    25%  { -webkit-transform: translate3d(0,10px,0); }
+    50%  { -webkit-transform: translate3d(0,-6px,0); }
+    75%  { -webkit-transform: translate3d(0,2px,0); }
+    100% { -webkit-transform: translate3d(0,0,0);     opacity: 1; }
+}
+
+@keyframes bounce {
+    0%   { -webkit-transform: translate3d(0,-25px,0); transform: translate3d(0,-25px,0); opacity:0; }
+    25%  { -webkit-transform: translate3d(0,10px,0);  transform: translate3d(0,10px,0); }
+    50%  { -webkit-transform: translate3d(0,-6px,0);  transform: translate3d(0,-6px,0); }
+    75%  { -webkit-transform: translate3d(0,2px,0);   transform: translate3d(0,2px,0); }
+    100% { -webkit-transform: translate3d(0,0,0);     transform: translate3d(0,0,0);     opacity: 1; }
+}

@@ -1,0 +1,300 @@
+// ================================================================
+// IMPORTS
+// ================================================================
+@import "mixins/sp-png";
+
+// ================================================================
+// VARIABLES
+// ================================================================
+@sp-main: url("@{img-path}/sp-png.png");
+
+// ================================================================
+// Tables
+// ================================================================
+.table {
+  position: relative;
+
+  > thead > tr > th {
+    color: @c-grey-text-main;
+    border-bottom: 1px solid @c-tooltip;
+  }
+
+  > tbody > tr > td {
+    background: fadeout(@c-white, 40%);
+    border-bottom: 1px solid @c-tooltip;
+    padding: 28px 12px 26px;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  // Cells
+  > thead,
+  > tfoot {
+    > tr {
+      background: transparent;
+
+      > th,
+      > td {
+        padding: @table-cell-padding @table-cell-padding + 8px @table-cell-padding - 3px;
+
+        &:first-child {
+          padding-left: 0;
+        }
+      }
+    }
+  }
+}
+
+.table-hover > tbody > tr:hover,
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background: transparent;
+}
+
+// ================================================================
+// Inputs
+// ================================================================
+.cart-input {
+  background: transparent;
+  border: 1px solid @c-btn-increase;
+  border-radius: 3px;
+  color: @c-black;
+  display: inline-block;
+  padding: 4px 15px 1px;
+  text-align: center;
+  width: 66px;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.form-control {
+  .font-anti;
+  box-shadow: none;
+  background-color: fade(@c-white, 60%);
+  border-color: @c-grey-text-main;
+  color: @c-black;
+  height: @input-height-base + 5;
+  padding: @padding-base-vertical @padding-base-horizontal - 3;
+
+  &::-moz-placeholder {
+    color: @c-grey-text-main;
+  }
+
+  &:-ms-placeholder {
+    color: @c-grey-text-main;
+  }
+
+  &::-webkit-input-placeholder {
+    color: @c-grey-text-main;
+  }
+}
+
+// ================================================================
+// Checkboxes & radiobuttons
+// ================================================================
+.custom-input-checkbox {
+  // Base for label styling:
+  .checkbox label {
+    padding-left: 25px;
+  }
+
+  [type="radio"]:checked,
+  [type="checkbox"]:checked,
+  [type="radio"]:not(:checked),
+  [type="checkbox"]:not(:checked) {
+    left: -9999px;
+    position: absolute;
+  }
+
+  [type="radio"]:checked + label,
+  [type="checkbox"]:checked + label,
+  [type="radio"]:not(:checked) + label,
+  [type="checkbox"]:not(:checked) + label {
+    cursor: pointer;
+    position: relative;
+  }
+
+  // Checkbox aspect:
+  [type="checkbox"]:checked + label:before,
+  [type="checkbox"]:not(:checked) + label:before {
+    border-radius: 4px;
+    border: 1px solid @c-checkbox-border;
+    content: "";
+    height: 17px;
+    left: 0;
+    position: absolute;
+    top: 1px;
+    width: 17px;
+  }
+
+  [type="radio"]:checked + label:before,
+  [type="radio"]:not(:checked) + label:before {
+    border-radius: 15px;
+    border: 1px solid @c-order-btn-file;
+    content: "";
+    height: 13px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 13px;
+  }
+
+  // Checked mark aspect:
+  [type="checkbox"]:checked + label:after,
+  [type="checkbox"]:not(:checked) + label:after {
+    .transition;
+    background: @sp-main;
+    .sprite(@12);
+    content: "";
+    left: 3px;
+    position: absolute;
+    top: 5px;
+  }
+
+  [type="radio"]:checked + label:after,
+  [type="radio"]:not(:checked) + label:after {
+    border-radius: 10px;
+    .transition;
+    background: @c-order-btn-file-active;
+    content: "";
+    height: 9px;
+    left: 2px;
+    position: absolute;
+    top: 2px;
+    width: 9px;
+  }
+
+  // Checked mark aspect changes:
+  [type="radio"]:not(:checked) + label:after,
+  [type="checkbox"]:not(:checked) + label:after {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  [type="radio"]:checked + label:after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  [type="checkbox"]:checked + label:after {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  // Disabled checkbox:
+  [type="checkbox"]:disabled:not(:checked) + label:before,
+  [type="checkbox"]:disabled:checked + label:before {
+    box-shadow: none;
+    border-color: #bbb;
+    background-color: #ddd;
+  }
+}
+
+// ================================================================
+// Modals
+// ================================================================
+.modal {
+  &-dialog {
+    color: @c-black-darkest;
+    width: 444px;
+  }
+
+  &-backdrop {
+    height: 100%;
+    z-index: 1000;
+  }
+
+  &-body {
+    strong {
+      .font-bold;
+    }
+  }
+
+  &-content {
+    .box-shadow(0 0 13px fade(@c-black, 39%));
+    border-radius: 0;
+    border-color: transparent;
+  }
+
+  &-header {
+    border-bottom: 4px solid @c-order-blue-text;
+    padding: 8px 0 5px;
+    text-align: center;
+  }
+
+  &-title-after {
+    padding-bottom: 11px;
+    padding-top: 18px;
+  }
+
+  &-title {
+    color: @c-order-blue-text;
+    font-size: @f-size-base + 2;
+    margin: -3px 0 6px;
+  }
+
+  &-subtitle {
+    line-height: 120%;
+    font-size: @f-size-base - 2;
+    margin-bottom: 24px;
+    width: 230px;
+  }
+
+  &-text-after {
+    padding-bottom: 11px;
+  }
+
+  &-footer {
+    border: none;
+    padding: 0 0 17px;
+    text-align: center;
+  }
+
+  .close {
+    background: @sp-main;
+    .sprite(@19);
+    height: 20px;
+    opacity: 1;
+    position: absolute;
+    right: 9px;
+    top: 10px;
+    width: 20px;
+
+    &:hover {
+      .sprite(@20);
+    }
+  }
+
+  .close {
+    background: @sp-main;
+    .sprite(@05);
+    margin: -3px -1px 0 0;
+    opacity: 1;
+
+    &:hover {
+      .sprite(@06);
+    }
+  }
+
+  .control-label {
+    font-size: 18px;
+    margin-right: -11px;
+    padding-right: 16px;
+    padding-top: 10px;
+  }
+
+  .form-control {
+    border-radius: 5px;
+    height: 36px;
+    margin-top: 1px;
+  }
+
+  .btn-submit {
+    .btn-dark-blue(3px, 18px, 4px 34px 3px);
+  }
+
+  .make-call-input {
+    padding-right: 14px;
+  }
+}

@@ -1,0 +1,25 @@
+<div class="call-modal" id="back-call" title="Заказ обратного звонка">
+  <p class="error-msg"></p>
+  <form class="call-modal-form" onsubmit="common.main.controller.backCallFormSubmit(event)">
+    <label class="call-modal-label">
+      <span class="call-modal-span">Номер вашего телефона</span>
+      <input class="call-modal-input form-control js-masked-phone" id="back-call-phone" name="phone" type="text"
+             placeholder="+7 (999) 000 00 00">
+    </label>
+    <label class="call-modal-label">
+      <span class="call-modal-span">Время для звонка</span>
+      <select class="call-modal-select form-control js-select-time" id="back-call-time" name="time"
+              onchange="common.main.controller.storeTimeToCall($(this).find(':selected').data('time'))">
+        <option data-time="0">в ближайшее время</option>
+        <option data-time="1">утром</option>
+        <option data-time="2">днём</option>
+        <option data-time="3">вечером</option>
+      </select>
+    </label>
+    <input class="call-modal-btn-send" type="button" value="отправить"
+           onclick="common.backCall.controller.sendBackCall($('#back-call-phone').val(), $('#back-call-time').val() );">
+  </form>
+</div>
+
+<div class="call-modal" id="back-call-success" title="Спасибо">Наш менеджер перезвонит вам <span
+    class="time"></span></div>
