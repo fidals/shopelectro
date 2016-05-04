@@ -5,8 +5,10 @@ __pycache__/
 src/
 *.sqlite*
 *.htaccess
+static/css/less/**/*.map
 local_settings.py
 shopelectro/robots.txt
+shopelectro/settings/local.py
 shopelectro/*.xml
 shopelectro/sitemap*
 shopelectro/*.html
@@ -15,3 +17,5 @@ shopelectro/*.yml
 shopelectro/xls/price-list-shopelectro.ru.xlsx
 shopelectro/css/
 shopelectro/js/
+static/admin/
+static/mptt/

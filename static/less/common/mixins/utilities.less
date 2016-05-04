@@ -1,0 +1,281 @@
+// ================================================================
+// MIXINS
+// ================================================================
+.appearance (@var) {
+    -webkit-appearance: @var;
+    -moz-appearance: @var;
+    appearance: @var;
+}
+
+.font-anti (@val: antialiased) {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: @val;
+}
+
+.font-bold {
+    .font-anti;
+    font-family: @proxima-bold;
+    font-weight: normal;
+}
+
+.font-light {
+    .font-anti;
+    font-family: @proxima-light;
+    font-weight: normal;
+}
+
+.image-plate (
+    @border-radius : 4px,
+    @background    : @c-white,
+    @border-color  : @c-stuff-link-border
+) {
+    background: @background;
+    border: 1px solid @border-color;
+    border-radius: @border-radius;
+}
+
+.link-dotted {
+    border-bottom: 1px dotted @c-grey-text-main;
+    color: @c-grey-text-main;
+    cursor: pointer;
+    text-decoration: none !important; // Prevent double lines;
+
+    &:visited {
+        color: @c-grey-text-main;
+    }
+
+    &:hover,
+    &:active {
+        border-bottom-style: solid;
+    }
+}
+
+.link-style {
+    border-bottom: 1px solid @c-head-mail-border;
+    color: @c-black-lighter-x;
+    display: inline;
+    text-decoration: none !important; // Prevent double lines;
+
+    &:hover {
+        border-color: transparent;
+    }
+
+    &:visited {
+        color: @c-black-lighter-x;
+    }
+}
+
+.transform (@transform) {
+    -webkit-transform: @transform;
+    -ms-transform: @transform;
+    transform: @transform;
+}
+
+.transition (
+    @property : all,
+    @duration : 0.3s,
+    @style    : ease-in-out
+) {
+    -webkit-transition: @property @duration @style;
+    -moz-transition: @property @duration @style;
+    transition: @property @duration @style;
+}
+
+.transition-delay (@delay: 0) {
+    -webkit-transition-delay: @delay;
+    -moz-transition-delay: @delay;
+    transition-delay: @delay;
+}
+
+.user-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+// ================================================================
+// PLACEHOLDERS
+// ================================================================
+.link-style {
+    border-bottom: 1px solid @c-head-mail-border;
+    color: @c-black-lighter-x;
+    display: inline;
+    text-decoration: none !important; // Prevent double lines;
+
+    &:hover {
+        border-color: transparent;
+    }
+
+    &:visited {
+        color: @c-black-lighter-x;
+    }
+}
+
+.teaser-shadow {
+    box-shadow: 0 1px 2px fadeout(@c-block-link-shadow, 85%);
+}
+
+// ================================================================
+// ELEMENTS
+// ================================================================
+.form-btn (
+    @border-radius : 3px
+) {
+    background: @btn-bg;
+    border: 2px solid @btn-bg;
+    border-radius: @border-radius;
+    color: @c-white;
+    cursor: pointer;
+    height: 32px;
+    line-height: 32px;
+    outline: none;
+    padding: 0 9px;
+    text-align: center;
+    text-decoration: none;
+    -webkit-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+    width: auto;
+
+    &:hover,
+    &:focus {
+        background: @btn-bg-hover;
+        border: 2px solid @btn-bg-hover;
+        color: @c-white;
+    }
+
+    &:active {
+        box-shadow: none;
+        background: @c-white;
+        border: 2px solid @btn-bg;
+        color: @btn-bg;
+    }
+}
+
+.btn-dark-blue (
+        @border-radius : 5px,
+        @font-size     : @f-size-base,
+        @padding       : 10px 28px 10px
+    ) {
+    border-radius: @border-radius;
+    .font-anti;
+    background: @c-blue-dark-focused;
+    border: 2px solid @c-blue-dark-focused;
+    color: @c-white;
+    font-size: @font-size;
+    padding: @padding;
+    text-decoration: none;
+    -webkit-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background: @c-blue-dark-hovered;
+        border-color: @c-blue-dark-hovered;
+        color: @c-white;
+    }
+
+    &:focus,
+    &:active,
+    &:active:focus {
+        box-shadow: none;
+        background: @c-white;
+        border-color: @c-blue-dark-focused;
+        color: @c-blue-dark-focused;
+        outline: none;
+    }
+}
+
+.btn-grey (
+    @border-radius : 3px,
+    @font-size     : 16px,
+    @padding       : 10px 28px
+) {
+    border-radius: @border-radius;
+    .font-anti;
+    background: @c-grey-text-main;
+    border: 2px solid @c-grey-text-main;
+    color: @c-white;
+    font-size: @font-size;
+    letter-spacing: -0.015em;
+    padding: @padding;
+    text-decoration: none;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background: @c-btn-remove-hovered;
+        border-color: @c-btn-remove-hovered;
+        color: @c-black;
+    }
+
+    &:focus,
+    &:active,
+    &:active:focus {
+        box-shadow: none;
+        background: @c-product-pop-label;
+        border-color: @c-product-pop-label;
+        color: @c-white;
+        outline: none;
+    }
+}
+
+.btn-red (
+    @border-radius : 3px,
+    @font-size     : @f-size-base,
+    @padding       : 3px 37px 1px
+) {
+    .font-anti;
+    background: @c-btn-red-focused;
+    border: 2px solid @c-btn-red-focused;
+    border-radius: @border-radius;
+    color: @c-white;
+    font-size: 24px;
+    letter-spacing: -0.015em;
+    line-height: 130%;
+    padding: @padding;
+    text-decoration: none;
+    text-shadow: 1px 2px 1px rgba(57, 4, 8, .75);
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background: @c-btn-red-hovered;
+        border-color: @c-btn-red-hovered;
+        color: @c-white;
+        text-shadow: none;
+    }
+
+    &:focus,
+    &:active,
+    &:active:focus {
+        box-shadow: none;
+        background: @c-white;
+        border-color: @c-btn-red-focused;
+        color: @c-btn-red-focused;
+        outline: none;
+        text-shadow: none;
+    }
+}
+
+.btn-wrapper-center {
+    text-align: center;
+}
+
+.input-number (
+    @height    : 38px,
+    @width     : 70px,
+    @font-size : 16px
+) {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid @c-btn-increase;
+    border-radius: 3px;
+    height: @height;
+    font-family: @proxima;
+    font-size: @font-size;
+    outline: none;
+    text-align: center;
+    width: @width;
+}
+

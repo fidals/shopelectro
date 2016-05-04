@@ -13,8 +13,17 @@ def index(request):
     :param request:
     :return: HttpResponse
     """
-    roots = Category.objects.root_nodes()
+    root_categories = Category.objects.root_nodes().order_by('position')
     top_products = Product.objects.filter(is_popular=True)
 
+    render_data = {
+        'description': 'Самые низкие цены на элементы питания оптом. Доставка по России.',
+        'keywords': 'аккумуляторы оптом, батарейки оптом, зарядные устройства оптом, блоки питания оптом',
+        'root_categories': root_categories,
+        'site_url': 'www.shopelectro.ru',
+        'top': top_products,
+        'title': 'Интернет магазин ShopElectro для оптовиков Санкт-Петербурга'
+    }
+
     return render(
-        request, 'shopelectro/main.html', {'roots': roots, 'top': top_products})
+        request, 'shopelectro/index.html', render_data)
