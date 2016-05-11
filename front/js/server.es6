@@ -1,4 +1,4 @@
-const SEND_CALLBACK = (data) => {
+const SEND_BACKCALL = (data) => {
   return new Promise((resolve, reject) => {
     if (data.time === 'днём') {
       resolve('Днём');
