@@ -1,25 +1,31 @@
 const DOM = {
-  'phoneInputs': $('.js-masked-phone'),
-  'btnScrollTop': $('#btn-scroll-to-top'),
-  'btnSendBackcall': $('.js-send-backcall'),
-  'userSelectTime': $('.js-select-time'),
+  phoneInputs: $('.js-masked-phone'),
+  btnScrollTop: $('#btn-scroll-to-top'),
+  scrollWrapper: $('#scroll-wrapper'),
 };
+
 const BACKCALL_MODAL = {
-  'timeToCall': $('#back-call-time'),
-  'isSend': false,
+  closeTag: $('.js-backcall-close'),
+  phoneTag: $('#back-call-phone'),
+  sendBtn: $('.js-send-backcall'),
+  successTag: $('.js-backcall-success'),
+  timeText: $('.js-backcall-time'),
+  timeTag: $('.js-select-time'),
+  timeToCall: $('#back-call-time'),
+  isSend: false,
 
   /**
    * Handles 'Backcall order' form:
    */
   sendBackcall: () => {
     let data = {
-      'phone': $('#back-call-phone').val(),
-      'time': BACKCALL_MODAL.timeToCall.val(),
+      phone: BACKCALL_MODAL.phoneTag.val(),
+      time: BACKCALL_MODAL.timeToCall.val(),
     };
 
     SEND_BACKCALL(data)
       .then(() => {
-        $('.js-backcall-time').text(DOM.userSelectTime.val());
+        BACKCALL_MODAL.timeText.text(BACKCALL_MODAL.timeTag.val());
         BACKCALL_MODAL.showSuccessModal();
       }, (response) => {
         console.group();
@@ -33,14 +39,15 @@ const BACKCALL_MODAL = {
    * Toggles backcall form buttons state:
    */
   showSuccessModal: () => {
-    DOM.btnSendBackcall.toggleClass('hidden');
-    $('.js-send-backcall-text').toggleClass('hidden');
-    $('.js-backcall-success')
+    BACKCALL_MODAL.sendBtn.toggleClass('hidden');
+    BACKCALL_MODAL.closeTag.toggleClass('hidden');
+    BACKCALL_MODAL.successTag
       .toggleClass('hidden')
       .siblings().toggleClass('hidden');
     BACKCALL_MODAL.isSend = true;
   },
 };
+
 const USER_BACKCALL_TIME = 'userBackcallTime';
 const USER_PHONE = 'userPhone';
 
@@ -55,22 +62,17 @@ let initialization = () => {
 
 let setUpListeners = () => {
   $(window).scroll(toggleToTopBtn);
-  DOM.btnSendBackcall.on('click', BACKCALL_MODAL.sendBackcall);
-  DOM.userSelectTime.on('change', storeTimeToBackcall.bind(this));
+  BACKCALL_MODAL.sendBtn.on('click', BACKCALL_MODAL.sendBackcall);
+  BACKCALL_MODAL.timeTag.on('change', storeBackcallTime.bind(this));
   DOM.btnScrollTop.on('click', () => $('html, body').animate({ scrollTop: 0 }, 300));
 };
 
 let pluginsInit = () => {
   /**
-   * Initializes masks for phone input fields with +7 on focus:
+   * Initializes masks for phone input fields:
    */
   DOM.phoneInputs
     .mask('+9 (999) 999 99 99')
-    .on('focus', () => {
-      if (!$(this).val()) {
-        $(this).val('+7');
-      }
-    })
     .on('keyup', function () {
       localStorage.setItem(USER_PHONE, $(this).val())
     });
@@ -78,16 +80,16 @@ let pluginsInit = () => {
   /**
    * Initializes custom scrollbar:
    */
-  $('#scroll-wrapper').jScrollPane({
+  DOM.scrollWrapper.jScrollPane({
     autoReinitialise: true,
     mouseWheelSpeed: 30,
   });
 };
 
-/**
-* Sets up user phone number:
-*/
 let fillInUserData = (data) => {
+  /**
+  * Sets up user phone number:
+  */
   if (data.USER_PHONE) {
     $.each(DOM.phoneInputs, function () {
       $(this).val(data.USER_PHONE);
@@ -95,10 +97,10 @@ let fillInUserData = (data) => {
   }
 
   /**
-   * Устанавлмвает время перезвона:
-   */
+  * Sets up user backcall time:
+  */
   if (data.USER_BACKCALL_TIME) {
-    DOM.userSelectTime.find('[data-time=' + data.USER_BACKCALL_TIME + ']').attr('selected', true);
+    BACKCALL_MODAL.timeTag.find('[data-time=' + data.USER_BACKCALL_TIME + ']').attr('selected', true);
   }
 };
 
@@ -116,8 +118,8 @@ let toggleToTopBtn = () => {
 /**
  * Stores users time for backcall:
  */
-let storeTimeToBackcall = (clickedOption) => {
-  let selectedTime = $(clickedOption.target).find(':selected').data('time');
+let storeBackcallTime = (selectedOption) => {
+  let selectedTime = $(selectedOption.target).find(':selected').data('time');
   localStorage.setItem(USER_BACKCALL_TIME, selectedTime);
 };
 
