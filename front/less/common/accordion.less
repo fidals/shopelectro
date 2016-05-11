@@ -1,0 +1,72 @@
+.accordion-link,
+.accordion-title,
+.menu-v-content ul li a {
+  border: 1px solid transparent;
+  border-top: 1px solid #DDD;
+  color: #073856;
+  cursor: pointer;
+  display: block;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 5px 3px;
+  text-decoration: none;
+}
+
+.accordion-title:first-child {
+  border-color: transparent;
+}
+
+.accordion-link {
+  font-weight: 400;
+}
+
+.accordion-link:hover,
+.accordion-title:hover,
+.menu-v-content ul li a:hover {
+  background-color: #CFCFCF;
+  border: 1px solid #999;
+  border-radius: 5px;
+  color: @c-black;
+  text-decoration: none;
+}
+
+.accordion-title {
+  position: relative;
+
+  .fa {
+    height: 11px;
+    font-size: 0.75em;
+    position: absolute;
+    right: -2px;
+    transition: transform 0.3s ease-in-out;
+    transform: translate(0, -50%);
+    top: 50%;
+    width: 11px;
+  }
+}
+
+.accordion-title.active .fa {
+  transform: rotate(-90deg) translate(60%, -25%);
+}
+
+.accordion-last-paragraph .fa {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.accordion-last-paragraph:hover .fa {
+  transform: translate(3px, 0);
+}
+
+.accordion-link-to-category {
+  color: #6C6C6C;
+  display: block;
+  font-size: 0.8em;
+  padding: 5px 3px;
+
+  .fa {
+    left: 4px;
+    position: relative;
+    top: 1px;
+  }
+}
