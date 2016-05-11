@@ -4,6 +4,7 @@ Basic (default) views for Catalog app.
 
 from django.shortcuts import render
 from catalog.models import Category, Product
+from .site_pages import get_page
 
 
 def index(request):
@@ -13,8 +14,14 @@ def index(request):
     :param request:
     :return: HttpResponse
     """
-    roots = Category.objects.root_nodes()
+    root_categories = Category.objects.root_nodes().order_by('position')
     top_products = Product.objects.filter(is_popular=True)
 
+    render_data = {
+        'meta_data': get_page(page_id='main'),
+        'root_categories': root_categories,
+        'top': top_products,
+    }
+
     return render(
-        request, 'shopelectro/main.html', {'roots': roots, 'top': top_products})
+        request, 'shopelectro/index.html', render_data)

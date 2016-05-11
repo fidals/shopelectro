@@ -1,0 +1,117 @@
+// ================================================================
+// IMPORTS
+// ================================================================
+@import "../common/variables";
+
+// ================================================================
+// ADMIN PAGE:
+// !important тут нужны для перекрытия стилей Сонаты. Все они
+// выпилятся при внедрении новой Админки
+// ================================================================
+.main-header .logo {
+  width: 436px !important;
+}
+
+.left-side {
+  width: 450px !important;
+}
+
+@media (min-width: 768px) {
+  .sidebar-collapse {
+    .left-side,
+    .main-sidebar {
+      transform: translate(-450px, 0);
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .sidebar-collapse {
+    .right-side,
+    .main-footer,
+    .content-wrapper {
+      margin-left: 0 !important;
+    }
+
+    .main-header > .logo {
+      background: #FFF !important;
+      width: 450px !important;
+    }
+  }
+}
+
+.right-side,
+.right-side,
+.main-footer,
+.content-wrapper,
+.main-header > .navbar,
+body > .header .navbar {
+  margin-left: 450px !important;
+}
+
+.logo img {
+  margin: 5px auto !important;
+  max-height: 50px !important;
+  max-width: inherit;
+  padding: 0;
+}
+
+.admin-tree ul {
+  padding-left: 20px;
+}
+
+.main-header > .logo {
+  .transition;
+  background: #222D32 !important;
+
+  span {
+    display: block;
+  }
+}
+
+.jstree-anchor .list-id {
+  color: #AAA;
+}
+
+.jstree-default .jstree-hovered,
+.jstree-default .jstree-clicked {
+  background: #0C7678 !important;
+  box-shadow: none;
+}
+
+.jstree-default .jstree-anchor {
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 90%;
+}
+
+.jstree-leaf .jstree-icon {
+  visibility: hidden;
+  width: 12px !important;
+}
+
+.slimScrollBar {
+  background: #27B1B4 !important;
+}
+
+.jstree-anchor {
+  user-select: none;
+}
+
+.ckeditor div {
+  height: 600px;
+}
+
+.sonata-bc textarea {
+  height: 200px;
+}
+
+.cke_contents {
+  height: 500px;
+}
+
+.left-side {
+  color: white;
+  overflow-y: scroll;
+}

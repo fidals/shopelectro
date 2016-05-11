@@ -1,0 +1,242 @@
+// ================================================================
+// IMPORTS
+// ================================================================
+@import "../common/variables";
+@import "../common/mixins/utilities";
+@import "../common/mixins/sp-png";
+
+// ================================================================
+// PAGE ARTICLE
+// ================================================================
+.p-article {
+  &-h1 {
+    .font-anti;
+    color: @c-article-text;
+    font-family: @proxima-bold;
+    font-size: @font-size-base + 10;
+    margin-top: 22px;
+  }
+
+  &-h2 {
+    .font-anti;
+    color: @c-article-text;
+    clear: both;
+    font-family: @proxima-bold;
+    font-size: @font-size-base + 8;
+    margin-bottom: 22px;
+  }
+
+  &-h3 {
+    .font-anti;
+    color: @c-article-text;
+    font-family: @proxima-bold;
+    font-size: @font-size-base + 6;
+    margin-bottom: 20px;
+  }
+
+  &-h4 {
+    .font-anti;
+    color: @c-article-text;
+    font-family: @proxima-bold;
+    font-size: @font-size-base + 4;
+    margin-top: 20px;
+    margin-bottom: 18px;
+  }
+
+  &-sidebar {
+    color: @c-article-text;
+    line-height: @line-height-body;
+    padding-top: 29px;
+  }
+
+  &-sidebar-title a {
+    color: @c-article-text;
+    display: block;
+    font-family: @proxima-bold;
+    font-size: @font-size-base + 5;
+    padding: 0 0 10px;
+    text-decoration: none;
+
+    &:hover,
+    &:visited {
+      color: @c-article-text;
+      text-decoration: none;
+    }
+  }
+
+  &-list-item {
+    margin-bottom: 22px;
+  }
+
+  &-list-title a {
+    .link-style;
+    color: @c-article-text;
+    font-size: @font-size-base;
+    line-height: 125%;
+    position: relative;
+    text-decoration: none;
+
+    &:hover,
+    &:visited {
+      color: @c-article-text;
+      text-decoration: none;
+    }
+
+    // Закомментированная иконка-стрелка для дропдауна:
+    // &:after {
+    //     background: @sp-main;
+    //     .sprite(@03);
+    //     content: "";
+    //     position: absolute;
+    //     right: 11px;
+    //     top: 0;
+    // }
+
+    &.active {
+      &:after {
+        .sprite(@04);
+        position: absolute;
+        right: 12px;
+        top: 2px;
+      }
+    }
+  }
+
+  &-list-inner-item {
+    margin-bottom: 15px;
+  }
+
+  &-list-inner {
+    font-size: @font-size-base - 2;
+    letter-spacing: -0.01em;
+    padding: 7px 0 0 14px;
+  }
+
+  &-sidebar-link {
+    border-bottom: 1px solid @c-stuff-link-border;
+    color: @c-black-lighter;
+    display: inline;
+    line-height: 120%;
+    text-decoration: none !important;
+
+    &:hover {
+      color: @c-article-text;
+      border: none;
+    }
+
+    &:visited {
+      color: @c-article-text;
+    }
+  }
+}
+
+.article {
+  color: @c-article-text;
+  line-height: 145%;
+  padding: 20px 4px 75px;
+
+  img,
+  &-img-title {
+    border: 1px solid @c-article-img-border;
+    box-shadow: 4px 4px 0 @c-article-img-shadow;
+    float: left;
+    margin: 0 23px 23px 0;
+  }
+
+  &-text-pre {
+    line-height: 145%;
+    padding: 11px 0 0;
+    overflow: hidden;
+  }
+
+  p,
+  &-text {
+    line-height: 145%;
+  }
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  li,
+  &-list-item {
+    display: table;
+    padding: 0 0 0 15px;
+    position: relative;
+
+    &:before {
+      background: @c-grey-text-main;
+      content: "";
+      height: 8px;
+      left: 0;
+      position: absolute;
+      top: 5px;
+      width: 8px;
+    }
+  }
+
+  &-content {
+    line-height: 1.4;
+  }
+}
+
+.right-col {
+  z-index: 0;
+
+  .header {
+    border-bottom: 1px solid @c-article-link;
+    clear: both;
+    font-weight: bold;
+    overflow: hidden;
+    padding-bottom: 10px;
+  }
+
+  .more {
+    margin-bottom: 30px;
+    text-align: right;
+    width: 100%;
+  }
+
+  .pagination ul {
+    padding: 0;
+  }
+}
+
+.delivery-maps {
+  float: left;
+  width: 48%;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.delivery-h2 {
+  margin: 30px 0 0 30px;
+}
+
+.delivery-h1 {
+  margin: 0 0 20px 30px;
+}
+
+body {
+  counter-reset: heading;
+}
+
+.delivery-h3:before {
+  content: counter(heading) ". ";
+  counter-increment: heading;
+}
+
+.delivery-counter {
+  counter-reset: list2;
+}
+
+.russia-delivery-h3:before {
+  content: counter(list2) ". ";
+  counter-increment: list2;
+}
+
+table, td.contacts {
+  padding: 5px;
+  margin-bottom: 30px;
+}

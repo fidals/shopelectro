@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html profile="http://gmpg.org/xfn/11"
+      prefix="ya: http://webmaster.yandex.ru/vocabularies/ og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" lang="ru">
+<head profile="http://gmpg.org/xfn/11">
+
+  {% include "shopelectro/meta.html" %}
+
+  {% block stylesheets %}
+    <link rel="stylesheet" href="{% static "css/styles.min.css" %}">
+  {% endblock %}
+</head>
+<body>
+
+{% block header %}
+  {% include "shopelectro/header.html" %}
+{% endblock %}
+
+<div class="content">
+  {% block body %}{% endblock %}
+</div>
+
+{% block footer %}
+  {% include "shopelectro/footer.html" %}
+{% endblock %}
+
+<div class="btn-scroll-to-top" id="btn-scroll-to-top">Наверх</div>
+
+{% include "shopelectro/back_call_modal.html" %}
+
+{% block jslibs %}
+  <script src="{% static "js/vendors.min.js" %}"></script>
+{% endblock %}
+
+{% block jslinks %}
+  <script src="{% static "js/main.min.js" %}"></script>
+{% endblock %}
+
+{% include "shopelectro/out_service_js.html" %}
+</body>
+</html>
