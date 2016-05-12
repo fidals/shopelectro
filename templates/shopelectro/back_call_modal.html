@@ -1,0 +1,42 @@
+<div class="modal fade" id="back-call-modal" tabindex="-1" role="dialog" aria-labelledby="back-call-modal-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true"></span>
+        </button>
+        <h4 class="modal-title" id="back-call-modal-label">Заказ обратного звонка</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label for="back-call-phone" class="col-sm-5 control-label">Ваш телефон</label>
+            <div class="col-sm-6">
+              <input class="call-modal-input form-control js-masked-phone" id="back-call-phone" name="phone" type="text"
+                   placeholder="+7 (999) 000 00 00">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="back-call-time" class="col-sm-5 control-label">Время для звонка</label>
+            <div class="col-sm-6">
+              <select class="call-modal-select form-control js-select-time" id="back-call-time" name="time">
+                <option data-time="0">в ближайшее время</option>
+                <option data-time="1">утром</option>
+                <option data-time="2">днём</option>
+                <option data-time="3">вечером</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group h4 hidden text-center js-backcall-success">Наш менеджер перезвонит вам <span
+            class="js-backcall-time"></span></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark-blue js-send-backcall">Отправить</button>
+        <button type="button" class="btn btn-dark-blue hidden js-backcall-close"
+                data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
