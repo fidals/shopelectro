@@ -1,5 +1,5 @@
 Django==1.9.5
-django-pipeline==1.6.8
 django-mptt
--e git://github.com/fidals/refarm-catalog.git#egg=refarm-catalog
--e git://github.com/fidals/refarm-blog.git#egg=refarm-blog
+-e git+git@github.com:fidals/refarm-catalog.git#egg=refarm-catalog
+-e git+git@github.com:fidals/refarm-blog.git#egg=refarm-blog
+-e git+git@github.com:fidals/refarm-seo.git#egg=refarm-seo

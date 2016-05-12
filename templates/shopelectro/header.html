@@ -124,20 +124,21 @@
       </div>
     </div>
 
-    <div class="bottom-header">
-      <div class="container">
-        <div class="nav-category-wrapper">
-          <ul class="nav-category list-unstyled clearfix">
-            {% for root in root_categories %}
-              <li class="nav-category-item">
-                <a class="nav-category-link" href="{% url 'catalog:category' root.id %}">{{ root.name }}</a>
-                {% if root.get_children %}
-                  <div class="nav-menu-dropdown">
-                    <ul>
-                      {% for child in root.get_children %}
-                        <li><a href="{% url 'catalog:category' child.id %}">{{ child.name }}</a></li>
-                      {% endfor %}
-                    </ul>
+    <div class="container">
+      <div class="nav-category-wrapper">
+        <ul class="nav-category list-unstyled clearfix">
+          {% for root in root_categories %}
+            <li class="nav-category-item">
+              <a class="nav-category-link" href="{% url 'catalog:category' root.id %}">{{ root.menu_item_title }}</a>
+              {% if root.get_children %}
+                <div class="nav-menu-dropdown">
+                  <ul class="list-unstyled">
+                    {% for child in root.get_children %}
+                      <li><a href="{% url 'catalog:category' child.id %}" class="nav-menu-dropdown-link">
+                        {{ child.name }}
+                      </a></li>
+                    {% endfor %}
+                  </ul>
 
 {#                    <div class="popular-product">#}
 {#                      <a class="popular-product-link"#}
@@ -152,16 +153,15 @@
 {#                        </div>#}
 {#                      </a>#}
 {#                    </div>#}
-                  </div>
-                {% endif %}
-              </li>
-            {% endfor %}
-
-            <li class="nav-category-item">
-              <a class="nav-category-link" href="#" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
+                </div>
+              {% endif %}
             </li>
-          </ul>
-        </div>
+          {% endfor %}
+
+          <li class="nav-category-item">
+            <a class="nav-category-link" href="#" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

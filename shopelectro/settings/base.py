@@ -141,6 +141,9 @@ APP_BLOG_POST_TYPES = {
     'navigation': {'name': 'Навигация', 'alias': 'navigation'},
 }
 
+# Top products for main page
+TOP_PRODUCTS_IDS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
+
 CRUMBS = {
     'main': 'Главная',
     'catalog': 'Каталог',
