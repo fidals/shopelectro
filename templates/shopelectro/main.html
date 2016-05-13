@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Main page | Proto</title>
+</head>
+<body>
+  <h1>Proto site</h1>
+
+  <h2>Catalog:</h2>
+  <p><a href="{% url 'catalog:category_tree' %}">каталог здесь</a></p>
+
+  <h3>Root categories:</h3>
+  <ul>
+    {% for category in root_categories %}
+      <li><a href="{% url 'catalog:category' category.id %}">{{ category.name }}</a></li>
+    {% endfor %}
+  </ul>
+  <h3>Top products:</h3>
+  <ul>
+    {% for product in top_products %}
+      <li><a href="{% url 'catalog:product' product.id %}">{{ product.name }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <h2>Blog:</h2>
+  <p><a href="{% url 'blog:posts_list' %}">Pages list</a></p>
+</body>
+</html>

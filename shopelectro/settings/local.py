@@ -1,3 +1,10 @@
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'refarm.sqlite3',
+    }
+}
+
 PIPELINE = {
     'CSS_COMPRESSOR': None,
     'LESS_BINARY': 'C:\\htdocs\\shopelectro\\node_modules\\.bin\\lessc.cmd',
