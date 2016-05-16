@@ -16,13 +16,16 @@ def index(request):
     :return: HttpResponse
     """
     root_categories = Category.objects.root_nodes().order_by('position')
-    top_products = Product.objects.filter(id__in=settings.TOP_PRODUCTS_IDS)
+    top_products = Product.objects.filter(id__in=settings.TOP_PRODUCTS)
 
-    render_data = {
+    context = {
         'meta_data': get_page(page_id='main'),
         'root_categories': root_categories,
         'top_products': top_products,
+        'category_tile': settings.CATEGORY_TILE,
+        'footer_links': settings.FOOTER_LINKS,
+        'href': settings.HREFS,
     }
 
     return render(
-        request, 'shopelectro/index.html', render_data)
+        request, 'shopelectro/index.html', context)

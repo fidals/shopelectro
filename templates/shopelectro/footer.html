@@ -32,7 +32,7 @@
       <div class="row middle-footer-row">
         <div class="col-xs-3 middle-footer-col">
           <div class="middle-footer-title">
-            <a class="middle-footer-title-link" href="#">Каталог товаров</a>
+            <a class="middle-footer-title-link" href="/catalog/">Каталог товаров</a>
           </div>
           <ul class="list-unstyled">
             {% for root in root_categories %}
@@ -45,30 +45,39 @@
         <div class="col-xs-3 middle-footer-col">
           <div class="middle-footer-title">Услуги</div>
           <ul class="list-unstyled">
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Ремонт аккумуляторов</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Пайка на заказ</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#russia">Доставка по всей России</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="http://istok-plus.ru/">Купить оптом</a></li>
+            {% for item in footer_links.services %}
+              <li class="footer-list-item">
+                <a class="footer-list-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+              </li>
+              <li class="footer-list-item">
+                <a class="footer-list-link" href="{% url 'catalog:category' 1 %}#russia">
+                  Доставка по всей России
+                </a>
+              </li>
+            {% endfor %}
+            <li class="footer-list-item">
+              <a class="footer-list-link" href="{{ HREF.istok_plus }}" target="_blank">Купить оптом</a>
+            </li>
           </ul>
         </div>
         <div class="col-xs-3 middle-footer-col">
           <div class="middle-footer-title">Статьи</div>
           <ul class="list-unstyled">
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Аккумуляторная батарея</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Нанопроводниковый аккумулятор</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Стационарные свинцовые аккумуляторы</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Батарейка типа АА</a></li>
+            {% for item in footer_links.articles %}
+              <li class="footer-list-item">
+                <a class="footer-list-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+              </li>
+            {% endfor %}
           </ul>
         </div>
         <div class="col-xs-3 middle-footer-col">
           <div class="middle-footer-title">О компании</div>
           <ul class="list-unstyled">
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Реквизиты</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Нормативные документы</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Оптовым покупателям</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Гарантии и возврат</a></li>
-            <li class="footer-list-item"><a class="footer-list-link" href="#">Карта
-              сайта</a></li>
+            {% for item in footer_links.about %}
+              <li class="footer-list-item">
+                <a class="footer-list-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+              </li>
+            {% endfor %}
           </ul>
         </div>
       </div>

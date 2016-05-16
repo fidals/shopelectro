@@ -5,140 +5,80 @@
     <div class="page-front-cell page-front-cell-01">
       <div class="stuff-wrapper stuff-wrapper-01">
         <div class="stuff-title">
-          <a class="stuff-title-link" href="#">
+          <a class="stuff-title-link" href="{% url 'catalog:category' 2 %}">
             Аккумуляторы
           </a>
         </div>
-        <a class="stuff-img stuff-img-01" href="#">
+        <a class="stuff-img stuff-img-01" href="{% url 'catalog:category' 2 %}">
           <img src="{{ STATIC_URL }}images/catalog/products/6/main.jpg" class="img-responsive" alt="Аккумуляторы">
         </a>
       </div>
       <ul class="stuff-list stuff-list-01 list-unstyled">
-        <li class="stuff-item">
-          <a class="stuff-link" href="#">Типоразмера ААА</a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Для радиомоделей и игрушек
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Свинцово-кислотные
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Внешние универсальные
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Для ноутбуков
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Адаптеры, отсеки и футляры
-          </a>
-        </li>
+        {% for item in category_tile.accumulators %}
+          <li class="stuff-item">
+            <a class="stuff-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+          </li>
+        {% endfor %}
       </ul>
     </div>
 
     <div class="page-front-cell page-front-cell-02">
       <div class="stuff-wrapper stuff-wrapper-02">
         <div class="stuff-title">
-          <a class="stuff-title-link" href="#">
+          <a class="stuff-title-link" href="{% url 'catalog:category' 22 %}">
             Автопреобразователи напряжения
           </a>
         </div>
-        <a class="stuff-img stuff-img-02" href="#">
+        <a class="stuff-img stuff-img-02" href="{% url 'catalog:category' 22 %}">
           <img src="{{ STATIC_URL }}images/catalog/products/290/small.jpg" class="img-responsive"
-               alt="Автопреобразователи
-           напряжения">
+               alt="Автопреобразователи напряжения">
         </a>
       </div>
       <ul class="stuff-list stuff-list-02 list-unstyled">
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Инверторы СОЮЗ
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Инверторы ROBITON
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Преобразователи DC 24 В/12 В KALLER
-          </a>
-        </li>
+        {% for item in category_tile.inverter %}
+          <li class="stuff-item">
+            <a class="stuff-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+          </li>
+        {% endfor %}
       </ul>
 
       <div class="stuff-double">
         <div class="stuff-double-wrapper">
           <div class="stuff-title">
-            <a class="stuff-title-link" href="#">
+            <a class="stuff-title-link" href="{% url 'catalog:category' 3 %}">
               Батарейки
             </a>
           </div>
-          <a class="stuff-img stuff-img-03" href="#">
+          <a class="stuff-img stuff-img-03" href="{% url 'catalog:category' 3 %}">
             <img src="{{ STATIC_URL }}images/catalog/products/2662/small.jpg" class="img-responsive" alt="Батарейки">
           </a>
         </div>
         <ul class="stuff-double-list list-unstyled">
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="#">Типоразмера АА</a>
-          </li>
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="#">
-              Часовые
-            </a>
-          </li>
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="#">
-              Литиевые
-            </a>
-          </li>
+          {% for item in category_tile.batteries %}
+            <li class="stuff-item stuff-item-double">
+              <a class="stuff-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+            </li>
+          {% endfor %}
         </ul>
       </div>
 
       <div class="stuff-double">
         <div class="stuff-double-wrapper">
           <div class="stuff-title">
-            <a class="stuff-title-link" href="#">
+            <a class="stuff-title-link" href="{% url 'catalog:category' 63 %}">
               Фонари
             </a>
           </div>
-          <a class="stuff-img stuff-img-03" href="#">
+          <a class="stuff-img stuff-img-03" href="{% url 'catalog:category' 63 %}">
             <img src="{{ STATIC_URL }}images/catalog/products/1227/small.jpg" class="img-responsive" alt="Фонари">
           </a>
         </div>
         <ul class="stuff-double-list list-unstyled">
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="#">
-              Фотон
-            </a>
-          </li>
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="#">
-              Эра
-            </a>
-          </li>
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="#">
-              Яркий Луч
-            </a>
-          </li>
+          {% for item in category_tile.lights %}
+            <li class="stuff-item stuff-item-double">
+              <a class="stuff-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+            </li>
+          {% endfor %}
         </ul>
       </div>
     </div>
@@ -146,103 +86,61 @@
     <div class="page-front-cell page-front-cell-03">
       <div class="stuff-wrapper stuff-wrapper-03">
         <div class="stuff-title">
-          <a class="stuff-title-link"
-             href="#">
+          <a class="stuff-title-link" href="{% url 'catalog:category' 4 %}">
             Зарядные устройства
           </a>
         </div>
-        <a class="stuff-img stuff-img-02"
-           href="#">
+        <a class="stuff-img stuff-img-02" href="{% url 'catalog:category' 4 %}">
           <img src="{{ STATIC_URL }}images/catalog/products/3124/small.jpg" class="img-responsive" alt="Зарядные
           устройства">
         </a>
       </div>
       <ul class="stuff-list stuff-list-03 list-unstyled">
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Для фотоаппаратов
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Для видеокамер
-          </a>
-        </li>
-        <li class="stuff-item">
-          <a class="stuff-link"
-             href="#">
-            Для свинцовых
-          </a>
-        </li>
+        {% for item in category_tile.chargers %}
+          <li class="stuff-item">
+            <a class="stuff-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+          </li>
+        {% endfor %}
       </ul>
 
       <div class="stuff-double">
         <div class="stuff-double-wrapper">
           <div class="stuff-title">
-            <a class="stuff-title-link"
-               href="#">
+            <a class="stuff-title-link" href="{% url 'catalog:category' 74 %}">
               Мультиметры
             </a>
           </div>
-          <a class="stuff-img stuff-img-03"
-             href="#">
+          <a class="stuff-img stuff-img-03" href="{% url 'catalog:category' 74 %}">
             <img src="{{ STATIC_URL }}images/catalog/products/1397/small.jpg" class="img-responsive" alt="Мультиметры">
           </a>
         </div>
         <ul class="stuff-double-list list-unstyled">
-          <li class="stuff-item stuff-item-double-small">
-            <a class="stuff-link" href="#">
-              MY68 Master Professional
-            </a>
-          </li>
-          <li class="stuff-item stuff-item-double-small">
-            <a class="stuff-link" href="#">
-              MY67 Master Professional
-            </a>
-          </li>
-          <li class="stuff-item stuff-item-double-small">
-            <a class="stuff-link" href="#">
-              MY65 Master Professional
-            </a>
-          </li>
+          {% for item in category_tile.multimeters %}
+            <li class="stuff-item stuff-item-double-small">
+              <a class="stuff-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+            </li>
+          {% endfor %}
         </ul>
       </div>
 
       <div class="stuff-double">
         <div class="stuff-double-wrapper">
           <div class="stuff-title">
-            <a class="stuff-title-link"
-               href="#">
+            <a class="stuff-title-link" href="{% url 'catalog:category' 6 %}">
               Блоки питания
             </a>
           </div>
-          <a class="stuff-img stuff-img-03"
-             href="#">
+          <a class="stuff-img stuff-img-03" href="{% url 'catalog:category' 6 %}">
             <img src="{{ STATIC_URL }}images/catalog/products/2847/small.jpg" class="img-responsive" alt="Блоки
             питания">
           </a>
         </div>
         <ul class="stuff-double-list list-unstyled">
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link"
-               href="#">
-              220В для ноутбуков
-            </a>
-          </li>
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link"
-               href="#">
-              12В для ноутбуков
-            </a>
-          </li>
-          <li class="stuff-item stuff-item-double">
-            <a class="stuff-link"
-               href="#">
-              Трансформаторные
-            </a>
-          </li>
+          {% for item in category_tile.adapters %}
+            <li class="stuff-item stuff-item-double">
+              <a class="stuff-link" href="{% url 'catalog:category' item.id %}">{{ item.name }}</a>
+            </li>
+          {% endfor %}
         </ul>
       </div>
     </div>
@@ -273,7 +171,7 @@
         </div>
         <div class="page-front-news-title">Доставка по всей России</div>
         <div class="page-front-news-text">
-          Доставка товаров по всей России курьером, почтой, транспортной компании.
+          Доставка товаров по всей России курьером, почтой, транспортной компанией.
           Доставка во все города и уголки страны
         </div>
       </div>

@@ -129,7 +129,7 @@
         <ul class="nav-category list-unstyled clearfix">
           {% for root in root_categories %}
             <li class="nav-category-item">
-              <a class="nav-category-link" href="{% url 'catalog:category' root.id %}">{{ root.menu_item_title }}</a>
+              <a class="nav-category-link" href="{% url 'catalog:category' root.id %}">{{ root.menu_title }}</a>
               {% if root.get_children %}
                 <div class="nav-menu-dropdown">
                   <ul class="list-unstyled">
@@ -139,20 +139,6 @@
                       </a></li>
                     {% endfor %}
                   </ul>
-
-{#                    <div class="popular-product">#}
-{#                      <a class="popular-product-link"#}
-{#                         href="#">#}
-{#                        <div class="label">Популярный товар</div>#}
-{#                        <div class="popular-product-image-wrapper">#}
-{#                          <img class="img-responsive" src="#" alt="">#}
-{#                        </div>#}
-{#                        <div class="text">#}
-{#                          <div class="price"> руб.</div>#}
-{#                          <div class="desc"><span></span></div>#}
-{#                        </div>#}
-{#                      </a>#}
-{#                    </div>#}
                 </div>
               {% endif %}
             </li>
