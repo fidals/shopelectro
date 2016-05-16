@@ -1,12 +1,7 @@
 // ================================================================
 // IMPORTS
 // ================================================================
-@import "../vendors/bootstrap/variables";
 @import "../vendors/bootstrap-select";
-@import "../vendors/bootstrap/mixins";
-@import "../common/mixins/utilities";
-@import "../common/mixins/sp-png";
-@import "../common/variables";
 
 // ================================================================
 // CATEGORY
@@ -16,7 +11,7 @@
     .text-overflow;
     appearance: none;
     box-shadow: none;
-    border: 1px solid @color-header-size;
+    border: 1px solid @c-black-lightest;
     border-radius: 20px;
     line-height: 1;
     height: 30px;
@@ -66,11 +61,8 @@
 .category-left {
   padding-left: 0;
 
-  .filter,
   .block {
-    border-bottom: 1px @color-top-header-mail solid;
-    margin: 0 0 5px 0;
-    padding: 12px 22px 10px 3px;
+    padding: 12px 10px 0 4px;
   }
 }
 
@@ -91,12 +83,12 @@
 
     &:hover {
       background: none;
-      color: @color-ui-slider-handler;
+      color: @c-tooltip-hovered;
     }
 
     span {
       display: inline-block;
-      color: @color-ui-slider-handler;
+      color: @c-tooltip-hovered;
       border-bottom: 1px solid @c-menu-dropdown-border;
       margin: 0 0 0 3px;
     }
@@ -131,7 +123,7 @@
   }
 
   &-pop-label {
-    background: @c-btn-increrase-active;
+    background: @c-btn-increase-active;
     color: @c-white;
     left: -1px;
     padding: 8px 16px;
@@ -153,7 +145,7 @@
 
   .topline {
     border-radius: 3px;
-    background-color: @color-topline-bg;
+    background-color: @c-middle-head-bg;
     height: 47px;
     margin-bottom: 13px;
     overflow: visible;
@@ -187,14 +179,6 @@
   }
 
   .popular-product {
-    // TODO: Шильдик популярного продукта на товаре:
-    // position: relative;
-    // display: block;
-    // text-decoration: none;
-    // float: none;
-    // height: auto;
-    // width: auto;
-
     .action {
       color: @c-white;
       background: url("@{img-path}/icons.png") -53px 0 no-repeat;
@@ -219,54 +203,6 @@
     }
   }
 
-  .compare {
-    padding: 0 0 0 18px;
-
-    &:after {
-      background: url("@{img-path}/icons.png") no-repeat left -16px;
-      content: "";
-      height: 16px;
-      left: 0;
-      position: absolute;
-      top: -2px;
-      width: 17px;
-    }
-
-    &:hover:after {
-      background-position: left top;
-    }
-
-    a {
-      border-bottom: 1px solid @color-top-header-mail;
-      color: @color-ui-widget-header;
-      text-decoration: none;
-    }
-  }
-
-  .bookmark {
-    padding: 0 0 0 23px;
-
-    .fa {
-      color: @c-bookmark;
-      font-size: 16px;
-      display: inline-block;
-      top: 0;
-      left: 0;
-      position: absolute;
-      margin-left: 7px;
-    }
-
-    &:hover .fa {
-      color: @c-bookmark-hover;
-    }
-
-    a {
-      color: @gray-light;
-      text-decoration: none;
-      border-bottom: 1px solid @color-top-header-mail;
-    }
-  }
-
   .img-wrp {
     &:extend(.teaser-shadow);
     background-color: @c-white;
@@ -284,7 +220,7 @@
 }
 
 .sorting-nav {
-  background-color: @color-topline-bg;
+  background-color: @c-middle-head-bg;
   border-radius: 3px;
   clear: both;
   height: 47px;
@@ -340,7 +276,7 @@
 
     &:hover {
       cursor: pointer;
-      color: @color-block-span;
+      color: @c-tooltip-hovered-link;
       background: none;
     }
   }
@@ -349,7 +285,7 @@
     font-size: @f-size-base + 2;
     font-family: @font-family-base;
     line-height: 28px;
-    color: @color-ui-slider-handler;
+    color: @c-tooltip-hovered;
     height: 40px;
     margin: 0 0 2px 0;
   }
@@ -395,8 +331,8 @@
     border-bottom-left-radius: 4px;
 
     &:hover {
-      background-color: @c-btn-decrerase-active;
-      border-color: @c-btn-decrerase-active;
+      background-color: @c-btn-decrease-active;
+      border-color: @c-btn-decrease-active;
       border-top-color: @c-white;
     }
   }
@@ -405,8 +341,8 @@
     border-top-left-radius: 4px;
 
     &:hover {
-      background-color: @c-btn-increrase-active;
-      border-color: @c-btn-increrase-active;
+      background-color: @c-btn-increase-active;
+      border-color: @c-btn-increase-active;
     }
 
     i {
@@ -638,9 +574,9 @@
 
 .btn-blue {
   .font-anti;
-  .transition(all 0.3s ease);
-  background: @btn-bg;
-  border: 2px solid @btn-bg;
+  .transition;
+  background: @c-btn-remove-active;
+  border: 2px solid @c-btn-remove-active;
   border-radius: 3px;
   color: @c-white;
   cursor: pointer;
@@ -655,16 +591,16 @@
 
   &:hover,
   &:focus {
-    background: @btn-bg-hover;
-    border: 2px solid @btn-bg-hover;
+    background: @c-tooltip-hovered;
+    border: 2px solid @c-tooltip-hovered;
     color: @c-white;
   }
 
   &:active {
     box-shadow: none;
     background: @c-white;
-    border: 2px solid @btn-bg;
-    color: @btn-bg;
+    border: 2px solid @c-btn-remove-active;
+    color: @c-btn-remove-active;
   }
 }
 
@@ -693,7 +629,7 @@
     outline: none !important;
 
     &:hover {
-      background-color: @color-topline-bg !important;
+      background-color: @c-middle-head-bg !important;
     }
   }
 

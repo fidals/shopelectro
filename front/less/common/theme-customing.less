@@ -2,6 +2,7 @@
 // IMPORTS
 // ================================================================
 @import "mixins/sp-png";
+@import "../vendors/bootstrap/variables";
 
 // ================================================================
 // VARIABLES
@@ -198,8 +199,8 @@
   @border-radius : 3px
 ) {
   .transition;
-  background: @btn-bg;
-  border: 2px solid @btn-bg;
+  background: @c-btn-remove-active;
+  border: 2px solid @c-btn-remove-active;
   border-radius: @border-radius;
   color: @c-white;
   cursor: pointer;
@@ -213,16 +214,16 @@
 
   &:hover,
   &:focus {
-    background: @btn-bg-hover;
-    border: 2px solid @btn-bg-hover;
+    background: @c-tooltip-hovered;
+    border: 2px solid @c-tooltip-hovered;
     color: @c-white;
   }
 
   &:active {
     box-shadow: none;
     background: @c-white;
-    border: 2px solid @btn-bg;
-    color: @btn-bg;
+    border: 2px solid @c-btn-remove-active;
+    color: @c-btn-remove-active;
   }
 }
 
@@ -287,22 +288,18 @@
   text-align: center;
 }
 
-.input-number (
-  @height    : 38px,
-  @width     : 70px,
-  @font-size : 16px
-) {
+.input-number {
   -moz-appearance: textfield;
   appearance: none;
   background-color: transparent;
   border: 1px solid @c-btn-increase;
   border-radius: 3px;
-  height: @height;
+  height: 38px;
   font-family: @proxima;
-  font-size: @font-size;
+  font-size: @f-size-base - 2;
   outline: none;
   text-align: center;
-  width: @width;
+  width: 70px;
 }
 
 // ================================================================
@@ -340,9 +337,9 @@
   }
 
   &-content {
-    .box-shadow(0 0 13px fade(@c-black, 39%));
     border-radius: 0;
     border-color: transparent;
+    box-shadow: 0 0 13px fade(@c-black, 39%);
   }
 
   &-header {

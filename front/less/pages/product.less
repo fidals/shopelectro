@@ -1,12 +1,4 @@
 // ================================================================
-// IMPORTS
-// ================================================================
-@import "../vendors/bootstrap/mixins/vendor-prefixes";
-@import "../common/variables";
-@import "../common/mixins/utilities";
-@import "../common/mixins/sp-png";
-
-// ================================================================
 // PAGE PRODUCT
 // ================================================================
 .product {
@@ -177,10 +169,12 @@
 
     .input-switcher {
       #product-price& {
-        .input-number(41px, 71px);
+        .input-number;
+        height: 41px;
         margin-top: 0;
         margin-left: 0;
         padding: 6px 0 6px 6px;
+        width: 71px;
       }
     }
 
@@ -242,7 +236,7 @@
     }
 
     .bootstrap-touchspin-down:hover {
-      background-color: @c-btn-decrerase-active;
+      background-color: @c-btn-decrease-active;
     }
   }
 
@@ -306,7 +300,7 @@
     }
 
     &-list {
-      .transition(all 0.3s ease);
+      .transition;
       clear: both;
       height: 295px;
       margin-bottom: 16px;
@@ -377,7 +371,7 @@
   }
 
   &-analog-list {
-    .transition(all 0.3s ease);
+    .transition;
     height: 216px;
     overflow: hidden;
     padding: 10px 0 0;
@@ -497,7 +491,6 @@
       }
 
       &:after {
-        .transform(rotate(45deg));
         background: @c-blue-table-fill;
         border-top: 1px solid @c-btn-increase;
         border-right: 1px solid @c-btn-increase;
@@ -509,6 +502,7 @@
         right: -6px;
         text-align: center;
         top: 10px;
+        transform: rotate(45deg);
         width: 10px;
       }
 
@@ -535,7 +529,7 @@
     }
 
     &-list {
-      .transition(all 0.3s ease);
+      .transition;
       margin-bottom: 15px;
       overflow: hidden;
     }
@@ -672,12 +666,16 @@
 }
 
 .btn-to-basket {
-  .btn-dark-blue(5px, 21px, 4px 56px);
+  .btn-dark-blue;
+  font-size: @f-size-base + 3;
+  padding: 4px 56px;
   margin: 2px 0 20px;
 }
 
 .btn-order {
-  .btn-grey(3px, 18px, 6px 36px);
+  .btn-grey;
+  font-size: @f-size-base + 1;
+  padding: 6px 36px;
   margin: 2px 0 0;
 }
 

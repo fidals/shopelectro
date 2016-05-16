@@ -1,12 +1,4 @@
 // ================================================================
-// IMPORTS
-// ================================================================
-@import "../common/variables";
-@import "../common/mixins/utilities";
-@import "../common/mixins/sp-png";
-@import "../vendors/bootstrap/mixins/vendor-prefixes";
-
-// ================================================================
 // PAGE MAIN
 // ================================================================
 .page-front {
@@ -51,8 +43,8 @@
     }
 
     &-img {
-      .box-shadow(4px 4px 0 fade(@c-black, 20%));
       border-radius: 100px;
+      box-shadow: 4px 4px 0 fade(@c-black, 20%);
       background: @c-white;
       height: 156px;
       margin: 0 auto 21px;
@@ -237,28 +229,6 @@
   }
 }
 
-.search-for {
-  border-radius: 5px;
-  border: 2px solid @c-btn-red-focused;
-  clear: both;
-  font-size: @f-size-base + 10;
-  margin-bottom: 44px;
-  padding: 28px 12px 20px;
-
-  .btn-red {
-    .btn-red;
-    float: right;
-    position: relative;
-    right: 3px;
-    top: -9px;
-  }
-}
-
-.search-text-for {
-  position: relative;
-  left: 275px;
-}
-
 .stuff-top {
   clear: both;
   position: relative;
@@ -272,6 +242,7 @@
 
   &-title {
     .font-anti;
+    font-size: @f-size-base + 12;
     margin-bottom: 22px;
   }
 
@@ -308,16 +279,6 @@
     height: 173px;
     margin-bottom: 5px;
     position: relative;
-
-    .img-responsive {
-      bottom: 0;
-      height: 100%;
-      left: 0;
-      margin: auto;
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
   }
 
   &-description {
@@ -348,6 +309,8 @@
     color: @c-black-lighter-x;
     font-size: @f-size-base - 2;
     line-height: 130%;
+    max-height: 45px;
+    overflow: hidden;
     padding: 5px 0 15px;
   }
 
