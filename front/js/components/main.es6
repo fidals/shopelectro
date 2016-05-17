@@ -74,7 +74,7 @@ let pluginsInit = () => {
   DOM.phoneInputs
     .mask('+9 (999) 999 99 99')
     .on('keyup', function () {
-      localStorage.setItem(USER_PHONE, $(this).val())
+      localStorage.setItem(USER_PHONE, $(this).val());
     });
 
   /**

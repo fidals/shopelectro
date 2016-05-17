@@ -1,16 +1,4 @@
 // ================================================================
-// IMPORTS
-// ================================================================
-@import "../common/variables";
-@import "../common/mixins/utilities";
-@import "../vendors/jscrollpane";
-@import "../common/mixins/sp-png";
-
-// ================================================================
-// VARIABLES
-// ================================================================
-@sp-main: url("@{img-path}/sp-png.png");
-
 // Header dropdown
 // ================================================================
 .basket {
@@ -32,7 +20,6 @@
   }
 
   &-wrapper {
-    .transform(translateY(50px));
     background: @c-basket-fill;
     border: 1px solid @c-basket-border;
     color: @c-black;
@@ -42,6 +29,7 @@
     padding: 15px 8px 10px 12px;
     position: absolute;
     top: 42px;
+    transform: translateY(50px);
     width: 318px;
     z-index: -1;
 
@@ -213,7 +201,7 @@
     &:active,
     &:active:focus {
       box-shadow: none;
-      background-color: @c-btn-increrase-active;
+      background-color: @c-btn-increase-active;
       outline: none;
     }
   }
@@ -226,7 +214,7 @@
     &:active,
     &:active:focus {
       box-shadow: none;
-      background-color: @c-btn-decrerase-active;
+      background-color: @c-btn-decrease-active;
       outline: none;
     }
   }
@@ -374,7 +362,6 @@
     }
 
     &:after {
-      .transform(rotate(45deg));
       background: @c-grey-body-main;
       border-top: 1px solid @c-grey-text-main;
       border-right: 1px solid @c-grey-text-main;
@@ -386,6 +373,7 @@
       right: -6px;
       text-align: center;
       top: 11px;
+      transform: rotate(45deg);
       width: 10px;
     }
 
