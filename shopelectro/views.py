@@ -6,15 +6,14 @@ NOTE: They all should be 'zero-logic'. All logic should live in respective appli
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
-from django.conf import settings
-from django.core.urlresolvers import reverse
 
-from catalog.models import Category, get_crumbs as catalog_crumbs
-from blog.models import Post, get_crumbs as blog_crumbs
 from . import config
 from .models import Product
+from blog.models import Post, get_crumbs as blog_crumbs
+from catalog.models import Category, get_crumbs as catalog_crumbs
 
 
 def index(request):
@@ -134,3 +133,26 @@ def blog_post(request, type_=''):
         'breadcrumbs': blog_crumbs(settings.CRUMBS['blog']),
         'page': config.page_metadata(type_),
     })
+
+
+def admin_autocomplete(request):
+    """
+    Returns names only for Categories or Products.
+
+    :param request:
+    :return: HttpResponse
+    """
+    search_term = request.GET['q']
+    page_term = request.GET['page']
+
+    if page_term == 'product':
+        query_objects = Product.objects.filter(name__contains=search_term).values('name')
+    else:
+        query_objects = Category.objects.filter(name__contains=search_term).values('name')
+
+    names = []
+
+    for item in query_objects:
+        names.append(item['name'])
+
+    return JsonResponse(names, safe=False)

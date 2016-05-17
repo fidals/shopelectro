@@ -27,6 +27,7 @@ const ENV = {
 const PATH = {
   src: {
     styles: [
+      'front/less/admin.less',
       'front/less/styles.less',
       'front/less/pages.less',
     ],
@@ -51,6 +52,10 @@ const PATH = {
         'front/js/components/product.es6',
         'front/js/components/accordion.es6',
       ],
+      admin: [
+        'front/js/admin/auto-complete.min.js',
+        'front/js/admin/admin.es6',
+      ],
     },
 
     images: 'front/images/**/*',
@@ -67,8 +72,7 @@ const PATH = {
   watch: {
     styles: 'front/less/**/*.less',
     js: [
-      'front/js/shared/*.es6',
-      'front/js/components/*.es6',
+      'front/js/**/*',
     ],
     images: 'src/images/**/*.*',
     fonts: 'src/fonts/**/*.*',
@@ -87,6 +91,7 @@ gulp.task('build', (callback) => {
     'js-vendors',
     'js-common',
     'js-pages',
+    'js-admin',
     'build-imgs',
     'build-fonts',
     callback
@@ -170,6 +175,26 @@ gulp.task('js-pages', () => {
 });
 
 // ================================================================
+// JS : Build admin page scripts
+// ================================================================
+gulp.task('js-admin', () => {
+  gulp.src(PATH.src.js.admin)
+    .pipe(changed(PATH.build.js, { extension: '.js' }))
+    .pipe(gulpIf(ENV.development, sourcemaps.init()))
+    .pipe(plumber())
+    .pipe(babel({
+      presets: ['es2015'],
+    }))
+    .pipe(concat('admin.js'))
+    .pipe(rename({
+      suffix: '.min',
+    }))
+    .pipe(gulpIf(ENV.production, uglify()))
+    .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
+    .pipe(gulp.dest(PATH.build.js));
+});
+
+// ================================================================
 // Images : Copy images
 // ================================================================
 gulp.task('build-imgs', () => {
@@ -204,6 +229,7 @@ gulp.task('watch', () => {
   gulp.watch(PATH.watch.styles, ['styles']);
   gulp.watch(PATH.watch.js, ['js-common']);
   gulp.watch(PATH.watch.js, ['js-pages']);
+  gulp.watch(PATH.watch.js, ['js-admin']);
 });
 
 // ================================================================

@@ -280,3 +280,133 @@ class BlogPageSeleniumTests(TestCase):
         accordion_title.click()
         time.sleep(1)
         self.assertFalse(accordion_content.is_displayed())
+
+
+class AdminPageSeleniumTests(TestCase):
+    """
+    Selenium-based tests for Admin page UI.
+    """
+
+    def setUp(self):
+        """
+        Sets up testing url and dispatches selenium webdriver.
+        """
+
+        self.admin_page = settings.LOCALHOST + 'admin'
+        self.login = 'admin'
+        self.password = 'admin;'
+        self.title_text = 'Shopelectro administration'
+        self.products_list_link = '//*[@id="content-main"]/div[4]/table/tbody/tr/th/a'
+        self.product_price_filter_link = '//*[@id="changelist-filter"]/ul[1]/li[4]'
+        self.show_active_products_link = '//*[@id="changelist-filter"]/ul[2]/li[2]/a'
+        self.show_nonactive_products_link = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
+        self.products_activity_state_img = '//*[@id="result_list"]/tbody/tr[1]/td[6]/img'
+        self.autocomplete_text = 'Фонарь'
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(5)
+
+    def tearDown(self):
+        """
+        Closes selenium's session.
+        """
+
+        self.browser.quit()
+
+    def _login(self):
+        self.browser.get(self.admin_page)
+        login_field = self.browser.find_element_by_id('id_username')
+        login_field.clear()
+        login_field.send_keys(self.login)
+        password_field = self.browser.find_element_by_id('id_password')
+        password_field.clear()
+        password_field.send_keys(self.password)
+        login_form = self.browser.find_element_by_id('login-form')
+        login_form.submit()
+        time.sleep(1)
+
+    def test_login(self):
+        """
+        We are able to login to Admin page.
+        """
+        self._login()
+
+        admin_title = self.browser.find_element_by_id('site-name')
+        self.assertIn(self.title_text, admin_title.text)
+
+    def test_admin_product(self):
+        """
+        Admin products page has icon links for Edit\View.
+        And it should has Search field.
+        """
+        self._login()
+
+        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link.click()
+        time.sleep(1)
+        edit_links = self.browser.find_element_by_class_name('field-links')
+        search_field = self.browser.find_element_by_id('changelist-search')
+        self.assertTrue(edit_links)
+        self.assertTrue(search_field)
+
+    def test_product_price_filter(self):
+        """
+        Price filter is able to filter products by set range.
+        In this case we filter products with 1000 - 2000 price range.
+        """
+        self._login()
+
+        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link.click()
+        time.sleep(1)
+
+        filter_link = self.browser.find_element_by_xpath(self.product_price_filter_link)
+        filter_link.click()
+        time.sleep(1)
+        first_product = self.browser.find_element_by_id('id_form-0-price')
+        first_product_price = float(first_product.get_attribute('value'))
+
+        self.assertTrue(first_product_price >= 1000)
+
+    def test_is_active_filter(self):
+        """
+        Activity filter returns only active or non active items.
+        """
+        self._login()
+
+        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link.click()
+        time.sleep(1)
+
+        filter_link = self.browser.find_element_by_xpath(self.show_active_products_link)
+        filter_link.click()
+        time.sleep(1)
+        first_product = self.browser.find_element_by_xpath(self.products_activity_state_img)
+        first_product_state = first_product.get_attribute('alt')
+
+        self.assertTrue(first_product_state == 'true')
+
+        filter_link = self.browser.find_element_by_xpath(self.show_nonactive_products_link)
+        filter_link.click()
+        time.sleep(1)
+        first_product = self.browser.find_element_by_xpath(self.products_activity_state_img)
+        first_product_state = first_product.get_attribute('alt')
+
+        self.assertTrue(first_product_state == 'false')
+
+    def test_search_autocomplete(self):
+        """
+        Search field could autocomplete.
+        """
+        self._login()
+
+        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link.click()
+        time.sleep(1)
+
+        filter_link = self.browser.find_element_by_id('searchbar')
+        filter_link.send_keys(self.autocomplete_text)
+        time.sleep(1)
+        first_product = self.browser.find_element_by_class_name('autocomplete-suggestion')
+        first_product_state = first_product.get_attribute('data-val')
+
+        self.assertTrue(self.autocomplete_text in first_product_state)
