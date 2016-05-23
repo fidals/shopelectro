@@ -1,5 +1,6 @@
 Django==1.9.5
 django-mptt == 0.8.3
+selenium
 -e git+https@github.com:fidals/refarm-catalog.git#egg=refarm-catalog
 -e git+https@github.com:fidals/refarm-blog.git#egg=refarm-blog
 -e git+https@github.com:fidals/refarm-seo.git#egg=refarm-seo

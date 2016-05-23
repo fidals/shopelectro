@@ -1,0 +1,14 @@
+{% extends "shopelectro/base.html" %}
+{% load staticfiles %}
+{% block content %}
+  <div class="container page-front">
+    {# Tile on main page #}
+    {% include 'index/tile.html' %}
+
+    {# Top 10 offers #}
+    {% include 'index/top_10.html' %}
+
+    {# Three news links #}
+    {% include 'index/services.html' %}
+  </div>
+{% endblock %}

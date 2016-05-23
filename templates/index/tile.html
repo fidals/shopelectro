@@ -1,0 +1,143 @@
+{% load staticfiles %}
+<div class="page-front-cell page-front-cell-01">
+  <div class="stuff-wrapper stuff-wrapper-01">
+    <div class="stuff-title">
+      <a class="stuff-title-link" href="{% url 'category' 'akkumuliatory' %}">
+        Аккумуляторы
+      </a>
+    </div>
+    <a class="stuff-img stuff-img-01" href="{% url 'category' 'akkumuliatory' %}">
+      <img src="{% static 'images/catalog/products/6/main.jpg' %}" class="img-responsive" alt="Аккумуляторы">
+    </a>
+  </div>
+  <ul class="stuff-list stuff-list-01 list-unstyled">
+    {% for item in category_tile.accumulators %}
+      <li class="stuff-item">
+        <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="page-front-cell page-front-cell-02">
+  <div class="stuff-wrapper stuff-wrapper-02">
+    <div class="stuff-title">
+      <a class="stuff-title-link" href="{% url 'category' 'avtopreobrazovateli-napriazheniia' %}">
+        Автопреобразователи напряжения
+      </a>
+    </div>
+    <a class="stuff-img stuff-img-02" href="{% url 'category' 'avtopreobrazovateli-napriazheniia' %}">
+      <img src="{% static 'images/catalog/products/290/small.jpg' %}" class="img-responsive"
+           alt="Автопреобразователи напряжения">
+    </a>
+  </div>
+  <ul class="stuff-list stuff-list-02 list-unstyled">
+    {% for item in category_tile.inverter %}
+      <li class="stuff-item">
+        <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <div class="stuff-double">
+    <div class="stuff-double-wrapper">
+      <div class="stuff-title">
+        <a class="stuff-title-link" href="{% url 'category' 'zariadnye-ustroistva' %}">
+          Батарейки
+        </a>
+      </div>
+      <a class="stuff-img stuff-img-03" href="{% url 'category' 'zariadnye-ustroistva' %}">
+        <img src="{% static 'images/catalog/products/2662/small.jpg' %}" class="img-responsive" alt="Батарейки">
+      </a>
+    </div>
+    <ul class="stuff-double-list list-unstyled">
+      {% for item in category_tile.batteries %}
+        <li class="stuff-item stuff-item-double">
+          <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="stuff-double">
+    <div class="stuff-double-wrapper">
+      <div class="stuff-title">
+        <a class="stuff-title-link" href="{% url 'category' 'fonari' %}">
+          Фонари
+        </a>
+      </div>
+      <a class="stuff-img stuff-img-03" href="{% url 'category' 'fonari' %}">
+        <img src="{% static 'images/catalog/products/1227/small.jpg' %}" class="img-responsive" alt="Фонари">
+      </a>
+    </div>
+    <ul class="stuff-double-list list-unstyled">
+      {% for item in category_tile.lights %}
+        <li class="stuff-item stuff-item-double">
+          <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<div class="page-front-cell page-front-cell-03">
+  <div class="stuff-wrapper stuff-wrapper-03">
+    <div class="stuff-title">
+      <a class="stuff-title-link" href="{% url 'category' 'zariadnye-ustroistva' %}">
+        Зарядные устройства
+      </a>
+    </div>
+    <a class="stuff-img stuff-img-02" href="{% url 'category' 'zariadnye-ustroistva' %}">
+      <img src="{% static 'images/catalog/products/3124/small.jpg' %}" class="img-responsive" alt="Зарядные
+      устройства">
+    </a>
+  </div>
+  <ul class="stuff-list stuff-list-03 list-unstyled">
+    {% for item in category_tile.chargers %}
+        <li class="stuff-item">
+          <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+        </li>
+    {% endfor %}
+  </ul>
+
+  <div class="stuff-double">
+    <div class="stuff-double-wrapper">
+      <div class="stuff-title">
+        <a class="stuff-title-link" href="{% url 'category' 'multimetry-master-professional' %}">
+          Мультиметры
+        </a>
+      </div>
+      <a class="stuff-img stuff-img-03" href="{% url 'category' 'multimetry-master-professional' %}">
+        <img src="{% static 'images/catalog/products/1397/small.jpg' %}" class="img-responsive" alt="Мультиметры">
+      </a>
+    </div>
+    <ul class="stuff-double-list list-unstyled">
+      {% for item in category_tile.multimeters %}
+        <li class="stuff-item stuff-item-double-small">
+          <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="stuff-double">
+    <div class="stuff-double-wrapper">
+      <div class="stuff-title">
+        <a class="stuff-title-link" href="{% url 'category' 'bloki-pitaniia' %}">
+          Блоки питания
+        </a>
+      </div>
+      <a class="stuff-img stuff-img-03" href="{% url 'category' 'bloki-pitaniia' %}">
+        <img src="{% static 'images/catalog/products/2847/small.jpg' %}" class="img-responsive" alt="Блоки
+        питания">
+      </a>
+    </div>
+    <ul class="stuff-double-list list-unstyled">
+      {% for item in category_tile.adapters %}
+        <li class="stuff-item stuff-item-double">
+          <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

@@ -51,7 +51,7 @@ const BACKCALL_MODAL = {
 const USER_BACKCALL_TIME = 'userBackcallTime';
 const USER_PHONE = 'userPhone';
 
-let initialization = () => {
+let init = () => {
   pluginsInit();
   fillInUserData({
     USER_PHONE: localStorage.getItem(USER_PHONE),
@@ -123,4 +123,4 @@ let storeBackcallTime = (selectedOption) => {
   localStorage.setItem(USER_BACKCALL_TIME, selectedTime);
 };
 
-initialization();
+init();
