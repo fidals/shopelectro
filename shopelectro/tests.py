@@ -4,9 +4,10 @@ Tests for shopelectro.ru
 There should be test suite for every 'page' on a site,
 containing Selenium-based tests.
 """
-
+import time
 from selenium import webdriver
 from django.test import TestCase
+from django.conf import settings
 
 
 class CategoryPageSeleniumTests(TestCase):
@@ -20,10 +21,12 @@ class CategoryPageSeleniumTests(TestCase):
     def setUp(self):
         """Sets up testing urls and dispatches selenium webdriver."""
 
-        self.accumulators_page = 'http://127.0.0.1:8000/catalog/categories/akkumuliatory/'
-        self.supplies_page = 'http://127.0.0.1:8000/catalog/categories/bloki-pitaniia/'
-        self.charger_page = 'http://127.0.0.1:8000/catalog/categories/zariadnye-ustroistva/'
-        self.deep_category = 'http://127.0.0.1:8000/catalog/categories/akkumuliatory-aa/'
+        self.accumulators_page = settings.LOCALHOST + 'catalog/categories/akkumuliatory/'
+        self.supplies_page = settings.LOCALHOST + 'catalog/categories/bloki-pitaniia/'
+        self.charger_page = (settings.LOCALHOST +
+                             'catalog/categories/zariadnye-ustroistva/')
+        self.deep_category = (settings.LOCALHOST +
+                              'catalog/categories/akkumuliatory-aa/')
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(10)
 
@@ -41,11 +44,13 @@ class CategoryPageSeleniumTests(TestCase):
         :return:
         """
 
-        self.browser.get(self.accumulators_page)  # In 'root category' there should be three crumbs
+        # In 'root category' there should be three crumbs
+        self.browser.get(self.accumulators_page)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
         self.assertEqual(len(crumbs), 3)
 
-        self.browser.get(self.deep_category)  # In 'deep category' there should be more crumbs
+        # In 'deep category' there should be more crumbs
+        self.browser.get(self.deep_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
         self.assertEqual(len(crumbs), 4)
 
@@ -69,6 +74,7 @@ class CategoryPageSeleniumTests(TestCase):
         load_more_button = self.browser.find_element_by_xpath(
             '//*[@id="btn-load-products"]')
         load_more_button.click()  # Let's load another 30 products.
+        time.sleep(1)  # Dirty hack
         loaded_products = self.browser.find_element_by_xpath(
             '//*[@id="category-right"]/p/span[1]').text
         self.assertEqual('60', loaded_products)
@@ -77,16 +83,21 @@ class CategoryPageSeleniumTests(TestCase):
         """If all products were loaded we shouldn't see load more button anymore."""
 
         self.browser.get(self.charger_page)  # There are only 33 of them
-        load_more_button = self.browser.find_element_by_xpath('//*[@id="btn-load-products"]')
+        load_more_button = self.browser.find_element_by_xpath(
+            '//*[@id="btn-load-products"]')
         load_more_button.click()
-        load_more_button = self.browser.find_element_by_xpath('//*[@id="btn-load-products"]')
+        time.sleep(1)
+        load_more_button = self.browser.find_element_by_xpath(
+            '//*[@id="btn-load-products"]')
         self.assertTrue('hidden' in load_more_button.get_attribute('class'))
 
     def test_load_more_not_present_in_fully_loaded_categories(self):
         """If category has <= 30 products, we should not see load more button in its page."""
 
-        self.browser.get(self.supplies_page)  # There are only 8 of them, no need of load more
-        load_more_button = self.browser.find_element_by_xpath('//*[@id="btn-load-products"]')
+        # There are only 8 of them, no need of load more
+        self.browser.get(self.supplies_page)
+        load_more_button = self.browser.find_element_by_xpath(
+            '//*[@id="btn-load-products"]')
         self.assertTrue('hidden' in load_more_button.get_attribute('class'))
 
     def test_default_view_is_tile(self):
@@ -100,9 +111,11 @@ class CategoryPageSeleniumTests(TestCase):
         self.browser.get(self.accumulators_page)
         tile_view_selector = self.browser.find_element_by_xpath(
             '//*[@id="category-right"]/div[1]/div/div/div[3]/div[1]')
-        products_view = self.browser.find_element_by_xpath('//*[@id="category-right"]')
+        products_view = self.browser.find_element_by_xpath(
+            '//*[@id="category-right"]')
         self.assertTrue('active' in tile_view_selector.get_attribute('class'))
-        self.assertTrue('view-mode-tile' in products_view.get_attribute('class'))
+        self.assertTrue(
+            'view-mode-tile' in products_view.get_attribute('class'))
 
     def test_change_view(self):
         """
@@ -113,7 +126,8 @@ class CategoryPageSeleniumTests(TestCase):
         self.browser.get(self.accumulators_page)
         list_view_selector = self.browser.find_element_by_xpath(
             '//*[@id="category-right"]/div[1]/div/div/div[3]/div[2]')
-        products_view = self.browser.find_element_by_xpath('//*[@id="category-right"]')
+        products_view = self.browser.find_element_by_xpath(
+            '//*[@id="category-right"]')
 
         self.assertFalse('active' in list_view_selector.get_attribute('class'))
         self.assertFalse('view-mode-list' in products_view.get_attribute('class'))

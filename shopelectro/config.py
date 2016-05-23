@@ -1,6 +1,6 @@
 """
 Config storage for shopelectro.ru.
-There should be every config-like option, which doesn't belong to settings.
+Every config-like option which doesn't belong to settings should be here.
 """
 
 
@@ -81,42 +81,55 @@ TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
 # Tile on main page
 MAIN_PAGE_TILE = {
     'accumulators': [
-        {'id': 1, 'name': 'Типоразмера ААА', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Для радиомоделей и игрушек', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Свинцово-кислотные', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Внешние универсальные', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Для ноутбуков', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Адаптеры, отсеки и футляры', 'alias': 'Текст'},
+        {'name': 'Типоразмера ААА', 'alias': 'akkumuliatory-aaa'},
+        {'name': 'Для радиомоделей и игрушек',
+         'alias': 'akkumuliatory-dlia-radioupravliaemykh-modelei-i-igrushek'},
+        {'name': 'Свинцово-кислотные',
+         'alias': 'akkumuliatory-svintsovo-kislotnye-4-v-6-v-12-v-lca'},
+        {'name': 'Внешние универсальные',
+         'alias': 'vneshnie-universalnye-akkumuliatory'},
+        {'name': 'Для ноутбуков', 'alias': 'akkumuliatory-dlia-noutbukov'},
+        {'name': 'Адаптеры, отсеки и футляры',
+         'alias': 'adaptery-otseki-i-futliary-dlia-akkumuliatorov'},
     ],
     'inverter': [
-        {'id': 1, 'name': 'Инверторы СОЮЗ', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Инверторы ROBITON', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Преобразователи DC 24 В/12 В KALLER', 'alias': 'Текст'},
+        {'name': 'Инверторы СОЮЗ', 'alias': 'invertory-soiuz'},
+        {'name': 'Инверторы ROBITON', 'alias': 'invertory-robiton'},
+        {'name': 'Преобразователи DC 24 В/12 В KALLER',
+         'alias': 'preobrazovateli-napriazheniia-dc-24-v12-v-kaller'},
     ],
     'batteries': [
-        {'id': 1, 'name': 'Типоразмера АА', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Часовые', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Литиевые', 'alias': 'Текст'},
+        {'name': 'Типоразмера АА', 'alias': 'batareiki-aa'},
+        {'name': 'Часовые', 'alias': 'batareiki-chasovye'},
+        {'name': 'Литиевые', 'alias': 'batareiki-litievye'},
     ],
     'lights': [
-        {'id': 1, 'name': 'Фотон', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Эра', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Яркий Луч', 'alias': 'Текст'},
+        {'name': 'Фотон', 'alias': 'fonari-foton'},
+        {'name': 'Эра', 'alias': 'fonari-era'},
+        {'name': 'Яркий Луч', 'alias': 'fonari-iarkii-luch'},
     ],
     'chargers': [
-        {'id': 1, 'name': 'Для фотоаппаратов', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Для видеокамер', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Для свинцовых', 'alias': 'Текст'},
+        {'name': 'Для фотоаппаратов',
+         'alias': 'zariadnye-ustroistva-dlia-fotoapparatov'},
+        {'name': 'Для видеокамер', 'alias': 'zariadnye-ustroistva-dlia-videokamer'},
+        {'name': 'Для свинцовых',
+         'alias': 'zariadnye-ustroistva-dlia-svintsovykh-akkumuliatorov'},
     ],
     'multimeters': [
-        {'id': 1, 'name': 'MY68 Master Professional', 'alias': 'Текст'},
-        {'id': 1, 'name': 'MY67 Master Professional', 'alias': 'Текст'},
-        {'id': 1, 'name': 'MY65 Master Professional', 'alias': 'Текст'},
+        {'name': 'MY68 Master Professional',
+         'alias': 'multimetry-master-professional'},
+        {'name': 'MY67 Master Professional',
+         'alias': 'multimetry-master-professional'},
+        {'name': 'MY65 Master Professional',
+         'alias': 'multimetry-master-professional'},
     ],
     'adapters': [
-        {'id': 1, 'name': '220В для ноутбуков', 'alias': 'Текст'},
-        {'id': 1, 'name': '12В для ноутбуков', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Трансформаторные', 'alias': 'Текст'},
+        {'id': 1, 'name': '220В для ноутбуков',
+         'alias': 'bloki-pitaniia-dlia-noutbukov-ot-seti-220v'},
+        {'id': 1, 'name': '12В для ноутбуков',
+         'alias': 'bloki-pitaniia-dlia-noutbukov-ot-seti-12v'},
+        {'id': 1, 'name': 'Трансформаторные',
+         'alias': 'bloki-pitaniia-transformatornye'},
     ],
 }
 

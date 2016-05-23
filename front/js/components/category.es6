@@ -7,8 +7,14 @@ const UI = {
   productsList: $('#products-wrapper'),
   viewType: $('#category-right'),
   loadMore: $('#btn-load-products'),
-  tileView: $('.js-icon-mode-tile'),
-  listView: $('.js-icon-mode-list'),
+  tileView: {
+    $: $('.js-icon-mode-tile'),
+    mode: 'tile'
+  },
+  listView: {
+    $: $('.js-icon-mode-list'),
+    mode: 'list'
+  },
   sorting: $('.selectpicker')
 };
 
@@ -17,7 +23,7 @@ const CONFIG = {
   totalProductsCount: parseInt($('.js-total-products').first().text())
 };
 
-let initialization = () => {
+let init = () => {
   setUpListeners();
   updateButtonState();
 };
@@ -28,8 +34,8 @@ let initialization = () => {
 let setUpListeners = () => {
   UI.loadMore.click(loadProducts);
   UI.sorting.change(changeSort);
-  UI.tileView.click(() => mediator.publish('onViewTypeChange', 'tile'));
-  UI.listView.click(() => mediator.publish('onViewTypeChange', 'list'));
+  UI.tileView.$.click(() => mediator.publish('onViewTypeChange', UI.tileView.mode));
+  UI.listView.$.click(() => mediator.publish('onViewTypeChange', UI.listView.mode));
   mediator.subscribe('onViewTypeChange', updateViewType, sendViewType);
   mediator.subscribe('onProductsLoad', updateLoadedCount, updateProductsList, updateButtonState);
 };
@@ -54,13 +60,9 @@ let updateProductsList = (event, products) => UI.productsList.append(products);
  *    so we should set loaded count a value of total products
  * 2) otherwise, we simply add PRODUCTS_TO_FETCH to counter.
  */
-let updateLoadedCount = () => {
-  if (productsLeft() >= CONFIG.productsToFetch) {
-    UI.loadedProducts.text(getLoadedProductsCount() + CONFIG.productsToFetch);
-  } else {
-    UI.loadedProducts.text(CONFIG.totalProductsCount);
-  }
-};
+let updateLoadedCount = () =>
+  UI.loadedProducts.text(loadedProductsCount() + Math.min(productsLeft(), CONFIG.productsToFetch));
+
 
 /**
  * Adds 'hidden' class to button if there are no more products to load.
@@ -83,12 +85,12 @@ let updateViewType = (event, viewType) => {
     .removeClass('view-mode-tile view-mode-list')
     .addClass(`view-mode-${viewType}`);
 
-  if (viewType === 'list') {
-    UI.listView.addClass('active');
-    UI.tileView.removeClass('active');
+  if (viewType === UI.listView.mode) {
+    UI.listView.$.addClass('active');
+    UI.tileView.$.removeClass('active');
   } else {
-    UI.tileView.addClass('active');
-    UI.listView.removeClass('active');
+    UI.tileView.$.addClass('active');
+    UI.listView.$.removeClass('active');
   }
 };
 
@@ -104,14 +106,14 @@ let sortingOption = () =>  UI.sorting.find(':selected');
  *
  * @returns {Number} - number of products left to fetch
  */
-let productsLeft = () => parseInt(CONFIG.totalProductsCount - getLoadedProductsCount());
+let productsLeft = () => parseInt(CONFIG.totalProductsCount - loadedProductsCount());
 
 /**
  * Gets number of already loaded products
  *
  * @returns {int} - number of products which are loaded and presented in UI
  */
-let getLoadedProductsCount = () => parseInt(UI.loadedProducts.first().text());
+let loadedProductsCount = () => parseInt(UI.loadedProducts.first().text());
 
 /**
  * Loads products from back-end using promise-like fetch object fetchProducts.
@@ -119,7 +121,7 @@ let getLoadedProductsCount = () => parseInt(UI.loadedProducts.first().text());
  */
 let loadProducts = () => {
   let categoryUrl = UI.loadMore.attr('data-url');
-  let offset = getLoadedProductsCount();
+  let offset = loadedProductsCount();
   let sorting = sortingOption().val();
   let url = `${categoryUrl}load-more/${offset}/${sorting}`;
 
@@ -127,4 +129,4 @@ let loadProducts = () => {
     .then((products) => mediator.publish('onProductsLoad', products));
 };
 
-initialization();
+init();

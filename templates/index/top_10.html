@@ -1,0 +1,19 @@
+{% load staticfiles %}
+<div class="stuff-top">
+  <p class="stuff-top-title text-center">ТОП 10 ТОВАРОВ</p>
+  {% for product in top_products %}
+    <div class="stuff-top-item">
+      <a class="stuff-top-img" href="{% url 'catalog:product' product.id %}">
+        <img src="{% static 'images/catalog/products/2847/small.jpg' %}" class="img-responsive img-centered"
+             alt="{{ product.name }}">
+      </a>
+      <div class="stuff-top-description">
+        <div class="stuff-top-wrap">
+          <a class="stuff-top-name" href="{% url 'catalog:product' product.id %}">{{ product.name }}</a>
+        </div>
+        <div class="stuff-top-category">{{ product.get_root_category }}</div>
+        <div class="stuff-top-price-new">{{ product.price }} руб.</div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

@@ -1,26 +1,27 @@
 {% load catalog_extras %}
+{% load staticfiles %}
 {% roots as root_categories %}
 <div class="header">
   <div class="wrapper-container">
     <div class="top-header">
       <div class="container">
-        <a href="/" class="header-logo"><img src="{{ STATIC_URL }}images/logo.png" alt=""></a>
+        <a href="/" class="header-logo"><img src="{% static 'images/logo.png' %}" alt=""></a>
 
         <div class="header-price-wrapper">
-          <a href="{{ STATIC_URL }}price-list-shopelectro.ru.xlsx" id="download-pricelist-header" class="download">Скачать
+          <a href="{% static 'price-list-shopelectro.ru.xlsx' %}" id="download-pricelist-header" class="download">Скачать
             прайс-лист</a>
         </div>
 
         <div class="header-sub-wrapper-left">
           <div class="header-sub">
             <span class="header-sub-text">Санкт-Петербург</span>
-            <span title="м. Автово"><img src="{{ STATIC_URL }}images/metro_red.png" alt="м. Автово">
+            <span title="м. Автово"><img src="{% static 'images/metro_red.png' %}" alt="м. Автово">
               <a class="subway-contact-link" rel="nofollow"
                  href="#yunona"> Ярмарка «Юнона», пав. 660, 662</a></span>
             <span class="header-sub-text">пн-вс 10:00-18:00</span>
           </div>
           <div class="header-sub">
-            <span title="м. Елизаровская"><img src="{{ STATIC_URL }}images/metro_green.png" alt="м.
+            <span title="м. Елизаровская"><img src="{% static 'images/metro_green.png' %}" alt="м.
             Елизаровская">
               <a class="subway-contact-link" rel="nofollow" href="#elizarova"> пр-т Елизарова 38А, офис 312</a></span>
             <span class="header-sub-text">пн-чт 10:00-18:00, пт 10:00-17:00</span>

@@ -14,11 +14,6 @@ let fetchProducts = (url) => {
 };
 
 let sendViewType = (event, viewType) => {
-  let data = { 'csrfmiddlewaretoken': getCookie('csrftoken'), 'view_type': viewType };
-
-  return fetch('/set-view-type/', {
-      method: 'post',
-      body: JSON.stringify(data)
-    });
+  $.post('/set-view-type/', { csrfmiddlewaretoken: Cookies.get('csrftoken'), view_type: viewType });
 };
 

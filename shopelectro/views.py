@@ -29,7 +29,7 @@ def index(request):
     }
 
     return render(
-        request, 'shopelectro/index.html', context)
+        request, 'index/index.html', context)
 
 
 def category_page(request, category_slug, sorting=0):
@@ -47,7 +47,8 @@ def category_page(request, category_slug, sorting=0):
     # if there is no view_type specified, default will be tile
     view_type = request.session.get('view_type', 'tile')
     category = get_object_or_404(Category.objects, slug=category_slug)
-    products, total_count = category.get_recursive_products_with_count(sorting=sorting_option)
+    products, total_count = category.get_recursive_products_with_count(
+        sorting=sorting_option)
 
     context = {'category': category,
                'products': products,
@@ -62,7 +63,7 @@ def category_page(request, category_slug, sorting=0):
 
 def load_more(request, category_slug, offset=0, sorting=0):
     """
-    Loads more product of a given category.
+    Loads more products of a given category.
 
     :param sorting: preferred sorting index from CATEGORY_SORTING tuple
     :param request: HttpRequest object
