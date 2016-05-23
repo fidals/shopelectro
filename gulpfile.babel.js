@@ -21,7 +21,7 @@ import sequence from 'run-sequence';
 // ================================================================
 const ENV = {
   development: true,
-  production: false
+  production: false,
 };
 
 const PATH = {
@@ -30,20 +30,30 @@ const PATH = {
       'front/less/styles.less',
       'front/less/pages.less',
     ],
+
     js: {
       vendors: [
         'front/js/vendors/jquery-2.2.3.min.js',
         'front/js/vendors/jquery.mask.min.js',
         'front/js/vendors/bootstrap.min.js',
+        'front/js/vendors/js.cookie.js',
         'front/js/vendors/jscrollpane.js',
+        'front/js/vendors/jquery.bootstrap-touchspin.min.js',
       ],
       common: [
         'front/js/shared/*.es6',
         'front/js/components/*.es6',
       ],
+      pages: [
+        'front/js/vendors/bootstrap-select.js',
+        'front/js/vendors/jquery.fancybox.min.js',
+        'front/js/components/category.es6',
+        'front/js/components/product.es6',
+      ],
     },
+
     images: 'front/images/**/*',
-    fonts: 'front/fonts/**/*'
+    fonts: 'front/fonts/**/*',
   },
 
   build: {
@@ -55,7 +65,10 @@ const PATH = {
 
   watch: {
     styles: 'front/less/**/*.less',
-    js: 'front/js/*.es6',
+    js: [
+      'front/js/shared/*.es6',
+      'front/js/components/*.es6',
+    ],
     images: 'src/images/**/*.*',
     fonts: 'src/fonts/**/*.*',
   },
@@ -83,7 +96,7 @@ gulp.task('build', (callback) => {
 // ================================================================
 gulp.task('styles', () => {
   gulp.src(PATH.src.styles)
-    .pipe(changed(PATH.build.styles, {extension: '.css'}))
+    .pipe(changed(PATH.build.styles, { extension: '.css' }))
     .pipe(gulpIf(ENV.development, sourcemaps.init()))
     .pipe(plumber())
     .pipe(less({
@@ -105,7 +118,7 @@ gulp.task('styles', () => {
 // ================================================================
 gulp.task('js-vendors', () => {
   gulp.src(PATH.src.js.vendors)
-    .pipe(changed(PATH.build.js, {extension: '.js'}))
+    .pipe(changed(PATH.build.js, { extension: '.js' }))
     .pipe(concat('vendors.js'))
     .pipe(rename({
       suffix: '.min',
@@ -119,13 +132,33 @@ gulp.task('js-vendors', () => {
 // ================================================================
 gulp.task('js-common', () => {
   gulp.src(PATH.src.js.common)
-    .pipe(changed(PATH.build.js, {extension: '.js'}))
+    .pipe(changed(PATH.build.js, { extension: '.js' }))
     .pipe(gulpIf(ENV.development, sourcemaps.init()))
     .pipe(plumber())
     .pipe(babel({
       presets: ['es2015'],
     }))
     .pipe(concat('main.js'))
+    .pipe(rename({
+      suffix: '.min',
+    }))
+    .pipe(gulpIf(ENV.production, uglify()))
+    .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
+    .pipe(gulp.dest(PATH.build.js));
+});
+
+// ================================================================
+// JS : Build all pages scripts
+// ================================================================
+gulp.task('js-pages', () => {
+  gulp.src(PATH.src.js.pages)
+    .pipe(changed(PATH.build.js, { extension: '.js' }))
+    .pipe(gulpIf(ENV.development, sourcemaps.init()))
+    .pipe(plumber())
+    .pipe(babel({
+      presets: ['es2015'],
+    }))
+    .pipe(concat('pages.js'))
     .pipe(rename({
       suffix: '.min',
     }))
@@ -168,6 +201,7 @@ gulp.task('build-fonts', () => {
 gulp.task('watch', () => {
   gulp.watch(PATH.watch.styles, ['styles']);
   gulp.watch(PATH.watch.js, ['js-common']);
+  gulp.watch(PATH.watch.js, ['js-pages']);
 });
 
 // ================================================================

@@ -34,8 +34,8 @@
     &-whole {
       color: @c-tooltip;
       font-size: @f-size-base - 2;
-      padding: 2px 0 0 5px;
-      margin: 20px 0 3px 0;
+      margin: 0;
+      padding: 0 0 10px 20px;
     }
   }
 
@@ -79,16 +79,6 @@
     height: @height-product-block;
     margin-bottom: 15px;
     position: relative;
-
-    .img-responsive {
-      bottom: 0;
-      max-height: 100%;
-      left: 0;
-      margin: auto;
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
   }
 
   &-image-small {
@@ -174,7 +164,7 @@
         margin-top: 0;
         margin-left: 0;
         padding: 6px 0 6px 6px;
-        width: 71px;
+        width: 100%;
       }
     }
 
@@ -196,39 +186,20 @@
       text-decoration: none;
     }
 
-    .input-group-btn-vertical {
-      display: block;
-      left: 58px;
-      position: absolute;
-      top: 0;
-      z-index: 999;
-
-      i {
-        top: 5px;
-      }
-    }
-
     .bootstrap-touchspin-up,
     .bootstrap-touchspin-down {
       height: 21px;
       background-color: @c-btn-increase;
       border: none;
       color: @c-white;
-      padding: 9px;
     }
 
     .bootstrap-touchspin-down {
-      border-bottom-left-radius: 4px;
       border-top: 1px solid @c-white;
     }
 
     .bootstrap-touchspin-up {
-      border-top-left-radius: 4px;
       height: 22px;
-
-      .glyphicon {
-        margin-top: -1px;
-      }
     }
 
     .bootstrap-touchspin-up:hover {
@@ -258,6 +229,7 @@
     .font-anti;
     color: @c-order-blue-text;
     font-size: @f-size-base + 16;
+    margin: 0 0 15px;
     padding: 0 20px;
 
     &.active {
@@ -628,16 +600,15 @@
 
     &-order {
       color: @c-grey-text-delivery;
-      padding: 15px 0 0 10px;
+      padding: 0 0 0 10px;
 
       &-caption {
         color: @c-black;
         font-size: @f-size-base + 2;
-        padding-top: 7px;
       }
 
       &-list {
-        padding: 5px 0 0 20px;
+        padding: 0 0 0 20px;
 
         li {
           padding: 5px 0;
@@ -742,6 +713,7 @@
 .page-product {
   table.product-table {
     border-color: @c-price-border-color;
+    margin-bottom: 25px;
 
     thead th,
     tbody td {

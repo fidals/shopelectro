@@ -1,0 +1,149 @@
+{% extends "shopelectro/base.html" %}
+{% load breadcrumb_extras %}
+{% load staticfiles %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block description %}{{ product.description }}{% endblock %}
+{% block uniqueURL %}{% url 'product' product.slug %}{% endblock %}
+{% block uniqueImg %}{% url 'index' %}{% endblock %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
+{% endblock %}
+
+{% block canonical %}
+  <link rel="canonical" href="{% url 'product' product.name %}">
+{% endblock %}
+
+{% block content %}
+  <div itemscope itemtype="http://schema.org/Product" class="page-product custom-input-checkbox">
+    {# Вынес сущность микроразметки Offer сюда, т.к. наша вложенность в вёрстке не совпадает #}
+    {# со вложенностью shema.org: Offer in Prouct #}
+    {# Пруфлинк: https://goo.gl/rF82ps #}
+    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
+      <span itemprop="price">{{ product.price }}</span>
+      <span itemprop="priceCurrency">RUB</span>
+      <link itemprop="availability" href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}">
+    </div>
+
+    <div class="container">
+      <p>{% breadcrumbs breadcrumbs %}</p>
+
+      <h1 class="product-h1" itemprop="name">{{ product.h1 }}</h1>
+      <span class="product-article">Арт. {{ product.id }}</span>
+
+      <div class="product-top">
+        <div class="product-images" id="product-images">
+          <div class="product-image-big box-product">
+            <img class="img-centered img-responsive" id="product-image-big" src="{% static main_image %}" data-index="1"
+                 alt="{{ product.name }}">
+          </div>
+
+          {% for image in images %}
+            <div class="product-image-small box-product">
+              <img class="img-responsive js-image-switch" src="{% static image %}"
+                   data-index="{{ forloop.counter0 }}">
+            </div>
+          {% endfor %}
+
+          {% for hidden_image in images %}
+            <a class="fancybox hidden" href="{% static hidden_image %}" rel="product-cart-gallery">
+              <img src="{% static hidden_image %}">
+            </a>
+          {% endfor %}
+        </div>
+
+        <div class="product-price-wrapper" id="product-price">
+          <p class="product-label-price-retail">Розничная цена:</p>
+          <p class="product-price active">{{ product.price }} руб / шт</p>
+
+          {% if product.price_small %}
+            <p class="product-label-price-whole">Оптовая цена:</p>
+            <table class="product-table table table-bordered">
+              <thead>
+                <tr>
+                  <th>от 15000 руб</th>
+                  <th>от 40000 руб</th>
+                  <th>от 100000 руб</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ product.price_small }} руб</td>
+                  <td>{{ product.price_medium }} руб</td>
+                  <td>{{ product.price_large }} руб</td>
+                </tr>
+              </tbody>
+            </table>
+          {% endif %}
+
+          <p class="product-stock">
+            {% if product.in_stock %}
+              <i class="fa fa-circle in-stock"></i> В наличии
+            {% else %}
+              <i class="fa fa-circle out-stock"></i> <span
+              title="Ожидание товара составит до 6 рабочих дней">Под заказ</span>
+            {% endif %}
+          </p>
+
+          <div class="product-price-btn-wrapper">
+            <input class="input-switcher js-touchspin" id="product-count" type="number" min="1" value="1">
+          </div>
+
+          <div class="btn-wrapper-center">
+            <button class="btn btn-to-basket" id="btn-to-basket" data-id="{{ product.id }}">В корзину</button>
+          </div>
+
+          <p class="product-one-click">Заказ в 1 клик</p>
+          <input class="form-control js-masked-phone" id="input-one-click-email" placeholder="+7 (999) 000 00 00"
+                 type="tel">
+          <button class="btn btn-order" id="btn-one-click-order" type="button" disabled>Заказать</button>
+
+          <p class="pr-additional">
+            Менеджер позвонит, уточнит все детали, проверит
+            наличие товара на складе и оформит заказ на ваше имя.
+          </p>
+        </div>
+
+        <div class="pr-chars">
+          <div class="pr-chars-order">
+            {% include 'shopelectro/order_notice.html' %}
+          </div>
+        </div>
+      </div>
+
+      <div class="product-bottom">
+        <div class="product-desc">
+          {% if product.text %}
+            <h3 class="product-desc-title">Описание</h3>
+            <p class="product-text">{{ product.text }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="pr-chars-delivery" data-toggle="modal" data-target="#pr-delivery-modal">
+        <p class="pr-chars-delivery-text font-bold">Доставим:</p>
+        <ul class="pr-delivery-list list-unstyled">
+          <li class="pr-delivery-list-item">
+            <span class="pr-delivery-link font-bold">по Санкт-Петербургу и ЛО</span>
+            <p>PickPoint, 190 руб.</p>
+            <p>курьером завтра, 300 руб.</p>
+            <p>можно забрать этот товар самостоятельно</p>
+          </li>
+          <li class="pr-delivery-list-item">
+            <span class="pr-delivery-link font-bold">по России</span>
+            <p>PickPoint, от 250 руб.</p>
+            <p>DPD, от 400 руб.</p>
+            <p>Деловые линии, от 350 руб.</p>
+            <p>Почта России, от 170 руб.</p>
+            <p>другой компанией</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block jslinks %}
+  {{ block.super }}
+  <script src="{% static "js/pages.min.js" %}"></script>
+{% endblock %}

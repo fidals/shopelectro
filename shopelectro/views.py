@@ -5,9 +5,11 @@ NOTE: They all should be 'zero-logic'. All logic should live in respective appli
 """
 
 from django.http import HttpResponse
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
-from catalog.models import Category, Product, get_crumbs
+from catalog.models import Category, get_crumbs
+from shopelectro.models import ProductExtended
 from . import config
 
 
@@ -18,7 +20,7 @@ def index(request):
     :param request:
     :return: HttpResponse
     """
-    top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
+    top_products = ProductExtended.objects.filter(id__in=config.TOP_PRODUCTS)
 
     context = {
         'meta_data': config.page_metadata('main'),
@@ -50,15 +52,43 @@ def category_page(request, category_slug, sorting=0):
     products, total_count = category.get_recursive_products_with_count(
         sorting=sorting_option)
 
-    context = {'category': category,
-               'products': products,
-               'total_products': total_count,
-               'sorting_options': config.category_sorting(),
-               'sort': sorting,
-               'breadcrumbs': get_crumbs(category),  # chosen sorting option
-               'view_type': view_type}
+    context = {
+        'category': category,
+        'products': products,
+        'total_products': total_count,
+        'sorting_options': config.category_sorting(),
+        'sort': sorting,
+        'breadcrumbs': get_crumbs(category, category_url='category', catalog_url='catalog'),
+        'view_type': view_type
+    }
 
     return render(request, 'catalog/category.html', context)
+
+
+def product_page(request, product_id):
+    """
+    Product page.
+
+    :param product_id: given product's id
+    :param request: HttpRequest object
+    :return:
+    """
+
+    product = get_object_or_404(ProductExtended.objects, id=product_id)
+    images = product.get_images()
+    main_image = settings.IMAGE_THUMBNAIL
+
+    if images:
+        main_image = [image for image in images if image.find('main') != -1][0]
+
+    context = {
+        'product': product,
+        'breadcrumbs': get_crumbs(product, category_url='category', catalog_url='catalog'),
+        'images': images,
+        'main_image': main_image,
+    }
+
+    return render(request, 'catalog/product.html', context)
 
 
 def load_more(request, category_slug, offset=0, sorting=0):
@@ -92,3 +122,21 @@ def set_view_type(request):
     """
     request.session['view_type'] = request.POST['view_type']
     return HttpResponse('ok')  # Return 200 OK
+
+
+def catalog_tree(request):
+    """
+    Renders category tree using MPTT library.
+
+    :param request:
+    :return: HttpResponse
+    """
+
+    return render(
+        request, 'catalog/catalog.html', {
+            'nodes': Category.objects.all(),
+            'breadcrumbs': get_crumbs(settings.CRUMBS['catalog'], category_url='category',
+                                      catalog_url='catalog'),
+            'meta_data': config.page_metadata('catalog'),
+        }
+    )

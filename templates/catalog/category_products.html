@@ -5,15 +5,14 @@
        itemscope itemtype="http://schema.org/Product">
     <meta itemprop="name" content="{{ product.name }}">
     <div class="img-wrp">
-      <a href="{% url "catalog:product" product.id %}">
-        <img class="img-responsive" src="{% static 'images/logo.png' %}" itemprop="image">
+      <a href="{% url "product" product.id %}">
+        <img class="img-centered img-responsive" src="{% static 'images/logo.png' %}" itemprop="image">
       </a>
     </div>
     <div class="text" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
       <div class="articul">Артикул: {{ product.id }}</div>
       <div class="desc">
-        <a class="product-card-desc"
-           href="{% url "catalog:product" product.id %}">
+        <a class="product-card-desc" href="{% url "product" product.id %}">
           {{ product.name }}
         </a>
       </div>
@@ -32,9 +31,7 @@
       </div>
       <div class="order row">
         <input class="col-xs-4 category-prods-count js-touchspin" type="number" value="1">
-        <button class="btn form-btn js-product-to-cart">
-          В корзину
-        </button>
+        <button class="btn form-btn js-product-to-cart">В корзину</button>
       </div>
     </div>
     <div itemprop="description" class="hidden">{{ product.description }}</div>
