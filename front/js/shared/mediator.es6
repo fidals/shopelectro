@@ -2,7 +2,7 @@
  * We implements mediator pattern via jQuery's global events
  * on empty object (it could be a window or a documents, also)
  */
-let mediator = {
+const mediator = {
   // Inner object, which used to bind and trigger events on it.
   M: {},
 
@@ -13,7 +13,7 @@ let mediator = {
    * @param handlers
    */
   subscribe: (eventName, ...handlers) => {
-    for (let handler of handlers) {
+    for (const handler of handlers) {
       $(mediator.M).bind(eventName, handler);
     }
   },
@@ -26,5 +26,5 @@ let mediator = {
    */
   publish: (eventName, context) => {
     $(mediator.M).trigger(eventName, context);
-  }
+  },
 };

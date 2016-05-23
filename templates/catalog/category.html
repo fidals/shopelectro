@@ -44,9 +44,7 @@
 
       <div class="text-center">
         <button class="btn-blue btn btn-primary js-load-more" data-url="{% url 'category' category.slug %}"
-                id="btn-load-products" type="button">
-          Загрузить ещё
-        </button>
+                id="btn-load-products" type="button">Загрузить ещё</button>
         <p class="products-showed-text">
           Показанно товаров
           <span class="js-products-showed-count">{{ products|length }}</span> из
@@ -57,3 +55,7 @@
   </div>
 {% endblock %}
 
+{% block jslinks %}
+  {{ block.super }}
+  <script src="{% static "js/pages.min.js" %}"></script>
+{% endblock %}
