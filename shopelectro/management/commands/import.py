@@ -1,7 +1,9 @@
+"""Import catalog prototypical management command."""
+
 import xml.etree.ElementTree as etree
-from django.core.management.base import BaseCommand
 from catalog.models import Product, Category
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -80,7 +82,9 @@ class Command(BaseCommand):
             We don't pass it explicitly because of closure on enclosing environment.
             :return: sum for stocks or 0 if it's below 0
             """
-            stock_list = [int(node.attrib[stock]) for stock in ['stock_elizar', 'stock_yunona', 'stock_main']]
+            stock_list = [int(node.attrib[stock])
+                          for stock in
+                          ['stock_elizar', 'stock_yunona', 'stock_main']]
             return sum(stock_list) if sum(stock_list) > 0 else 0
 
         product_data = {

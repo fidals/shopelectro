@@ -1,0 +1,43 @@
+{% load staticfiles %}
+
+{% for product in products %}
+  <div class="product-card col-xs-4" productId="{{ product.id }}"
+       itemscope itemtype="http://schema.org/Product">
+    <meta itemprop="name" content="{{ product.name }}">
+    <div class="img-wrp">
+      <a href="{% url "catalog:product" product.id %}">
+        <img class="img-responsive" src="{% static 'images/logo.png' %}" itemprop="image">
+      </a>
+    </div>
+    <div class="text" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+      <div class="articul">Артикул: {{ product.id }}</div>
+      <div class="desc">
+        <a class="product-card-desc"
+           href="{% url "catalog:product" product.id %}">
+          {{ product.name }}
+        </a>
+      </div>
+      <div class="price">{{ product.price }} руб / шт</div>
+      <meta itemprop="price" content="{{ product.price }}">
+      <meta itemprop="priceCurrency" content="RUB">
+      <div class="stock">
+        {% if product.in_stock > 0 %}
+          <i class="fa fa-circle in-stock"></i> В наличии
+          <link itemprop="availability" href="http://schema.org/InStock">
+        {% else %}
+          <i class="fa fa-circle out-stock"></i>
+          <span title="Ожидание товара составит до 6 рабочих дней">Под заказ</span>
+          <link itemprop="availability" href="http://schema.org/PreOrder">
+        {% endif %}
+      </div>
+      <div class="order row">
+        <input class="col-xs-4 category-prods-count js-touchspin" type="number" value="1">
+        <button class="btn form-btn js-product-to-cart">
+          В корзину
+        </button>
+      </div>
+    </div>
+    <div itemprop="description" class="hidden">{{ product.description }}</div>
+  </div>
+{% endfor %}
+<div class="hidden js-products-loaded">{{ products|length }}</div>
