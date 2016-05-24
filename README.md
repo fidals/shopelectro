@@ -2,12 +2,13 @@
 shopelectro.ru site's code
 
 ### Install dependencies
-Run `pip install -r requirements.txt`
+Run `pip install --user -r requirements.txt`
 
 
-### Import actual data from .xml files
-- Copy `categories.xml` and `products.xml` to project root
-- Run: `python manage.py import categories.xml products.xml`
+### Available managements commands
+- `python manage.py import` - import catalog from 1C, create all prices.
+- `python manage.py excel` - generate Excel file with prices
+- `python manage.py price` - generate .yml price files for YM and Price.ru.
 
 ### Running Selenium-based tests
 - Install Selenium: `pip install selenium`

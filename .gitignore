@@ -4,6 +4,7 @@ __pycache__/
 .idea/
 front/build
 src/
+env/
 *.sqlite*
 *.htaccess
 node_modules

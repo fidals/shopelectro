@@ -8,6 +8,7 @@ For running test, you should first run standard Django's development server on p
         python manage.py runserver
 """
 import time
+
 from selenium import webdriver
 from django.test import TestCase
 from django.conf import settings
