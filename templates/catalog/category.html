@@ -1,5 +1,6 @@
 {% extends "shopelectro/base.html" %}
 {% load staticfiles %}
+{% load breadcrumb_extras %}
 {% block title %}{{ category.name }}{% endblock %}
 {% block description %}{{ category.description }}{% endblock %}
 {% block uniqueURL %}{% url 'category' category.slug %}{% endblock %}
@@ -17,7 +18,7 @@
 {% block content %}
   <div class="container">
     <div class="col-xs-12">
-      <p>{% include 'seo/breadcrumbs.html' %}</p>
+      <p>{% breadcrumbs breadcrumbs %}</p>
       <h1 class="category-title">{{ category.name }}</h1>
     </div>
 
@@ -56,4 +57,3 @@
     </div>
   </div>
 {% endblock %}
-
