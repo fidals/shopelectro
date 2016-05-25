@@ -1,0 +1,26 @@
+{% extends "shopelectro/base.html" %}
+{% load mptt_tags %}
+{% load staticfiles %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1>Карта каталога</h1>
+    <ul class="catalog-list">
+      {% recursetree nodes %}
+        <li class="catalog-list-item">
+          <a href="{% url 'category' node.slug %}" class="catalog-list-item">{{ node.name }}</a>
+          {% if not node.is_leaf_node %}
+            <ul class="catalog-list-children">
+              {{ children }}
+            </ul>
+          {% endif %}
+        </li>
+      {% endrecursetree %}
+    </ul>
+  </div>
+{% endblock %}

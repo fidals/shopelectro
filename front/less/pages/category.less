@@ -1,7 +1,7 @@
 // ================================================================
 // IMPORTS
 // ================================================================
-@import "../vendors/bootstrap-select";
+@import "../vendors/bootstrap-select/*";
 
 // ================================================================
 // CATEGORY
@@ -211,11 +211,12 @@
     padding: 10px;
     text-align: center;
     z-index: 1;
-  }
 
-  .img-responsive {
-    height: 160px;
-    margin: auto;
+    a {
+      display: block;
+      height: 160px;
+      position: relative;
+    }
   }
 }
 
@@ -237,6 +238,7 @@
 }
 
 .product-card {
+  .transition;
   display: block;
   height: auto;
   margin: 0 20px 22px 0;
