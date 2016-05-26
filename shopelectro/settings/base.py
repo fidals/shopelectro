@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'catalog',
     'mptt',
     'seo',
-    'macros',
     'shopelectro',
 ]
 

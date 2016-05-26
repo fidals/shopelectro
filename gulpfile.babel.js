@@ -38,8 +38,8 @@ const PATH = {
         'front/js/vendors/jscrollpane.js',
       ],
       common: [
-        'front/js/components/server.es6',
-        'front/js/components/main.es6',
+        'front/js/shared/*.es6',
+        'front/js/components/*.es6',
       ],
     },
     images: 'front/images/**/*',
