@@ -9,7 +9,7 @@ from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from catalog.models import Category, get_crumbs
-from shopelectro.models import ProductExtended
+from shopelectro.models import Product
 from . import config
 
 
@@ -20,10 +20,10 @@ def index(request):
     :param request:
     :return: HttpResponse
     """
-    top_products = ProductExtended.objects.filter(id__in=config.TOP_PRODUCTS)
+    top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
 
     context = {
-        'meta_data': config.page_metadata('main'),
+        'meta': config.page_metadata('main'),
         'category_tile': config.MAIN_PAGE_TILE,
         'footer_links': config.FOOTER_LINKS,
         'href': config.HREFS,
@@ -74,7 +74,7 @@ def product_page(request, product_id):
     :return:
     """
 
-    product = get_object_or_404(ProductExtended.objects, id=product_id)
+    product = get_object_or_404(Product.objects, id=product_id)
     images = product.get_images()
     main_image = settings.IMAGE_THUMBNAIL
 
@@ -82,10 +82,10 @@ def product_page(request, product_id):
         main_image = [image for image in images if image.find('main') != -1][0]
 
     context = {
-        'product': product,
         'breadcrumbs': get_crumbs(product, category_url='category', catalog_url='catalog'),
         'images': images,
         'main_image': main_image,
+        'product': product,
     }
 
     return render(request, 'catalog/product.html', context)
@@ -136,7 +136,6 @@ def catalog_tree(request):
         request, 'catalog/catalog.html', {
             'nodes': Category.objects.all(),
             'breadcrumbs': get_crumbs(settings.CRUMBS['catalog'], category_url='category',
-                                      catalog_url='catalog'),
-            'meta_data': config.page_metadata('catalog'),
+                                      catalog_url='catalog')
         }
     )

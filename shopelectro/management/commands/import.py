@@ -2,7 +2,7 @@
 
 import xml.etree.ElementTree as etree
 from catalog.models import Category
-from shopelectro.models import ProductExtended as Product
+from shopelectro.models import Product
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 

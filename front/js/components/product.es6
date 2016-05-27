@@ -14,7 +14,7 @@ const productModule = (function () {
 
   let init = () => {
     setUpListeners();
-    btnOrderState();
+    changeOneClickButtonState();
   };
 
   /**
@@ -23,7 +23,7 @@ const productModule = (function () {
   let setUpListeners = () => {
     DOM.imageBig.click(fancyBoxStart);
     DOM.imagesToSwitch.click(productImgSwitch);
-    DOM.oneClickBuyEmail.keyup(btnOrderState);
+    DOM.oneClickBuyEmail.keyup(changeOneClickButtonState);
     mediator.subscribe('onAddToBasket', addToBasket);
     DOM.addToBasketBtn.click(() => mediator.publish('onAddToBasket',
       {
@@ -73,7 +73,7 @@ const productModule = (function () {
   /**
    * Phone validation on keypress
    */
-  const btnOrderState = () => {
+  const changeOneClickButtonState = () => {
     if (!DOM.oneClickBuyEmail.length) return;
     const isFilled = isPhoneValid(DOM.oneClickBuyEmail.val());
 

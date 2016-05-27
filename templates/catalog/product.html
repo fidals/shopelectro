@@ -1,25 +1,22 @@
 {% extends "shopelectro/base.html" %}
 {% load breadcrumb_extras %}
 {% load staticfiles %}
-{% block title %}{{ product.name }}{% endblock %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block keywords %}{{ product.keywords }}{% endblock %}
+{% block og_title %}{{ product.title }}{% endblock %}
 {% block description %}{{ product.description }}{% endblock %}
-{% block uniqueURL %}{% url 'product' product.slug %}{% endblock %}
-{% block uniqueImg %}{% url 'index' %}{% endblock %}
+{% block og_description %}{{ product.description }}{% endblock %}
+{% block unique_url %}{% url 'product' product.id %}{% endblock %}
+{% block unique_img %}{% static main_image %}{% endblock %}
+{% block canonical %}{% url 'product' product.id %}{% endblock %}
 
 {% block stylesheets %}
   {{ block.super }}
   <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
 {% endblock %}
 
-{% block canonical %}
-  <link rel="canonical" href="{% url 'product' product.name %}">
-{% endblock %}
-
 {% block content %}
   <div itemscope itemtype="http://schema.org/Product" class="page-product custom-input-checkbox">
-    {# Вынес сущность микроразметки Offer сюда, т.к. наша вложенность в вёрстке не совпадает #}
-    {# со вложенностью shema.org: Offer in Prouct #}
-    {# Пруфлинк: https://goo.gl/rF82ps #}
     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
       <span itemprop="price">{{ product.price }}</span>
       <span itemprop="priceCurrency">RUB</span>
@@ -57,7 +54,7 @@
           <p class="product-label-price-retail">Розничная цена:</p>
           <p class="product-price active">{{ product.price }} руб / шт</p>
 
-          {% if product.price_small %}
+          {% if product.wholesale_low %}
             <p class="product-label-price-whole">Оптовая цена:</p>
             <table class="product-table table table-bordered">
               <thead>
@@ -69,22 +66,15 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>{{ product.price_small }} руб</td>
-                  <td>{{ product.price_medium }} руб</td>
-                  <td>{{ product.price_large }} руб</td>
+                  <td>{{ product.wholesale_low }} руб</td>
+                  <td>{{ product.wholesale_medium }} руб</td>
+                  <td>{{ product.wholesale_large }} руб</td>
                 </tr>
               </tbody>
             </table>
           {% endif %}
 
-          <p class="product-stock">
-            {% if product.in_stock %}
-              <i class="fa fa-circle in-stock"></i> В наличии
-            {% else %}
-              <i class="fa fa-circle out-stock"></i> <span
-              title="Ожидание товара составит до 6 рабочих дней">Под заказ</span>
-            {% endif %}
-          </p>
+          {% include 'catalog/product_in_stock_section.html' %}
 
           <div class="product-price-btn-wrapper">
             <input class="input-switcher js-touchspin" id="product-count" type="number" min="1" value="1">
@@ -114,31 +104,14 @@
 
       <div class="product-bottom">
         <div class="product-desc">
-          {% if product.text %}
+          {% if product.content %}
             <h3 class="product-desc-title">Описание</h3>
-            <p class="product-text">{{ product.text }}</p>
+            <p class="product-text">{{ product.content }}</p>
           {% endif %}
         </div>
       </div>
-      <div class="pr-chars-delivery" data-toggle="modal" data-target="#pr-delivery-modal">
-        <p class="pr-chars-delivery-text font-bold">Доставим:</p>
-        <ul class="pr-delivery-list list-unstyled">
-          <li class="pr-delivery-list-item">
-            <span class="pr-delivery-link font-bold">по Санкт-Петербургу и ЛО</span>
-            <p>PickPoint, 190 руб.</p>
-            <p>курьером завтра, 300 руб.</p>
-            <p>можно забрать этот товар самостоятельно</p>
-          </li>
-          <li class="pr-delivery-list-item">
-            <span class="pr-delivery-link font-bold">по России</span>
-            <p>PickPoint, от 250 руб.</p>
-            <p>DPD, от 400 руб.</p>
-            <p>Деловые линии, от 350 руб.</p>
-            <p>Почта России, от 170 руб.</p>
-            <p>другой компанией</p>
-          </li>
-        </ul>
-      </div>
+
+      {% include 'catalog/product_delivery_section.html' %}
     </div>
   </div>
 {% endblock %}

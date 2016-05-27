@@ -3,7 +3,8 @@
 import os
 from django.conf import settings
 from django.test import TestCase
-from catalog.models import Category, Product
+from catalog.models import Category
+from shopelectro.models import Product
 
 
 class ModelsTests(TestCase):
@@ -27,19 +28,14 @@ class ModelsTests(TestCase):
         Get product's images or return image thumbnail.
         """
 
-        product_folder_with_image = 'images/catalog/products/' + str(self.product.id)
-        static = os.path.join(settings.STATIC_ROOT, product_folder_with_image)
+        main_image_path = 'images/catalog/products/' + str(self.product.id) + '/main.jpg'
+        images_list = self.product.get_images()
 
-        try:
-            images_array = \
-                [os.path.join(product_folder_with_image, file) for file in os.listdir(static) if not file.startswith(
-                    'small')]
-            reversed_list = list(reversed(images_array))
-
+        if images_list:
             self.assertIn(
-                reversed_list[0],
-                os.path.join(product_folder_with_image, 'main.jpg')
+                images_list[0],
+                main_image_path
             )
-        except FileNotFoundError:
+        else:
             image_name = settings.IMAGE_THUMBNAIL
             self.assertEqual(image_name, 'images/logo.png')
