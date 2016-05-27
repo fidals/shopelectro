@@ -1,6 +1,7 @@
 import os
 from django.db import models
 from django.conf import settings
+
 from catalog import models as catalog_models
 
 
@@ -23,7 +24,8 @@ class Product(catalog_models.Product):
         static = os.path.join(settings.STATIC_ROOT, product_folder)
 
         try:
-            images_array = [os.path.join(product_folder, file)
+            images_array = [os.path.normpath(
+                                os.path.join(product_folder, file))
                             for file in os.listdir(static)
                             if not file.startswith('small')]
         except FileNotFoundError:

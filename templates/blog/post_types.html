@@ -1,0 +1,33 @@
+{% extends 'shopelectro/base.html' %}
+{% load staticfiles %}
+{% load breadcrumb_extras %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="container article-content">
+    <div class="p-article-sidebar col-xs-3">
+      {% include 'blog/accordion.html' %}
+    </div>
+    <div class="col-xs-9 right-col">
+      <h1>Статьи Shopelectro</h1>
+        <p>
+          <ul>
+            {% if not post_types %}There is no posts yet{% endif %}
+
+            {% for item in post_types %}
+              <li><a href="{{ item.slug }}">{{ item.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block jslinks %}
+  {{ block.super }}
+  <script src="{% static 'js/pages.min.js' %}"></script>
+{% endblock %}

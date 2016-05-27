@@ -1,5 +1,4 @@
-.accordion-link,
-.accordion-title {
+.accordion-link, .js-accordion-title {
   border: 1px solid transparent;
   border-top: 1px solid @c-price-border-color;
   color: @c-tooltip-hovered-link;
@@ -19,16 +18,24 @@
   }
 }
 
-.accordion-title:first-child {
-  border-color: transparent;
+.accordion-link:hover, .js-accordion-title:hover {
+  background-color: @c-accordion-link-hovered;
+  border-radius: 5px;
+  color: @c-black;
+  text-decoration: none;
 }
 
 .accordion-link {
   font-weight: 400;
 }
 
-.accordion-title {
+
+.js-accordion-title {
   position: relative;
+
+  &:first-child {
+    border-color: transparent;
+  }
 
   .fa {
     height: 11px;
@@ -46,7 +53,7 @@
   }
 }
 
-.accordion-last-paragraph {
+.accordion-first-item {
   .fa {
     position: relative;
     transition: all 0.3s ease;
