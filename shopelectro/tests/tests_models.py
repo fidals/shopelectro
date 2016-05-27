@@ -38,7 +38,8 @@ class ModelsTests(TestCase):
         Get product's images or return image thumbnail.
         """
 
-        main_image_path = 'images/catalog/products/' + str(self.product.id) + '/main.jpg'
+        main_image_path = os.path.normpath(
+            'images/catalog/products/' + str(self.product.id) + '/main.jpg')
         images_list = self.product.get_images()
 
         if images_list:
