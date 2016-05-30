@@ -20,10 +20,11 @@ category_urls = [
 ]
 
 urlpatterns = [
-    url(r'^$', views.index),
+    url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
     url(r'^catalog/categories/', include(category_urls)),
-    url(r'^catalog/', include('catalog.urls')),
+    url(r'^catalog/products/(?P<product_id>[0-9]+)/$', views.product_page, name='product'),
+    url(r'^catalog/', views.catalog_tree, name='catalog'),
     url(r'^blog/', include('blog.urls')),
 ]

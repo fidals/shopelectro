@@ -1,7 +1,8 @@
 """Import catalog prototypical management command."""
 
 import xml.etree.ElementTree as etree
-from catalog.models import Product, Category
+from catalog.models import Category
+from shopelectro.models import Product
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 

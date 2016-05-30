@@ -2,6 +2,7 @@ const DOM = {
   phoneInputs: $('.js-masked-phone'),
   btnScrollTop: $('#btn-scroll-to-top'),
   scrollWrapper: $('#scroll-wrapper'),
+  inputTouchspin: $('.js-touchspin'),
 };
 
 const BACKCALL_MODAL = {
@@ -15,7 +16,7 @@ const BACKCALL_MODAL = {
   isSend: false,
 
   /**
-   * Handles 'Backcall order' form:
+   * Handles 'Backcall order' form.
    */
   sendBackcall: () => {
     let data = {
@@ -36,7 +37,7 @@ const BACKCALL_MODAL = {
   },
 
   /**
-   * Toggles backcall form buttons state:
+   * Toggles backcall form buttons state.
    */
   showSuccessModal: () => {
     BACKCALL_MODAL.sendBtn.toggleClass('hidden');
@@ -55,7 +56,7 @@ let init = () => {
   pluginsInit();
   fillInUserData({
     USER_PHONE: localStorage.getItem(USER_PHONE),
-    USER_BACKCALL_TIME: localStorage.getItem(USER_BACKCALL_TIME)
+    USER_BACKCALL_TIME: localStorage.getItem(USER_BACKCALL_TIME),
   });
   setUpListeners();
 };
@@ -69,7 +70,7 @@ let setUpListeners = () => {
 
 let pluginsInit = () => {
   /**
-   * Initializes masks for phone input fields:
+   * Initializes masks for phone input fields.
    */
   DOM.phoneInputs
     .mask('+9 (999) 999 99 99')
@@ -78,17 +79,28 @@ let pluginsInit = () => {
     });
 
   /**
-   * Initializes custom scrollbar:
+   * Initializes custom scrollbar.
    */
   DOM.scrollWrapper.jScrollPane({
     autoReinitialise: true,
     mouseWheelSpeed: 30,
   });
+
+  /**
+   * Initializes TouchSpin for product count inputs.
+   */
+  DOM.inputTouchspin.TouchSpin({
+    min: 1,
+    max: 10000,
+    verticalbuttons: true,
+    verticalupclass: 'glyphicon glyphicon-plus',
+    verticaldownclass: 'glyphicon glyphicon-minus',
+  });
 };
 
 let fillInUserData = (data) => {
   /**
-  * Sets up user phone number:
+  * Sets up user phone number.
   */
   if (data.USER_PHONE) {
     $.each(DOM.phoneInputs, function () {
@@ -97,7 +109,7 @@ let fillInUserData = (data) => {
   }
 
   /**
-  * Sets up user backcall time:
+  * Sets up user backcall time.
   */
   if (data.USER_BACKCALL_TIME) {
     BACKCALL_MODAL.timeTag.find('[data-time=' + data.USER_BACKCALL_TIME + ']').attr('selected', true);
@@ -105,10 +117,10 @@ let fillInUserData = (data) => {
 };
 
 /**
- * Toggles to top button:
+ * Toggles to top button.
  */
 let toggleToTopBtn = () => {
-  if ($(window).scrollTop() > 100) {
+  if ($(window).scrollTop() > 300) {
     DOM.btnScrollTop.addClass('active');
   } else {
     DOM.btnScrollTop.removeClass('active');
@@ -116,7 +128,7 @@ let toggleToTopBtn = () => {
 };
 
 /**
- * Stores users time for backcall:
+ * Stores users time for backcall.
  */
 let storeBackcallTime = (selectedOption) => {
   let selectedTime = $(selectedOption.target).find(':selected').data('time');

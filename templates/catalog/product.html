@@ -1,0 +1,122 @@
+{% extends "shopelectro/base.html" %}
+{% load breadcrumb_extras %}
+{% load staticfiles %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block keywords %}{{ product.keywords }}{% endblock %}
+{% block og_title %}{{ product.title }}{% endblock %}
+{% block description %}{{ product.description }}{% endblock %}
+{% block og_description %}{{ product.description }}{% endblock %}
+{% block unique_url %}{% url 'product' product.id %}{% endblock %}
+{% block unique_img %}{% static main_image %}{% endblock %}
+{% block canonical %}{% url 'product' product.id %}{% endblock %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
+{% endblock %}
+
+{% block content %}
+  <div itemscope itemtype="http://schema.org/Product" class="page-product custom-input-checkbox">
+    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
+      <span itemprop="price">{{ product.price }}</span>
+      <span itemprop="priceCurrency">RUB</span>
+      <link itemprop="availability" href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}">
+    </div>
+
+    <div class="container">
+      <p>{% breadcrumbs breadcrumbs %}</p>
+
+      <h1 class="product-h1" itemprop="name">{{ product.h1 }}</h1>
+      <span class="product-article">Арт. {{ product.id }}</span>
+
+      <div class="product-top">
+        <div class="product-images" id="product-images">
+          <div class="product-image-big box-product">
+            <img class="img-centered img-responsive" id="product-image-big" src="{% static main_image %}" data-index="1"
+                 alt="{{ product.name }}">
+          </div>
+
+          {% for image in images %}
+            <div class="product-image-small box-product">
+              <img class="img-responsive js-image-switch" src="{% static image %}"
+                   data-index="{{ forloop.counter0 }}">
+            </div>
+          {% endfor %}
+
+          {% for hidden_image in images %}
+            <a class="fancybox hidden" href="{% static hidden_image %}" rel="product-cart-gallery">
+              <img src="{% static hidden_image %}">
+            </a>
+          {% endfor %}
+        </div>
+
+        <div class="product-price-wrapper" id="product-price">
+          <p class="product-label-price-retail">Розничная цена:</p>
+          <p class="product-price active">{{ product.price }} руб / шт</p>
+
+          {% if product.wholesale_low %}
+            <p class="product-label-price-whole">Оптовая цена:</p>
+            <table class="product-table table table-bordered">
+              <thead>
+                <tr>
+                  <th>от 15000 руб</th>
+                  <th>от 40000 руб</th>
+                  <th>от 100000 руб</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ product.wholesale_low }} руб</td>
+                  <td>{{ product.wholesale_medium }} руб</td>
+                  <td>{{ product.wholesale_large }} руб</td>
+                </tr>
+              </tbody>
+            </table>
+          {% endif %}
+
+          {% include 'catalog/product_in_stock_section.html' %}
+
+          <div class="product-price-btn-wrapper">
+            <input class="input-switcher js-touchspin" id="product-count" type="number" min="1" value="1">
+          </div>
+
+          <div class="btn-wrapper-center">
+            <button class="btn btn-to-basket" id="btn-to-basket" data-id="{{ product.id }}">В корзину</button>
+          </div>
+
+          <p class="product-one-click">Заказ в 1 клик</p>
+          <input class="form-control js-masked-phone" id="input-one-click-email" placeholder="+7 (999) 000 00 00"
+                 type="tel">
+          <button class="btn btn-order" id="btn-one-click-order" type="button" disabled>Заказать</button>
+
+          <p class="pr-additional">
+            Менеджер позвонит, уточнит все детали, проверит
+            наличие товара на складе и оформит заказ на ваше имя.
+          </p>
+        </div>
+
+        <div class="pr-chars">
+          <div class="pr-chars-order">
+            {% include 'shopelectro/order_notice.html' %}
+          </div>
+        </div>
+      </div>
+
+      <div class="product-bottom">
+        <div class="product-desc">
+          {% if product.content %}
+            <h3 class="product-desc-title">Описание</h3>
+            <p class="product-text">{{ product.content }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      {% include 'catalog/product_delivery_section.html' %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block jslinks %}
+  {{ block.super }}
+  <script src="{% static "js/pages.min.js" %}"></script>
+{% endblock %}

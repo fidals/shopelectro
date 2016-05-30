@@ -19,3 +19,6 @@ shopelectro/css/
 shopelectro/js/
 static/**/*
 !static/assets/
+front/images/catalog
+categories.xml
+products.xml

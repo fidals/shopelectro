@@ -150,4 +150,6 @@ CRUMBS = {
 
 LOCALHOST = 'http://127.0.0.1:8000/'
 
+IMAGE_THUMBNAIL = 'images/logo.png'
+
 from .local import *

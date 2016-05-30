@@ -151,7 +151,7 @@ h3 {
 
 .img-centered {
   bottom: 0;
-  height: 100%;
+  max-height: 100%;
   left: 0;
   margin: auto;
   position: absolute;
@@ -1145,7 +1145,7 @@ h3 {
     }
 
     &:after {
-      content: "→";
+      content: "\2192";
       right: -16px;
       position: absolute;
       top: 1px;
@@ -1197,10 +1197,10 @@ h3 {
 
   .glyphicon {
     font-size: @f-size-base - 5;
-    font-weight: 400;
-    left: 5px;
+    left: 1px;
     position: absolute;
-    top: 3px;
+    top: 4px;
+    width: 100%;
   }
 
   > .btn {
@@ -1208,7 +1208,7 @@ h3 {
     float: none;
     margin-left: -1px;
     max-width: 100%;
-    padding: 8px 10px;
+    padding: 0;
     position: relative;
     width: 100%;
   }
@@ -1930,7 +1930,10 @@ div.info-text {
 
 .input-group-btn-vertical {
   display: inline-block;
-  width: 10px;
+  position: absolute;
+  right: 0;
+  width: 18px;
+  z-index: 999;
 }
 
 .product-count input {

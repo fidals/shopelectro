@@ -27,6 +27,7 @@ def page_metadata(page):
             'name': 'Статьи про аккумы',
         },
         'catalog': {
+            'title': 'Карта каталога',
             'name': 'Каталог аккумов',
         },
     }
