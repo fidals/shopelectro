@@ -1,6 +1,3 @@
-"""
-Catalog extended models: Category and Product.
-"""
 import os
 from django.db import models
 from django.conf import settings
@@ -8,15 +5,17 @@ from catalog import models as catalog_models
 
 
 class Product(catalog_models.Product):
-    """
-    Product extended model.
-    Extends basic functionality and primitives for Product model.
-    Has n:1 relation with Category.
-    """
+    wholesale_small = models.FloatField()
+    wholesale_medium = models.FloatField()
+    wholesale_large = models.FloatField()
 
-    wholesale_low = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-    wholesale_medium = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-    wholesale_large = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    @property
+    def trademark(self):
+        """Return value of trademark property if exists."""
+        try:
+            return self.property_set.get(name='Товарный знак').value
+        except Property.DoesNotExist:
+            return
 
     def get_images(self):
         """:return: all product images"""
@@ -31,3 +30,13 @@ class Product(catalog_models.Product):
             return []
 
         return list(reversed(images_array))
+
+
+class Property(models.Model):
+    name = models.CharField(max_length=255)
+    is_numeric = models.SmallIntegerField(default=0)
+    value = models.CharField(max_length=255)
+    product = models.ForeignKey(Product)
+
+    def __str__(self):
+        return self.name

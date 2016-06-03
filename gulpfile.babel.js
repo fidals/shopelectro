@@ -42,7 +42,7 @@ const PATH = {
       ],
       common: [
         'front/js/shared/*.es6',
-        'front/js/components/*.es6',
+        'front/js/components/main.es6',
       ],
       pages: [
         'front/js/vendors/bootstrap-select.js',
@@ -85,6 +85,7 @@ gulp.task('build', (callback) => {
     'styles',
     'js-vendors',
     'js-common',
+    'js-pages',
     'build-imgs',
     'build-fonts',
     callback

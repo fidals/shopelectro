@@ -4,10 +4,11 @@ Shopelectro views.
 NOTE: They all should be 'zero-logic'. All logic should live in respective applications.
 """
 
-from django.http import HttpResponse
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
+
 from catalog.models import Category, get_crumbs
 from shopelectro.models import Product
 from . import config

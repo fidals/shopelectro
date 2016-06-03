@@ -149,6 +149,8 @@ CRUMBS = {
 }
 
 LOCALHOST = 'http://127.0.0.1:8000/'
+BASE_URL = 'https://www.shopelectro.ru'
+
 
 IMAGE_THUMBNAIL = 'images/logo.png'
 

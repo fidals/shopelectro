@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
+<yml_catalog date="{% now "Y-m-d H:i" %}">
+  <shop>
+    <name>Shopelectro</name>
+    <company>Shopelectro</company>
+    <url>{{ base_url }}</url>
+    <platform>Django</platform>
+    <version>1.9.6</version>
+    <email>info@shopelectro.ru</email>
+    <currencies>
+      <currency id="RUR" rate="1"/>
+    </currencies>
+    <categories>
+      {% for category in categories %}
+        <category id="{{ category.id }}" {% if category.parent %} parentId="{{ category.parent.id }}"{% endif %}>
+          {{ category.name}}
+        </category>
+      {% endfor %}
+    </categories>
+    <local_delivery_cost>{{ shop.local_delivery_cost }}</local_delivery_cost>
+    <cpa>0</cpa>
+    <offers>
+      {% for product in products %}
+        <offer id="{{ product.id }}" available="{{ product.in_stock|yesno:'true,false'">
+          <url>{{ product.utm_url }}</url>
+          <price>{{ product.price }}</price>
+          {% if utm != 'priceru' %}<purchase_price>{{ product.price }}</purchase_price>{% endif %}
+          <currencyId>RUR</currencyId>
+          <categoryId>{{ product.category.id }}</categoryId>
+          <store>false</store>
+          <pickup>true</pickup>
+          <delivery>true</delivery>
+          {% if product.price > shop.delivery_threshold %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
+          <name>{{ product.name }}</name>
+          {% if product.trademark %}<vendor>{{ product.trademark }}</vendor>{% endif %}
+          {% if product.content %}<description>{{ product.content }}</description>{% endif %}
+          <sales_notes>При заказе от {{ shop.delivery_threshold }} руб. доставка по СПб бесплатно</sales_notes>
+        </offer>
+      {% endfor %}
+    </offers>
+  </shop>
+</yml_catalog>
