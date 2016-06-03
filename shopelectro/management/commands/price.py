@@ -39,7 +39,8 @@ class Command(BaseCommand):
                     'utm_term': str(product.id)
                 }
             url = reverse('product', args=(product.id,))
-            utm_mark = '&'.join([k + '=' + v for k, v in product_utm().items()])
+            utm_mark = '&'.join(['{}={}'.format(k, v)
+                                 for k, v in product_utm().items()])
             product.utm_url = ''.join([settings.BASE_URL, url, utm_mark])
             return product
 
@@ -48,7 +49,8 @@ class Command(BaseCommand):
         categories_except_others = Category.objects.exclude(pk__in=others)
         products_except_others = (put_utm(product)
                                   for product in
-                                  Product.objects.filter(category__in=categories_except_others)
+                                  Product.objects.filter(
+                                      category__in=categories_except_others)
                                   .filter(price__gt=0))
         return {
             'base_url': settings.BASE_URL,

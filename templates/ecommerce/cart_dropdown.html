@@ -1,0 +1,84 @@
+{% load humanize %}
+
+<div class="col-xs-8 col-xs-offset-4">
+<div class="js-header-cart">
+  <span class="basket-products-count js-cart-size">{{ cart.total_quantity }}</span>
+    {% if cart.total_price == 0 %}
+        <span class="js-cart-is-empty" id="cart-is-empty">Корзина пуста</span>
+    {% else %}
+        <span class="js-cart-is-empty hidden" id="cart-is-empty">Корзина пуста</span>
+        <a class="price-in-cart" id="price-in-cart" href="{% url 'order_page' %}">{{ cart.total_price|floatformat|intcomma }} руб.</a>
+    {% endif %}
+  <a href="#" class="opener"><i class="fa fa-chevron-down"></i></a>
+</div>
+</div>
+<div class="basket-wrapper">
+<p>В корзине <span class="js-basket-amount-count">{{ cart|length }}</span> позиций</p>
+<div class="scroll-wrapper" id="scroll-wrapper">
+  <ul class="basket-list list-unstyled" id="basket-list">
+      {% for position in cart %}
+        {% with product=position.product %}
+            <li class="basket-item">
+                <a class="basket-stuff-link" href="{% url 'product' product.id %}">
+                  <img class="basket-stuff-img img-responsive" src="">
+                </a>
+                <div class="basket-stuff-about">
+                  <a class="basket-stuff-title" href="{% url 'product' product.id %}">
+                    {{ product.name }}
+                  </a>
+                </div>
+                <p class="basket-stock">
+                    {% if product.in_stock %}
+                        <i class="fa fa-circle in-stock"></i> В наличии: {{ product.in_stock }} шт.
+                    {% else %}
+                        <i class="fa fa-circle out-stock"></i> Под заказ
+                    {% endif %}
+                </p>
+                <div class="basket-stuff-price">
+                  <span class="basket-price js-basket-price">{{position.price}} руб</span> х
+                  <span class="basket-count js-basket-count">{{position.quantity}} шт.</span> =
+                  <span class="basket-sum js-basket-sum">{{position.total|floatformat|intcomma}} руб.</span>
+                </div>
+                <div class="basket-remove js-basket-remove" id="{{ product.id }}" title="Удалить товар"></div>
+            </li>
+        {% endwith %}
+{% endfor %}
+  </ul>
+</div>
+
+<div class="basket-calculations text-right
+    {% if cart.total_price == 0 %}
+        hidden
+     {% endif %}
+     js-basket-calculations">
+  <p class="basket-price-sum">
+    Итого:
+    <span class="js-basket-price-sum">{{ cart.total_price }}</span>
+    <span class="table-units"> руб.</span>
+  </p>
+  <p class="basket-info">без учета стоимости доставки</p>
+</div>
+
+<div class="basket-is-empty
+    {% if cart.total_price > 0 %}
+        hidden
+     {% endif %}
+    text-right js-cart-is-empty">
+  <p class="basket-price-sum">Корзина пуста</p>
+</div>
+
+<div class="text-center">
+    {% if cart|length == 0 %}
+      <button class="btn btn-pink btn-to-order js-submit-order" type="button" disabled>
+        Оформить заказ сейчас
+      </button>
+    {% else %}
+      <button class="btn btn-pink btn-to-order js-submit-order" type="button">
+        Оформить заказ сейчас
+      </button>
+      <p>
+        <span class="basket-reset">Очистить корзину</span>
+      </p>
+    {% endif %}
+</div>
+</div>

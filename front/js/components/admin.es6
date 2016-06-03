@@ -1,4 +1,5 @@
-const DOM = {
+const admin = (() => {
+  const DOM = {
   categoryPage: $('.model-category'),
   productPage: $('.model-product'),
 };
@@ -35,3 +36,5 @@ const getCurrentPageType = () => {
 
   return pageType;
 };
+})();
+

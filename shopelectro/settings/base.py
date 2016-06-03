@@ -37,10 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'mptt',
     'blog',
     'catalog',
-    'mptt',
     'seo',
+    'ecommerce',
     'shopelectro',
 ]
 
@@ -69,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.core.context_processors.static',
+                'ecommerce.context_processors.cart'
             ],
         },
     },
@@ -155,3 +158,14 @@ LOCALHOST = 'http://127.0.0.1:8000/'
 BASE_URL = 'https://www.shopelectro.ru'
 
 IMAGE_THUMBNAIL = 'images/logo.png'
+
+PRODUCT_MODEL = 'shopelectro.Product'
+CART_ID = 'cart'
+SHOP_EMAIL = 'egorbirykov@yandex.com'
+PAYMENT_OPTIONS = (
+    ('cash', 'Наличные'),
+    ('cashless', 'Безналичные и денежные переводы')
+)
+
+
+from .local import *

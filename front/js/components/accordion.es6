@@ -1,6 +1,6 @@
 const accordion = (() => {
 
-  let getSavedItem = () => $('#' + localStorage.getItem(ITEM_KEY));
+  const getSavedItem = () => $('#' + localStorage.getItem(ITEM_KEY));
 
   const ITEM_KEY = 'activeItem';
   const DOM = {
@@ -9,7 +9,7 @@ const accordion = (() => {
     savedItem: getSavedItem(),
   };
 
-  let init = () => {
+  const init = () => {
     collapseAccordion();
     switchItem(DOM.savedItem);
     DOM.titles.click((event) => switchItem($(event.target)));
@@ -21,7 +21,7 @@ const accordion = (() => {
    *  -- inactive - slide up it, make active
    * @param $clickedItem - accordion item as jQuery object
    */
-  let switchItem = ($clickedItem) => {
+  const switchItem = ($clickedItem) => {
     if (!$clickedItem) {
       return
     }
@@ -35,32 +35,33 @@ const accordion = (() => {
     }
   };
 
-  let openItem = ($clickedItem) => {
-    let $to_switch = $clickedItem.next();
+  const openItem = ($clickedItem) => {
+    let $toSwitch = $clickedItem.next();
     collapseAccordion();
     $clickedItem.addClass('active');
-    $to_switch.stop().slideDown();
+    $toSwitch.stop().slideDown();
   };
 
-  let collapseItem = ($clickedItem) => {
-    let $to_switch = $clickedItem.next();
+  const collapseItem = ($clickedItem) => {
+    let $toSwitch = $clickedItem.next();
     $clickedItem.removeClass('active');
-    $to_switch.stop().slideUp();
+    $toSwitch.stop().slideUp();
     removeItem();
   };
 
-  let saveItem = ($item) => {
+  const saveItem = ($item) => {
     localStorage.setItem(ITEM_KEY, $item.attr('id'));
   };
 
-  let removeItem = ($item) => {
+  const removeItem = (_) => {
     localStorage.removeItem(ITEM_KEY);
   };
 
-  let collapseAccordion = () => {
+  const collapseAccordion = () => {
     DOM.titles.removeClass('active');
     DOM.panels.stop().slideUp();
   };
 
   init();
 })();
+

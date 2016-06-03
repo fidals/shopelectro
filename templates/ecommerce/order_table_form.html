@@ -1,0 +1,142 @@
+{% load staticfiles %}
+{% load humanize %}
+{% if cart|length %}
+  <h1>Оформление заказа</h1>
+  <table class="table table-bordered order-list">
+    <colgroup>
+      <col style="width: 5%;">
+      <col style="width: 5%;">
+      <col style="width: 50%;">
+      <col style="width: 5%;">
+      <col style="width: 10%;">
+      <col style="width: 3%;">
+    </colgroup>
+    <tr>
+      <th>Код</th>
+      <th>Фото</th>
+      <th>Наименование</th>
+      <th>Количество</th>
+      <th>Цена</th>
+      <th></th>
+    </tr>
+    {% for position in cart %}
+      {% with product=position.product %}
+        <tr id="{{ product.id }}">
+          <td>{{ product.id }}</td>
+          <td class="photo text-center">
+            {% if product.main_image == 'images/logo.png' %}
+              <img src="{% static 'images/camera-icon.png' %}">
+            {% else %}
+              <a class="fancybox" rel="product-cart-gallery" href="{% static product.main_image %}" title="{{ product.name }}">
+                <img src="{% static 'images/camera-icon-clr.png' %}">
+              </a>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+          </td>
+          <td class="count">
+            <div class="stock">
+              {% if product.in_stock > 0 %}
+                <i class="fa fa-circle in-stock" title="В наличии"></i>
+              {% else %}
+                <i class="fa fa-circle out-stock" title="Под заказ"></i>
+              {% endif %}
+            </div>
+            <input class="prod-count js-touchspin" value="{{ position.quantity }}" name="prod-count" productId="{{ product.id }}">
+          </td>
+          <td class="price js-product-price" productId="{{ product.id }}">{{ product.price}} руб</td>
+          <td class="product-delete">
+            <img class="btn-cart remove" productId="{{ product.id }}" src="{% static 'images/btn-close-icon.png' %}" alt="Убрать из корзины" title="Убрать из заказа">
+          </td>
+        </tr>
+      {% endwith %}
+    {% endfor %}
+    <tr>
+      <td class="order-total" colspan="3">
+        <b>Итого:</b>
+      </td>
+      <td class="order-count">
+        <b><span id="cart-page-prods-count">{{ cart.total_quantity }}</span> шт.</b>
+      </td>
+      <td class="order-sum" colspan="2">
+        <b><span id="cart-page-sum">{{ cart.total_price|floatformat|intcomma }}</span> руб.</b>
+      </td>
+    </tr>
+  </table>
+  <form class="order-form" id="order-form-full" action="." method="post">
+    {% csrf_token %}
+    <table class="order-info">
+      <tr>
+        <td>
+          <div class="payment-message order-answ">Выберете способ оплаты!</div>
+          <div class="info-header"><b style="color:red">*</b> способы оплаты</div>
+        </td>
+        <td>
+          <div class="info-header">форма заказа</div>
+        </td>
+      </tr>
+      <tr>
+        <td class="payment-types-form">
+          {% include 'ecommerce/payment_types.html' %}
+        </td>
+        <td>
+         {% csrf_token %}
+          <p class="error-msg" id="order-form-error-text"></p>
+          <table class="order-form-right form-horizontal">
+            <tr>
+              <td class="form-order title">
+                <label class="control-label" for="{{ form.name.id_for_label }}">Ваше имя:</label>
+              </td>
+              <td class="form-order data">
+                {{ form.name.errors }}
+                {{ form.name }}
+              </td>
+            </tr>
+            <tr>
+              <td class="form-order title">
+                <b class="table-required-icon">*</b>
+                <label class="control-label" for="{{ form.phone.id_for_label }}">Контактный телефон: </label>
+              </td>
+              <td class="form-order data">
+                {{ form.phone.errors }}
+                {{ form.phone }}
+              </td>
+            </tr>
+            <tr>
+              <td class="form-order title">
+                <b class="table-required-icon">*</b>
+                <label class="control-label" for="{{ form.email.id_for_label }}">Электронная почта:</label>
+              </td>
+              <td class="form-order data">
+                {{ form.email.errors }}
+                {{ form.email }}
+              </td>
+            </tr>
+            <tr>
+              <td class="form-order title">
+                <b class="table-required-icon">*</b>
+                <label class="control-label" for="{{ form.city.id_for_label }}">Город:</label>
+              </td>
+              <td class="form-order data">
+                {{ form.city.errors }}
+                {{ form.city }}
+              </td>
+            </tr>
+            <tr>
+              <td class="form-order form-submit-wrapper">
+                <input id="btn-send-se" class="buy-btn btn-send" type="submit" value="Продолжить">
+                <input id="btn-send-ya" class="buy-btn btn-send hidden" type="submit" value="Продолжить">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </form>
+{% else %}
+  <h1>Корзина пуста</h1>
+  <span class="page-info-message">В вашей корзине пока нет товаров. <a
+      href="{% url 'catalog' %}">Перейти к каталогу</a></span>
+{% endif %}
+

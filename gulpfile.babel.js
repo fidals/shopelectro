@@ -44,6 +44,8 @@ const PATH = {
 
       common: [
         'front/js/shared/*.es6',
+        'front/js/components/orderCall.es6',
+        'front/js/components/headerCart.es6',
         'front/js/components/main.es6',
       ],
 
@@ -52,6 +54,7 @@ const PATH = {
         'front/js/vendors/jquery.fancybox.min.js',
         'front/js/components/category.es6',
         'front/js/components/product.es6',
+        'front/js/components/order.es6',
         'front/js/components/accordion.es6',
       ],
 

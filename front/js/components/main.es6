@@ -1,139 +1,59 @@
-const DOM = {
-  phoneInputs: $('.js-masked-phone'),
-  btnScrollTop: $('#btn-scroll-to-top'),
-  scrollWrapper: $('#scroll-wrapper'),
-  inputTouchspin: $('.js-touchspin'),
-};
+const mainPage = (() => {
+  const DOM = {
+    btnScrollTop: $('#btn-scroll-to-top'),
+    scrollWrapper: $('#scroll-wrapper'),
+    inputTouchspin: $('.js-touchspin')
+  };
 
-const BACKCALL_MODAL = {
-  closeTag: $('.js-backcall-close'),
-  phoneTag: $('#back-call-phone'),
-  sendBtn: $('.js-send-backcall'),
-  successTag: $('.js-backcall-success'),
-  timeText: $('.js-backcall-time'),
-  timeTag: $('.js-select-time'),
-  timeToCall: $('#back-call-time'),
-  isSend: false,
+  const CONFIG = {
+    touchspin: {
+      min: 1,
+      max: 10000,
+      verticalbuttons: true,
+      verticalupclass: 'glyphicon glyphicon-plus',
+      verticaldownclass: 'glyphicon glyphicon-minus'
+    },
+    scrollbar: {
+      autoReinitialise: true,
+      mouseWheelSpeed: 30
+    }
+  };
 
-  /**
-   * Handles 'Backcall order' form.
-   */
-  sendBackcall: () => {
-    const data = {
-      phone: BACKCALL_MODAL.phoneTag.val(),
-      time: BACKCALL_MODAL.timeToCall.val(),
-    };
+  const init = () => {
+    pluginsInit();
+    setUpListeners();
+  };
 
-    SEND_BACKCALL(data)
-      .then(() => {
-        BACKCALL_MODAL.timeText.text(BACKCALL_MODAL.timeTag.val());
-        BACKCALL_MODAL.showSuccessModal();
-      }, (response) => {
-        console.group();
-        console.warn('Something goes wrong...');
-        console.log(response);
-        console.groupEnd();
-      });
-  },
+  const setUpListeners = () => {
+    $(window).scroll(toggleToTopBtn);
+    DOM.btnScrollTop.on('click', () => $('html, body').animate({ scrollTop: 0 }, 300));
+  };
 
-  /**
-   * Toggles backcall form buttons state.
-   */
-  showSuccessModal: () => {
-    BACKCALL_MODAL.sendBtn.toggleClass('hidden');
-    BACKCALL_MODAL.closeTag.toggleClass('hidden');
-    BACKCALL_MODAL.successTag
-      .toggleClass('hidden')
-      .siblings().toggleClass('hidden');
-    BACKCALL_MODAL.isSend = true;
-  },
-};
+  const pluginsInit = () => {
+    DOM.scrollWrapper.jScrollPane(CONFIG.scrollbar);
+    DOM.inputTouchspin.TouchSpin(CONFIG.touchspin);
+  };
 
-const USER_BACKCALL_TIME = 'userBackcallTime';
-const USER_PHONE = 'userPhone';
-
-const init = () => {
-  pluginsInit();
-  fillInUserData({
-    USER_PHONE: localStorage.getItem(USER_PHONE),
-    USER_BACKCALL_TIME: localStorage.getItem(USER_BACKCALL_TIME),
-  });
-  setUpListeners();
-};
-
-const setUpListeners = () => {
-  $(window).scroll(toggleToTopBtn);
-  BACKCALL_MODAL.sendBtn.on('click', BACKCALL_MODAL.sendBackcall);
-  BACKCALL_MODAL.timeTag.on('change', storeBackcallTime.bind(this));
-  DOM.btnScrollTop.on('click', () => $('html, body').animate({ scrollTop: 0 }, 300));
-};
-
-const pluginsInit = () => {
-  /**
-   * Initializes masks for phone input fields.
-   */
-  DOM.phoneInputs
-    .mask('+9 (999) 999 99 99')
-    .on('keyup', function () {
-      localStorage.setItem(USER_PHONE, $(this).val());
-    });
-
-  /**
-   * Initializes custom scrollbar.
-   */
-  DOM.scrollWrapper.jScrollPane({
-    autoReinitialise: true,
-    mouseWheelSpeed: 30,
-  });
-
-  /**
-   * Initializes TouchSpin for product count inputs.
-   */
-  DOM.inputTouchspin.TouchSpin({
-    min: 1,
-    max: 10000,
-    verticalbuttons: true,
-    verticalupclass: 'glyphicon glyphicon-plus',
-    verticaldownclass: 'glyphicon glyphicon-minus',
-  });
-};
-
-const fillInUserData = (data) => {
-  /**
-  * Sets up user phone number.
-  */
-  if (data.USER_PHONE) {
-    $.each(DOM.phoneInputs, function () {
-      $(this).val(data.USER_PHONE);
-    });
-  }
-
-  /**
-  * Sets up user backcall time.
-  */
-  if (data.USER_BACKCALL_TIME) {
-    BACKCALL_MODAL.timeTag.find('[data-time=' +
-      data.USER_BACKCALL_TIME + ']').attr('selected', true);
-  }
-};
-
-/**
- * Toggles to top button.
- */
-const toggleToTopBtn = () => {
-  if ($(window).scrollTop() > 300) {
+  const enableScrollToTop = () => {
     DOM.btnScrollTop.addClass('active');
-  } else {
+  };
+
+  const disableScrollToTop = () => {
     DOM.btnScrollTop.removeClass('active');
-  }
-};
+  };
 
-/**
- * Stores users time for backcall.
- */
-const storeBackcallTime = (selectedOption) => {
-  const selectedTime = $(selectedOption.target).find(':selected').data('time');
-  localStorage.setItem(USER_BACKCALL_TIME, selectedTime);
-};
+  /**
+   * Toggles to top button.
+   */
+  const toggleToTopBtn = () => {
+    let isScreenBottom = $(window).scrollTop() > 300;
 
-init();
+    if (isScreenBottom) {
+      enableScrollToTop();
+    } else {
+      disableScrollToTop();
+    }
+  };
+
+  init();
+})();

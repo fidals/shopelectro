@@ -1,0 +1,20 @@
+{% extends 'shopelectro/base.html' %}
+{% load staticfiles %}
+{% block title %}Оформление заказа{% endblock %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
+{% endblock %}
+
+{% block content %}
+  <div class="container order-contain js-order-contain">
+    {% include 'ecommerce/order_table_form.html' %}
+  </div>
+{% endblock %}
+
+{% block jslinks %}
+  {{ block.super }}
+  <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=ru"></script>
+  <script src="{% static "js/pages.min.js" %}"></script>
+{% endblock %}

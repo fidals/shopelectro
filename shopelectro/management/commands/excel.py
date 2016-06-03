@@ -39,14 +39,16 @@ class Command(BaseCommand):
         Return tuple with opened openpyxl file's object
         and active price sheet.
         """
-        file = openpyxl.load_workbook(os.path.join(settings.STATIC_ROOT, self.TEMPLATE))
+        file = openpyxl.load_workbook(os.path.join(
+            settings.STATIC_ROOT, self.TEMPLATE))
         return file, file.get_sheet_by_name('Прайслист')
 
     def fill_header(self, sheet):
         """Fill header of a sheet with date and title."""
         date_cell = 'C5'
         sheet.title = self.SHEET_TITLE
-        sheet[date_cell] = datetime.date.strftime(datetime.date.today(), '%d.%m.%Y')
+        sheet[date_cell] = datetime.date.strftime(
+            datetime.date.today(), '%d.%m.%Y')
 
     @staticmethod
     def hide_formulas(sheet):
@@ -71,13 +73,15 @@ class Command(BaseCommand):
                       product.wholesale_large]
             for price, total in zip('CDEF', 'HIJK'):
                 sheet[price + self.CURRENT_ROW] = prices.pop(0)
-                sheet[total + self.CURRENT_ROW] = '={0}{1}*G{1}'.format(price, self.CURRENT_ROW)
+                sheet[total + self.CURRENT_ROW] = ('={0}{1}*G{1}'
+                                                   .format(price, self.CURRENT_ROW))
             sheet['G' + self.CURRENT_ROW].fill = self.BUY_FILL
 
         def write_category_line():
             """Merge category line into one cell and write to it."""
             category_start = 'A' + self.CURRENT_ROW
-            category_line = '{}:{}'.format(category_start, 'G' + self.CURRENT_ROW)
+            category_line = '{}:{}'.format(
+                category_start, 'G' + self.CURRENT_ROW)
             sheet.merge_cells(category_line)
             sheet[category_start] = category.name
             sheet[category_start].fill = self.CATEGORY_FILL

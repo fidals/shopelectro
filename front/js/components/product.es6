@@ -1,43 +1,28 @@
-/**
- * Product Page module defines logic, operations and UI for ProductPage.
- */
-const productModule = (function () {
+const product = (() => {
   const DOM = {
     imageBig: $('#product-image-big'),
-    addToBasketBtn: $('#btn-to-basket'),
-    oneClickBuyEmail: $('#input-one-click-email'),
-    oneClickBuyBtn: $('#btn-one-click-order'),
-    counter: $('#product-count'),
     imagesToSwitch: $('.js-image-switch'),
     fancybox: $('.fancybox'),
+    addToCart: $('#btn-to-basket'),
+    phone: $('#input-one-click-phone'),
+    oneClick: $('#btn-one-click-order'),
+    counter: $('#product-count')
   };
 
-  let init = () => {
+  const productId = () => DOM.addToCart.attr('data-id');
+
+  const init = () => {
     setUpListeners();
     changeOneClickButtonState();
   };
 
-  /**
-   * Subscribing on events using mediator.
-   */
-  let setUpListeners = () => {
+  const setUpListeners = () => {
     DOM.imageBig.click(fancyBoxStart);
     DOM.imagesToSwitch.click(productImgSwitch);
-    DOM.oneClickBuyEmail.keyup(changeOneClickButtonState);
-    mediator.subscribe('onAddToBasket', addToBasket);
-    DOM.addToBasketBtn.click(() => mediator.publish('onAddToBasket',
-      {
-        id: DOM.addToBasketBtn.attr('data-id'),
-        count: DOM.counter.val(),
-      }
-    ));
-    mediator.subscribe('onOneClickOrder', oneClickOrder);
-    DOM.oneClickBuyBtn.click(() => mediator.publish('onOneClickOrder',
-      {
-        phone: DOM.oneClickBuyEmail.val(),
-        count: DOM.counter.val(),
-      }
-    ));
+    DOM.phone.keyup(changeOneClickButtonState);
+    DOM.addToCart.click(() => buyProduct());
+    DOM.oneClick.click(() => oneClick());
+    mediator.subscribe('onOneClickBuy', successOrder);
   };
 
   /**
@@ -51,45 +36,25 @@ const productModule = (function () {
         index: index,
         helpers: {
           overlay: {
-            locked: false,
-          },
-        },
+            locked: false
+          }
+        }
       });
 
     return false;
   };
 
-  /**
-   * Adds product to basket.
-   *
-   * @param data.id - product's id
-   * @param data.count - product's count
-   */
-  const addToBasket = (event, data) => {
-    console.log(event);
-    console.log(data);
+  const oneClick = () => {
+    const phone = DOM.phone.val();
+    const count = DOM.counter.val();
+
+    oneClickBuy(productId(), count, phone).then(() => mediator.publish('onOneClickBuy'));
   };
 
   /**
    * Phone validation on keypress
    */
-  const changeOneClickButtonState = () => {
-    if (!DOM.oneClickBuyEmail.length) return;
-    const isFilled = isPhoneValid(DOM.oneClickBuyEmail.val());
-
-    DOM.oneClickBuyBtn.attr('disabled', !isFilled);
-  };
-
-  /**
-  * Handles one click order.
-  *
-  * @param data.phone - user phone
-  * @param data.count - product count
-  */
-  const oneClickOrder = (event, data) => {
-    console.log(data.phone);
-    console.log(data.count);
-  };
+  const changeOneClickButtonState = () => DOM.oneClick.attr('disabled', !isPhoneValid(DOM.phone.val()));
 
   /**
    * Переключение картинок товара:
@@ -108,5 +73,17 @@ const productModule = (function () {
     }
   };
 
+  const buyProduct = () => {
+    let {id, count} = {
+      id: productId(),
+      count: DOM.counter.val()
+    };
+
+    addToCart(id, count).then((data) => mediator.publish('onCartUpdate', data));
+  };
+
+  const successOrder = () => location.href = '/shop/success-order';
+
   init();
-}());
+})();
+
