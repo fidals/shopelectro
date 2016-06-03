@@ -157,3 +157,8 @@ FOOTER_LINKS = {
 HREFS = {
     'istok_plus': 'http://istok-plus.ru',
 }
+
+SHOP = {
+    'local_delivery_cost': 300,
+    'local_delivery_cost_threshold': 5000
+}

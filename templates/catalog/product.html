@@ -54,7 +54,7 @@
           <p class="product-label-price-retail">Розничная цена:</p>
           <p class="product-price active">{{ product.price }} руб / шт</p>
 
-          {% if product.wholesale_low %}
+          {% if product.wholesale_small %}
             <p class="product-label-price-whole">Оптовая цена:</p>
             <table class="product-table table table-bordered">
               <thead>
@@ -66,7 +66,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>{{ product.wholesale_low }} руб</td>
+                  <td>{{ product.wholesale_small }} руб</td>
                   <td>{{ product.wholesale_medium }} руб</td>
                   <td>{{ product.wholesale_large }} руб</td>
                 </tr>
