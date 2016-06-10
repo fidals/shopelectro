@@ -49,6 +49,7 @@ const PATH = {
         'front/js/vendors/jquery.fancybox.min.js',
         'front/js/components/category.es6',
         'front/js/components/product.es6',
+        'front/js/components/accordion.es6',
       ],
     },
 

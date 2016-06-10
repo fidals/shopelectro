@@ -3,8 +3,8 @@
 {% load breadcrumb_extras %}
 {% block title %}{{ category.title }}{% endblock %}
 {% block keywords %}{{ category.keywords }}{% endblock %}
-{% block og_title %}{{ category.title }}{% endblock %}
 {% block description %}{{ category.description }}{% endblock %}
+{% block og_title %}{{ category.title }}{% endblock %}
 {% block og_description %}{{ category.description }}{% endblock %}
 {% block unique_url %}{% url 'category' category.slug %}{% endblock %}
 {% block unique_img %}{% url 'index' %}{% endblock %}

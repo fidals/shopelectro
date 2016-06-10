@@ -1,0 +1,46 @@
+{% extends 'shopelectro/base.html' %}
+{% load staticfiles %}
+{% load breadcrumb_extras %}
+{% load blog_extras %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block keywords %}{{ page.keywords }}{% endblock %}
+{% block description %}{{ page.description }}{% endblock %}
+
+{% block published_date %}{{ page.date_published|date:'d-m-Y' }}{% endblock %}
+{% block unique_url %}{{ request.build_absolute_uri }}{{ page.get_absolute_url }}{% endblock %}
+{% block canonical %}{{ request.build_absolute_uri }}{{ page.get_absolute_url }}{% endblock %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
+{% endblock %}
+
+
+{% block content %}
+  <div class="container article-content">
+    <div class="p-article-sidebar col-xs-3">
+      {% accordion %}
+    </div>
+
+    <div class="col-xs-9 right-col">
+      <p>{% breadcrumbs breadcrumbs %}</p>
+      <h1>{{ page.h1 }}</h1>
+      {% if page.type != 'navigation' and page.date_published %}
+        <p class="date-pub-article">
+          {{ page.date_published|date:'d.m.Y' }}
+        </p>
+      {% endif %}
+      {% autoescape off %}
+        {% if page.content %}
+          {{ page.content }}
+        {% endif %}
+      {% endautoescape %}
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block jslinks %}
+  {{ block.super }}
+  <script src="{% static 'js/pages.min.js' %}"></script>
+{% endblock %}

@@ -222,3 +222,61 @@ class ProductPageSeleniumTests(TestCase):
         input_one_click_order.clear()
 
         self.assertTrue(button_one_click_order.get_attribute('disabled'))
+
+
+class BlogPageSeleniumTests(TestCase):
+    """
+    Selenium-based tests for product page UI.
+    """
+
+    def setUp(self):
+        """Sets up testing url and dispatches selenium webdriver."""
+
+        self.test_blog_root_page = settings.LOCALHOST + 'blog/'
+        self.test_blog_pages_list = settings.LOCALHOST + 'blog/posts/article/'
+        self.test_blog_page = settings.LOCALHOST + 'blog/contacts/'
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(20)
+
+    def tearDown(self):
+        """Closes selenium's session."""
+
+        self.browser.quit()
+
+    @property
+    def _accordion_title(self):
+        return self.browser.find_element_by_id('js-accordion-title-navigation')
+
+    @property
+    def _accordion_content(self):
+        return self.browser.find_element_by_id(
+            'js-accordion-content-navigation')
+
+    def test_accordion_minimized(self):
+        """Accordion item should be minimized by default"""
+
+        self.browser.get(self.test_blog_page)
+        accordion_content = self._accordion_content
+        self.assertFalse(accordion_content.is_displayed())
+
+    def test_accordion_expand(self):
+        """Accordion item should expand by click on title"""
+
+        self.browser.get(self.test_blog_page)
+        accordion_title = self._accordion_title
+        accordion_content = self._accordion_content
+        accordion_title.click()
+        time.sleep(1)
+        self.assertTrue(accordion_content.is_displayed())
+
+    def test_accordion_minimize_by_double_click(self):
+        """Accordion item should be minimized by two clicks on title"""
+
+        self.browser.get(self.test_blog_page)
+        accordion_title = self._accordion_title
+        accordion_content = self._accordion_content
+        accordion_title.click()
+        time.sleep(1)
+        accordion_title.click()
+        time.sleep(1)
+        self.assertFalse(accordion_content.is_displayed())

@@ -2,37 +2,63 @@
 Config storage for shopelectro.ru.
 Every config-like option which doesn't belong to settings should be here.
 """
+from django.conf import settings
+
+pages = {
+    'main': {
+        'name': 'Батарейки, Аккумуляторы, ЗУ в СПб',
+        'title': 'ShopElectro | Батарейки, Аккумуляторы, ЗУ в СПб',
+        'h1': 'Батарейки, Аккумуляторы, ЗУ в СПб',
+        'keywords': 'купить аккумуляторы, '
+                    'купить батарейки, '
+                    'купить зарядные устройства, купить блоки питания',
+        'description': 'Купить Батарейки, Аккумуляторы, ЗУ в СПб. Доставка по России',
+        'site_url': 'www.shopelectro.ru'
+    },
+    'navigation': {
+        'name': 'О магазине. Выбор, заказ, оплата, доставка',
+        'h1': 'Контакты, реквизиты, услуги',
+        'title': 'ShopElectro | О магазине. Выбор, заказ, оплата, доставка',
+        'keywords': 'Выбрать товар, заказать товар, оплатить товар, получить товар',
+        'description': 'Как выбрать товар, заказать, оплатить и получить',
+        'date_published': settings.SITE_CREATED,
+    },
+    'news': {
+        'name': 'Новости магазина',
+        'h1': 'Новости магазина',
+        'title': 'ShopElectro | Новости магазина',
+        'keywords': 'Новости shopelectro',
+        'description': 'Новости магазина. Изменение цен, ассортимента, обсуживания',
+        'date_published': settings.SITE_CREATED,
+    },
+    'article': {
+        'name': 'Статьи о товарах',
+        'h1': 'Статьи о товарах',
+        'title': 'ShopElectro | Статьи о товарах',
+        'keywords': 'батарейки, аккумуляторы, зу',
+        'description': 'Как выбрать товар',
+        'date_published': settings.SITE_CREATED,
+    },
+    'catalog': {
+        'title': 'Карта каталога',
+        'name': 'Каталог аккумов',
+    },
+}
 
 
 def page_metadata(page):
     """
     Returns page metadata (e.g., name, title, h1 and so on) for a given page string.
 
-    If such page doesn't have metadata, it throws KeyError.
+    If such page doesn't have metadata, it throws ValueError.
     :param page: string page identifier
     :return: dict with metadata
     """
-    pages = {
-        'main': {
-            'name': 'Аккумы и батарейки',
-            'title': 'Интернет магазин ShopElectro для оптовиков Санкт-Петербурга',
-            'h1': 'збс Аккумы в СПб',
-            'keywords': 'аккумуляторы оптом, '
-                        'батарейки оптом, '
-                        'зарядные устройства оптом, блоки питания оптом',
-            'description': 'Самые низкие цены на элементы питания оптом. Доставка по России.',
-            'site_url': 'www.shopelectro.ru'
-        },
-        'blog': {
-            'name': 'Статьи про аккумы',
-        },
-        'catalog': {
-            'title': 'Карта каталога',
-            'name': 'Каталог аккумов',
-        },
-    }
-
-    return pages[page]
+    try:
+        return pages[page]
+    except KeyError:
+        raise ValueError('site data have not such page: ' + page +
+                         '. Check your config.py')
 
 
 def category_sorting(sorting_index=None):

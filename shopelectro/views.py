@@ -8,10 +8,13 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.conf import settings
+from django.core.urlresolvers import reverse
 
-from catalog.models import Category, get_crumbs
-from shopelectro.models import Product
+from catalog.models import Category, get_crumbs as catalog_crumbs
+from blog.models import Post, get_crumbs as blog_crumbs
 from . import config
+from .models import Product
 
 
 def index(request):
@@ -59,7 +62,7 @@ def category_page(request, category_slug, sorting=0):
         'total_products': total_count,
         'sorting_options': config.category_sorting(),
         'sort': sorting,
-        'breadcrumbs': get_crumbs(category, category_url='category', catalog_url='catalog'),
+        'breadcrumbs': catalog_crumbs(category),
         'view_type': view_type
     }
 
@@ -83,7 +86,7 @@ def product_page(request, product_id):
         main_image = [image for image in images if image.find('main') != -1][0]
 
     context = {
-        'breadcrumbs': get_crumbs(product, category_url='category', catalog_url='catalog'),
+        'breadcrumbs': catalog_crumbs(product),
         'images': images,
         'main_image': main_image,
         'product': product,
@@ -125,18 +128,9 @@ def set_view_type(request):
     return HttpResponse('ok')  # Return 200 OK
 
 
-def catalog_tree(request):
-    """
-    Renders category tree using MPTT library.
-
-    :param request:
-    :return: HttpResponse
-    """
-
-    return render(
-        request, 'catalog/catalog.html', {
-            'nodes': Category.objects.all(),
-            'breadcrumbs': get_crumbs(settings.CRUMBS['catalog'], category_url='category',
-                                      catalog_url='catalog')
-        }
-    )
+def blog_post(request, type_=''):
+    return render(request, 'blog/posts.html', {
+        'posts': Post.objects.filter(type=type_),
+        'breadcrumbs': blog_crumbs(settings.CRUMBS['blog']),
+        'page': config.page_metadata(type_),
+    })

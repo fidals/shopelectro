@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+from datetime import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(
@@ -135,9 +136,9 @@ STATICFILES_DIRS = [
 # - navigation: /blog/navigation/1/
 # All aliases in config will be trimmed with "/" symbol
 APP_BLOG_POST_TYPES = {
-    'article': {'name': 'Статьи', 'alias': '', 'default': True},
+    'navigation': {'name': 'Контакты, реквизиты, услуги', 'alias': '', 'default': True},
+    'article': {'name': 'Статьи', 'alias': 'article'},
     'news': {'name': 'Новости', 'alias': 'news'},
-    'navigation': {'name': 'Навигация', 'alias': 'navigation'},
 }
 
 PRODUCTS_TO_LOAD = 30
@@ -147,6 +148,8 @@ CRUMBS = {
     'catalog': 'Каталог',
     'blog': 'Список страниц',
 }
+
+SITE_CREATED = datetime(2013, 1, 1)
 
 LOCALHOST = 'http://127.0.0.1:8000/'
 BASE_URL = 'https://www.shopelectro.ru'
