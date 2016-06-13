@@ -8,8 +8,8 @@ const SEND_BACKCALL = (data) => {
   });
 };
 
-let fetchProducts = (url) => fetch(url).then((response) => response.text());
+const fetchProducts = (url) => fetch(url).then((response) => response.text());
 
-let sendViewType = (event, viewType) => {
+const sendViewType = (event, viewType) => {
   $.post('/set-view-type/', { csrfmiddlewaretoken: Cookies.get('csrftoken'), view_type: viewType });
 };

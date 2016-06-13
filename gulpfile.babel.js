@@ -41,10 +41,12 @@ const PATH = {
         'front/js/vendors/jscrollpane.js',
         'front/js/vendors/jquery.bootstrap-touchspin.min.js',
       ],
+
       common: [
         'front/js/shared/*.es6',
         'front/js/components/main.es6',
       ],
+
       pages: [
         'front/js/vendors/bootstrap-select.js',
         'front/js/vendors/jquery.fancybox.min.js',
@@ -52,9 +54,10 @@ const PATH = {
         'front/js/components/product.es6',
         'front/js/components/accordion.es6',
       ],
+
       admin: [
-        'front/js/admin/auto-complete.min.js',
-        'front/js/admin/admin.es6',
+        'front/js/vendors/auto-complete.min.js',
+        'front/js/components/admin.es6',
       ],
     },
 

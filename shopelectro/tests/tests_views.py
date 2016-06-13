@@ -294,7 +294,7 @@ class AdminPageSeleniumTests(TestCase):
 
         self.admin_page = settings.LOCALHOST + 'admin'
         self.login = 'admin'
-        self.password = 'admin;'
+        self.password = 'asdfjkl;'
         self.title_text = 'Shopelectro administration'
         self.products_list_link = '//*[@id="content-main"]/div[4]/table/tbody/tr/th/a'
         self.product_price_filter_link = '//*[@id="changelist-filter"]/ul[1]/li[4]'
@@ -305,14 +305,6 @@ class AdminPageSeleniumTests(TestCase):
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(5)
 
-    def tearDown(self):
-        """
-        Closes selenium's session.
-        """
-
-        self.browser.quit()
-
-    def _login(self):
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
         login_field.clear()
@@ -324,12 +316,17 @@ class AdminPageSeleniumTests(TestCase):
         login_form.submit()
         time.sleep(1)
 
+    def tearDown(self):
+        """
+        Closes selenium's session.
+        """
+
+        self.browser.quit()
+
     def test_login(self):
         """
         We are able to login to Admin page.
         """
-        self._login()
-
         admin_title = self.browser.find_element_by_id('site-name')
         self.assertIn(self.title_text, admin_title.text)
 
@@ -338,8 +335,6 @@ class AdminPageSeleniumTests(TestCase):
         Admin products page has icon links for Edit\View.
         And it should has Search field.
         """
-        self._login()
-
         products_link = self.browser.find_element_by_xpath(self.products_list_link)
         products_link.click()
         time.sleep(1)
@@ -353,8 +348,6 @@ class AdminPageSeleniumTests(TestCase):
         Price filter is able to filter products by set range.
         In this case we filter products with 1000 - 2000 price range.
         """
-        self._login()
-
         products_link = self.browser.find_element_by_xpath(self.products_list_link)
         products_link.click()
         time.sleep(1)
@@ -371,8 +364,6 @@ class AdminPageSeleniumTests(TestCase):
         """
         Activity filter returns only active or non active items.
         """
-        self._login()
-
         products_link = self.browser.find_element_by_xpath(self.products_list_link)
         products_link.click()
         time.sleep(1)
@@ -397,8 +388,6 @@ class AdminPageSeleniumTests(TestCase):
         """
         Search field could autocomplete.
         """
-        self._login()
-
         products_link = self.browser.find_element_by_xpath(self.products_list_link)
         products_link.click()
         time.sleep(1)
@@ -406,7 +395,7 @@ class AdminPageSeleniumTests(TestCase):
         filter_link = self.browser.find_element_by_id('searchbar')
         filter_link.send_keys(self.autocomplete_text)
         time.sleep(1)
-        first_product = self.browser.find_element_by_class_name('autocomplete-suggestion')
-        first_product_state = first_product.get_attribute('data-val')
+        first_suggested_item = self.browser.find_element_by_class_name('autocomplete-suggestion')
+        first_suggested_item_text = first_suggested_item.get_attribute('data-val')
 
-        self.assertTrue(self.autocomplete_text in first_product_state)
+        self.assertTrue(self.autocomplete_text in first_suggested_item_text)

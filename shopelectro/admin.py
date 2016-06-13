@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.db import models
 from django.forms import TextInput
+from collections import namedtuple
+
 from shopelectro import models as shopelectro_models
 from catalog.models import Category
 
@@ -14,13 +16,15 @@ from catalog.models import Category
 admin.sites.AdminSite.site_header = 'Shopelectro administration'
 admin.ModelAdmin.change_list_template = os.path.join(settings.BASE_DIR,
                                                      'templates/shopelectro/admin/change_list.html')
+admin.ModelAdmin.change_form_template = os.path.join(settings.BASE_DIR,
+                                                     'templates/shopelectro/admin/change_form.html')
 
 
 def after_action_message(updated_rows):
     if updated_rows == 1:
         return '1 item was'
     else:
-        return '%s items were' % updated_rows
+        return '{} items were'.format(updated_rows)
 
 
 class PriceRange(admin.SimpleListFilter):
@@ -38,55 +42,42 @@ class PriceRange(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        return (
-            ('0', _('0 руб.')),
-            ('1', _('1 - 1 000 руб.')),
-            ('2', _('1 000 - 2 000 руб.')),
-            ('3', _('2 000 - 3 000 руб.')),
-            ('4', _('3 000 - 4 000 руб.')),
-            ('5', _('4 000 - 5 000 руб.')),
-            ('6', _('5 000 - 6 000 руб.')),
-            ('7', _('6 000 - 7 000 руб.')),
-            ('8', _('7 000 - 8 000 руб.')),
-            ('9', _('8 000 - 9 000 руб.')),
-            ('10', _('9 000 - 10 000 руб.')),
-            ('11', _('10 000+ руб.')),
-        )
+        price_segment = namedtuple('price_segment', ['name', 'size'])
+        price_segment_list = [
+            price_segment(
+                '{}'.format(i - 1),
+                _('{} 000 - {} 000 руб.'.format(i - 1, i))
+            )
+            for i in range(2, 11)
+        ]
+
+        price_segment_list.insert(0, price_segment('0', _('0 руб.')))
+        price_segment_list.append(price_segment('10', _('10 000+ руб.')))
+
+        return price_segment_list
 
     def queryset(self, request, queryset):
         """
         Returns the filtered queryset based on the value provided in the query string.
         """
+        if not self.value():
+            return
+
         if self.value() == '0':
             return queryset.filter(price__exact=0)
-        if self.value() == '1':
-            return queryset.filter(price__in=range(1, 1000))
-        if self.value() == '2':
-            return queryset.filter(price__in=range(1000, 2000))
-        if self.value() == '3':
-            return queryset.filter(price__in=range(2000, 3000))
-        if self.value() == '4':
-            return queryset.filter(price__in=range(3000, 4000))
-        if self.value() == '5':
-            return queryset.filter(price__in=range(4000, 5000))
-        if self.value() == '6':
-            return queryset.filter(price__in=range(5000, 6000))
-        if self.value() == '7':
-            return queryset.filter(price__in=range(6000, 7000))
-        if self.value() == '8':
-            return queryset.filter(price__in=range(7000, 8000))
-        if self.value() == '9':
-            return queryset.filter(price__in=range(8000, 9000))
+
         if self.value() == '10':
-            return queryset.filter(price__in=range(9000, 10000))
-        if self.value() == '11':
             return queryset.filter(price__gt=10000)
+
+        price_ranges = {i: (i * 1000, (i + 1) * 1000) for i in range(0, 10)}  # Логика мб другая
+        range_for_query = price_ranges[int(self.value())]
+        return queryset.filter(price__in=range(*range_for_query))
 
 
 class AbstractChangeListAdmin(admin.ModelAdmin):
     # Settings
     save_on_top = True
-    list_filter = ('is_active',)
+    list_filter = ['is_active']
     list_per_page = 50
 
     # Actions
@@ -96,7 +87,7 @@ class AbstractChangeListAdmin(admin.ModelAdmin):
         updated_rows = queryset.update(is_active=1)
         message_prefix = after_action_message(updated_rows)
 
-        self.message_user(request, '%s marked as active.' % message_prefix)
+        self.message_user(request, '{} marked as active.'.format(message_prefix))
 
     make_items_active.short_description = 'Mark items active'
 
@@ -104,7 +95,7 @@ class AbstractChangeListAdmin(admin.ModelAdmin):
         updated_rows = queryset.update(is_active=0)
         message_prefix = after_action_message(updated_rows)
 
-        self.message_user(request, '%s marked as non-active.' % message_prefix)
+        self.message_user(request, '{} marked as non-active.'.format(message_prefix))
 
     make_items_non_active.short_description = 'Mark items NOT active'
 
@@ -112,37 +103,33 @@ class AbstractChangeListAdmin(admin.ModelAdmin):
 class CategoryShopelectroAdmin(AbstractChangeListAdmin):
     # Settings
     search_fields = ['name']
-    list_display = ('name', 'custom_parent', 'is_active')
-    list_display_links = ('name',)
+    list_display = ['name', 'custom_parent', 'is_active']
+    list_display_links = ['name']
 
     # Custom fields
     def custom_parent(self, model):
+        if model.parent is None:
+            return
+
         parent = model.parent
+        url = reverse('admin:catalog_category_change', args=(parent.id,))
 
-        if parent is not None:
-            url = '/admin/catalog/category/' + str(parent.id) + '/change'
-
-            return format_html(
-                u'<a href="{url}">{parent}</a>',
-                parent=parent,
-                url=url
-            )
+        return format_html(
+            '<a href="{url}">{parent}</a>',
+            parent=parent,
+            url=url
+        )
 
     custom_parent.short_description = 'Parent'
     custom_parent.admin_order_field = 'parent'
-
-    @staticmethod
-    # View on site button
-    def view_on_site(model):
-        return reverse('category', args=[str(model.slug)])
 
 
 class ProductsShopelectroAdmin(AbstractChangeListAdmin):
     # Settings
     search_fields = ['name', 'category__name']
-    list_display = ('name', 'links', 'category', 'price', 'is_active')
-    list_editable = ('name', 'category', 'price',)
-    list_filter = (PriceRange, 'is_active')
+    list_display = ['name', 'links', 'category', 'price', 'is_active']
+    list_editable = ['name', 'category', 'price']
+    list_filter = [PriceRange, 'is_active']
     list_display_links = None
 
     # Input fields attributes
@@ -162,10 +149,6 @@ class ProductsShopelectroAdmin(AbstractChangeListAdmin):
     links.short_description = 'Links'
     links.admin_order_field = 'name'
 
-    @staticmethod
-    # View on site button
-    def view_on_site(model):
-        return reverse('product', args=[str(model.id)])
 
 admin.site.register(Category, CategoryShopelectroAdmin)
 admin.site.register(shopelectro_models.Product, ProductsShopelectroAdmin)

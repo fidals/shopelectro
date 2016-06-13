@@ -19,7 +19,7 @@ const BACKCALL_MODAL = {
    * Handles 'Backcall order' form.
    */
   sendBackcall: () => {
-    let data = {
+    const data = {
       phone: BACKCALL_MODAL.phoneTag.val(),
       time: BACKCALL_MODAL.timeToCall.val(),
     };
@@ -52,7 +52,7 @@ const BACKCALL_MODAL = {
 const USER_BACKCALL_TIME = 'userBackcallTime';
 const USER_PHONE = 'userPhone';
 
-let init = () => {
+const init = () => {
   pluginsInit();
   fillInUserData({
     USER_PHONE: localStorage.getItem(USER_PHONE),
@@ -61,14 +61,14 @@ let init = () => {
   setUpListeners();
 };
 
-let setUpListeners = () => {
+const setUpListeners = () => {
   $(window).scroll(toggleToTopBtn);
   BACKCALL_MODAL.sendBtn.on('click', BACKCALL_MODAL.sendBackcall);
   BACKCALL_MODAL.timeTag.on('change', storeBackcallTime.bind(this));
   DOM.btnScrollTop.on('click', () => $('html, body').animate({ scrollTop: 0 }, 300));
 };
 
-let pluginsInit = () => {
+const pluginsInit = () => {
   /**
    * Initializes masks for phone input fields.
    */
@@ -98,7 +98,7 @@ let pluginsInit = () => {
   });
 };
 
-let fillInUserData = (data) => {
+const fillInUserData = (data) => {
   /**
   * Sets up user phone number.
   */
@@ -112,14 +112,15 @@ let fillInUserData = (data) => {
   * Sets up user backcall time.
   */
   if (data.USER_BACKCALL_TIME) {
-    BACKCALL_MODAL.timeTag.find('[data-time=' + data.USER_BACKCALL_TIME + ']').attr('selected', true);
+    BACKCALL_MODAL.timeTag.find('[data-time=' +
+      data.USER_BACKCALL_TIME + ']').attr('selected', true);
   }
 };
 
 /**
  * Toggles to top button.
  */
-let toggleToTopBtn = () => {
+const toggleToTopBtn = () => {
   if ($(window).scrollTop() > 300) {
     DOM.btnScrollTop.addClass('active');
   } else {
@@ -130,8 +131,8 @@ let toggleToTopBtn = () => {
 /**
  * Stores users time for backcall.
  */
-let storeBackcallTime = (selectedOption) => {
-  let selectedTime = $(selectedOption.target).find(':selected').data('time');
+const storeBackcallTime = (selectedOption) => {
+  const selectedTime = $(selectedOption.target).find(':selected').data('time');
   localStorage.setItem(USER_BACKCALL_TIME, selectedTime);
 };
 
