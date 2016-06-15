@@ -1,6 +1,5 @@
 const accordion = (() => {
-
-  const getSavedItem = () => $('#' + localStorage.getItem(ITEM_KEY));
+  let getSavedItem = () => $('#' + localStorage.getItem(ITEM_KEY));
 
   const ITEM_KEY = 'activeItem';
   const DOM = {
@@ -23,7 +22,7 @@ const accordion = (() => {
    */
   const switchItem = ($clickedItem) => {
     if (!$clickedItem) {
-      return
+      return;
     }
 
     saveItem($clickedItem);
@@ -64,4 +63,3 @@ const accordion = (() => {
 
   init();
 })();
-

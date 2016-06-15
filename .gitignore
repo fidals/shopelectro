@@ -12,7 +12,6 @@ node_modules
 shopelectro/robots.txt
 shopelectro/settings/local.py
 shopelectro/*.xml
-shopelectro/sitemap*
 shopelectro/*.html
 shopelectro/*.xls
 shopelectro/*.yml

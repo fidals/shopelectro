@@ -1,8 +1,8 @@
 const admin = (() => {
   const DOM = {
-  categoryPage: $('.model-category'),
-  productPage: $('.model-product'),
-};
+    categoryPage: $('.model-category'),
+    productPage: $('.model-product'),
+  };
 
   const CONFIG = {
     autoComplete: {
@@ -35,7 +35,6 @@ const admin = (() => {
       pageType = 'category';
     }
 
-  return pageType;
-};
+    return pageType;
+  };
 })();
-
