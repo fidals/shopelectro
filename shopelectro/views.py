@@ -5,25 +5,21 @@ NOTE: They all should be 'zero-logic'. All logic should live in respective appli
 """
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
-from django.conf import settings
-from django.core.urlresolvers import reverse
 
-from catalog.models import Category, get_crumbs as catalog_crumbs
-from blog.models import Post, get_crumbs as blog_crumbs
 from . import config
 from .models import Product
+from blog.models import Post, get_crumbs as blog_crumbs
+from catalog.models import Category, get_crumbs as catalog_crumbs
 
 
 def index(request):
     """
     Main page view: root categories, top products.
-
-    :param request:
-    :return: HttpResponse
     """
+
     top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
 
     context = {
@@ -47,6 +43,7 @@ def category_page(request, category_slug, sorting=0):
     :param request: HttpRequest object
     :return:
     """
+
     sorting = int(sorting)
     sorting_option = config.category_sorting(sorting)
 
@@ -105,6 +102,7 @@ def load_more(request, category_slug, offset=0, sorting=0):
     :param offset: used for slicing QuerySet.
     :return:
     """
+
     category = get_object_or_404(Category.objects, slug=category_slug)
     sorting_option = config.category_sorting(int(sorting))
     products, _ = category.get_recursive_products_with_count(
@@ -120,10 +118,8 @@ def set_view_type(request):
     """
     Simple 'view' for setting view type to user's session.
     Requires POST HTTP method, since it sets data to session.
-
-    :param request:
-    :return:
     """
+
     request.session['view_type'] = request.POST['view_type']
     return HttpResponse('ok')  # Return 200 OK
 
@@ -134,3 +130,29 @@ def blog_post(request, type_=''):
         'breadcrumbs': blog_crumbs(settings.CRUMBS['blog']),
         'page': config.page_metadata(type_),
     })
+
+
+def get_models_names(model_type, search_term):
+    """
+    Returns related names for models.
+    """
+
+    return model_type.objects.filter(name__contains=search_term).values('name')
+
+
+def admin_autocomplete(request):
+    """
+    Returns autocompleted names as response.
+    """
+
+    model_map = {'product': Product, 'category': Category}
+    search_term = request.GET['q']
+    page_term = request.GET['pageType']
+
+    if page_term not in ['product', 'category']:
+        return
+
+    query_objects = get_models_names(model_map[page_term], search_term)
+    names = [item['name'] for item in query_objects]
+
+    return JsonResponse(names, safe=False)

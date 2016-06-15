@@ -3,6 +3,7 @@ __pycache__/
 *$py.class
 .idea/
 front/build
+env/
 src/
 env/
 *.sqlite*
@@ -20,6 +21,7 @@ shopelectro/css/
 shopelectro/js/
 static/**/*
 !static/assets/
+!static/template.xlsx
 front/images/catalog
 categories.xml
 products.xml
