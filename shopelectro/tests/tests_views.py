@@ -534,8 +534,8 @@ class AdminPageSeleniumTests(TestCase):
         """
 
         self.admin_page = settings.LOCALHOST + 'admin'
-        self.login = 'admin'
-        self.password = 'asdfjkl;'
+        self.login = settings.ADMIN_LOGIN
+        self.password = settings.ADMIN_PASS
         self.title_text = 'Shopelectro administration'
         self.products_list_link = '//*[@id="content-main"]/div[5]/table/tbody/tr/th/a'
         self.product_price_filter_link = '//*[@id="changelist-filter"]/ul[1]/li[4]'
