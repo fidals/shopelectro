@@ -43,13 +43,11 @@ const order = (() => {
     }
   };
 
-
   const init = () => {
     pluginsInit();
     setUpListeners();
     fillInputs();
   };
-
 
   /**
    * Fill inputs of a form.
@@ -93,7 +91,6 @@ const order = (() => {
     touchSpin();
   };
 
-
   /**
    * Event handler for changing product's count in Cart.
    * We wait at least 100ms every time the user pressed the button.
@@ -120,7 +117,6 @@ const order = (() => {
     mediator.subscribe('onCartUpdate', renderTable, pluginsInit);
   };
 
-
   /**
    * Stores inputted value into LocalStorage.
    * TODO: maybe we should move all the LS-logic into separate file, also.
@@ -128,7 +124,6 @@ const order = (() => {
   const storeInput = (target) => {
     localStorage.setItem(target.attr('name'), target.val());
   };
-
 
   /**
    * Remove product from cart's table and dispatches 'onCartUpdate' event.
@@ -138,8 +133,7 @@ const order = (() => {
       mediator.publish('onCartUpdate', data);
     })
   };
-
-
+  
   /**
    * Renders table and form.
    * After that, fill in saved form data.

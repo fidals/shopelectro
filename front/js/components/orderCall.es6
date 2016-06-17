@@ -40,7 +40,7 @@ const orderCall = (() => {
 
   const fillInUserData = (data) => {
     if (data.phone) {
-      $.each(DOM.phoneInputs, function () {
+      $.each(DOM.phoneInputs, () => {
         $(this).val(data.phone);
       });
     }

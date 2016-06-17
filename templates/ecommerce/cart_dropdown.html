@@ -1,7 +1,7 @@
 {% load humanize %}
 
 <div class="col-xs-8 col-xs-offset-4">
-<div class="js-header-cart">
+<div class="js-header-cart header-cart">
   <span class="basket-products-count js-cart-size">{{ cart.total_quantity }}</span>
     {% if cart.total_price == 0 %}
         <span class="js-cart-is-empty" id="cart-is-empty">Корзина пуста</span>
@@ -39,7 +39,7 @@
                   <span class="basket-count js-basket-count">{{position.quantity}} шт.</span> =
                   <span class="basket-sum js-basket-sum">{{position.total|floatformat|intcomma}} руб.</span>
                 </div>
-                <div class="basket-remove js-basket-remove" id="{{ product.id }}" title="Удалить товар"></div>
+                <div class="basket-remove js-cart-remove" id="{{ product.id }}" title="Удалить товар"></div>
             </li>
         {% endwith %}
 {% endfor %}
@@ -77,7 +77,7 @@
         Оформить заказ сейчас
       </button>
       <p>
-        <span class="basket-reset">Очистить корзину</span>
+        <span class="basket-reset js-reset-cart">Очистить корзину</span>
       </p>
     {% endif %}
 </div>

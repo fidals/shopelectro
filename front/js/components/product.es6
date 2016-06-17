@@ -36,9 +36,9 @@ const product = (() => {
         index: index,
         helpers: {
           overlay: {
-            locked: false
-          }
-        }
+            locked: false,
+          },
+        },
       });
 
     return false;

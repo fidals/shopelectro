@@ -53,7 +53,7 @@ const accordion = (() => {
     localStorage.setItem(ITEM_KEY, $item.attr('id'));
   };
 
-  const removeItem = (_) => {
+  const removeItem = () => {
     localStorage.removeItem(ITEM_KEY);
   };
 

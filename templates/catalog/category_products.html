@@ -29,8 +29,8 @@
           <link itemprop="availability" href="http://schema.org/PreOrder">
         {% endif %}
       </div>
-      <div class="order row">
-        <input class="col-xs-4 category-prods-count js-touchspin" type="number" value="1">
+      <div class="js-order order row">
+        <input class="col-xs-4 category-prods-count js-product-count js-touchspin" type="number" value="1">
         <button class="btn form-btn js-product-to-cart" productId="{{ product.id }}" productPrice="{{ product.price }}">В корзину</button>
       </div>
     </div>

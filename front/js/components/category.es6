@@ -130,16 +130,15 @@ const category = (() => {
       .then((products) => mediator.publish('onProductsLoad', products));
   };
 
-
   const buyProduct = (event) => {
-    let add_to_cart_values = (event) => {
+    let buyInfo = (event) => {
       let product = $(event.target);
-      let count = product.closest('.order').find('.category-prods-count').val();
+      let count = product.closest('.js-order').find('.js-product-count').val();
       return {'count': parseInt(count),
               'id': parseInt(product.attr('productId'))};
     };
 
-    let {id, count} = add_to_cart_values(event);
+    let {id, count} = buyInfo(event);
     addToCart(id, count).then((data) => mediator.publish('onCartUpdate', data));
   };
 

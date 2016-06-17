@@ -224,7 +224,7 @@ def change_count_in_cart(request):
     """
     cart = Cart(request.session)
     product = get_object_or_404(Product, id=request.POST['product'])
-    cart.change_product_quantity(product, request.POST['quantity'])
+    cart.set_product_quantity(product, request.POST['quantity'])
     return request
 
 

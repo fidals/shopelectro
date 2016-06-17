@@ -2,17 +2,9 @@ const mainPage = (() => {
   const DOM = {
     btnScrollTop: $('#btn-scroll-to-top'),
     scrollWrapper: $('#scroll-wrapper'),
-    inputTouchspin: $('.js-touchspin')
   };
 
   const CONFIG = {
-    touchspin: {
-      min: 1,
-      max: 10000,
-      verticalbuttons: true,
-      verticalupclass: 'glyphicon glyphicon-plus',
-      verticaldownclass: 'glyphicon glyphicon-minus'
-    },
     scrollbar: {
       autoReinitialise: true,
       mouseWheelSpeed: 30
@@ -31,7 +23,6 @@ const mainPage = (() => {
 
   const pluginsInit = () => {
     DOM.scrollWrapper.jScrollPane(CONFIG.scrollbar);
-    DOM.inputTouchspin.TouchSpin(CONFIG.touchspin);
   };
 
   const enableScrollToTop = () => {

@@ -1,8 +1,8 @@
 const headerCart = (() => {
   const DOM = {
-    cart: $('.basket-parent'),
-    reset: '.basket-reset',
-    removeFromCart: '.js-basket-remove'
+    cart: $('.js-cart-header'),
+    reset: '.js-reset-cart',
+    removeFromCart: '.js-cart-remove'
   };
 
   /**
