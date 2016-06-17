@@ -9,6 +9,7 @@ For running such tests, you should first run Django's development server on port
 import time
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
+from seleniumrequests import Chrome
 
 from selenium.webdriver.common import utils
 from django.test import TestCase
@@ -301,6 +302,180 @@ class ProductPage(TestCase):
             'btn-one-click-order')
         self.assertTrue(button_one_click_order.get_attribute('disabled'))
 
+    def test_one_click_buy_active_with_phone_filled(self):
+        """.btn-one-click-order should be active if phone is filled."""
+        self.browser.find_element_by_id(
+            'input-one-click-phone').send_keys('22222222222')
+        button_one_click_order = self.browser.find_element_by_id(
+            'btn-one-click-order')
+        self.assertFalse(button_one_click_order.get_attribute('disabled'))
+
+    def test_one_click_buy_action(self):
+        """We can order product via one-click buy button."""
+        self.browser.find_element_by_id(
+            'input-one-click-phone').send_keys('22222222222')
+        button_one_click_order = self.browser.find_element_by_id(
+            'btn-one-click-order')
+        button_one_click_order.click()
+        wait()
+        self.assertEqual(self.browser.current_url, success_order_page)
+
+    def test_add_to_cart(self):
+        """We can add item to cart from it's page."""
+        self.browser.find_element_by_class_name('btn-to-basket').click()
+        wait()
+        cart_is_empty = self.browser.find_element_by_class_name(
+            'js-cart-is-empty')
+        self.assertFalse(cart_is_empty.is_displayed())
+
+    def test_product_name_in_cart_dropdown(self):
+        self.browser.find_element_by_class_name('btn-to-basket').click()
+        wait()
+        cart_parent = self.browser.find_element_by_class_name('basket-parent')
+        hover(self.browser, cart_parent)
+        cart = self.browser.find_element_by_class_name('basket-wrapper')
+        self.assertTrue('Аккумулятор Panasonic' in cart.text)
+
+    def test_actual_product_count_in_cart_dropdown(self):
+        self.browser.find_element_by_id('product-count').send_keys('42')
+        self.browser.find_element_by_class_name('btn-to-basket').click()
+        wait()
+        cart_parent = self.browser.find_element_by_class_name('basket-parent')
+        hover(self.browser, cart_parent)
+        cart_size = self.browser.find_element_by_class_name('js-cart-size')
+        self.assertTrue('42' in cart_size.text)
+
+
+class OrderPage(TestCase):
+
+    def setUp(self):
+        """Sets up testing url and dispatches selenium webdriver."""
+        def buy_five_products():
+            self.browser.maximize_window()
+            self.browser.get(settings.LOCALHOST +
+                             'catalog/categories/akkumuliatory/')
+            for i in range(1, 6):
+                self.browser.find_element_by_xpath(
+                    '//*[@id="products-wrapper"]/div[{}]/div[2]/div[5]/button'
+                    .format(i)
+                ).click()
+        self.browser = webdriver.Chrome()
+        self.browser.maximize_window()
+        self.browser.implicitly_wait(10)
+        buy_five_products()
+        self.browser.get(settings.LOCALHOST + 'shop/order/')
+        self.cart_dropdown = self.browser.find_element_by_class_name(
+            'basket-parent')
+
+    def tearDown(self):
+        """Closes selenium's session."""
+        self.browser.quit()
+
+    def test_table_is_presented_if_there_is_some_products(self):
+        """If there are some products in cart, we should see them in table on OrderPage."""
+        order_table = self.browser.find_element_by_class_name('order-list')
+        self.assertTrue(order_table.is_displayed())
+
+    def test_remove_product_from_table(self):
+        """We can remove product from table and see the changes both in table and dropdown."""
+        first_row_remove = self.browser.find_element_by_xpath(
+            '//*[@id="4023"]/td[6]/img')
+        first_row_product_name = self.browser.find_element_by_xpath(
+            '//*[@id="4023"]/td[3]/a').text
+        first_row_remove.click()
+        wait()
+        self.assertFalse(
+            first_row_product_name in self.browser.find_element_by_class_name('order-list').text)
+        hover(self.browser, self.cart_dropdown)
+        dropdown_products_list = self.browser.find_element_by_class_name(
+            'basket-list')
+        self.assertFalse(first_row_product_name in dropdown_products_list.text)
+
+    def test_empty_cart(self):
+        products_in_cart = ['4526', '4023', '4524', '4523']
+        for product_id in products_in_cart:
+            self.browser.find_element_by_xpath(
+                '//*[@id="{}"]/td[6]/img'.format(product_id)
+            ).click()
+            wait()
+
+        self.assertFalse('Корзина пуста' in self.browser.find_element_by_class_name(
+            'js-order-contain').text)
+
+    def test_table_and_dropdown_are_synchronized(self):
+        def get_counts():
+            return (self.browser.find_element_by_id('cart-page-prods-count').text,
+                    self.browser.find_element_by_class_name('js-cart-size').text)
+
+        self.browser.refresh()
+        table_count, dropdown_count = get_counts()
+        self.assertEqual(table_count, '5')
+        self.assertEqual(dropdown_count, table_count)
+        add_one_more = self.browser.find_element_by_xpath(
+            '//*[@id="4526"]/td[4]/div[2]/span[3]/button[1]/i')
+        add_one_more.click()
+        wait()
+        table_count, dropdown_count = get_counts()
+        self.assertEqual(table_count, '6')
+        self.assertEqual(table_count, dropdown_count)
+        wait()
+        first_row_remove = self.browser.find_element_by_xpath(
+            '//*[@id="4526"]/td[6]/img')
+        first_row_remove.click()
+        wait()
+        table_count, dropdown_count = get_counts()
+        self.assertEqual(table_count, dropdown_count)
+        self.assertEqual(table_count, '4')
+
+    def test_change_product_count(self):
+        """We can change product's count from table and see the changes both in table and dropdown."""
+        add_one_more = self.browser.find_element_by_xpath(
+            '//*[@id="4023"]/td[4]/div[2]/span[3]/button[1]/i')
+        add_one_more.click()
+        wait()
+        count_input = self.browser.find_element_by_xpath(
+            '//*[@id="4023"]/td[4]/div[2]/input')
+        product_count, total_count = str(2), str(6)
+        self.assertTrue(product_count in count_input.get_attribute('value'))
+        self.assertTrue(
+            total_count in self.browser.find_element_by_class_name('js-cart-size').text)
+
+    def test_confirm_order(self):
+        """After filling the form we should be able to confirm an order."""
+        self.browser.find_element_by_id('id_payment_option_0').click()
+        add_one_more = self.browser.find_element_by_xpath(
+            '//*[@id="4023"]/td[4]/div[2]/span[3]/button[1]/i')
+        add_one_more.click()  # perform some operations on cart
+        wait()
+        self.fill_and_submit_form()
+        wait()
+        self.assertEqual(self.browser.current_url, success_order_page)
+
+    def fill_and_submit_form(self, yandex=False):
+        self.browser.find_element_by_id('id_name').send_keys('Name')
+        self.browser.find_element_by_id('id_city').send_keys('Санкт-Петербург')
+        self.browser.find_element_by_id('id_phone').send_keys('22222222222')
+        self.browser.find_element_by_id('id_email').send_keys('test@test.test')
+        wait()
+        submit = 'btn-send-ya' if yandex else 'btn-send-se'
+        self.browser.find_element_by_id(submit).click()
+
+    def test_yandex_order_without_phone(self):
+        self.browser.find_element_by_id('id_payment_option_2').click()
+        self.browser.find_element_by_id('id_name').send_keys('Name')
+        self.browser.find_element_by_id('id_city').send_keys('Санкт-Петербург')
+        self.browser.find_element_by_id('btn-send-ya').click()
+        wait()
+        alert = self.browser.switch_to.alert
+        self.assertIn('телефон', alert.text)
+
+    def test_yandex_order(self):
+        self.browser.find_element_by_id('id_payment_option_2').click()
+        self.fill_and_submit_form(yandex=True)
+        wait()
+        yan_or = 'http://127.0.0.1:8000/test-ya-kassa/'
+        self.assertEqual(self.browser.current_url, yan_or)
+
 
 class BlogPageSeleniumTests(TestCase):
     """
@@ -414,7 +589,8 @@ class AdminPageSeleniumTests(TestCase):
         Admin products page has icon links for Edit\View.
         And it should has Search field.
         """
-        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link = self.browser.find_element_by_xpath(
+            self.products_list_link)
         products_link.click()
         wait()
         edit_links = self.browser.find_element_by_class_name('field-links')
@@ -427,11 +603,13 @@ class AdminPageSeleniumTests(TestCase):
         Price filter is able to filter products by set range.
         In this case we filter products with 1000 - 2000 price range.
         """
-        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link = self.browser.find_element_by_xpath(
+            self.products_list_link)
         products_link.click()
         wait()
 
-        filter_link = self.browser.find_element_by_xpath(self.product_price_filter_link)
+        filter_link = self.browser.find_element_by_xpath(
+            self.product_price_filter_link)
         filter_link.click()
         wait()
         first_product = self.browser.find_element_by_id('id_form-0-price')
@@ -443,19 +621,23 @@ class AdminPageSeleniumTests(TestCase):
         """
         Activity filter returns only active or non active items.
         """
-        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link = self.browser.find_element_by_xpath(
+            self.products_list_link)
         products_link.click()
         wait()
 
-        filter_link = self.browser.find_element_by_xpath(self.show_active_products_link)
+        filter_link = self.browser.find_element_by_xpath(
+            self.show_active_products_link)
         filter_link.click()
         wait()
-        first_product = self.browser.find_element_by_xpath(self.products_activity_state_img)
+        first_product = self.browser.find_element_by_xpath(
+            self.products_activity_state_img)
         first_product_state = first_product.get_attribute('alt')
 
         self.assertTrue(first_product_state == 'true')
 
-        filter_link = self.browser.find_element_by_xpath(self.show_nonactive_products_link)
+        filter_link = self.browser.find_element_by_xpath(
+            self.show_nonactive_products_link)
         filter_link.click()
         wait()
         results = self.browser.find_element_by_class_name('paginator')
@@ -465,17 +647,84 @@ class AdminPageSeleniumTests(TestCase):
         """
         Search field could autocomplete.
         """
-        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link = self.browser.find_element_by_xpath(
+            self.products_list_link)
         products_link.click()
         wait()
 
         filter_link = self.browser.find_element_by_id('searchbar')
         filter_link.send_keys(self.autocomplete_text)
         wait()
-        first_suggested_item = self.browser.find_element_by_class_name('autocomplete-suggestion')
-        first_suggested_item_text = first_suggested_item.get_attribute('data-val')
+        first_suggested_item = self.browser.find_element_by_class_name(
+            'autocomplete-suggestion')
+        first_suggested_item_text = first_suggested_item.get_attribute(
+            'data-val')
 
         self.assertTrue(self.autocomplete_text in first_suggested_item_text)
+
+
+class YandexMoney(TestCase):
+
+    def setUp(self):
+        self.browser = Chrome()
+        self.yandex_check = settings.LOCALHOST + 'service/ya-kassa/check/'
+        self.yandex_aviso = settings.LOCALHOST + 'service/ya-kassa/aviso/'
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_yandex_check_valid_invoice(self):
+        response = self.browser.request('POST',
+                                        self.yandex_check,
+                                        data={"invoiceId": "42"})
+        self.assertTrue('invoiceId="42"' in response.text)
+
+
+class SitemapPageSeleniumTests(TestCase):
+    """
+    Selenium-based tests for Sitemap.
+    """
+
+    def setUp(self):
+        """
+        Sets up testing url and dispatches selenium webdriver.
+        """
+
+        self.sitemap_page = settings.LOCALHOST + 'sitemap.xml'
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(5)
+
+        self.browser.get(self.sitemap_page)
+
+    def tearDown(self):
+        """
+        Closes selenium's session.
+        """
+
+        self.browser.quit()
+
+    def test_url_tags(self):
+        """
+        We should see <url> tags on Sitemap page.
+        """
+
+        url_tags = self.browser.find_elements_by_tag_name('url')
+        self.assertGreater(len(url_tags), 0)
+
+    def test_models_urls(self):
+        """
+        Sitemap page should to print correct urls for models.
+        """
+
+        slice_start_index = 22
+
+        model_url = self.browser.find_element_by_id('collapsible3')
+        model_url_text = model_url.find_element_by_class_name(
+            'collapsible-content').text[slice_start_index:]
+        self.browser.get(settings.LOCALHOST + model_url_text)
+
+        header_wrapper = self.browser.find_elements_by_class_name('header')
+        self.assertGreater(len(header_wrapper), 0)
 
 
 class SitemapPageSeleniumTests(TestCase):

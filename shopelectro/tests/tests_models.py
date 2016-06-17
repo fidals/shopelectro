@@ -55,4 +55,5 @@ class ModelsTests(TestCase):
 
     def test_main_image(self):
         """Main image property should return image, or thumbnail."""
-        self.assertIn(self.product.main_image, [self.main_image, settings.IMAGE_THUMBNAIL])
+        self.assertIn(self.product.main_image,
+                      [self.main_image, settings.IMAGE_THUMBNAIL])

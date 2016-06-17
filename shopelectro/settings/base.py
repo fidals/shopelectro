@@ -73,7 +73,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.core.context_processors.static',
-                'ecommerce.context_processors.cart'
+                'ecommerce.context_processors.cart',
+                'shopelectro.context_processors.shop'
             ],
         },
     },
@@ -158,9 +159,12 @@ SITE_ID = 1
 PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
 SHOP_EMAIL = ''  # Fill it in local.py
-PAYMENT_OPTIONS = (
-    ('cash', 'Наличные'),
-    ('cashless', 'Безналичные и денежные переводы')
-)
+PAYMENT_OPTIONS = (('cash', 'Наличные'),
+                   ('cashless', 'Безналичные и денежные переводы'),
+                   ('AC', 'Банковская карта'),
+                   ('PC', 'Яндекс.Деньги'),
+                   ('GP', 'Связной (терминал)'),
+                   ('AB', 'Альфа-Клик'),
+                   ('MC', 'Мобильный телефон'))
 
 from .local import *

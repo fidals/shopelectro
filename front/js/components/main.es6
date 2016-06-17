@@ -13,7 +13,22 @@ const mainPage = (() => {
 
   const init = () => {
     pluginsInit();
+    setupXHR();
     setUpListeners();
+  };
+  
+  // TODO: move to config module
+  const setupXHR = () => {
+    let csrfUnsafeMethod = (method) => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    let token = Cookies.get('csrftoken');
+
+    $.ajaxSetup({
+      beforeSend: (xhr, settings) => {
+          if (csrfUnsafeMethod(settings.type)) {
+              xhr.setRequestHeader("X-CSRFToken", token);
+          }
+      }
+    });
   };
 
   const setUpListeners = () => {

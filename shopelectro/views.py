@@ -9,7 +9,7 @@ from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.template.loader import render_to_string
 
 from blog.models import Post, get_crumbs as blog_crumbs
@@ -22,29 +22,31 @@ from . import config
 from .models import Product
 
 
-def cart_modifier(fn):
+def cart_modifier(view_function):
     """
     Decorator for cart's operations.
 
-    Perform operations on Cart (e.g. remove, add) and always return JsonResponse in following format:
+    Perform operations on Cart (e.g. remove, add) and
+    always return JsonResponse in following format:
     {
-        'cart': rendered_html_for_header_cart, // (see ecommerce/cart_dropdown.html template)
-        'table': rendered_html_for_table_in_order_page, // (see ecommerce/order_table_form.html template)
+        'cart': rendered_html_for_header_cart,
+        'table': rendered_html_for_table_in_order_page,
     }
 
     Rationale: this decorator allows us to keep JS code logic-less and state-less.
     We simply get new html every time we hit backend,
-    since the difference between returning HttpResponse('ok') and JsonResponse of two keys is insignificant.
+    since the difference between returning HttpResponse('ok') and
+    JsonResponse of two keys is insignificant.
     """
-    @wraps(fn)
+    @wraps(view_function)
     def wrapper(*args, **kwargs):
-        # Here we perform operation on Cart and return request object object.
-        request = fn(*args, **kwargs)
-        cart = Cart(request.session)
-        header = render_to_string(
-            'ecommerce/cart_dropdown.html', {'cart': cart}, request=request)
-        table = render_to_string(
-            'ecommerce/order_table_form.html', {'cart': cart, 'form': OrderForm()}, request=request)
+        """Perform view-operation on cart and return JSON with templates."""
+        request = view_function(*args, **kwargs)
+        header = render_to_string('ecommerce/cart_dropdown.html',
+                                  request=request)
+        table = render_to_string('ecommerce/order_table_form.html',
+                                 {'form': OrderForm()},
+                                 request=request)
         return JsonResponse({'cart': header, 'table': table})
     return wrapper
 
@@ -52,6 +54,10 @@ def cart_modifier(fn):
 def save_order_to_session(session, order):
     session['order_id'] = order.id
     session.modified = True
+
+
+def get_keys_from_post(request, *args):
+    return tuple(request.POST[arg] for arg in args)
 
 
 @ensure_csrf_cookie
@@ -223,8 +229,9 @@ def change_count_in_cart(request):
     :return:
     """
     cart = Cart(request.session)
-    product = get_object_or_404(Product, id=request.POST['product'])
-    cart.set_product_quantity(product, request.POST['quantity'])
+    product_id, quantity = get_keys_from_post(request, 'product', 'quantity')
+    product = get_object_or_404(Product, id=product_id)
+    cart.set_product_quantity(product, quantity)
     return request
 
 
@@ -255,13 +262,15 @@ def one_click_buy(request):
     order = Order(phone=request.POST['phone'])
     order.set_items(cart)
     save_order_to_session(request.session, order)
-    mailer.send_order(subject=config.EMAIL_SUBJECTS['order'], order=order, to_customer=False)
+    mailer.send_order(subject=config.EMAIL_SUBJECTS['order'],
+                      order=order,
+                      to_customer=False)
     return HttpResponse('ok')
 
 
 @require_POST
 def order_call(request):
-    phone, time, url = request.POST['phone'], request.POST['time'], request.POST['url']
+    phone, time, url = get_keys_from_post(request, 'phone', 'time', 'url')
     mailer.order_call(config.EMAIL_SUBJECTS['call'], phone, time, url)
     return HttpResponse('ok')
 
@@ -287,10 +296,86 @@ def order_page(request):
         form = OrderForm(request.POST)
         if form.is_valid():
             order = save_order(form)
-            mailer.send_order(subject=config.EMAIL_SUBJECTS['order'], order=order, to_customer=True)
+            mailer.send_order(subject=config.EMAIL_SUBJECTS['order'],
+                              order=order)
             return redirect('order_success')
     else:
         form = OrderForm()
     return render(request,
                   'ecommerce/order.html',
                   {'cart': cart, 'form': form})
+
+
+def test_yandex(request):
+    # TODO: remove when Yandex-integration will be tested
+    return HttpResponse(request)
+
+
+def yandex_order(request):
+    """
+    Handle yandex order: order with yandex-provided payment system.
+
+    Save cart from user session as an Order, return order_id.
+    """
+    cart = Cart(request.session)
+    name, phone, email = get_keys_from_post(request, 'name', 'phone', 'email')
+    order = Order(name=name, phone=phone, email=email)
+    order.set_items(cart)
+    return HttpResponse(order.id)
+
+
+@csrf_exempt
+def yandex_check(request):
+    """
+    Handle Yandex check.
+    We simply accept every check.
+    It's marked with @csrf_exempt, because we don't need to check CSRF in yandex-requests.
+    """
+    return render(request,
+                  'ecommerce/yandex_check.xml',
+                  {'invoice': request.POST['invoiceId']},
+                  content_type='application/xhtml+xml')
+
+
+@csrf_exempt
+def yandex_aviso(request):
+    """
+    Handle Yandex Aviso check.
+    It's marked with @csrf_exempt, because we don't need to check CSRF in yandex-requests.
+
+    1. Retrieve order number from request, find in in DB.
+    2. If it's a first aviso check (there might be more than one, depends on Yandex)
+       send different emails to client and shop.
+    3. Get invoice id from request and return XML to Yandex.
+    """
+    def first_aviso(order):
+        return not order.paid
+
+    def send_mail_to_se(order):
+        paid, profit = get_keys_from_post(request,
+                                          'orderSumAmount',
+                                          'shopSumAmount')
+        commission = 100 * float(paid) / float(profit)
+        mailer.send_order(template='ecommerce/yandex_order_email.html',
+                          subject=config.EMAIL_SUBJECTS['yandex_order'],
+                          order=order,
+                          to_customer=False,
+                          extra_context={'paid': paid, 'profit': profit, 'comission': commission})
+
+    def send_mail_to_customer(order):
+        mailer.send_order(subject=config.EMAIL_SUBJECTS['yandex_order'],
+                          order=order,
+                          to_shop=False)
+
+    order = get_object_or_404(Order, pk=request.POST['orderNumber'])
+
+    if first_aviso(order):
+        order.paid = True
+        send_mail_to_customer(order)
+        send_mail_to_se(order)
+
+    invoice_id = request.POST['invoiceId']
+    return render(request,
+                  'ecommerce/yandex_aviso.xml',
+                  {'invoice': invoice_id},
+                  content_type='application/xhtml+xml')

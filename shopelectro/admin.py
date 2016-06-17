@@ -1,3 +1,5 @@
+"""Django admin module."""
+
 import os
 from django.contrib import admin
 from django.conf import settings
@@ -9,8 +11,8 @@ from django.db import models
 from django.forms import TextInput
 from collections import namedtuple
 
-from shopelectro import models as shopelectro_models
 from catalog.models import Category
+from shopelectro import models as shopelectro_models
 
 # Override templates
 admin.sites.AdminSite.site_header = 'Shopelectro administration'
