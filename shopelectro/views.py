@@ -3,18 +3,58 @@ Shopelectro views.
 
 NOTE: They all should be 'zero-logic'. All logic should live in respective applications.
 """
+from functools import wraps
 
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.template.loader import render_to_string
 
-from . import config
-from .models import Product
 from blog.models import Post, get_crumbs as blog_crumbs
 from catalog.models import Category, get_crumbs as catalog_crumbs
+from ecommerce import mailer
+from ecommerce.cart import Cart
+from ecommerce.models import Order
+from .forms import OrderForm
+from . import config
+from .models import Product
 
 
+def cart_modifier(fn):
+    """
+    Decorator for cart's operations.
+
+    Perform operations on Cart (e.g. remove, add) and always return JsonResponse in following format:
+    {
+        'cart': rendered_html_for_header_cart, // (see ecommerce/cart_dropdown.html template)
+        'table': rendered_html_for_table_in_order_page, // (see ecommerce/order_table_form.html template)
+    }
+
+    Rationale: this decorator allows us to keep JS code logic-less and state-less.
+    We simply get new html every time we hit backend,
+    since the difference between returning HttpResponse('ok') and JsonResponse of two keys is insignificant.
+    """
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        # Here we perform operation on Cart and return request object object.
+        request = fn(*args, **kwargs)
+        cart = Cart(request.session)
+        header = render_to_string(
+            'ecommerce/cart_dropdown.html', {'cart': cart}, request=request)
+        table = render_to_string(
+            'ecommerce/order_table_form.html', {'cart': cart, 'form': OrderForm()}, request=request)
+        return JsonResponse({'cart': header, 'table': table})
+    return wrapper
+
+
+def save_order_to_session(session, order):
+    session['order_id'] = order.id
+    session.modified = True
+
+
+@ensure_csrf_cookie
 def index(request):
     """
     Main page view: root categories, top products.
@@ -34,6 +74,7 @@ def index(request):
         request, 'index/index.html', context)
 
 
+@ensure_csrf_cookie
 def category_page(request, category_slug, sorting=0):
     """
     Category page: all it's subcategories and products.
@@ -66,6 +107,7 @@ def category_page(request, category_slug, sorting=0):
     return render(request, 'catalog/category.html', context)
 
 
+@ensure_csrf_cookie
 def product_page(request, product_id):
     """
     Product page.
@@ -76,7 +118,7 @@ def product_page(request, product_id):
     """
 
     product = get_object_or_404(Product.objects, id=product_id)
-    images = product.get_images()
+    images = product.images
     main_image = settings.IMAGE_THUMBNAIL
 
     if images:
@@ -156,3 +198,99 @@ def admin_autocomplete(request):
     names = [item['name'] for item in query_objects]
 
     return JsonResponse(names, safe=False)
+
+
+@cart_modifier
+@require_POST
+def add_to_cart(request):
+    """
+    View to add product to cart.
+    Requires POST method.
+    Return request as every other @cart_modifier function.
+    """
+    cart = Cart(request.session)
+    product = get_object_or_404(Product, id=request.POST['product'])
+    cart.add(product, request.POST['quantity'])
+    return request
+
+
+@cart_modifier
+@require_POST
+def change_count_in_cart(request):
+    """
+    Change count
+    :param request:
+    :return:
+    """
+    cart = Cart(request.session)
+    product = get_object_or_404(Product, id=request.POST['product'])
+    cart.set_product_quantity(product, request.POST['quantity'])
+    return request
+
+
+@cart_modifier
+@require_POST
+def cart_flush(request):
+    cart = Cart(request.session)
+    cart.clear()
+    return request
+
+
+@cart_modifier
+@require_POST
+def cart_remove(request):
+    cart = Cart(request.session)
+    product = get_object_or_404(Product, id=request.POST['product'])
+    cart.remove(product)
+    return request
+
+
+@require_POST
+def one_click_buy(request):
+    Cart(request.session).clear()
+
+    cart = Cart(request.session)
+    product = get_object_or_404(Product, id=request.POST['product'])
+    cart.add(product, request.POST['quantity'])
+    order = Order(phone=request.POST['phone'])
+    order.set_items(cart)
+    save_order_to_session(request.session, order)
+    mailer.send_order(subject=config.EMAIL_SUBJECTS['order'], order=order, to_customer=False)
+    return HttpResponse('ok')
+
+
+@require_POST
+def order_call(request):
+    phone, time, url = request.POST['phone'], request.POST['time'], request.POST['url']
+    mailer.order_call(config.EMAIL_SUBJECTS['call'], phone, time, url)
+    return HttpResponse('ok')
+
+
+def success_order(request):
+    order_id = request.session['order_id']
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'ecommerce/success.html', {'order': order})
+
+
+def order_page(request):
+    """Order page with order content's table and proceeding form."""
+    def save_order(form):
+        """Saves order to DB and to session."""
+        order = form.save()
+        order.set_items(cart)
+        cart.clear()
+        save_order_to_session(request.session, order)
+        return order
+
+    cart = Cart(request.session)
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = save_order(form)
+            mailer.send_order(subject=config.EMAIL_SUBJECTS['order'], order=order, to_customer=True)
+            return redirect('order_success')
+    else:
+        form = OrderForm()
+    return render(request,
+                  'ecommerce/order.html',
+                  {'cart': cart, 'form': form})

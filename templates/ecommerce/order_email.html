@@ -1,0 +1,109 @@
+{% load staticfiles %}
+{% load se_extras %}
+
+<div style="padding:0 30px;">
+  <div style="width:100%;margin-bottom:35px;">
+            <span style="float: right; font: 16px Arial; color: rgb(118, 122, 123); margin-top:15px;">
+                <span class="wmi-callto">
+                    <small style="position:relative; top:-.2em;">(812)</small>
+                    <span style="color:#CC0000; font-size:25px;" class="ya-opt-phone"><a href="tel:+78124163200">416-32-00</a> </span>
+                </span>
+            </span>
+    <div style="padding:10px 0 8px;">
+      <span style="color:#CC0000; font-size:25px; font-family: arial, sans-serif; font-weight: bold;">ShopElectro</span>
+      <div style="color: #515151; display: block; font-family: arial, sans-serif; font-size: 13px; font-style: normal;
+      font-weight: normal; margin: -6px 0 0 15px; white-space: nowrap;">
+      </div>
+    </div>
+    <div style="width: 100%; background-color: rgb(215, 215, 215); height:1px;"></div>
+  </div>
+  <div style="font-size: 1.077em; line-height: 1.43; margin:35px 0;">
+    <p style="margin:0 0 1.15em; font-family: arial, sans-serif;">
+      {% if order.name %}
+        Уважаемый(ая) {{ order.name }}, благодарим
+      {% else %}
+        Благодарим
+      {% endif %}
+      за использование корзины в интернет-магазине
+      <a href="{% url 'index' %}" target="_blank">www.shopelectro.ru</a>
+      <br>
+      Ваш заказ оплачен, сумма {{ order.total_price }} руб.
+    </p>
+    <p>Номер заказа: <b>{{ order.id }}</b></p>
+    <table width="100%" cellspacing="0" cellpadding="3px" border="0"
+         style="font-size:100%; margin-bottom: 1.15em; margin-left: -10px; margin-top: 0.385em;">
+      <tbody>
+      <table width="100%" cellspacing="0" cellpadding="3px" border="0"
+           style="font-size:100%; margin-bottom: 1.15em; margin-left: -10px; margin-top: 0.385em;">
+        <tbody>
+        <tr>
+          <td width="5%" align="left" style="padding:5px 10px; font-weight:bold;">Артикул</td>
+          <td width="65%" align="left" style="padding:5px 10px; font-weight:bold;">Наименование</td>
+          <td width="10%" align="right" style="padding:5px 10px; font-weight:bold;">Кол-во</td>
+          <td width="10%" align="right" style="padding:5px 10px; font-weight:bold;">Цена</td>
+          <td width="10%" align="right" style="padding:5px 10px; font-weight:bold;">Сумма</td>
+        </tr>
+        <tr>
+          <td colspan="6" style="border-top:1px solid #E4E4E4; height:5px;"></td>
+        </tr>
+        {% for position in order.items %}
+          {% with product=position.product %}
+            <tr>
+              <td align="left" style="padding:5px 10px;">{{ product.id }}</td>
+              <td align="left" style="padding:5px 10px;">
+                <a href="{% url 'product' product.id %}">
+                  {{ product.name }}
+                </a>
+              </td>
+              <td align="right" style="padding:5px 10px;">{{ position.quantity }} шт.</td>
+              <td align="right" style="padding:5px 10px;">{{ position.price }} руб.</td>
+              <td align="right" style="padding:5px 10px;">{{ position.cost }} руб.</td>
+            </tr>
+          {% endwith %}
+        {% endfor %}
+        <tr>
+          <td colspan="6" style="border-bottom:1px solid #E4E4E4;height:5px;"></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding:5px 10px;">&nbsp;</td>
+          <td align="right" colspan="2" style="padding:5px 10px; font-weight: bold;">Итого:</td>
+          <td align="right" style="padding:5px 10px;">{{ order.total_price }} руб</td>
+        </tr>
+        </tbody>
+      </table>
+      <tr>
+        <td colspan="6" style="border-top:1px solid #E4E4E4; height:5px;"></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <ul style="margin: 0.77em 0 1.15em;">
+      {% if order.payment_option %}
+        <li style="margin: 0.385em 0;">Тип платежа: <b style="font-weight:bold;">{{ payment_name }}</b></li>
+      {% endif %}
+      <li style="margin: 0.385em 0;">Телефон: <b style="font-weight:bold;">{{ order.phone }}</b></li>
+      {% if order.email %}
+        <li style="margin: 0.385em 0;">Email: <b style="font-weight:bold;">{{ order.email }}</b></li>
+      {% endif %}
+      <li style="margin: 0.385em 0;">Город: <b style="font-weight:bold;">{{ order.city }}</b></li>
+    </ul>
+    <p style="margin:0; font-family: arial, sans-serif;">{% time_to_call %}</p>
+    <table>
+      <tr>
+        <td>Мы находимся по адресу: Санкт-Петербург,&nbsp;</td>
+        <td>ул. Маршала Казакова, 35, Ярмарка «Юнона», пав. 660, 662</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>проспект Елизарова 38А, офис 312</td>
+      </tr>
+    </table>
+    <div style="width: 100%; text-align: right; border-top:1px solid rgb(242, 242, 242); padding:5px 0; font-style:italic;">
+      <span style="font: bold 1.077em arial;"></span>
+      <br/>
+      <em></em>
+    </div>
+    {% block se_info %}
+    {% endblock %}
+  </div>
+</div>

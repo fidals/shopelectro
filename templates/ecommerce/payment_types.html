@@ -1,0 +1,14 @@
+{% load staticfiles %}
+
+<table>
+  {% for radio in form.payment_option %}
+    <tr>
+      <td>
+          <label for="{{ radio.id_for_label }}">
+            <img src="{% static 'images/pay/'|add:radio.choice_value|add:'.png' %}">
+            <span class="radio">{{ radio }}</span>
+          </label>
+      </td>
+    </tr>
+  {% endfor %}
+</table>

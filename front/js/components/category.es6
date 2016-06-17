@@ -1,12 +1,13 @@
 /**
  * Category Page module defines logic, operations and DOM for CategoryPage.
  */
-const categoryModule = (function () {
+const category = (() => {
   const DOM = {
     loadedProducts: $('.js-products-showed-count'),
     productsList: $('#products-wrapper'),
     viewType: $('#category-right'),
     loadMore: $('#btn-load-products'),
+    addToCart: $('.js-product-to-cart'),
     tileView: {
       $: $('.js-icon-mode-tile'),
       mode: 'tile',
@@ -23,7 +24,7 @@ const categoryModule = (function () {
     totalProductsCount: parseInt($('.js-total-products').first().text()),
   };
 
-  let init = () => {
+  const init = () => {
     setUpListeners();
     updateButtonState();
   };
@@ -31,11 +32,12 @@ const categoryModule = (function () {
   /**
    * Subscribing on events using mediator.
    */
-  let setUpListeners = () => {
+  const setUpListeners = () => {
     DOM.loadMore.click(loadProducts);
     DOM.sorting.change(changeSort);
     DOM.tileView.$.click(() => mediator.publish('onViewTypeChange', DOM.tileView.mode));
     DOM.listView.$.click(() => mediator.publish('onViewTypeChange', DOM.listView.mode));
+    DOM.addToCart.click((event) => buyProduct(event));
     mediator.subscribe('onViewTypeChange', updateViewType, sendViewType);
     mediator.subscribe('onProductsLoad', updateLoadedCount, updateProductsList, updateButtonState);
   };
@@ -43,7 +45,7 @@ const categoryModule = (function () {
   /**
    * Changes sorting option and re-renders the whole screen.
    */
-  let changeSort = () => location.href = sortingOption().attr('data-path');
+  const changeSort = () => location.href = sortingOption().attr('data-path');
 
   /**
    * Updates Products List DOM via appending html-list of loaded products
@@ -52,7 +54,7 @@ const categoryModule = (function () {
    * @param {Event} event
    * @param {string} products - HTML string of fetched product's list
    */
-  let updateProductsList = (event, products) => DOM.productsList.append(products);
+  const updateProductsList = (event, products) => DOM.productsList.append(products);
 
   /**
    * Updates loaded products counter by a simple logic:
@@ -60,13 +62,13 @@ const categoryModule = (function () {
    *    so we should set loaded count a value of total products
    * 2) otherwise, we simply add PRODUCTS_TO_FETCH to counter.
    */
-  let updateLoadedCount = () =>
+  const updateLoadedCount = () =>
     DOM.loadedProducts.text(loadedProductsCount() + Math.min(productsLeft(), CONFIG.productsToFetch));
 
   /**
    * Adds 'hidden' class to button if there are no more products to load.
    */
-  let updateButtonState = () => {
+  const updateButtonState = () => {
     if (productsLeft() === 0) {
       DOM.loadMore.addClass('hidden');
     }
@@ -79,7 +81,7 @@ const categoryModule = (function () {
    * @param {Event} event
    * @param {string} viewType: list|tile
    */
-  let updateViewType = (event, viewType) => {
+  const updateViewType = (event, viewType) => {
     DOM.viewType
       .removeClass('view-mode-tile view-mode-list')
       .addClass(`view-mode-${viewType}`);
@@ -96,7 +98,7 @@ const categoryModule = (function () {
   /**
    * Returns selected sorting option.
    */
-  let sortingOption = () => DOM.sorting.find(':selected');
+  const sortingOption = () => DOM.sorting.find(':selected');
 
   /**
    * Number of products remained un-fetched from back-end.
@@ -105,20 +107,20 @@ const categoryModule = (function () {
    *
    * @returns {Number} - number of products left to fetch
    */
-  let productsLeft = () => parseInt(CONFIG.totalProductsCount - loadedProductsCount());
+  const productsLeft = () => parseInt(CONFIG.totalProductsCount - loadedProductsCount());
 
   /**
    * Gets number of already loaded products
    *
    * @returns {int} - number of products which are loaded and presented in DOM
    */
-  let loadedProductsCount = () => parseInt(DOM.loadedProducts.first().text());
+  const loadedProductsCount = () => parseInt(DOM.loadedProducts.first().text());
 
   /**
    * Loads products from back-end using promise-like fetch object fetchProducts.
    * After products successfully loaded - publishes 'onProductLoad' event.
    */
-  let loadProducts = () => {
+  const loadProducts = () => {
     let categoryUrl = DOM.loadMore.attr('data-url');
     let offset = loadedProductsCount();
     let sorting = sortingOption().val();
@@ -128,5 +130,18 @@ const categoryModule = (function () {
       .then((products) => mediator.publish('onProductsLoad', products));
   };
 
+  const buyProduct = (event) => {
+    let buyInfo = (event) => {
+      let product = $(event.target);
+      let count = product.closest('.js-order').find('.js-product-count').val();
+      return {'count': parseInt(count),
+              'id': parseInt(product.attr('productId'))};
+    };
+
+    let {id, count} = buyInfo(event);
+    addToCart(id, count).then((data) => mediator.publish('onCartUpdate', data));
+  };
+
   init();
-}());
+})();
+

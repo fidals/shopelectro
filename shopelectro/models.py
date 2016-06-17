@@ -6,6 +6,7 @@ from catalog import models as catalog_models
 
 
 class Product(catalog_models.Product):
+    images_folder = 'images/catalog/products/'
     wholesale_small = models.FloatField()
     wholesale_medium = models.FloatField()
     wholesale_large = models.FloatField()
@@ -18,11 +19,17 @@ class Product(catalog_models.Product):
         except Property.DoesNotExist:
             return
 
-    def get_images(self):
-        """:return: all product images"""
-        product_folder = 'images/catalog/products/' + str(self.id)
-        static = os.path.join(settings.STATIC_ROOT, product_folder)
+    @property
+    def main_image(self):
+        """Return 'main' image for product"""
+        main_image = [img for img in self.images if img.find('main') != -1]
+        return main_image[0] if main_image else settings.IMAGE_THUMBNAIL
 
+    @property
+    def images(self):
+        """:return: all product images"""
+        product_folder = '{}{}'.format(self.images_folder, self.id)
+        static = os.path.join(settings.STATIC_ROOT, product_folder)
         try:
             images_array = [os.path.normpath(
                                 os.path.join(product_folder, file))

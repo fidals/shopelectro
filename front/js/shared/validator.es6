@@ -9,7 +9,7 @@ const CONFIG = {
  *
  * @param data - phone number
  */
-const isPhoneValid = (data) => !!data.match(CONFIG.regexpPhone);
+const isPhoneValid = (data) => data && !!data.match(CONFIG.regexpPhone);
 
 /**
  * Returns boolean result of email validation.

@@ -19,6 +19,7 @@ from shopelectro.management.commands import catalog
 
 
 class ImportTest(TestCase):
+
     @classmethod
     def setUpTestData(cls):
         call_command('catalog')
@@ -84,26 +85,33 @@ class ImportTest(TestCase):
             self.assertGreaterEqual(size, file.size)
 
     def test_categories_in_price(self):
-        """There should be at least 60 categories in price. (except Others categories)"""
-        categories_in_price = ElementTree.parse('priceru.xml').getroot().find('shop').find('categories')
+        """There should be at least 60 categories in price. (except Others)"""
+        categories_in_price = ElementTree.parse(
+            'priceru.xml').getroot().find('shop').find('categories')
         self.assertGreaterEqual(len(categories_in_price), 60)
 
     def test_products_in_price(self):
-        """There should be at least 2000 products in price. (except those who has Other category)"""
-        products_in_price = ElementTree.parse('priceru.xml').getroot().find('shop').find('offers')
+        """There should be at least 2000 products in price. (except Others)"""
+        products_in_price = ElementTree.parse(
+            'priceru.xml').getroot().find('shop').find('offers')
         self.assertGreaterEqual(len(products_in_price), 2400)
 
     def test_no_others_categories_in_price(self):
         """There should be no categories inherited from Other category."""
-        others = Category.objects.get(name='Прочее').get_descendants(include_self=True).values('id')
-        categories_in_price = ElementTree.parse('priceru.xml').getroot().find('shop').find('categories')
+        others = Category.objects.get(name='Прочее').get_descendants(
+            include_self=True).values('id')
+        categories_in_price = ElementTree.parse(
+            'priceru.xml').getroot().find('shop').find('categories')
         for category in categories_in_price:
             self.assertFalse(category.attrib['id'] in others.values())
 
     def test_no_others_products_in_price(self):
-        """There should be no products from from Other category and its children."""
-        others = Category.objects.get(name='Прочее').get_descendants(include_self=True)
-        products_others = Product.objects.filter(category__in=others).values('id')
-        products_in_price = ElementTree.parse('priceru.xml').getroot().find('shop').find('offers')
+        """There should be no products from Other category and its children."""
+        others = Category.objects.get(
+            name='Прочее').get_descendants(include_self=True)
+        products_others = Product.objects.filter(
+            category__in=others).values('id')
+        products_in_price = ElementTree.parse(
+            'priceru.xml').getroot().find('shop').find('offers')
         for product in products_in_price:
             self.assertFalse(product.attrib['id'] in products_others.values())

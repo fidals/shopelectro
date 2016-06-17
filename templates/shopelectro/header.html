@@ -84,44 +84,8 @@
                 </div>
               </form>
             </div>
-
-            <div class="basket-parent col-xs-4">
-              <div class="col-xs-8 col-xs-offset-4">
-                <div class="hed-cart">
-                  <span class="basket-products-count js-products-size">0</span>
-                  <span class="cart-is-empty" id="cart-is-empty">Корзина пуста</span>
-                  <a class="price-in-cart hidden" id="price-in-cart" href="#"></a>
-                  <a href="#" class="opener"><i class="fa fa-chevron-down"></i></a>
-                </div>
-              </div>
-              <div class="basket-wrapper">
-                <p>В корзине <span class="js-basket-amount-count">нет</span> позиций</p>
-                <div class="scroll-wrapper" id="scroll-wrapper">
-                  <ul class="basket-list list-unstyled" id="basket-list"></ul>
-                </div>
-
-                <div class="basket-calculations text-right hidden js-basket-calculations">
-                  <p class="basket-price-sum">
-                    Итого:
-                    <span class="js-basket-price-sum">0</span>
-                    <span class="table-units"> руб.</span>
-                  </p>
-                  <p class="basket-info">без учета стоимости доставки</p>
-                </div>
-
-                <div class="basket-is-empty text-right js-basket-is-empty">
-                  <p class="basket-price-sum">Корзина пуста</p>
-                </div>
-
-                <div class="text-center">
-                  <button class="btn btn-pink btn-to-order js-submit-order" type="button" disabled>
-                    Оформить заказ сейчас
-                  </button>
-                  <p>
-                    <span class="basket-reset hidden">Очистить корзину</span>
-                  </p>
-                </div>
-              </div>
+            <div class="basket-parent js-cart-header col-xs-4">
+                {% include 'ecommerce/cart_dropdown.html' %}
             </div>
           </div>
         </div>

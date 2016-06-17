@@ -19,6 +19,17 @@ category_urls = [
         views.load_more, name='load_more'),
 ]
 
+shop_urls = [
+    url(r'^cart-add/$', views.add_to_cart),
+    url(r'^cart-change/$', views.change_count_in_cart),
+    url(r'^cart-flush/$', views.cart_flush),
+    url(r'^cart-remove/$', views.cart_remove),
+    url(r'^one-click-buy/$', views.one_click_buy),
+    url(r'^success-order/$', views.success_order, name='order_success'),
+    url(r'^order-call/$', views.order_call),
+    url(r'^order/$', views.order_page, name='order_page'),
+]
+
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
@@ -29,4 +40,5 @@ urlpatterns = [
     url(r'^catalog/', include('catalog.urls')),
     url(r'^blog/posts/(?P<type_>[\w-]+)/$', views.blog_post, name='posts'),
     url(r'^blog/', include('blog.urls')),
+    url(r'^shop/', include(shop_urls))
 ]

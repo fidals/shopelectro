@@ -135,7 +135,8 @@ class Command(BaseCommand):
         """Run 'import' command."""
         start_time = time.time()
         self.get_xml_files()
-        delete_and_create([(Category, self.parse_categories()), (Product, self.parse_products())])
+        delete_and_create([(Category, self.parse_categories()),
+                           (Product, self.parse_products())])
         self.remove_xml()
         self.generate_prices()
         return 'Импорт завершен! Затрачено {0:.1f} секунд'.format(time.time() - start_time)
@@ -157,7 +158,8 @@ class Command(BaseCommand):
             for category in catalog:
                 yield Category(id=category_id(category),
                                name=category.text.strip(),
-                               position=CATEGORY_POSITIONS.get(category_id(category), 0),
+                               position=CATEGORY_POSITIONS.get(
+                                   category_id(category), 0),
                                parent_id=parent_id_or_none(category))
         return categories_generator(self.categories_in_xml)
 
@@ -171,12 +173,14 @@ class Command(BaseCommand):
             for product in catalog:
                 if has_no_category(product):
                     continue
-                product_properties = self.get_product_properties_or_none(product)
+                product_properties = self.get_product_properties_or_none(
+                    product)
                 if product_properties:
                     yield Product(**product_properties)
         return products_generator(self.products_in_xml)
 
-    # TODO: This method could be moved into parse_products. Should we define more local funcs?
+    # TODO: This method could be moved into parse_products. Should we define
+    # more local funcs?
     @staticmethod
     def get_product_properties_or_none(node) -> typing.Optional[dict]:
         """Get product's info for given node in XML."""

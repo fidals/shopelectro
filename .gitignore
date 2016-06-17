@@ -25,3 +25,6 @@ static/**/*
 front/images/catalog
 categories.xml
 products.xml
+pricelist.xlsx
+priceru.xml
+yandex.yml

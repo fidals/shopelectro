@@ -34,24 +34,25 @@ class ModelsTests(TestCase):
             product=self.product
         )
 
+        self.main_image = ('images/catalog/products/' +
+                           str(self.product.id) + '/main.jpg')
+
     def test_get_image(self):
         """
         Get product's images or return image thumbnail.
         """
-
-        main_image_path = os.path.normpath(
-            'images/catalog/products/' + str(self.product.id) + '/main.jpg')
-        images_list = self.product.get_images()
+        images_list = self.product.images
 
         if images_list:
-            self.assertIn(
-                images_list[0],
-                main_image_path
-            )
+            self.assertIn(self.main_image, images_list)
         else:
             image_name = settings.IMAGE_THUMBNAIL
-            self.assertEqual(image_name, 'images/logo.png')
+            self.assertEqual(image_name, settings.IMAGE_THUMBNAIL)
 
     def test_get_trademark(self):
         """Trademark property of Product object should return value of respective Property object."""
         self.assertEqual(self.product.trademark, self.trademark.value)
+
+    def test_main_image(self):
+        """Main image property should return image, or thumbnail."""
+        self.assertIn(self.product.main_image, [self.main_image, settings.IMAGE_THUMBNAIL])
