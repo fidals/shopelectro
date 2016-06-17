@@ -572,10 +572,8 @@ class AdminPageSeleniumTests(TestCase):
         filter_link = self.browser.find_element_by_xpath(self.show_nonactive_products_link)
         filter_link.click()
         wait()
-        first_product = self.browser.find_element_by_xpath(self.products_activity_state_img)
-        first_product_state = first_product.get_attribute('alt')
-
-        self.assertTrue(first_product_state == 'false')
+        results = self.browser.find_element_by_class_name('paginator')
+        self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
         """

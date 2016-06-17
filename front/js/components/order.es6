@@ -60,7 +60,7 @@ const order = (() => {
     for (let fieldName in DOM.orderForm) {
       let field = getFieldByName(fieldName);
       let savedValue = localStorage.getItem(fieldName);
-      if (savedValue) {
+      if (savedValue && field) {
         field.value = savedValue;
       }
     }
@@ -68,8 +68,10 @@ const order = (() => {
 
   const pluginsInit = () => {
     const autocomplete = () => {
+      let cityField = document.getElementById('id_city');
+      if (!cityField) { return; }
       let citiesAutocomplete = new google.maps.places.Autocomplete(
-        document.getElementById('id_city'), CONFIG.citiesAutocomplete);
+        cityField, CONFIG.citiesAutocomplete);
 
       google.maps.event.addListener(citiesAutocomplete, 'place_changed', function () {
         storeInput(DOM.orderForm.city);

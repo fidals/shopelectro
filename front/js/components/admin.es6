@@ -4,35 +4,36 @@ const admin = (() => {
   productPage: $('.model-product'),
 };
 
-const CONFIG = {
-  autoComplete: {
-    completeURL: '/admin-autocomplete/',
-    searchFieldId: '#searchbar',
-    minChars: 3,
-  },
-};
+  const CONFIG = {
+    autoComplete: {
+      completeURL: '/admin-autocomplete/',
+      searchFieldId: '#searchbar',
+      minChars: 3,
+    },
+  };
 
-let pageType = '';
 
-const autoComplete = new autoComplete({
-  selector: CONFIG.autoComplete.searchFieldId,
-  minChars: CONFIG.autoComplete.minChars,
-  source: (term, response) => {
-    $.getJSON(CONFIG.autoComplete.completeURL, {
-      q: term,
-      pageType: getCurrentPageType(),
-    }, (namesArray) => {
-      response(namesArray);
-    });
-  },
-});
+  let pageType = '';
 
-const getCurrentPageType = () => {
-  if (DOM.productPage.size() > 0) {
-    pageType = 'product';
-  } else {
-    pageType = 'category';
-  }
+  const search = new autoComplete({
+    selector: CONFIG.autoComplete.searchFieldId,
+    minChars: CONFIG.autoComplete.minChars,
+    source: (term, response) => {
+      $.getJSON(CONFIG.autoComplete.completeURL, {
+        q: term,
+        pageType: getCurrentPageType(),
+      }, (namesArray) => {
+        response(namesArray);
+      });
+    },
+  });
+
+  const getCurrentPageType = () => {
+    if (DOM.productPage.size() > 0) {
+      pageType = 'product';
+    } else {
+      pageType = 'category';
+    }
 
   return pageType;
 };
