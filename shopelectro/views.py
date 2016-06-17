@@ -4,10 +4,12 @@ Shopelectro views.
 NOTE: They all should be 'zero-logic'. All logic should live in respective applications.
 """
 
+from itertools import chain
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.db import models
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
 from blog.models import Post, get_crumbs as blog_crumbs
@@ -138,12 +140,12 @@ def blog_post(request, type_=''):
     })
 
 
-def get_models_names(model_type, search_term):
+def find_model_names(model: models.Model, search_term: str):
     """
-    Returns related names for models.
+    Returns related names gave model
     """
 
-    return model_type.objects.filter(name__contains=search_term).values('name')
+    return model.objects.filter(name__contains=search_term).values('name')
 
 
 def admin_autocomplete(request):
@@ -158,7 +160,7 @@ def admin_autocomplete(request):
     if page_term not in ['product', 'category']:
         return
 
-    query_objects = get_models_names(model_map[page_term], search_term)
+    query_objects = find_model_names(model_map[page_term], search_term)
     names = [item['name'] for item in query_objects]
 
     return JsonResponse(names, safe=False)
@@ -267,3 +269,37 @@ def yandex_aviso(request):
                   'ecommerce/yandex_aviso.xml',
                   {'invoice': invoice_id},
                   content_type='application/xhtml+xml')
+
+def search(request):
+
+    def get_products(search_term):
+        start_names = Product.objects.filter(name__istartswith=search_term)
+        middle_names = Product.objects.filter(name__icontains=search_term)\
+            .exclude(name__istartswith=search_term)
+        if not (len(start_names) + len(middle_names)):
+            return None
+        return chain(start_names.iterator(), middle_names.iterator())
+
+    def get_categories(search_term):
+        start_names = Category.objects.filter(name__istartswith=search_term)
+        middle_names = Category.objects.filter(name__icontains=search_term)\
+            .exclude(name__istartswith=search_term)
+        if not (len(start_names) + len(middle_names)):
+            return None
+        return chain(start_names.iterator(), middle_names.iterator())
+
+    term = request.GET['search']
+
+    categories = get_categories(term)
+    products = get_products(term)
+    has_items = products is not None or categories is not None
+
+    template = 'shopelectro/search/{}.html'.format(
+        'results' if has_items else 'no_results')
+
+    return render(request, template, {
+        'categories': categories,
+        'products': products,
+        'query': term,
+    })
+
