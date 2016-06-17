@@ -5,7 +5,11 @@
   <div class="wrapper-container">
     <div class="top-header">
       <div class="container">
-        <a href="/" class="header-logo"><img src="{% static 'images/logo.png' %}" alt=""></a>
+
+        <div class="header-logo-wrapper">
+          <a href="/" title="На главную"><img class="header-logo" src="{% static 'images/logo.svg' %}" alt="ShopElectro"></a>
+          <p class="header-logo-text">продажа элементов питания</p>
+        </div>
 
         <div class="header-price-wrapper">
           <a href="{% static 'price-list-shopelectro.ru.xlsx' %}" id="download-pricelist-header" class="download">Скачать

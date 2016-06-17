@@ -168,6 +168,25 @@ h3 {
   position: relative;
   z-index: 2;
 
+
+  &-logo {
+    max-width: 185px;
+
+    &-wrapper {
+      display: block;
+      float: left;
+      margin: 18px 20px 0 0;
+    }
+
+    &-text {
+      color: @c-head-logo-text;
+      font-family: @proxima-cond-bold;
+      font-size: @font-size-base - 1;
+      padding: 4px 0 0 2px;
+      letter-spacing: 0.015em;
+    }
+  }
+
   &-left {
     float: left;
   }
@@ -199,16 +218,10 @@ h3 {
     }
   }
 
-  &-logo {
-    display: block;
-    float: left;
-    margin: 24px 10px 0 0;
-  }
-
   &-price-wrapper {
     display: block;
     float: left;
-    margin: 25px 30px 0 15px;
+    margin: 25px 30px 0 0;
     text-align: center;
     width: 142px;
   }
