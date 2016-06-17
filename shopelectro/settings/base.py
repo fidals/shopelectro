@@ -161,7 +161,7 @@ IMAGE_THUMBNAIL = 'images/logo.png'
 
 PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
-SHOP_EMAIL = 'egorbirykov@yandex.com'
+SHOP_EMAIL = ''  # Fill it in local.py
 PAYMENT_OPTIONS = (
     ('cash', 'Наличные'),
     ('cashless', 'Безналичные и денежные переводы')

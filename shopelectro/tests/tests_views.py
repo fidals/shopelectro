@@ -288,7 +288,7 @@ class ProductPage(TestCase):
         self.assertTrue('main' in product_main_img.get_attribute('src'))
 
         next_product_img = self.browser.find_element_by_xpath(
-            '//*[@id="product-images"]/div[3]')
+            '//*[@id="product-images"]/div[2]/img')
         next_product_img.click()
         wait()
         self.assertFalse('main' in product_main_img.get_attribute('src'))
@@ -349,6 +349,7 @@ class OrderPage(TestCase):
     def setUp(self):
         """Sets up testing url and dispatches selenium webdriver."""
         def buy_five_products():
+            self.browser.maximize_window()
             self.browser.get(settings.LOCALHOST +
                              'catalog/categories/akkumuliatory/')
             for i in range(1, 6):
