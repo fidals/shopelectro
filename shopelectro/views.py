@@ -12,6 +12,8 @@ from django.views.decorators.http import require_POST
 from django.db import models
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
+from . import config
+from .models import Product
 from blog.models import Post, get_crumbs as blog_crumbs
 from catalog.models import Category, get_crumbs as catalog_crumbs
 from ecommerce import mailer
@@ -40,7 +42,6 @@ def index(request):
         request, 'index/index.html', context)
 
 
-@ensure_csrf_cookie
 def category_page(request, category_slug, sorting=0):
     """
     Category page: all it's subcategories and products.
@@ -73,7 +74,6 @@ def category_page(request, category_slug, sorting=0):
     return render(request, 'catalog/category.html', context)
 
 
-@ensure_csrf_cookie
 def product_page(request, product_id):
     """
     Product page.
@@ -84,7 +84,7 @@ def product_page(request, product_id):
     """
 
     product = get_object_or_404(Product.objects, id=product_id)
-    images = product.images
+    images = product.get_images()
     main_image = settings.IMAGE_THUMBNAIL
 
     if images:
@@ -145,7 +145,7 @@ def find_model_names(model: models.Model, search_term: str):
     Returns related names gave model
     """
 
-    return model.objects.filter(name__contains=search_term).values('name')
+    return model.objects.filter(name__icontains=search_term).values('name')
 
 
 def admin_autocomplete(request):
@@ -272,17 +272,9 @@ def yandex_aviso(request):
 
 def search(request):
 
-    def get_products(search_term):
-        start_names = Product.objects.filter(name__istartswith=search_term)
-        middle_names = Product.objects.filter(name__icontains=search_term)\
-            .exclude(name__istartswith=search_term)
-        if not (len(start_names) + len(middle_names)):
-            return None
-        return chain(start_names.iterator(), middle_names.iterator())
-
-    def get_categories(search_term):
-        start_names = Category.objects.filter(name__istartswith=search_term)
-        middle_names = Category.objects.filter(name__icontains=search_term)\
+    def find_items(search_term: str, model: models.Model):
+        start_names = model.objects.filter(name__istartswith=search_term)
+        middle_names = model.objects.filter(name__icontains=search_term)\
             .exclude(name__istartswith=search_term)
         if not (len(start_names) + len(middle_names)):
             return None
@@ -290,8 +282,8 @@ def search(request):
 
     term = request.GET['search']
 
-    categories = get_categories(term)
-    products = get_products(term)
+    categories = find_items(term, Category)
+    products = find_items(term, Product)
     has_items = products is not None or categories is not None
 
     template = 'shopelectro/search/{}.html'.format(
@@ -303,3 +295,11 @@ def search(request):
         'query': term,
     })
 
+
+def autocomplete(request):
+    search_term = request.GET['q']
+
+    query_objects = find_model_names(Product, search_term)
+    names = [item['name'] for item in query_objects]
+
+    return JsonResponse(names, safe=False)

@@ -51,6 +51,7 @@ urlpatterns = [
     url(r'^test-ya-kassa/$', views.test_yandex, name='test_yandex'),
     url(r'^admin/', admin.site.urls),
     url(r'^admin-autocomplete/', views.admin_autocomplete),
+    url(r'^search/autocomplete/', views.autocomplete),
     url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
     url(r'^catalog/categories/', include(category_urls)),
     url(r'^catalog/products/(?P<product_id>[0-9]+)/$', views.product_page, name='product'),
