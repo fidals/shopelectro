@@ -1,3 +1,4 @@
+{% load se_extras %}
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE yml_catalog SYSTEM "shops.dtd">
 <yml_catalog date="{% now "Y-m-d H:i" %}">
@@ -27,6 +28,7 @@
           <price>{{ product.price }}</price>
           {% if utm != 'priceru' %}<purchase_price>{{ product.price }}</purchase_price>{% endif %}
           <currencyId>RUR</currencyId>
+          {% get_model_images product %}
           <categoryId>{{ product.category.id }}</categoryId>
           <store>false</store>
           <pickup>true</pickup>

@@ -4,7 +4,7 @@
   {% for product in top_products %}
     <div class="stuff-top-item">
       <a class="stuff-top-img" href="{% url 'product' product.id %}">
-        <img src="{% static 'images/catalog/products/2847/small.jpg' %}" class="img-responsive img-centered"
+        <img src="/media/products/2847/small.jpg" class="img-responsive img-centered"
              alt="{{ product.name }}">
       </a>
       <div class="stuff-top-description">

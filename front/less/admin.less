@@ -20,3 +20,56 @@
     width: 624px;
   }
 }
+
+.images {
+  &-list {
+    margin: 0;
+    padding: 0;
+
+    .fa {
+      cursor: pointer;
+      font-size: 24px;
+      left: 0;
+      margin: auto;
+      opacity: 0.7;
+      position: absolute;
+      transition: all 0.3s ease;
+      right: 0;
+      width: 20px;
+      z-index: 1;
+    }
+  }
+
+  &-list-item {
+    vertical-align: top;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: inline-block;
+    height: 150px;
+    margin: 0 2px 20px 0;
+    padding: 2px;
+    position: relative;
+    text-align: center;
+    top: 0;
+    transition: all 0.3s ease;
+    width: 150px;
+
+    &:hover {
+      top: -3px;
+    }
+
+    &:hover .fa {
+      opacity: 1;
+    }
+  }
+
+  &-item {
+    max-width: 100%;
+  }
+}
+
+.admin {
+  &-upload-form {
+    margin-bottom: 20px;
+  }
+}

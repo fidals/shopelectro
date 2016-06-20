@@ -17,9 +17,9 @@ from shopelectro import models as shopelectro_models
 # Override templates
 admin.sites.AdminSite.site_header = 'Shopelectro administration'
 admin.ModelAdmin.change_list_template = os.path.join(settings.BASE_DIR,
-                                                     'templates/shopelectro/admin/change_list.html')
+                                                     'templates/admin/change_list.html')
 admin.ModelAdmin.change_form_template = os.path.join(settings.BASE_DIR,
-                                                     'templates/shopelectro/admin/change_form.html')
+                                                     'templates/admin/change_form.html')
 
 
 def after_action_message(updated_rows):
@@ -146,11 +146,10 @@ class ProductsShopelectroAdmin(AbstractChangeListAdmin):
             'admin_url': '/admin/shopelectro/product/' + str(model.id) + '/change',
         }
 
-        return render_to_string('shopelectro/admin/admin_items_list_row.html', context)
+        return render_to_string('admin/items_list_row.html', context)
 
     links.short_description = 'Links'
     links.admin_order_field = 'name'
-
 
 admin.site.register(Category, CategoryShopelectroAdmin)
 admin.site.register(shopelectro_models.Product, ProductsShopelectroAdmin)

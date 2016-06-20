@@ -16,18 +16,19 @@ const mainPage = (() => {
     setupXHR();
     setUpListeners();
   };
-  
+
   // TODO: move to config module
+  // http://youtrack.stkmail.ru/issue/dev-748
   const setupXHR = () => {
-    let csrfUnsafeMethod = (method) => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    let token = Cookies.get('csrftoken');
+    const csrfUnsafeMethod = (method) => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    const token = Cookies.get('csrftoken');
 
     $.ajaxSetup({
       beforeSend: (xhr, settings) => {
-          if (csrfUnsafeMethod(settings.type)) {
-              xhr.setRequestHeader("X-CSRFToken", token);
-          }
-      }
+        if (csrfUnsafeMethod(settings.type)) {
+          xhr.setRequestHeader('X-CSRFToken', token);
+        }
+      },
     });
   };
 

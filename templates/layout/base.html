@@ -37,7 +37,7 @@
 <body>
 
 {% block header %}
-  {% include "shopelectro/header.html" %}
+  {% include "layout/header.html" %}
 {% endblock %}
 
 <div class="content">
@@ -45,12 +45,12 @@
 </div>
 
 {% block footer %}
-  {% include "shopelectro/footer.html" %}
+  {% include "layout/footer.html" %}
 {% endblock %}
 
 <div class="btn-scroll-to-top" id="btn-scroll-to-top">Наверх</div>
 
-{% include "shopelectro/back_call_modal.html" %}
+{% include "layout/back_call_modal.html" %}
 
 {% block jslibs %}
   <script src="{% static "js/vendors.min.js" %}"></script>
@@ -60,6 +60,6 @@
   <script src="{% static "js/main.min.js" %}"></script>
 {% endblock %}
 
-{% include "shopelectro/out_service_js.html" %}
+{% include "layout/marketing.html" %}
 </body>
 </html>
