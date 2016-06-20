@@ -34,8 +34,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'mptt',
@@ -78,16 +80,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'shopelectro.wsgi.application'
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': 'refarm.sqlite3'
-   },
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -159,6 +151,10 @@ BASE_URL = 'https://www.shopelectro.ru'
 
 IMAGE_THUMBNAIL = 'images/logo.png'
 
+SITE_ID = 1
+# Uncomment for http->https change
+# os.environ['HTTPS'] = 'on'
+
 PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
 SHOP_EMAIL = ''  # Fill it in local.py
@@ -166,6 +162,5 @@ PAYMENT_OPTIONS = (
     ('cash', 'Наличные'),
     ('cashless', 'Безналичные и денежные переводы')
 )
-
 
 from .local import *

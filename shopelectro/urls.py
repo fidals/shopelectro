@@ -7,8 +7,13 @@ distinct lists and then include them all at once.
 
 from django.contrib import admin
 from django.conf.urls import url, include
-from . import views
+from django.contrib.sitemaps.views import sitemap
+from collections import OrderedDict
+from django.views.decorators.cache import cache_page
 
+from . import views
+from . import sitemaps
+from . import config
 
 category_urls = [
     url(r'^(?P<category_slug>[\w-]+)/$',
@@ -18,6 +23,14 @@ category_urls = [
     url(r'^(?P<category_slug>[\w-]+)/load-more/(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/$',
         views.load_more, name='load_more'),
 ]
+
+# Orders sitemaps instances
+sitemaps = OrderedDict([
+    ('index', sitemaps.IndexSitemap),
+    ('category', sitemaps.CategorySitemap),
+    ('products', sitemaps.ProductSitemap),
+    ('blog', sitemaps.BlogSitemap)
+])
 
 shop_urls = [
     url(r'^cart-add/$', views.add_to_cart),
@@ -30,6 +43,8 @@ shop_urls = [
     url(r'^order/$', views.order_page, name='order_page'),
 ]
 
+cached_view = cache_page(config.cached_time())
+
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
@@ -40,5 +55,9 @@ urlpatterns = [
     url(r'^catalog/', include('catalog.urls')),
     url(r'^blog/posts/(?P<type_>[\w-]+)/$', views.blog_post, name='posts'),
     url(r'^blog/', include('blog.urls')),
+    url(r'^sitemap\.xml$', cached_view(sitemap), {
+            'sitemaps': sitemaps
+        },
+        name='django.contrib.sitemaps.views.sitemap'),
     url(r'^shop/', include(shop_urls))
 ]
