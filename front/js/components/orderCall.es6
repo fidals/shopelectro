@@ -38,7 +38,7 @@ const orderCall = (() => {
       DOM.timeTag.on('change', storeBackcallTime.bind(this));
   };
 
-  const fillInUserData = (data) => {
+  const fillInUserData = data => {
     if (data.phone) {
       $.each(DOM.phoneInputs, () => {
         $(this).val(data.phone);
@@ -48,18 +48,18 @@ const orderCall = (() => {
       DOM.timeTag.find('[data-time=' + data.time + ']').attr('selected', true);
     }
   };
-  
+
   const order = () => {
     let phone = DOM.phone.val();
     let time = DOM.timeToCall.val();
     let url = location.href;
 
-    sendOrderCall(phone, time, url).then(() => {
+    server.sendOrderCall(phone, time, url).then(() => {
       DOM.timeText.text(DOM.timeTag.val());
       showSuccessModal();
     });
   };
-  
+
   const showSuccessModal = () => {
     DOM.orderButton.toggleClass('hidden');
     DOM.closeModal.toggleClass('hidden');

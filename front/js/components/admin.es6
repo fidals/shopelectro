@@ -1,40 +1,75 @@
 const admin = (() => {
   const DOM = {
-    categoryPage: $('.model-category'),
-    productPage: $('.model-product'),
+    $productPage: $('.model-product'),
+    $removeIcon: $('.js-remove-image'),
+    $imageItem: $('.js-list-item'),
   };
 
-  const CONFIG = {
-    autoComplete: {
-      completeURL: '/catalog/search/autocomplete/admin/',
-      searchFieldId: '#searchbar',
-      minChars: 3,
-    },
+  const UPLOAD = {
+    $: $('.js-file-input'),
+    removeUrl: '/admin/remove-image/',
   };
 
+  const AUTOCOMPLETE = {
+    completeURL: '/catalog/search/autocomplete/admin/',
+    searchFieldId: '#searchbar',
+    minChars: 3,
+  };
 
-  let pageType = '';
+  const init = () => {
+    pluginsInit();
+    setupXHR();
+    setUpListeners();
+  };
 
-  const search = new autoComplete({
-    selector: CONFIG.autoComplete.searchFieldId,
-    minChars: CONFIG.autoComplete.minChars,
-    source: (term, response) => {
-      $.getJSON(CONFIG.autoComplete.completeURL, {
-        q: term,
-        pageType: getCurrentPageType(),
-      }, (namesArray) => {
-        response(namesArray);
-      });
-    },
-  });
+  // TODO: move to config module
+  // http://youtrack.stkmail.ru/issue/dev-748
+  const setupXHR = () => {
+    const csrfUnsafeMethod = (method) => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    const token = Cookies.get('csrftoken');
+
+    $.ajaxSetup({
+      beforeSend: (xhr, settings) => {
+        if (csrfUnsafeMethod(settings.type)) {
+          xhr.setRequestHeader('X-CSRFToken', token);
+        }
+      },
+    });
+  };
+
+  const pluginsInit = () => {
+    return new autoComplete({
+      selector: AUTOCOMPLETE.searchFieldId,
+      minChars: AUTOCOMPLETE.minChars,
+      source: (term, response) => {
+        $.getJSON(AUTOCOMPLETE.completeURL, {
+          q: term,
+          pageType: getCurrentPageType(),
+        }, (namesArray) => {
+          response(namesArray);
+        });
+      },
+    });
+  };
+
+  const setUpListeners = () => {
+    DOM.$removeIcon.click(removeImage);
+  };
 
   const getCurrentPageType = () => {
-    if (DOM.productPage.size() > 0) {
-      pageType = 'product';
-    } else {
-      pageType = 'category';
-    }
-
-    return pageType;
+    return (DOM.$productPage.size() > 0) ? 'product' : 'category';
   };
+
+  const removeImage = () => {
+    const $target = $(event.target);
+
+    $.post(
+      UPLOAD.removeUrl, {
+        url: $target.data('id'),
+      }
+    )
+    .success(() => $target.closest(DOM.$imageItem).slideUp());
+  };
+
+  init();
 })();

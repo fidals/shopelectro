@@ -5,57 +5,65 @@ from django.test import TestCase
 
 from catalog.models import Category
 from shopelectro.models import Product, Property
+from .. import images
 
 
 class ModelsTests(TestCase):
     """Test suite for models."""
 
     def setUp(self):
-        """
-        Defines testing data.
-        """
-        self.category = Category.objects.create(
+        """Define testing data."""
+
+        self.category, _ = Category.objects.get_or_create(
             name='Test category'
         )
 
-        self.product = Product.objects.create(
-            id=99999,
-            category=self.category,
+        self.product, _ = Product.objects.get_or_create(
+            id=3993,
             wholesale_small=10,
             wholesale_medium=10,
             wholesale_large=10,
+            category=self.category,
         )
 
-        self.trademark = Property.objects.create(
+        self.non_existing_product, _ = Product.objects.get_or_create(
+            id=9999,
+            wholesale_small=10,
+            wholesale_medium=10,
+            wholesale_large=10,
+            category=self.category,
+        )
+
+        self.trademark, _ = Property.objects.get_or_create(
             name='Товарный знак',
             is_numeric=False,
             value='TM',
             product=self.product
         )
 
-        self.main_image = ('images/catalog/products/' +
-                           str(self.product.id) + '/main.jpg')
+        self.main_image = 'products/{}/main.jpg'.format(self.product.id)
 
-    def test_get_image(self):
-        """
-        Get product's images or return image thumbnail.
-        """
-        images_list = self.product.images
+    def test_product_images(self):
+        """Get Product images."""
 
-        if images_list:
-            self.assertIn(self.main_image, images_list)
-        else:
-            image_name = settings.IMAGE_THUMBNAIL
-            self.assertEqual(image_name, settings.IMAGE_THUMBNAIL)
+        images_list = images.get_images_without_small(self.product)
+        self.assertIn(self.main_image, images_list)
+
+    def test_thumbnail_image(self):
+        """Get Product image thumbnail."""
+
+        images_list = images.get_image(self.non_existing_product)
+        self.assertEqual(images_list, settings.IMAGES['thumbnail'])
+
+    def test_main_image(self):
+        """Main image property should return image."""
+
+        self.assertTrue(images.get_image(self.product), self.main_image)
 
     def test_get_trademark(self):
         """
         Trademark property of Product object should return
-        value of respective Property object
+        value of respective Property object.
         """
-        self.assertEqual(self.product.trademark, self.trademark.value)
 
-    def test_main_image(self):
-        """Main image property should return image, or thumbnail."""
-        self.assertIn(self.product.main_image,
-                      [self.main_image, settings.IMAGE_THUMBNAIL])
+        self.assertEqual(self.product.trademark, self.trademark.value)

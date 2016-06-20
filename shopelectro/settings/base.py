@@ -127,6 +127,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/assets'),
 ]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # refarm-blog config
 # Each post type can have it's own alias
 # For config below, page types will have different urls:
@@ -153,7 +156,11 @@ SITE_CREATED = datetime(2013, 1, 1)
 LOCALHOST = 'http://127.0.0.1:8000/'
 BASE_URL = 'https://www.shopelectro.ru'
 
-IMAGE_THUMBNAIL = 'images/logo.png'
+IMAGES = {
+    'large': 'main',
+    'small': 'small',
+    'thumbnail': 'logo.png'
+}
 
 AUTOCOMPLETE_LIMIT = 20
 SEARCH_LIMIT = 500
@@ -179,6 +186,17 @@ EMAIL_SUBJECTS = {
     'order': 'Заказ №{0.id}',
     'yandex_order': 'Заказ №{0.id} | Яндекс.Касса',
     'one_click': 'Заказ в один клик №{}',
+}
+
+MODEL_TYPES = {
+    'Product': {
+        'app_name': 'shopelectro',
+        'dir_name': 'products',
+    },
+    'Category': {
+        'app_name': 'catalog',
+        'dir_name': 'categories',
+    }
 }
 
 from .local import *

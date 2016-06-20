@@ -1,13 +1,31 @@
+"""Shopelectro template tags"""
+
 import datetime
 
 from django import template
+from django.conf import settings
+
+from catalog.models import Category
+from ..models import Product
+from ..images import get_images_without_small
 
 register = template.Library()
 
 
+@register.filter
+def class_name(model):
+    """Return Model name."""
+
+    return type(model).__name__
+
+
 @register.simple_tag
 def time_to_call():
-    """Return time when SE-manager will call the client based on current datetime."""
+    """
+    Return time when SE-manager will call the client based on
+    current datetime.
+    """
+
     def is_weekend(t):
         return t.weekday() > 4
 
@@ -39,3 +57,21 @@ def time_to_call():
     for condition, time in when_we_call.items():
         if condition(time_):
             return time + call
+
+
+@register.filter
+def upload_form(model):
+    """Check if template with current Model should have upload form"""
+
+    models_with_upload_form, model_type = ['Category', 'Product'], type(model).__name__
+    return model_type in models_with_upload_form
+
+
+@register.inclusion_tag('prices/picture_tag.html')
+def get_model_images(model):
+    """Return Model images without small variant"""
+
+    return {
+        'dir_path': settings.BASE_URL + settings.MEDIA_URL,
+        'images': get_images_without_small(model, url='products')
+    }

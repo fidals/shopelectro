@@ -26,7 +26,7 @@
         <tr id="{{ product.id }}">
           <td>{{ product.id }}</td>
           <td class="photo text-center">
-            {% if product.main_image == 'images/logo.png' %}
+            {% if product.main_image == 'logo.png' %}
               <img src="{% static 'images/camera-icon.png' %}">
             {% else %}
               <a class="fancybox" rel="product-cart-gallery" href="{% static product.main_image %}"

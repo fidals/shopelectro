@@ -160,6 +160,10 @@ h3 {
   top: 0;
 }
 
+.img-responsive {
+  height: auto;
+}
+
 // ================================================================
 // HEADER
 // ================================================================
@@ -433,25 +437,6 @@ h3 {
       color: @c-feedback-bg;
       text-shadow: 1px 2px 2px @c-white;
     }
-  }
-}
-
-.basket {
-  &-products-count {
-    background: @c-white;
-    border: 1px solid @c-black-lightest;
-    border-radius: 50px;
-    color: @c-search-area;
-    display: inline-block;
-    font-size: @f-size-base - 3;
-    height: 20px;
-    left: 9px;
-    line-height: 1.6;
-    position: absolute;
-    text-align: center;
-    top: 20px;
-    width: 20px;
-    z-index: 2;
   }
 }
 
@@ -800,7 +785,7 @@ h3 {
     z-index: 1;
 
     .img-responsive {
-      height: 100%;
+      height: auto;
       margin: auto;
     }
   }
@@ -1242,140 +1227,21 @@ h3 {
 // Header basket dropdown
 // ================================================================
 .basket {
-  &-wrapper {
-    background: @c-basket-fill;
-    border: 1px solid @c-basket-border;
-    color: @c-black;
-    left: 0;
-    opacity: 0;
-    padding: 15px 8px 10px 12px;
-    position: absolute;
-    top: 40px;
-    transform: translateY(50px);
-    visibility: hidden;
-    width: 318px;
-    z-index: -1;
-
-    &:before {
-      content: "";
-      height: 15px;
-      left: 0;
-      position: absolute;
-      top: -15px;
-      width: 100%;
-    }
-
-    &:after {
-      background: @c-basket-border;
-      content: "";
-      height: 6px;
-      left: 0;
-      position: absolute;
-      top: 0;
-      width: 100%;
-    }
-
-    &.active,
-    .basket-parent:hover & {
-      opacity: 1;
-      transform: none;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      visibility: visible;
-      z-index: 100;
-    }
-  }
-
-  &-list {
-    color: @c-black-lighter-x;
-    margin: 0;
-    position: relative;
-    top: 6px;
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  &-parent {
-    height: 32px;
-    position: relative;
-  }
-
-  &-item {
-    border-radius: 3px;
-    background: @c-basket-item;
-    font-size: @f-size-base - 2;
-    margin: 0 13px 10px 0;
-    padding: 12px 15px 8px 8px;
-    position: relative;
-  }
-
-  &-stuff-link {
+  &-products-count {
     background: @c-white;
-    border: 1px solid @c-tooltip-img-border;
-    border-radius: 4px;
-    height: 51px;
-    margin: 0 10px 20px 0;
-    float: left;
-    overflow: hidden;
-    width: 51px;
-  }
-
-  &-stuff-about {
-    line-height: 130%;
-    margin-bottom: 5px;
-    max-height: 54px;
-    overflow: hidden;
-    width: 130px;
-  }
-
-  &-stock {
-    margin: 0 0 5px;
-  }
-
-  &-stuff-title {
-    color: @c-black-lighter-x;
-    text-decoration: none;
-
-    &:visited {
-      color: @c-black-lighter-x;
-    }
-
-    &:hover {
-      color: @c-tooltip-hovered-link;
-    }
-  }
-
-  &-stuff-price {
-    padding: 0 0 0 2px;
-  }
-
-  &-sum {
-    font-size: @f-size-base;
-  }
-
-  &-remove {
-    background-image: @sp-main;
-    .sprite(@01);
-    color: @c-basket-border;
-    cursor: pointer;
-    font-family: @proxima-bold;
+    border: 1px solid @c-black-lightest;
+    border-radius: 50px;
+    color: @c-search-area;
+    display: inline-block;
+    font-size: @f-size-base - 3;
+    height: 20px;
+    left: 9px;
+    line-height: 1.6;
     position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 1;
-
-    &:hover {
-      .sprite(@02);
-    }
-  }
-
-  &-is-empty,
-  &-calculations {
-    border-top: 1px solid @c-head-nav-link-border;
-    margin-bottom: 5px;
-    margin-right: 22px;
-    padding: 7px 0 7px 22px;
+    text-align: center;
+    top: 20px;
+    width: 20px;
+    z-index: 2;
   }
 
   &-price-sum {
@@ -1432,6 +1298,181 @@ h3 {
   }
 }
 
+// ================================================================
+// Header dropdown
+// ================================================================
+.basket {
+  &-list {
+    color: @c-black-lighter-x;
+    margin: 0 0 15px;
+    max-height: 214px;
+    overflow: auto;
+    position: relative;
+    top: 6px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &-parent {
+    height: 32px;
+    position: relative;
+  }
+
+  &-wrapper {
+    background: @c-basket-fill;
+    border: 1px solid @c-basket-border;
+    color: @c-black;
+    left: 0;
+    margin: 0 5px;
+    opacity: 0;
+    padding: 15px 8px 10px 12px;
+    position: absolute;
+    top: 40px;
+    transform: translateY(50px);
+    visibility: hidden;
+    width: 313px;
+    z-index: -1;
+
+    &:before {
+      content: '';
+      height: 10px;
+      left: 0;
+      position: absolute;
+      top: -10px;
+      width: 100%;
+    }
+
+    &:after {
+      background: @c-basket-border;
+      content: '';
+      height: 6px;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    &.active,
+    .basket-parent:hover & {
+      opacity: 1;
+      transform: none;
+      transition: transform 0.3s ease-in-out,
+                  opacity 0.3s ease-in-out;
+      visibility: visible;
+      z-index: 100;
+    }
+  }
+
+  &-item {
+    border-radius: 3px;
+    background: @c-basket-item;
+    font-size: @f-size-base - 2;
+    margin: 0 13px 15px 0;
+    padding: 12px 15px 8px 8px;
+    position: relative;
+  }
+
+  &-stuff-link {
+    border-radius: 4px;
+    background: @c-white;
+    border: 1px solid @c-tooltip-img-border;
+    height: 43px;
+    margin: 0 10px 10px 0;
+    float: left;
+    overflow: hidden;
+    width: 44px;
+  }
+
+  &-stuff-about {
+    height: 50px;
+    line-height: 130%;
+    margin-bottom: 5px;
+    overflow: hidden;
+    position: relative;
+    width: 170px;
+  }
+
+  &-stuff-title {
+    color: @c-black-lighter-x;
+    text-decoration: none;
+
+    &:visited {
+      color: @c-black-lighter-x;
+    }
+
+    &:hover {
+      color: @c-tooltip-hovered-link;
+    }
+  }
+
+  &-stuff-price {
+    padding: 0 0 0 2px;
+  }
+
+  &-sum {
+    font-size: @f-size-base;
+  }
+
+  &-remove {
+    background-image: @sp-main;
+    .sprite(@01);
+    color: @c-basket-border;
+    cursor: pointer;
+    font-family: @proxima-bold;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 1;
+
+    &:hover {
+      .sprite(@02);
+    }
+  }
+
+  &-is-empty,
+  &-calculations {
+    border-top: 1px solid @c-tooltip-img-border;
+    margin-bottom: 5px;
+    margin-right: 22px;
+    padding: 7px 0 7px 22px;
+  }
+
+  &-price-sum {
+    .font-anti;
+    font-family: @proxima-bold;
+    margin-bottom: 1px;
+  }
+
+  &-info {
+    color: @c-grey-text-main;
+    font-size: @f-size-base - 2;
+    margin-bottom: 1px;
+  }
+
+  &-policy,
+  &-rewatch {
+    border-bottom: 1px solid @c-tooltip-img-border;
+    color: @c-tooltip-img-border;
+    display: inline-block;
+    font-family: @proxima-light;
+    font-size: @f-size-base;
+    margin: 0 0 5px;
+    padding: 0;
+    text-decoration: none !important;
+
+    &:visited {
+      color: @c-tooltip-img-border;
+    }
+
+    &:hover {
+      color: @c-black-lighter-x;
+    }
+  }
+}
+
+
 // Button order from dropdown:
 .btn-pink {
   .font-anti;
@@ -1446,7 +1487,8 @@ h3 {
   margin-bottom: 10px;
   min-height: 37px;
   padding: 5px 12px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, .75);
+  text-shadow: 1px 1px 2px fade(@c-black, 75%);
+  text-decoration: none;
 
   &:hover {
     background: @c-btn-red-hovered;
