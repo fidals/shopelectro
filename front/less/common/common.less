@@ -2244,80 +2244,34 @@ a.main-link {
       padding: 3px 5px;
     }
 
-    a:hover {
-      span {
+
+    a {
+      color: @c-black-lighter-x;
+      display: block;
+      text-decoration: none;
+      border-radius: 4px;
+
+      &:hover span {
         color: @c-black;
       }
 
-      span:first-child {
+      span {
         color: @c-blue-cats-bg;
-      }
-
-      .label {
-        border-radius: 0;
-        background: url("@{img-path}/icons.png") -52px -44px no-repeat;
-        color: @c-white;
-        display: inline-block;
-        height: 34px;
+        display: table-cell;
+        font-size: @f-size-base;
         font-family: @proxima;
-        font-size: @f-size-base - 4;
-        font-style: normal;
-        font-weight: normal;
-        line-height: 27px;
-        margin: 0 3px 0 0;
-        padding: 3px 3px 0 0;
-        text-align: center;
-        width: 34px;
-      }
+        height: 34px;
+        text-align: right;
+        vertical-align: middle;
+        width: 210px;
 
-      .links {
-        display: block;
-        height: auto;
-        color: @c-black-lighter-x;
-        font: 12px @proxima;
-
-        a {
-          .link-style;
-          display: inline-block;
-          margin: 0 2px;
-          color: @c-blue-dark;
-          font: 12px @proxima;
-        }
-
-        a:hover {
+        &:first-child {
           color: @c-black-lighter-x;
-          background: none;
+          font-family: @proxima-light;
+          text-align: left;
+          width: 85%;
         }
       }
-    }
-  }
-}
-
-a.ui-corner-all {
-  color: @c-black-lighter-x;
-  display: block;
-  text-decoration: none;
-  border-radius: 4px;
-
-  &:hover {
-    color: @c-black-lighter-x;
-  }
-
-  span {
-    color: @c-blue-cats-bg;
-    display: table-cell;
-    font-size: @f-size-base;
-    font-family: @proxima;
-    height: 34px;
-    text-align: right;
-    vertical-align: middle;
-    width: 210px;
-
-    &:first-child {
-      color: @c-black-lighter-x;
-      font-family: @proxima-light;
-      text-align: left;
-      width: 85%;
     }
   }
 }

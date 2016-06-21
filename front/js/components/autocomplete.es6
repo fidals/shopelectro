@@ -39,7 +39,7 @@ const autoComplete = new autoComplete({
     };
     const itemHtml = `
       <div class="autocomplete-suggestion" data-val="${context.itemName}">
-        <a class="ui-corner-all" href="${context.url}">${context.name}${context.price}</a>
+        <a href="${context.url}">${context.name}${context.price}</a>
       </div>
     `;
     return itemHtml;
