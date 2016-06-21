@@ -5,6 +5,7 @@ NOTE: They all should be 'zero-logic'. All logic should live in respective appli
 """
 
 from itertools import chain
+from typing import List
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -140,12 +141,12 @@ def blog_post(request, type_=''):
     })
 
 
-def find_model_names(model: models.Model, search_term: str):
+def find_model_names(model: models.Model, search_term: str, limit=20):
     """
     Returns related names gave model
     """
 
-    return model.objects.filter(name__icontains=search_term).values('name')
+    return model.objects.filter(name__icontains=search_term)[:limit]
 
 
 def admin_autocomplete(request):
@@ -161,10 +162,46 @@ def admin_autocomplete(request):
         return
 
     query_objects = find_model_names(model_map[page_term], search_term)
-    names = [item['name'] for item in query_objects]
+    names = [item.name for item in query_objects]
 
     return JsonResponse(names, safe=False)
 
+
+def autocomplete(request):
+
+    def prepare_products(items: List[models.Model]) -> List[dict]:
+        items_data = [{
+            'name': item.name,
+            'price': item.price,
+            'url': item.get_absolute_url(),
+        } for item in items]
+        return items_data
+
+    def prepare_categories(items: List[models.Model]) -> List[dict]:
+        items_data = [{
+            'name': item.name,
+            'url': item.get_absolute_url(),
+        } for item in items]
+        return items_data
+
+    def last_item():
+        return {
+            'type': 'see_all',
+            'name': 'Смотреть все результаты',
+        }
+
+    search_term = request.GET['q']
+
+    result_categories = find_model_names(Category, search_term)
+    prepared_categories = prepare_categories(result_categories)
+
+    products_limit = 20 - len(prepared_categories)
+    result_products = find_model_names(Product, search_term, products_limit)
+    prepared_products = prepare_products(result_products)
+
+    result_items = prepared_categories + prepared_products + [last_item()]
+
+    return JsonResponse(result_items, safe=False)
 
 
 @require_POST
@@ -269,7 +306,6 @@ def yandex_aviso(request):
                   'ecommerce/yandex_aviso.xml',
                   {'invoice': invoice_id},
                   content_type='application/xhtml+xml')
-
 def search(request):
 
     def find_items(search_term: str, model: models.Model):
@@ -294,12 +330,3 @@ def search(request):
         'products': products,
         'query': term,
     })
-
-
-def autocomplete(request):
-    search_term = request.GET['q']
-
-    query_objects = find_model_names(Product, search_term)
-    names = [item['name'] for item in query_objects]
-
-    return JsonResponse(names, safe=False)

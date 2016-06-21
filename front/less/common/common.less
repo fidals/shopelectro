@@ -2206,3 +2206,118 @@ a.main-link {
   padding: 7px 0 0;
   margin: 0;
 }
+
+.autocomplete-suggestions {
+  background: @c-white;
+  border: 1px solid @c-grey-body-main;
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 3px 7px -2px @c-subway-station;
+  margin: 0 10px 15px 10px;
+  padding: 10px 10px 0;
+  position: relative;
+  width: 572px !important; // NEED TO override inline width;
+  z-index: 4;
+
+  div {
+    border-bottom: 1px dotted @c-tooltip-img-border;
+    display: block;
+    cursor: pointer;
+    font-size: @f-size-base - 1;
+    line-height: 18px;
+    min-height: 40px;
+    padding: 3px 5px;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: @c-block-link-hover;
+    }
+
+    &:last-child {
+      border-bottom: none;
+      color: @c-black-lighter-x;
+      font-family: @proxima-light;
+      font-size: @f-size-base;
+      padding: 11px 5px 0;
+    }
+
+    &:first-child {
+      padding: 3px 5px;
+    }
+
+    a:hover {
+      span {
+        color: @c-black;
+      }
+
+      span:first-child {
+        color: @c-blue-cats-bg;
+      }
+
+      .label {
+        border-radius: 0;
+        background: url("@{img-path}/icons.png") -52px -44px no-repeat;
+        color: @c-white;
+        display: inline-block;
+        height: 34px;
+        font-family: @proxima;
+        font-size: @f-size-base - 4;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 27px;
+        margin: 0 3px 0 0;
+        padding: 3px 3px 0 0;
+        text-align: center;
+        width: 34px;
+      }
+
+      .links {
+        display: block;
+        height: auto;
+        color: @c-black-lighter-x;
+        font: 12px @proxima;
+
+        a {
+          .link-style;
+          display: inline-block;
+          margin: 0 2px;
+          color: @c-blue-dark;
+          font: 12px @proxima;
+        }
+
+        a:hover {
+          color: @c-black-lighter-x;
+          background: none;
+        }
+      }
+    }
+  }
+}
+
+a.ui-corner-all {
+  color: @c-black-lighter-x;
+  display: block;
+  text-decoration: none;
+  border-radius: 4px;
+
+  &:hover {
+    color: @c-black-lighter-x;
+  }
+
+  span {
+    color: @c-blue-cats-bg;
+    display: table-cell;
+    font-size: @f-size-base;
+    font-family: @proxima;
+    height: 34px;
+    text-align: right;
+    vertical-align: middle;
+    width: 210px;
+
+    &:first-child {
+      color: @c-black-lighter-x;
+      font-family: @proxima-light;
+      text-align: left;
+      width: 85%;
+    }
+  }
+}
