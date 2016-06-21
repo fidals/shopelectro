@@ -3,15 +3,8 @@
 {% block title %}Результаты поиска{% endblock %}
 
 {% block content %}
-	<div class="container">
+  <div class="container">
     {% include 'shopelectro/search/form.html' %}
-
-    {% for product in products %}
-      <div class="par-header">
-        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
-        <p class="search-type-res"> Продукт </p>
-      </div>
-    {% endfor %}
 
     {% for category in categories %}
       <div class="par-header">
@@ -19,5 +12,12 @@
         <p class="search-type-res"> Категория </p>
       </div>
     {% endfor %}
-	</div>
+
+    {% for product in products %}
+      <div class="par-header">
+        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+        <p class="search-type-res"> Продукт </p>
+      </div>
+    {% endfor %}
+  </div>
 {% endblock %}

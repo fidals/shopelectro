@@ -155,6 +155,9 @@ BASE_URL = 'https://www.shopelectro.ru'
 
 IMAGE_THUMBNAIL = 'images/logo.png'
 
+AUTOCOMPLETE_LIMIT = 20
+SEARCH_LIMIT = 500
+
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 # Uncomment for http->https change

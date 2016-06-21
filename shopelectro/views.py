@@ -4,7 +4,6 @@ Shopelectro views.
 NOTE: They all should be 'zero-logic'. All logic should live in respective applications.
 """
 
-from itertools import chain
 from typing import List
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
@@ -141,28 +140,19 @@ def blog_post(request, type_=''):
     })
 
 
-def find_model_names(model: models.Model, search_term: str, limit=20):
-    """
-    Returns related names gave model
-    """
-
-    return model.objects.filter(name__icontains=search_term)[:limit]
-
-
 def admin_autocomplete(request):
     """
     Returns autocompleted names as response.
     """
 
     model_map = {'product': Product, 'category': Category}
-    search_term = request.GET['q']
-    page_term = request.GET['pageType']
-
-    if page_term not in ['product', 'category']:
+    term = request.GET['q']
+    page_type = request.GET['pageType']
+    if page_type not in ['product', 'category']:
         return
 
-    query_objects = find_model_names(model_map[page_term], search_term)
-    names = [item.name for item in query_objects]
+    result_items = model_map[page_type].search(term)
+    names = [item.name for item in result_items]
 
     return JsonResponse(names, safe=False)
 
@@ -174,6 +164,7 @@ def autocomplete(request):
             'name': item.name,
             'price': item.price,
             'url': item.get_absolute_url(),
+            'type': 'product',
         } for item in items]
         return items_data
 
@@ -181,6 +172,7 @@ def autocomplete(request):
         items_data = [{
             'name': item.name,
             'url': item.get_absolute_url(),
+            'type': 'category',
         } for item in items]
         return items_data
 
@@ -190,15 +182,17 @@ def autocomplete(request):
             'name': 'Смотреть все результаты',
         }
 
-    search_term = request.GET['q']
+    term = request.GET['q']
+    limit = settings.AUTOCOMPLETE_LIMIT
 
-    result_categories = find_model_names(Category, search_term)
+    result_categories = Category.search(term, limit)
+    products_limit = limit - len(result_categories)
+    result_products = Product.search(term, products_limit)
+    if not (len(result_categories) + len(result_products)):
+        return JsonResponse({})
+
     prepared_categories = prepare_categories(result_categories)
-
-    products_limit = 20 - len(prepared_categories)
-    result_products = find_model_names(Product, search_term, products_limit)
     prepared_products = prepare_products(result_products)
-
     result_items = prepared_categories + prepared_products + [last_item()]
 
     return JsonResponse(result_items, safe=False)
@@ -308,22 +302,16 @@ def yandex_aviso(request):
                   content_type='application/xhtml+xml')
 def search(request):
 
-    def find_items(search_term: str, model: models.Model):
-        start_names = model.objects.filter(name__istartswith=search_term)
-        middle_names = model.objects.filter(name__icontains=search_term)\
-            .exclude(name__istartswith=search_term)
-        if not (len(start_names) + len(middle_names)):
-            return None
-        return chain(start_names.iterator(), middle_names.iterator())
-
     term = request.GET['search']
+    limit = settings.SEARCH_LIMIT
 
-    categories = find_items(term, Category)
-    products = find_items(term, Product)
-    has_items = products is not None or categories is not None
+    categories = Category.search(term, limit)
+    products_limit = limit - len(categories)
+    products = Product.search(term, products_limit)
+    total_count = len(products) + len(categories)
 
     template = 'shopelectro/search/{}.html'.format(
-        'results' if has_items else 'no_results')
+        'results' if total_count else 'no_results')
 
     return render(request, template, {
         'categories': categories,
