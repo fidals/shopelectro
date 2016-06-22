@@ -9,6 +9,8 @@ Run `pip install --user -r requirements.txt`
 - `python manage.py import` - import catalog from 1C, create all prices.
 - `python manage.py excel` - generate Excel file with prices
 - `python manage.py price` - generate .yml price files for YM and Price.ru.
+- `python manage.py redirects` - insert the old and new path to django_redirect table and update default domain name to
+                                 the actual.
 
 ### Running Selenium-based tests
 - Install Selenium: `pip install selenium`
