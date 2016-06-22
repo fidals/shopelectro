@@ -17,11 +17,19 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.conf import settings
 
+from catalog.models import Product
+
 
 def hover(browser, element):
     """Perform a hover over an element."""
     hover_action = ActionChains(browser).move_to_element(element)
     hover_action.perform()
+
+
+class CategoryPageSeleniumTests(TestCase):
+    """
+    Selenium-based tests for category page UI.
+    """
 
 
 def wait(seconds=1):
@@ -565,6 +573,11 @@ class AdminPageSeleniumTests(TestCase):
 
         self.browser.quit()
 
+    def go_to_products_list(self):
+        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link.click()
+        time.sleep(1)
+
     def test_login(self):
         """
         We are able to login to Admin page.
@@ -577,10 +590,7 @@ class AdminPageSeleniumTests(TestCase):
         Admin products page has icon links for Edit\View.
         And it should has Search field.
         """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
-        wait()
+        self.go_to_products_list()
         edit_links = self.browser.find_element_by_class_name('field-links')
         search_field = self.browser.find_element_by_id('changelist-search')
         self.assertTrue(edit_links)
@@ -591,10 +601,7 @@ class AdminPageSeleniumTests(TestCase):
         Price filter is able to filter products by set range.
         In this case we filter products with 1000 - 2000 price range.
         """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
-        wait()
+        self.go_to_products_list()
 
         filter_link = self.browser.find_element_by_xpath(
             self.product_price_filter_link)
@@ -605,14 +612,11 @@ class AdminPageSeleniumTests(TestCase):
 
         self.assertTrue(first_product_price >= 1000)
 
-    def test_is_active_filter(self):
+    def test_filter_active_items(self):
         """
         Activity filter returns only active or non active items.
         """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
-        wait()
+        self.go_to_products_list()
 
         filter_link = self.browser.find_element_by_xpath(
             self.show_active_products_link)
@@ -624,21 +628,39 @@ class AdminPageSeleniumTests(TestCase):
 
         self.assertTrue(first_product_state == 'true')
 
+    def test_filter_not_active_items(self):
+        """
+        Filter should can find not active items
+        """
+        def make_product_inactive(product):
+            product.is_active = False
+            product.save()
+
+        def make_product_active(product):
+            product.is_active = True
+            product.save()
+
+        self.go_to_products_list()
+
+        # we should have at least one not active product to test
+        product = Product.objects.get(id=3076)
+        make_product_inactive(product)
+
         filter_link = self.browser.find_element_by_xpath(
             self.show_nonactive_products_link)
         filter_link.click()
-        wait()
-        results = self.browser.find_element_by_class_name('paginator')
-        self.assertTrue('0' in results.text)
+        time.sleep(1)
+        first_product = self.browser.find_element_by_xpath(
+            self.products_activity_state_img)
+        first_product_state = first_product.get_attribute('alt')
+
+        make_product_active(product)
 
     def test_search_autocomplete(self):
         """
         Search field could autocomplete.
         """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
-        wait()
+        self.go_to_products_list()
 
         filter_link = self.browser.find_element_by_id('searchbar')
         filter_link.send_keys(self.autocomplete_text)

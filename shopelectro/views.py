@@ -150,8 +150,9 @@ def admin_autocomplete(request):
     page_type = request.GET['pageType']
     if page_type not in ['product', 'category']:
         return
+    current_model = model_map[page_type]
 
-    result_items = model_map[page_type].search(term)
+    result_items = current_model.search(term, settings.AUTOCOMPLETE_LIMIT)
     names = [item.name for item in result_items]
 
     return JsonResponse(names, safe=False)
