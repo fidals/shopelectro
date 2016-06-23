@@ -1,16 +1,23 @@
 const order = (() => {
   const DOM = {
-    fancybox: $('.fancybox'),
-    productCount: '.prod-count',
-    remove: '.btn-cart',
-    totalCount: $('.order-count'),
-    totalPrice: $('.order-sum'),
-    order: $('.js-order-contain'),
+    $fancybox: $('.fancybox'),
+    $order: $('.js-order-contain'),
+    yandexSubmit: '#btn-send-ya',
+    seSubmit: '#btn-send-se',
+    yandexForm: '#yandex-form',
+    productCount: '.js-prod-count',
+    remove: '.js-remove',
+    paymentOptions: 'input[name=payment_option]',
     orderForm: {
-      name: $('#id_name'),
-      phone: $('#id_phone'),
-      email: $('#id_email'),
-      city: $('#id_city'),
+      name: '#id_name',
+      phone: '#id_phone',
+      email: '#id_email',
+      city: '#id_city',
+    },
+    yandexOrderInfo: {
+      customer: 'input[name=customerNumber]',
+      order: 'input[name=orderNumber]',
+      payment: 'input[name=paymentType]'
     }
   };
 
@@ -40,29 +47,48 @@ const order = (() => {
       componentRestrictions: {
         country: 'ru',
       },
-    }
+    },
+    sePayments: ['cash', 'cashless'],
+    paymentKey: 'payment'
   };
 
   const init = () => {
     pluginsInit();
     setUpListeners();
-    fillInputs();
+    fillSavedInputs();
+    restoreSelectedPayment();
+    selectPaymentSubmit();
   };
 
   /**
-   * Fill inputs of a form.
-   * Implemented without jQuery because it badly handles dynamically added
-   * elements.
+   * Fill inputs, which have saved to localstorage value.
+   * Runs on page load, and on every cart's update.
    */
-  const fillInputs = () => {
-    let getFieldByName = (name) => document.getElementById(`id_${name}`);
+  const fillSavedInputs = () => {
+    const getFieldByName = (name) => $(`#id_${name}`);
 
     for (let fieldName in DOM.orderForm) {
-      let field = getFieldByName(fieldName);
+      let $field = getFieldByName(fieldName);
       let savedValue = localStorage.getItem(fieldName);
-      if (savedValue && field) {
-        field.value = savedValue;
+      if ($field && savedValue) {
+        $field.val(savedValue);
       }
+    }
+  };
+
+  /**
+   * Select saved payment if there is one.
+   */
+  const restoreSelectedPayment = () => {
+    let savedPayment = localStorage.getItem(CONFIG.paymentKey);
+
+    if (savedPayment) {
+      const isSelected = ($option) => $option.val() === savedPayment;
+
+      $(DOM.paymentOptions).each((_, el) => {
+        let $inputOption = $(el);
+        $inputOption.attr('checked', isSelected($inputOption));
+      });
     }
   };
 
@@ -73,20 +99,18 @@ const order = (() => {
       let citiesAutocomplete = new google.maps.places.Autocomplete(
         cityField, CONFIG.citiesAutocomplete);
 
-      google.maps.event.addListener(citiesAutocomplete, 'place_changed', function () {
-        storeInput(DOM.orderForm.city);
-      });
+      google.maps.event.addListener(citiesAutocomplete, 'place_changed', () => storeInput($(DOM.orderForm.city)));
     };
 
     const fancyBoxStart = () => {
-      DOM.fancybox.fancybox(CONFIG.fancybox);
+      DOM.$fancybox.fancybox(CONFIG.fancybox);
     };
 
     const touchSpin = () => {
       $(DOM.productCount).TouchSpin(CONFIG.touchspin);
     };
 
-    DOM.orderForm.phone.mask('+9 (999) 999 99 99');
+    $(DOM.orderForm.phone).mask('+9 (999) 999 99 99');
 
     autocomplete();
     fancyBoxStart();
@@ -96,32 +120,116 @@ const order = (() => {
   /**
    * Event handler for changing product's count in Cart.
    * We wait at least 100ms every time the user pressed the button.
-   * @param event
    */
   const changeProductCount = (event) => {
     let productID = event.target.getAttribute('productId');
     let newCount = event.target.value;
     setTimeout(
-      changeInCart(productID, newCount).then((data) => mediator.publish('onCartUpdate', data)),
+      () => changeInCart(productID, newCount).then((data) => mediator.publish('onCartUpdate', data)),
       100
     );
 
   };
 
   /**
-   * We bind events to parent's elements, because we can't bind event to dynamically
-   * added element.
+   * Return name (which is value) of a selected payment option.
    */
+  const getSelectedPaymentName = () => {
+    let $selectedOption = $(DOM.paymentOptions + ':checked');
+    return $selectedOption.val();
+  };
+
+  /**
+   * Select appropriate submit button, based on selected payment option.
+   */
+  const selectPaymentSubmit = () => {
+    const selectSE = () => {
+      $yandexSubmit.addClass('hidden');
+      $seSubmit.removeClass('hidden');
+    };
+
+    const selectYandex = () => {
+      $seSubmit.addClass('hidden');
+      $yandexSubmit.removeClass('hidden');
+    };
+
+    let $yandexSubmit = $(DOM.yandexSubmit);
+    let $seSubmit = $(DOM.seSubmit);
+    let optionName = getSelectedPaymentName();
+    let isYandexPayment = CONFIG.sePayments.indexOf(optionName) === -1;
+
+    isYandexPayment ? selectYandex() : selectSE();
+    localStorage.setItem(CONFIG.paymentKey, optionName);
+  };
+
+  /**
+   * Return hash with customer's info from form.
+   */
+  const getCustomerInfo = () => {
+    let customerInfo = {};
+
+    $.each(DOM.orderForm, (name, field) => {
+      customerInfo[name] = $(field).val();
+    });
+
+    return customerInfo;
+  };
+
+  /**
+   * Submit Yandex order if user's phone is provided.
+   * It consists of several steps:
+   * 
+   * 1. Get customerNumber (which is a phone without any non-numeric chars)
+   * 2. Hit backend and save Order to DB. This step returns id of an order.
+   * 3. Fill Yandex-form
+   * 4. Submit Yandex-form.
+   */
+  const submitYandexOrder = (event) => {
+    event.preventDefault();
+
+    const getCustomerNumber = (phone) => phone.replace(/\D/g,'');
+    const fillYandexForm = (orderId) => {
+      $(DOM.yandexOrderInfo.order).val(orderId);
+      $(DOM.yandexOrderInfo.customer).val(getCustomerNumber(customerInfo.phone));
+      $(DOM.yandexOrderInfo.payment).val(getSelectedPaymentName());
+    };
+
+    let customerInfo = getCustomerInfo();
+
+    if (!isPhoneValid(customerInfo.phone)) {
+      // TODO: modal (Yoz)
+      alert('Введите телефон.');
+      return;
+    }
+
+    sendYandexOrder(customerInfo).then((id) => {
+      fillYandexForm(id);
+      $(DOM.yandexForm).submit();
+    });
+
+  };
+  
   const setUpListeners = () => {
-    DOM.order.on('change', DOM.productCount, (event) => setTimeout(changeProductCount(event), 100));
-    DOM.order.on('click', DOM.remove, (event) => remove(event.target.getAttribute('productId')));
-    DOM.order.on('keyup', 'input', (event) => storeInput($(event.target)));
+    /**
+     * Bind events to parent's elements, because we can't bind event to dynamically added element.
+     * @param eventName - standard event name
+     * @param element - element, which is a child of parent's element (DOM.$order)
+     * @param handler - callable which will be dispatched on event
+     */
+    const subscribeOrderEvent = (eventName, element, handler) => DOM.$order.on(eventName, element, handler);
+    let getEventTarget = (event) => $(event.target);
+    
+    subscribeOrderEvent('change', DOM.productCount, (event) => changeProductCount(event));
+    subscribeOrderEvent('click', DOM.remove, (event) => remove(event.target.getAttribute('productId')));
+    subscribeOrderEvent('keyup', 'input', (event) => storeInput(getEventTarget(event)));
+    subscribeOrderEvent('click', DOM.paymentOptions, (event) => selectPaymentSubmit(event.target.getAttribute('value')));
+    subscribeOrderEvent('click', DOM.yandexSubmit, submitYandexOrder);
+    
     mediator.subscribe('onCartUpdate', renderTable, pluginsInit);
   };
 
   /**
-   * Stores inputted value into LocalStorage.
-   * TODO: maybe we should move all the LS-logic into separate file, also.
+   * Store inputted value into LocalStorage.
    */
   const storeInput = (target) => {
     localStorage.setItem(target.attr('name'), target.val());
@@ -137,12 +245,14 @@ const order = (() => {
   };
   
   /**
-   * Renders table and form.
+   * Render table and form.
    * After that, fill in saved form data.
    */
   const renderTable = (event, data) => {
-    DOM.order.html(data.table);
-    fillInputs();
+    DOM.$order.html(data.table);
+    fillSavedInputs();
+    restoreSelectedPayment();
+    selectPaymentSubmit();
   };
 
   init();

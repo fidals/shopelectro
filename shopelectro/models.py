@@ -31,8 +31,8 @@ class Product(catalog_models.Product):
         product_folder = '{}{}'.format(self.images_folder, self.id)
         static = os.path.join(settings.STATIC_ROOT, product_folder)
         try:
-            images_array = [os.path.normpath(
-                                os.path.join(product_folder, file))
+            images_array = [os.path.normpath(os.path.join(product_folder,
+                                                          file))
                             for file in os.listdir(static)
                             if not file.startswith('small')]
         except FileNotFoundError:

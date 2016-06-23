@@ -41,12 +41,20 @@ shop_urls = [
     url(r'^success-order/$', views.success_order, name='order_success'),
     url(r'^order-call/$', views.order_call),
     url(r'^order/$', views.order_page, name='order_page'),
+    url(r'^yandex-order/$', views.yandex_order),
 ]
 
 cached_view = cache_page(config.cached_time())
 
+service_urls = [
+    url(r'^ya-kassa/aviso/$', views.yandex_aviso),
+    url(r'^ya-kassa/check/$', views.yandex_check),
+]
+
+
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^test-ya-kassa/$', views.test_yandex, name='test_yandex'),
     url(r'^admin/', admin.site.urls),
     url(r'^admin-autocomplete/', views.admin_autocomplete),
     url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
@@ -55,9 +63,10 @@ urlpatterns = [
     url(r'^catalog/', include('catalog.urls')),
     url(r'^blog/posts/(?P<type_>[\w-]+)/$', views.blog_post, name='posts'),
     url(r'^blog/', include('blog.urls')),
-    url(r'^sitemap\.xml$', cached_view(sitemap), {
-            'sitemaps': sitemaps
-        },
+    url(r'^shop/', include(shop_urls)),
+    url(r'^service/', include(service_urls)),
+    url(r'^sitemap\.xml$',
+        cached_view(sitemap),
+        {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
-    url(r'^shop/', include(shop_urls))
 ]

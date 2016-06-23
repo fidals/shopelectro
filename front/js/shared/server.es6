@@ -8,7 +8,6 @@ const sendOrderCall = (phone, time, url) => {
   return $.post(
     '/shop/order-call/',
     {
-      csrfmiddlewaretoken: Cookies.get('csrftoken'),
       phone: phone,
       time: time,
       url: url
@@ -19,7 +18,7 @@ const sendOrderCall = (phone, time, url) => {
 const fetchProducts = (url) => fetch(url).then((response) => response.text());
 
 const sendViewType = (event, viewType) => {
-  $.post('/set-view-type/', {csrfmiddlewaretoken: Cookies.get('csrftoken'), view_type: viewType});
+  $.post('/set-view-type/', {view_type: viewType});
 };
 
 /**
@@ -31,7 +30,6 @@ const addToCart = (productId, quantity) => {
   return $.post(
     '/shop/cart-add/',
     {
-      csrfmiddlewaretoken: Cookies.get('csrftoken'),
       quantity: quantity,
       product: productId
     }
@@ -41,12 +39,7 @@ const addToCart = (productId, quantity) => {
 /**
  * Flush (or clear) the cart on backend.
  */
-const flushCart = () => {
-  return $.post(
-    '/shop/cart-flush/',
-    {csrfmiddlewaretoken: Cookies.get('csrftoken')}
-  );
-};
+const flushCart = () => $.post('/shop/cart-flush/');
 
 /**
  * Handle one-click-buy feature. Sends:
@@ -58,7 +51,6 @@ const oneClickBuy = (productId, quantity, phone) => {
   return $.post(
     '/shop/one-click-buy/',
     {
-      csrfmiddlewaretoken: Cookies.get('csrftoken'),
       product: productId,
       quantity: quantity,
       phone: phone
@@ -74,7 +66,6 @@ const removeFromCart = (productId) => {
   return $.post(
     '/shop/cart-remove/',
     {
-      csrfmiddlewaretoken: Cookies.get('csrftoken'),
       product: productId
     }
   );
@@ -89,9 +80,15 @@ const changeInCart = (productId, quantity) => {
   return $.post(
     '/shop/cart-change/',
     {
-      csrfmiddlewaretoken: Cookies.get('csrftoken'),
       product: productId,
       quantity: quantity
     }
+  );
+};
+
+const sendYandexOrder = (data) => {
+  return $.post(
+    '/shop/yandex-order/',
+    data
   );
 };

@@ -94,9 +94,9 @@
   </div>
   <ul class="stuff-list stuff-list-03 list-unstyled">
     {% for item in category_tile.chargers %}
-        <li class="stuff-item">
-          <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
-        </li>
+      <li class="stuff-item">
+        <a class="stuff-link" href="{% url 'category' item.alias %}">{{ item.name }}</a>
+      </li>
     {% endfor %}
   </ul>
 

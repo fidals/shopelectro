@@ -192,6 +192,12 @@ HREFS = {
 }
 
 SHOP = {
+    'id': '39965',
+    'scid': '27590',
+    'success_url': 'https://www.shopelectro.ru/shop/pay-success/',
+    'fail_url': 'https://www.shopelectro.ru/',
+    'cps_phone': '+78124163200',
+    'cps_email': 'info@shopelectro.ru',
     'local_delivery_cost': 300,
     'local_delivery_cost_threshold': 5000
 }
@@ -199,5 +205,6 @@ SHOP = {
 EMAIL_SUBJECTS = {
     'call': 'Обратный звонок',
     'order': 'Заказ №{0.id}',
+    'yandex_order': 'Заказ №{0.id} | Яндекс.Касса',
     'one_click': 'Заказ в один клик №{}',
 }

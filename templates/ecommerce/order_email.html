@@ -31,10 +31,10 @@
     </p>
     <p>Номер заказа: <b>{{ order.id }}</b></p>
     <table width="100%" cellspacing="0" cellpadding="3px" border="0"
-         style="font-size:100%; margin-bottom: 1.15em; margin-left: -10px; margin-top: 0.385em;">
+           style="font-size:100%; margin-bottom: 1.15em; margin-left: -10px; margin-top: 0.385em;">
       <tbody>
       <table width="100%" cellspacing="0" cellpadding="3px" border="0"
-           style="font-size:100%; margin-bottom: 1.15em; margin-left: -10px; margin-top: 0.385em;">
+             style="font-size:100%; margin-bottom: 1.15em; margin-left: -10px; margin-top: 0.385em;">
         <tbody>
         <tr>
           <td width="5%" align="left" style="padding:5px 10px; font-weight:bold;">Артикул</td>
@@ -79,7 +79,7 @@
 
     <ul style="margin: 0.77em 0 1.15em;">
       {% if order.payment_option %}
-        <li style="margin: 0.385em 0;">Тип платежа: <b style="font-weight:bold;">{{ payment_name }}</b></li>
+        <li style="margin: 0.385em 0;">Тип платежа: <b style="font-weight:bold;">{{ order.payment_name }}</b></li>
       {% endif %}
       <li style="margin: 0.385em 0;">Телефон: <b style="font-weight:bold;">{{ order.phone }}</b></li>
       {% if order.email %}
@@ -98,7 +98,8 @@
         <td>проспект Елизарова 38А, офис 312</td>
       </tr>
     </table>
-    <div style="width: 100%; text-align: right; border-top:1px solid rgb(242, 242, 242); padding:5px 0; font-style:italic;">
+    <div
+        style="width: 100%; text-align: right; border-top:1px solid rgb(242, 242, 242); padding:5px 0; font-style:italic;">
       <span style="font: bold 1.077em arial;"></span>
       <br/>
       <em></em>

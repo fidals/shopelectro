@@ -1,6 +1,7 @@
 Django==1.9.5
 django-mptt == 0.8.3
 selenium
+selenium-requests
 psycopg2
 openpyxl
 -e git+https@github.com:fidals/refarm-catalog.git#egg=refarm-catalog
