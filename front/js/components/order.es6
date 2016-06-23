@@ -132,7 +132,6 @@ const order = (() => {
   };
 
   /**
-   * Helper function.
    * Return name (which is value) of a selected payment option.
    */
   const getSelectedPaymentName = () => {
