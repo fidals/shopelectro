@@ -29,7 +29,7 @@ const autocomplete = (() => {
   const renderLastItem = (item, term) => {
     const searchPageUrl = '/search/' + '?search=' + term;
     return `
-      <div class="autocomplete-suggestion">
+      <div class="autocomplete-suggestion autocomplete-last-item">
         <a class="ui-corner-all" href="${searchPageUrl}">${item.name}</a>
       </div>
     `;

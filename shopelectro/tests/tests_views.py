@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Chrome
 
+from selenium.webdriver.common.keys import Keys
 from django.core.management import call_command
 from django.test import TestCase
 from django.conf import settings
@@ -739,3 +740,81 @@ class SitemapPageTests(TestCase):
         response = self.client.get(model_url_text)
 
         self.assertEqual(response.status_code, 200)
+
+
+class SearchTests(TestCase):
+    """
+    Selenium-based tests for Search
+    """
+
+    def setUp(self):
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(5)
+        self.browser.get(settings.LOCALHOST)
+        self.input = self.browser.find_element_by_class_name('js-search-input')
+        self.autocomplete = self.browser.find_element_by_class_name(
+            'autocomplete-suggestions ')
+        self.query = 'Батар'
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_autocomplete_can_expand_and_collapse(self):
+        """
+        Autocomplete should minimize during user typing correct search query
+        Autocomplete should minimize by removing search query
+        """
+
+        self.input.send_keys(self.query)  # enter correct search term ...
+        wait()
+        # ... and autocomplete expands
+        self.assertTrue(self.autocomplete.is_displayed())
+
+        self.input.send_keys(Keys.BACKSPACE*len(self.query))  # remove search term ...
+        wait()
+        # ... and autocomplete collapse
+        self.assertFalse(self.autocomplete.is_displayed())
+
+    def test_autocomplete_item_link(self):
+        """Every autocomplete item should link on category page by click"""
+        self.input.send_keys(self.query)  # enter correct search term ...
+        wait()
+        first_item = self.autocomplete.find_element_by_css_selector(
+            ':first-child')
+        first_item.click()
+        wait()
+        self.assertTrue('/catalog/category/' in self.browser.current_url)
+
+    def test_autocomplete_see_all_item(self):
+        """
+        Autocomplete should contain "see all" item.
+        "See all" item links on search results page
+        """
+        self.input.send_keys(self.query)  # enter correct search term ...
+        wait()
+        last_item = self.autocomplete.find_element_by_class_name(
+            'autocomplete-last-item')
+        last_item.click()
+        wait()
+        self.assertTrue('/search/' in self.browser.current_url)
+
+    def test_search_have_results(self):
+        """Search results page should contain links on relevant pages"""
+        self.input.send_keys(self.query)
+        wait()
+        search_form = self.browser.find_element_by_class_name('search-form')
+        search_form.submit()
+        wait()
+        self.assertTrue(self.browser.find_element_by_link_text('Батарейки AA'))
+        self.assertTrue(self.browser.find_element_by_link_text(
+            'Батарейки часовые'))
+        self.assertTrue(self.browser.find_element_by_link_text(
+            'Батарейка Energizer BASE Alkaline, 1.5 В, LR03 BL2'))
+
+    def test_search_results_empty(self):
+        """Search results for wrong term should contain empty result set"""
+        self.input.send_keys('Not existing search query')
+        button_submit = self.browser.find_element_by_id('search-submit')
+        button_submit.click()
+        h1 = self.browser.find_element_by_tag_name('h1')
+        self.assertTrue('По вашему запросу ничего не найдено' == h1.text)
