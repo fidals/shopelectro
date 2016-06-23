@@ -628,33 +628,29 @@ class AdminPageSeleniumTests(TestCase):
 
         self.assertTrue(first_product_state == 'true')
 
-    def test_filter_not_active_items(self):
+    def test_is_active_filter(self):
         """
-        Filter should can find not active items
+        Activity filter returns only active or non active items.
         """
-        def make_product_inactive(product):
-            product.is_active = False
-            product.save()
-
-        def make_product_active(product):
-            product.is_active = True
-            product.save()
-
         self.go_to_products_list()
-
-        # we should have at least one not active product to test
-        product = Product.objects.get(id=3076)
-        make_product_inactive(product)
+        wait()
 
         filter_link = self.browser.find_element_by_xpath(
-            self.show_nonactive_products_link)
+            self.show_active_products_link)
         filter_link.click()
-        time.sleep(1)
+        wait()
         first_product = self.browser.find_element_by_xpath(
             self.products_activity_state_img)
         first_product_state = first_product.get_attribute('alt')
 
-        make_product_active(product)
+        self.assertTrue(first_product_state == 'true')
+
+        filter_link = self.browser.find_element_by_xpath(
+            self.show_nonactive_products_link)
+        filter_link.click()
+        wait()
+        results = self.browser.find_element_by_class_name('paginator')
+        self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
         """
