@@ -244,6 +244,7 @@ class ProductPage(TestCase):
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(10)
         self.browser.get(self.test_product_page)
+        self.one_click = self.browser.find_element_by_id('btn-one-click-order')
 
     def tearDown(self):
         """Closes selenium's session."""
@@ -267,12 +268,10 @@ class ProductPage(TestCase):
         for phone number
         """
         button_order = self.browser.find_element_by_id('btn-to-basket')
-        button_one_click_order = self.browser.find_element_by_id(
-            'btn-one-click-order')
         input_one_click_order = self.browser.find_element_by_id(
             'input-one-click-phone')
         self.assertTrue(button_order)
-        self.assertTrue(button_one_click_order)
+        self.assertTrue(self.one_click)
         self.assertTrue(input_one_click_order)
 
     def test_fancybox(self):
@@ -298,25 +297,19 @@ class ProductPage(TestCase):
     def test_one_click_buy_disabled_with_empty_phone(self):
         """By default .btn-one-click-order should be disabled"""
         self.browser.find_element_by_id('input-one-click-phone').clear()
-        button_one_click_order = self.browser.find_element_by_id(
-            'btn-one-click-order')
-        self.assertTrue(button_one_click_order.get_attribute('disabled'))
+        self.assertTrue(self.one_click.get_attribute('disabled'))
 
     def test_one_click_buy_active_with_phone_filled(self):
         """.btn-one-click-order should be active if phone is filled."""
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys('22222222222')
-        button_one_click_order = self.browser.find_element_by_id(
-            'btn-one-click-order')
-        self.assertFalse(button_one_click_order.get_attribute('disabled'))
+        self.assertFalse(self.one_click.get_attribute('disabled'))
 
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys('22222222222')
-        button_one_click_order = self.browser.find_element_by_id(
-            'btn-one-click-order')
-        button_one_click_order.click()
+        self.one_click.click()
         wait()
         self.assertEqual(self.browser.current_url, success_order_page)
 
@@ -411,17 +404,15 @@ class OrderPage(TestCase):
         table_count, dropdown_count = get_counts()
         self.assertEqual(table_count, '5')
         self.assertEqual(dropdown_count, table_count)
-        add_one_more = self.browser.find_element_by_xpath(
-            '//*[@id="4526"]/td[4]/div[2]/span[3]/button[1]/i')
-        add_one_more.click()
+        self.browser.find_element_by_xpath(
+            '//*[@id="4526"]/td[4]/div[2]/span[3]/button[1]/i').click()
         wait()
         table_count, dropdown_count = get_counts()
         self.assertEqual(table_count, '6')
         self.assertEqual(table_count, dropdown_count)
         wait()
-        first_row_remove = self.browser.find_element_by_xpath(
-            '//*[@id="4526"]/td[6]/img')
-        first_row_remove.click()
+        self.browser.find_element_by_xpath(
+            '//*[@id="4526"]/td[6]/img').click()
         wait()
         table_count, dropdown_count = get_counts()
         self.assertEqual(table_count, dropdown_count)
@@ -435,7 +426,7 @@ class OrderPage(TestCase):
         wait()
         count_input = self.browser.find_element_by_xpath(
             '//*[@id="4023"]/td[4]/div[2]/input')
-        product_count, total_count = str(2), str(6)
+        product_count, total_count = '2', '6'
         self.assertTrue(product_count in count_input.get_attribute('value'))
         self.assertTrue(
             total_count in self.browser.find_element_by_class_name('js-cart-size').text)
@@ -473,8 +464,8 @@ class OrderPage(TestCase):
         self.browser.find_element_by_id('id_payment_option_2').click()
         self.fill_and_submit_form(yandex=True)
         wait()
-        yan_or = 'http://127.0.0.1:8000/test-ya-kassa/'
-        self.assertEqual(self.browser.current_url, yan_or)
+        yandex_order = settings.LOCALHOST + 'test-ya-kassa/'
+        self.assertEqual(self.browser.current_url, yandex_order)
 
 
 class BlogPageSeleniumTests(TestCase):
@@ -721,52 +712,6 @@ class SitemapPageSeleniumTests(TestCase):
         model_url = self.browser.find_element_by_id('collapsible3')
         model_url_text = model_url.find_element_by_class_name(
             'collapsible-content').text[slice_start_index:]
-        self.browser.get(settings.LOCALHOST + model_url_text)
-
-        header_wrapper = self.browser.find_elements_by_class_name('header')
-        self.assertGreater(len(header_wrapper), 0)
-
-
-class SitemapPageSeleniumTests(TestCase):
-    """
-    Selenium-based tests for Sitemap.
-    """
-
-    def setUp(self):
-        """
-        Sets up testing url and dispatches selenium webdriver.
-        """
-
-        self.sitemap_page = settings.LOCALHOST + 'sitemap.xml'
-        self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(5)
-
-        self.browser.get(self.sitemap_page)
-
-    def tearDown(self):
-        """
-        Closes selenium's session.
-        """
-
-        self.browser.quit()
-
-    def test_url_tags(self):
-        """
-        We should see <url> tags on Sitemap page.
-        """
-
-        url_tags = self.browser.find_elements_by_tag_name('url')
-        self.assertGreater(len(url_tags), 0)
-
-    def test_models_urls(self):
-        """
-        Sitemap page should to print correct urls for models.
-        """
-
-        slice_start_index = 22
-
-        model_url = self.browser.find_element_by_id('collapsible3')
-        model_url_text = model_url.find_element_by_class_name('collapsible-content').text[slice_start_index:]
         self.browser.get(settings.LOCALHOST + model_url_text)
 
         header_wrapper = self.browser.find_elements_by_class_name('header')

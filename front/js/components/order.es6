@@ -5,9 +5,9 @@ const order = (() => {
     yandexSubmit: '#btn-send-ya',
     seSubmit: '#btn-send-se',
     yandexForm: '#yandex-form',
-    productCount: '.prod-count',
-    remove: '.btn-cart',
-    paymentOptions: 'input[type=radio][name=payment_option]',
+    productCount: '.js-prod-count',
+    remove: '.js-remove',
+    paymentOptions: 'input[name=payment_option]',
     orderForm: {
       name: '#id_name',
       phone: '#id_phone',
@@ -87,7 +87,7 @@ const order = (() => {
 
       $(DOM.paymentOptions).each((_, el) => {
         let $inputOption = $(el);
-        isSelected($inputOption) ?  $inputOption.attr('checked', true) : $inputOption.attr('checked', false);
+        $inputOption.attr('checked', isSelected($inputOption));
       });
     }
   };
@@ -99,10 +99,7 @@ const order = (() => {
       let citiesAutocomplete = new google.maps.places.Autocomplete(
         cityField, CONFIG.citiesAutocomplete);
 
-      google.maps.event.addListener(citiesAutocomplete, 'place_changed', function () {
-        let $cityField = $(DOM.orderForm.city);
-        storeInput($cityField);
-      });
+      google.maps.event.addListener(citiesAutocomplete, 'place_changed', () => storeInput($(DOM.orderForm.city)));
     };
 
     const fancyBoxStart = () => {
@@ -177,7 +174,6 @@ const order = (() => {
     });
 
     return customerInfo;
-
   };
 
   /**

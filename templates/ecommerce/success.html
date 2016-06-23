@@ -3,34 +3,34 @@
 {% block title %}Спасибо за Ваш заказ{% endblock %}
 
 {% block content %}
-    <div class="container">
-        {% if yandex %}
-            <h1>Спасибо, Ваш заказ оплачен!</h1>
-        {% else %}
-            <h1>Заказ принят</h1>
-        {% endif %}
-        <div class="page-info-message">
-            <p>Номер вашего заказа {{ order.id }}</p>
-            <p>{% time_to_call %}</p>
-            {% if order.phone %}
-                <p>Контактный телефон: {{ order.phone }}</p>
-            {% endif %}
+  <div class="container">
+    {% if yandex %}
+      <h1>Спасибо, Ваш заказ оплачен!</h1>
+    {% else %}
+      <h1>Заказ принят</h1>
+    {% endif %}
+    <div class="page-info-message">
+      <p>Номер вашего заказа {{ order.id }}</p>
+      <p>{% time_to_call %}</p>
+      {% if order.phone %}
+        <p>Контактный телефон: {{ order.phone }}</p>
+      {% endif %}
 
-            {% if order.email %}
-                <p>Электронная почта: {{ order.email }}</p>
-            {% endif %}
+      {% if order.email %}
+        <p>Электронная почта: {{ order.email }}</p>
+      {% endif %}
 
-            {% if order.city %}
-                <p>Город: {{ order.city }}</p>
-            {% endif %}
-            <p>Режим работы:</p>
-            <ul class="working-hours">
-                <li>ПН-ПТ 10:00-18:00</li>
-                <li>ПТ 10:00-17:00</li>
-                <li>СБ-ВС - выходной</li>
-            </ul>
-            <a href="{% url 'index' %}">Вернуться на главную</a>
-        </div>
+      {% if order.city %}
+        <p>Город: {{ order.city }}</p>
+      {% endif %}
+      <p>Режим работы:</p>
+      <ul class="working-hours">
+        <li>ПН-ПТ 10:00-18:00</li>
+        <li>ПТ 10:00-17:00</li>
+        <li>СБ-ВС - выходной</li>
+      </ul>
+      <a href="{% url 'index' %}">Вернуться на главную</a>
     </div>
+  </div>
 {% endblock %}
 

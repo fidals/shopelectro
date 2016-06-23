@@ -65,8 +65,8 @@ urlpatterns = [
     url(r'^blog/', include('blog.urls')),
     url(r'^shop/', include(shop_urls)),
     url(r'^service/', include(service_urls)),
-    url(r'^sitemap\.xml$', cached_view(sitemap), {
-            'sitemaps': sitemaps
-        },
+    url(r'^sitemap\.xml$',
+        cached_view(sitemap),
+        {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
 ]

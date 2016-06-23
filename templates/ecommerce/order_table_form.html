@@ -27,7 +27,8 @@
             {% if product.main_image == 'images/logo.png' %}
               <img src="{% static 'images/camera-icon.png' %}">
             {% else %}
-              <a class="fancybox" rel="product-cart-gallery" href="{% static product.main_image %}" title="{{ product.name }}">
+              <a class="fancybox" rel="product-cart-gallery" href="{% static product.main_image %}"
+                 title="{{ product.name }}">
                 <img src="{% static 'images/camera-icon-clr.png' %}">
               </a>
             {% endif %}
@@ -43,11 +44,13 @@
                 <i class="fa fa-circle out-stock" title="Под заказ"></i>
               {% endif %}
             </div>
-            <input class="prod-count js-touchspin" value="{{ position.quantity }}" name="prod-count" productId="{{ product.id }}">
+            <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" name="prod-count"
+                   productId="{{ product.id }}">
           </td>
-          <td class="price js-product-price" productId="{{ product.id }}">{{ product.price}} руб</td>
+          <td class="price js-product-price" productId="{{ product.id }}">{{ product.price }} руб</td>
           <td class="product-delete">
-            <img class="btn-cart remove" productId="{{ product.id }}" src="{% static 'images/btn-close-icon.png' %}" alt="Убрать из корзины" title="Убрать из заказа">
+            <img class="btn-cart js-remove" productId="{{ product.id }}" src="{% static 'images/btn-close-icon.png' %}"
+                 alt="Убрать из корзины" title="Убрать из заказа">
           </td>
         </tr>
       {% endwith %}
@@ -81,7 +84,7 @@
           {% include 'ecommerce/payment_types.html' %}
         </td>
         <td>
-         {% csrf_token %}
+          {% csrf_token %}
           <p class="error-msg" id="order-form-error-text"></p>
           <table class="order-form-right form-horizontal">
             <tr>
@@ -134,22 +137,22 @@
       </tr>
     </table>
   </form>
-    <div class="hidden">
-        <form action="{% url 'test_yandex' %}" id="yandex-form" method="POST">
-            {% csrf_token %}
-            <input type="text" name="shopId" value="{{ shop.id }}">
-            <input type="text" name="scid" value="{{ shop.scid }}">
-            <input type="text" name="shopSuccessURL" value="{{ shop.success_url }}">
-            <input type="text" name="shopFailURL" value="{{ shop.fail_url }}">
-            <input type="text" name="cps_phone" value="{{ shop.cps_phone }}">
-            <input type="text" name="cps_email" value="{{ shop.cps_email }}">
-            <input type="text" name="sum" value="{{ cart.total_price }}">
-            <input type="text" name="customerNumber" value="">
-            <input type="text" name="orderNumber" value="">
-            <input type="text" name="paymentType" value="">
-            <input type="submit" name="sendYandex" value="">
-        </form>
-    </div>
+  <div class="hidden">
+    <form action="{% url 'test_yandex' %}" id="yandex-form" method="POST">
+      {% csrf_token %}
+      <input type="text" name="shopId" value="{{ shop.id }}">
+      <input type="text" name="scid" value="{{ shop.scid }}">
+      <input type="text" name="shopSuccessURL" value="{{ shop.success_url }}">
+      <input type="text" name="shopFailURL" value="{{ shop.fail_url }}">
+      <input type="text" name="cps_phone" value="{{ shop.cps_phone }}">
+      <input type="text" name="cps_email" value="{{ shop.cps_email }}">
+      <input type="text" name="sum" value="{{ cart.total_price }}">
+      <input type="text" name="customerNumber" value="">
+      <input type="text" name="orderNumber" value="">
+      <input type="text" name="paymentType" value="">
+      <input type="submit" name="sendYandex" value="">
+    </form>
+  </div>
 {% else %}
   <h1>Корзина пуста</h1>
   <span class="page-info-message">В вашей корзине пока нет товаров. <a

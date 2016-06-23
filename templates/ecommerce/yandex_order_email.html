@@ -1,26 +1,26 @@
 {% extends 'ecommerce/order_email.html' %}
 
 {% block se_info %}
-	<table>
-		<tr>
-			<td>Номер заказа</td>
-			<td>{{ order.id }}</td>
-		</tr>
-		<tr>
-			<td>Оплатил</td>
-			<td>{{ sum }}</td>
-		</tr>
-		<tr>
-			<td>Зашло на счет</td>
-			<td>{{ profit }}</td>
-		</tr>
-		<tr>
-			<td>Комиссия Я.Кассы</td>
-			<td>{{ commission }} %</td>
-		</tr>
-		<tr>
-			<td>Способ оплаты</td>
-			<td>{{ payment_name }}</td>
-		</tr>
-	</table>
+  <table>
+    <tr>
+      <td>Номер заказа</td>
+      <td>{{ order.id }}</td>
+    </tr>
+    <tr>
+      <td>Оплатил</td>
+      <td>{{ sum }}</td>
+    </tr>
+    <tr>
+      <td>Зашло на счет</td>
+      <td>{{ profit }}</td>
+    </tr>
+    <tr>
+      <td>Комиссия Я.Кассы</td>
+      <td>{{ commission }} %</td>
+    </tr>
+    <tr>
+      <td>Способ оплаты</td>
+      <td>{{ payment_name }}</td>
+    </tr>
+  </table>
 {% endblock %}
