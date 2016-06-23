@@ -654,7 +654,7 @@ class AdminPageSeleniumTests(TestCase):
         self.assertTrue(self.autocomplete_text in first_suggested_item_text)
 
 
-class YandexMoney(TestCase):
+class YandexKassa(TestCase):
 
     def setUp(self):
         self.browser = Chrome()
