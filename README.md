@@ -12,6 +12,17 @@ Run `pip install --user -r requirements.txt`
 - `python manage.py redirects` - insert the old and new path to django_redirect table and update default domain name to
                                  the actual.
 
+## Setup mail configuration
+- Define SHOP_EMAIL const in your settings.local module `SHOP_EMAIL = my@mail.com`
+- Define smtp server connection settings:
+```
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'my@gmail.com'
+EMAIL_HOST_PASSWORD = 'my_pass'
+EMAIL_USE_TLS = True
+```
+
 ## Run Selenium-based tests
 
 ### Setup your shopelectro project

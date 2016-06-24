@@ -18,9 +18,6 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.conf import settings
 
-from catalog.models import Product
-
-
 def hover(browser, element):
     """Perform a hover over an element."""
     hover_action = ActionChains(browser).move_to_element(element)
@@ -37,7 +34,7 @@ def wait(seconds=1):
     """Simple wrapper on time.sleep() method."""
     time.sleep(seconds)
 
-success_order_page = settings.LOCALHOST + 'shop/success-order/'
+SUCCESS_ORDER_PAGE = settings.LOCALHOST + 'shop/success-order/'
 
 
 class Header(TestCase):
@@ -56,8 +53,10 @@ class Header(TestCase):
         self.browser.quit()
 
     def test_call_modal_not_visible(self):
-        """By default we shouldn't see call modal."""
-        """After clicking on call button we should see call modal."""
+        """
+        By default we shouldn't see call modal
+        After clicking on call button we should see call modal
+        """
         modal = self.browser.find_element_by_id('back-call-modal')
         self.assertFalse(modal.is_displayed())
 
@@ -71,7 +70,7 @@ class Header(TestCase):
     def test_order_call(self):
         """After filling modal's fields we can successfully order call."""
         self.call_button.click()
-        wait(3)
+        wait()
         self.browser.find_element_by_id(
             'back-call-phone').send_keys('22222222222')
         day_time = self.browser.find_element_by_xpath(
@@ -289,14 +288,14 @@ class ProductPage(TestCase):
 
     def test_images_switch(self):
         """If product has > 1 image, we could to switch them by clicking."""
-        product_main_img = self.browser.find_element_by_id('product-image-big')
-        self.assertTrue('main' in product_main_img.get_attribute('src'))
+        product_big_img = self.browser.find_element_by_id('product-image-big')
+        self.assertTrue('main' in product_big_img.get_attribute('src'))
 
         next_product_img = self.browser.find_element_by_xpath(
-            '//*[@id="product-images"]/div[2]/img')
+            '//*[@id="product-images"]/div[3]/img')
         next_product_img.click()
         wait()
-        self.assertFalse('main' in product_main_img.get_attribute('src'))
+        self.assertFalse('main' in product_big_img.get_attribute('src'))
 
     def test_one_click_buy_disabled_with_empty_phone(self):
         """By default .btn-one-click-order should be disabled"""
@@ -315,7 +314,7 @@ class ProductPage(TestCase):
             'input-one-click-phone').send_keys('22222222222')
         self.one_click.click()
         wait()
-        self.assertEqual(self.browser.current_url, success_order_page)
+        self.assertEqual(self.browser.current_url, SUCCESS_ORDER_PAGE)
 
     def test_add_to_cart(self):
         """We can add item to cart from it's page."""
@@ -330,6 +329,7 @@ class ProductPage(TestCase):
         wait()
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         hover(self.browser, cart_parent)
+        wait()
         cart = self.browser.find_element_by_class_name('basket-wrapper')
         self.assertTrue('Аккумулятор Panasonic' in cart.text)
 
@@ -424,7 +424,8 @@ class OrderPage(TestCase):
 
     def test_change_product_count(self):
         """
-        We can change product's count from table and see the changes both in table and dropdown.
+        We can change product's count from table and see the changes
+        both in table and dropdown
         """
         add_one_more = self.browser.find_element_by_xpath(
             '//*[@id="4023"]/td[4]/div[2]/span[3]/button[1]/i')
@@ -446,7 +447,7 @@ class OrderPage(TestCase):
         wait()
         self.fill_and_submit_form()
         wait()
-        self.assertEqual(self.browser.current_url, success_order_page)
+        self.assertEqual(SUCCESS_ORDER_PAGE, self.browser.current_url)
 
     def fill_and_submit_form(self, yandex=False):
         self.browser.find_element_by_id('id_name').send_keys('Name')
@@ -494,7 +495,7 @@ class BlogPageSeleniumTests(TestCase):
         self.browser.quit()
 
     @property
-    def _accordion_title(self):
+    def accordion_title(self):
         return self.browser.find_element_by_id('js-accordion-title-navigation')
 
     @property
@@ -502,34 +503,23 @@ class BlogPageSeleniumTests(TestCase):
         return self.browser.find_element_by_id(
             'js-accordion-content-navigation')
 
-    def test_accordion_minimized(self):
-        """Accordion item should be minimized by default"""
-
-        self.browser.get(self.test_blog_page)
-        wait()
-        self.assertFalse(self.accordion_content.is_displayed())
-
-    def test_accordion_expand(self):
+    def test_accordion_can_expand_and_minimize(self):
         """Accordion item should expand by click on title"""
 
         self.browser.get(self.test_blog_page)
-        accordion_title = self._accordion_title
-        accordion_content = self.accordion_content
-        accordion_title.click()
+        self.accordion_title.click()
         wait()
-        self.assertTrue(accordion_content.is_displayed())
+        self.assertTrue(self.accordion_content.is_displayed())
 
     def test_accordion_minimize_by_double_click(self):
         """Accordion item should be minimized by two clicks on title"""
 
         self.browser.get(self.test_blog_page)
-        accordion_title = self._accordion_title
-        accordion_content = self.accordion_content
-        accordion_title.click()
+        self.accordion_title.click()
         wait()
-        accordion_title.click()
+        self.accordion_title.click()
         wait()
-        self.assertFalse(accordion_content.is_displayed())
+        self.assertFalse(self.accordion_content.is_displayed())
 
 
 class AdminPageSeleniumTests(TestCase):
@@ -553,8 +543,8 @@ class AdminPageSeleniumTests(TestCase):
         self.products_activity_state_img = '//*[@id="result_list"]/tbody/tr[1]/td[6]/img'
         self.autocomplete_text = 'Фонарь'
         self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(5)
         self.browser.maximize_window()
+        self.browser.implicitly_wait(5)
 
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
@@ -588,7 +578,7 @@ class AdminPageSeleniumTests(TestCase):
 
     def test_admin_product(self):
         """
-        Admin products page has icon links for Edit\View.
+        Admin products page has icon links for Edit/View.
         And it should has Search field.
         """
         self.go_to_products_list()
