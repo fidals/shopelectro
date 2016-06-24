@@ -18,7 +18,7 @@ class ModelsTests(TestCase):
             name='Test category'
         )
 
-        self.product = Product.objects.create(
+        self.product, _ = Product.objects.get_or_create(
             id=99999,
             category=self.category,
             wholesale_small=10,
@@ -28,11 +28,9 @@ class ModelsTests(TestCase):
 
         self.trademark, _ = Property.objects.get_or_create(
             name='Товарный знак',
-            product=self.product,
-            defaults={
-                'is_numeric': False,
-                'value': 'TM',
-            }
+            is_numeric=False,
+            value='TM',
+            product=self.product
         )
 
         self.main_image = ('images/catalog/products/' +

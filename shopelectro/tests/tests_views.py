@@ -18,16 +18,11 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.conf import settings
 
+
 def hover(browser, element):
     """Perform a hover over an element."""
     hover_action = ActionChains(browser).move_to_element(element)
     hover_action.perform()
-
-
-class CategoryPageSeleniumTests(TestCase):
-    """
-    Selenium-based tests for category page UI.
-    """
 
 
 def wait(seconds=1):

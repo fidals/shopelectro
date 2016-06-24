@@ -181,21 +181,19 @@ def admin_autocomplete(request):
 def autocomplete(request):
 
     def prepare_products(items: List[models.Model]) -> List[dict]:
-        items_data = [{
+        return [{
             'name': item.name,
             'price': item.price,
             'url': item.get_absolute_url(),
             'type': 'product',
         } for item in items]
-        return items_data
 
     def prepare_categories(items: List[models.Model]) -> List[dict]:
-        items_data = [{
+        return [{
             'name': item.name,
             'url': item.get_absolute_url(),
             'type': 'category',
         } for item in items]
-        return items_data
 
     def last_item():
         return {
