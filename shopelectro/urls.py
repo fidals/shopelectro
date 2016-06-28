@@ -32,23 +32,17 @@ sitemaps = OrderedDict([
     ('blog', sitemaps.BlogSitemap)
 ])
 
-shop_urls = [
-    url(r'^cart-add/$', views.add_to_cart),
-    url(r'^cart-change/$', views.change_count_in_cart),
-    url(r'^cart-flush/$', views.cart_flush),
-    url(r'^cart-remove/$', views.cart_remove),
-    url(r'^one-click-buy/$', views.one_click_buy),
-    url(r'^success-order/$', views.success_order, name='order_success'),
-    url(r'^order-call/$', views.order_call),
-    url(r'^order/$', views.order_page, name='order_page'),
-    url(r'^yandex-order/$', views.yandex_order),
-]
-
 cached_view = cache_page(config.cached_time())
 
 service_urls = [
     url(r'^ya-kassa/aviso/$', views.yandex_aviso),
     url(r'^ya-kassa/check/$', views.yandex_check),
+]
+
+shop_urls = [
+    url(r'^order-call/$', views.order_call),
+    url(r'^one-click-buy/$', views.one_click_buy),
+    url(r'^yandex-order/$', views.yandex_order),
 ]
 
 
@@ -63,6 +57,7 @@ urlpatterns = [
     url(r'^catalog/', include('catalog.urls')),
     url(r'^blog/posts/(?P<type_>[\w-]+)/$', views.blog_post, name='posts'),
     url(r'^blog/', include('blog.urls')),
+    url(r'^shop/', include('ecommerce.urls')),
     url(r'^shop/', include(shop_urls)),
     url(r'^service/', include(service_urls)),
     url(r'^sitemap\.xml$',

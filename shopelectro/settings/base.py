@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'mptt',
+    'widget_tweaks',
     'blog',
     'catalog',
     'seo',
@@ -169,5 +170,11 @@ PAYMENT_OPTIONS = (('cash', 'Наличные'),
                    ('GP', 'Связной (терминал)'),
                    ('AB', 'Альфа-Клик'),
                    ('MC', 'Мобильный телефон'))
+EMAIL_SUBJECTS = {
+    'call': 'Обратный звонок',
+    'order': 'Заказ №{0.id}',
+    'yandex_order': 'Заказ №{0.id} | Яндекс.Касса',
+    'one_click': 'Заказ в один клик №{}',
+}
 
 from .local import *

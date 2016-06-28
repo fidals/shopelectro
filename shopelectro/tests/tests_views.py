@@ -94,6 +94,7 @@ class CategoryPage(TestCase):
         """Sets up testing urls and dispatches selenium webdriver."""
 
         self.accumulators_page = settings.LOCALHOST + 'catalog/categories/akkumuliatory/'
+        self.converters_page = settings.LOCALHOST + 'catalog/categories/avtopreobrazovateli-napriazheniia/'
         self.supplies_page = settings.LOCALHOST + 'catalog/categories/bloki-pitaniia/'
         self.charger_page = (settings.LOCALHOST +
                              'catalog/categories/zariadnye-ustroistva/')
@@ -152,18 +153,10 @@ class CategoryPage(TestCase):
     def test_load_more_hidden_if_all_products_were_loaded(self):
         """If all products were loaded we shouldn't see load more button anymore."""
 
-        self.browser.get(self.charger_page)  # There are only 33 of them
+        self.browser.get(self.converters_page)  # There are only 34 of them
         load_more_button = self.browser.find_element_by_id('btn-load-products')
         load_more_button.click()
         wait()
-        load_more_button = self.browser.find_element_by_id('btn-load-products')
-        self.assertTrue('hidden' in load_more_button.get_attribute('class'))
-
-    def test_load_more_not_present_in_fully_loaded_categories(self):
-        """If category has <= 30 products, we should not see load more button in its page."""
-
-        # There are only 8 of them, no need of load more
-        self.browser.get(self.supplies_page)
         load_more_button = self.browser.find_element_by_id('btn-load-products')
         self.assertTrue('hidden' in load_more_button.get_attribute('class'))
 
@@ -504,8 +497,8 @@ class BlogPageSeleniumTests(TestCase):
         """Accordion item should be minimized by default"""
 
         self.browser.get(self.test_blog_page)
-        accordion_content = self._accordion_content
-        self.assertFalse(accordion_content.is_displayed())
+        wait()
+        self.assertFalse(self._accordion_content.is_displayed())
 
     def test_accordion_expand(self):
         """Accordion item should expand by click on title"""
@@ -544,7 +537,7 @@ class AdminPageSeleniumTests(TestCase):
         self.login = 'admin'
         self.password = 'asdfjkl;'
         self.title_text = 'Shopelectro administration'
-        self.products_list_link = '//*[@id="content-main"]/div[4]/table/tbody/tr/th/a'
+        self.products_list_link = '//*[@id="content-main"]/div[5]/table/tbody/tr/th/a'
         self.product_price_filter_link = '//*[@id="changelist-filter"]/ul[1]/li[4]'
         self.show_active_products_link = '//*[@id="changelist-filter"]/ul[2]/li[2]/a'
         self.show_nonactive_products_link = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
