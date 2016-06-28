@@ -17,3 +17,7 @@ Run `pip install --user -r requirements.txt`
 - Install [Selenium ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 - Start Django's development server `python manage.py runserver`
 - Run tests: `python manage.py test` and go have a coffee :)
+
+### Local settings
+- DATABASES - settings for your database
+- SITE_DOMAIN_NAME - this const needed for "sites" and sitemap frameworks. Format: www.example.com

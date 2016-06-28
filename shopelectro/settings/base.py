@@ -155,6 +155,7 @@ BASE_URL = 'https://www.shopelectro.ru'
 IMAGE_THUMBNAIL = 'images/logo.png'
 
 SITE_ID = 1
+SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 # Uncomment for http->https change
 # os.environ['HTTPS'] = 'on'
 

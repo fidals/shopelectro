@@ -6,12 +6,14 @@ There should be test suite for every 'page' on a site.
 For running such tests, you should first run Django's development server on port 8000
         python manage.py runserver
 """
+import os
 import time
+from xml.etree import ElementTree as ET
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Chrome
 
-from selenium.webdriver.common import utils
+from django.core.management import call_command
 from django.test import TestCase
 from django.conf import settings
 
@@ -419,7 +421,9 @@ class OrderPage(TestCase):
         self.assertEqual(table_count, '4')
 
     def test_change_product_count(self):
-        """We can change product's count from table and see the changes both in table and dropdown."""
+        """
+        We can change product's count from table and see the changes both in table and dropdown.
+        """
         add_one_more = self.browser.find_element_by_xpath(
             '//*[@id="4023"]/td[4]/div[2]/span[3]/button[1]/i')
         add_one_more.click()
@@ -671,48 +675,56 @@ class YandexKassa(TestCase):
         self.assertTrue('invoiceId="42"' in response.text)
 
 
-class SitemapPageSeleniumTests(TestCase):
+class SitemapPageTests(TestCase):
     """
-    Selenium-based tests for Sitemap.
+    Tests for Sitemap.
+    Getting sitemap.xml and parsing it as string.
     """
+
+    @classmethod
+    def setUpTestData(cls):
+        """
+        Import testing data into DB and create site domain name.
+        """
+        call_command('catalog')
+        call_command('redirects')
+
+        # Namespace for using ET.find()
+        cls.NAMESPACE = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Remove data.
+        """
+        os.remove('priceru.xml')
+        os.remove('yandex.yml')
+        os.remove('pricelist.xlsx')
 
     def setUp(self):
         """
-        Sets up testing url and dispatches selenium webdriver.
+        Sets up testing url.
         """
 
-        self.sitemap_page = settings.LOCALHOST + 'sitemap.xml'
-        self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(5)
-
-        self.browser.get(self.sitemap_page)
-
-    def tearDown(self):
-        """
-        Closes selenium's session.
-        """
-
-        self.browser.quit()
+        content = self.client.get('/sitemap.xml').content.decode('utf-8')
+        self.root = ET.fromstring(content)
 
     def test_url_tags(self):
         """
         We should see <url> tags on Sitemap page.
         """
-
-        url_tags = self.browser.find_elements_by_tag_name('url')
+        url_tags = self.root.findall("{}url".format(self.NAMESPACE))
         self.assertGreater(len(url_tags), 0)
 
     def test_models_urls(self):
         """
         Sitemap page should to print correct urls for models.
         """
+        slice_start_index = len("http://" + settings.SITE_DOMAIN_NAME)
 
-        slice_start_index = 22
+        path = "{0}url[2]/{0}loc".format(self.NAMESPACE)
+        model_url_text = self.root.find(path).text[slice_start_index:]
 
-        model_url = self.browser.find_element_by_id('collapsible3')
-        model_url_text = model_url.find_element_by_class_name(
-            'collapsible-content').text[slice_start_index:]
-        self.browser.get(settings.LOCALHOST + model_url_text)
+        response = self.client.get(model_url_text)
 
-        header_wrapper = self.browser.find_elements_by_class_name('header')
-        self.assertGreater(len(header_wrapper), 0)
+        self.assertEqual(response.status_code, 200)

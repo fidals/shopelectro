@@ -58,7 +58,7 @@ class Command(BaseCommand):
 
     def change_domain_name_in_the_db(self, cur):
         """Change default domain name to the actual."""
-        DOMAIN_NAME = settings.BASE_URL
+        DOMAIN_NAME = settings.SITE_DOMAIN_NAME
 
         print("Domain name changed on {}.".format(DOMAIN_NAME))
         cur.execute(
