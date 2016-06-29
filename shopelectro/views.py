@@ -151,14 +151,6 @@ def blog_post(request, type_=''):
     })
 
 
-def get_models_names(model_type, search_term):
-    """
-    Returns related names for models.
-    """
-
-    return model_type.objects.filter(name__contains=search_term).values('name')
-
-
 def admin_autocomplete(request):
     """
     Returns autocompleted names as response.
