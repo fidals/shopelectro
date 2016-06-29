@@ -40,12 +40,10 @@ const autocomplete = (() => {
     `;
   };
 
-  const renderLastItem = (item, term) => {
-    // TODO: move on back side
-    const searchPageUrl = `/catalog/search/?search=${term}`;
+  const renderLastItem = (item) => {
     return `
       <div class="autocomplete-suggestion autocomplete-last-item">
-        <a href="${searchPageUrl}">${item.name}</a>
+        <a href="${item.url}">${item.name}</a>
       </div>
     `;
   };
@@ -72,7 +70,7 @@ const autocomplete = (() => {
       }
 
       if (item.type === 'see_all') {
-        return renderLastItem(item, term);
+        return renderLastItem(item);
       }
     },
     onSelect: (event, term, item) => {
