@@ -5,6 +5,7 @@ selenium
 selenium-requests
 psycopg2
 openpyxl
+unidecode
 -e git+https@github.com:fidals/refarm-catalog.git#egg=refarm-catalog
 -e git+https@github.com:fidals/refarm-blog.git#egg=refarm-blog
 -e git+https@github.com:fidals/refarm-seo.git#egg=refarm-seo

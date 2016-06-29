@@ -15,8 +15,6 @@ from django.template.loader import render_to_string
 from django.db import models
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
-from blog.models import Post, get_crumbs as blog_crumbs
-from catalog.models import Category, get_crumbs as catalog_crumbs
 from ecommerce import mailer
 from ecommerce.cart import Cart
 from ecommerce.models import Order
@@ -31,6 +29,7 @@ from ecommerce.models import Order
 from ecommerce.views import get_keys_from_post, save_order_to_session
 from . import config
 from .models import Product
+from catalog.models import search as catalog_search
 
 
 @ensure_csrf_cookie
@@ -152,19 +151,18 @@ def blog_post(request, type_=''):
 
 
 def admin_autocomplete(request):
-    """
-    Returns autocompleted names as response.
-    """
+    """Returns autocompleted names as response."""
 
     model_map = {'product': Product, 'category': Category}
     term = request.GET['q']
+    limit = settings.AUTOCOMPLETE_LIMIT
     page_type = request.GET['pageType']
 
     if page_type not in ['product', 'category']:
         return
     current_model = model_map[page_type]
 
-    result_items = current_model.search(term, settings.AUTOCOMPLETE_LIMIT)
+    result_items = catalog_search(current_model, term)[:limit]
     names = [item.name for item in result_items]
 
     return JsonResponse(names, safe=False)
@@ -196,10 +194,13 @@ def autocomplete(request):
     term = request.GET['q']
     limit = settings.AUTOCOMPLETE_LIMIT
 
-    result_categories = Category.search(term, limit)
-    products_limit = limit - len(result_categories)
-    result_products = Product.search(term, products_limit)
-    if not (len(result_categories) + len(result_products)):
+    result_categories = catalog_search(Category, term)[:limit]
+    products_limit = len(result_categories) - limit
+    result_products = []
+    if products_limit:
+        result_products = catalog_search(Product, term)[:products_limit]
+
+    if not (result_categories + result_products):
         return JsonResponse({})
 
     prepared_categories = prepare_categories(result_categories)
@@ -316,13 +317,14 @@ def search(request):
     term = request.GET['search']
     limit = settings.SEARCH_LIMIT
 
-    categories = Category.search(term, limit)
-    products_limit = limit - len(categories)
-    products = Product.search(term, products_limit)
-    total_count = len(products) + len(categories)
+    categories = catalog_search(Category, term)[:limit]
+    products_limit = len(categories) - limit
+    products = []
+    if products_limit:
+        products = catalog_search(Product, term)[:products_limit]
 
     template = 'shopelectro/search/{}.html'.format(
-        'results' if total_count else 'no_results')
+        'results' if (products + categories) else 'no_results')
 
     return render(request, template, {
         'categories': categories,
