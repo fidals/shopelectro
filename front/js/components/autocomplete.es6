@@ -21,7 +21,7 @@ const autocomplete = (() => {
    */
   const highlight = (name, search) => {
     const preparedSearch = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const regexp = new RegExp("(" + preparedSearch.split(' ').join('|') + ")", "gi");
+    const regexp = new RegExp("(" + preparedSearch.split(" ").join("|") + ")", "gi");
     return name.replace(regexp, "<b>$1</b>");
   };
 

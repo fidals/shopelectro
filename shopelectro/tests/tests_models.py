@@ -14,11 +14,11 @@ class ModelsTests(TestCase):
         """
         Defines testing data.
         """
-        self.category, _ = Category.objects.get_or_create(
+        self.category = Category.objects.create(
             name='Test category'
         )
 
-        self.product, _ = Product.objects.get_or_create(
+        self.product = Product.objects.create(
             id=99999,
             category=self.category,
             wholesale_small=10,
@@ -26,7 +26,7 @@ class ModelsTests(TestCase):
             wholesale_large=10,
         )
 
-        self.trademark, _ = Property.objects.get_or_create(
+        self.trademark = Property.objects.create(
             name='Товарный знак',
             is_numeric=False,
             value='TM',

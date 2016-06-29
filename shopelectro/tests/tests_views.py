@@ -32,7 +32,7 @@ def wait(seconds=1):
 SUCCESS_ORDER_PAGE = settings.LOCALHOST + 'shop/success-order/'
 
 
-class Header(TestCase):
+class HeaderTests(TestCase):
     """Selenium-based tests for header."""
 
     def setUp(self):
@@ -90,7 +90,7 @@ class Header(TestCase):
         self.assertTrue(cart.is_displayed())
 
 
-class CategoryPage(TestCase):
+class CategoryPageTests(TestCase):
     """Selenium-based tests for category page UI."""
 
     def setUp(self):
@@ -230,7 +230,7 @@ class CategoryPage(TestCase):
         self.assertFalse(cart_is_empty.is_displayed())
 
 
-class ProductPage(TestCase):
+class ProductPageTests(TestCase):
     """
     Selenium-based tests for product page UI.
     """
@@ -338,7 +338,7 @@ class ProductPage(TestCase):
         self.assertTrue('42' in cart_size.text)
 
 
-class OrderPage(TestCase):
+class OrderPageTests(TestCase):
 
     def setUp(self):
         """Sets up testing url and dispatches selenium webdriver."""
@@ -655,7 +655,7 @@ class AdminPageSeleniumTests(TestCase):
         self.assertTrue(self.autocomplete_text in first_suggested_item_text)
 
 
-class YandexKassa(TestCase):
+class YandexKassaTests(TestCase):
 
     def setUp(self):
         self.browser = Chrome()
@@ -744,26 +744,29 @@ class SearchTests(TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def fill_input(self):
+        """Enter correct search term"""
+        self.input.send_keys(self.query)  # enter correct search term ...
+        wait()
+
     def test_autocomplete_can_expand_and_collapse(self):
         """
         Autocomplete should minimize during user typing correct search query
         Autocomplete should minimize by removing search query
         """
-
-        self.input.send_keys(self.query)  # enter correct search term ...
-        wait()
+        self.fill_input()
         # ... and autocomplete expands
         self.assertTrue(self.autocomplete.is_displayed())
 
-        self.input.send_keys(Keys.BACKSPACE*len(self.query))  # remove search term ...
+        # remove search term ...
+        self.input.send_keys(Keys.BACKSPACE*len(self.query))
         wait()
         # ... and autocomplete collapse
         self.assertFalse(self.autocomplete.is_displayed())
 
     def test_autocomplete_item_link(self):
-        """Every autocomplete item should link on category page by click"""
-        self.input.send_keys(self.query)  # enter correct search term ...
-        wait()
+        """First autocomplete item should link on category page by click"""
+        self.fill_input()
         first_item = self.autocomplete.find_element_by_css_selector(
             ':first-child')
         first_item.click()
@@ -775,8 +778,7 @@ class SearchTests(TestCase):
         Autocomplete should contain "see all" item.
         "See all" item links on search results page
         """
-        self.input.send_keys(self.query)  # enter correct search term ...
-        wait()
+        self.fill_input()
         last_item = self.autocomplete.find_element_by_class_name(
             'autocomplete-last-item')
         last_item.click()
@@ -785,8 +787,7 @@ class SearchTests(TestCase):
 
     def test_search_have_results(self):
         """Search results page should contain links on relevant pages"""
-        self.input.send_keys(self.query)
-        wait()
+        self.fill_input()
         search_form = self.browser.find_element_by_class_name('search-form')
         search_form.submit()
         wait()
