@@ -1,6 +1,6 @@
 const autocomplete = (() => {
   const CONFIG = {
-    url: '/search/autocomplete/',
+    url: '/catalog/search/autocomplete/',
     searchInput: '.js-search-input',
     minChars: 2,
     itemsTypes: ['see_all', 'category', 'product'],
@@ -41,7 +41,8 @@ const autocomplete = (() => {
   };
 
   const renderLastItem = (item, term) => {
-    const searchPageUrl = `/search/?search=${term}`;
+    // TODO: move on back side
+    const searchPageUrl = `/catalog/search/?search=${term}`;
     return `
       <div class="autocomplete-suggestion autocomplete-last-item">
         <a href="${searchPageUrl}">${item.name}</a>

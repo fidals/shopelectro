@@ -5,14 +5,12 @@ NOTE: They all should be 'zero-logic'. All logic should live in respective appli
 """
 from functools import wraps
 
-from typing import List
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.template.loader import render_to_string
-from django.db import models
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
 from ecommerce import mailer
@@ -168,48 +166,6 @@ def admin_autocomplete(request):
     return JsonResponse(names, safe=False)
 
 
-def autocomplete(request):
-
-    def prepare_products(items: List[models.Model]) -> List[dict]:
-        return [{
-            'name': item.name,
-            'price': item.price,
-            'url': item.get_absolute_url(),
-            'type': 'product',
-        } for item in items]
-
-    def prepare_categories(items: List[models.Model]) -> List[dict]:
-        return [{
-            'name': item.name,
-            'url': item.get_absolute_url(),
-            'type': 'category',
-        } for item in items]
-
-    def last_item():
-        return {
-            'type': 'see_all',
-            'name': 'Смотреть все результаты',
-        }
-
-    term = request.GET['q']
-    limit = settings.AUTOCOMPLETE_LIMIT
-
-    result_categories = catalog_search(Category, term)[:limit]
-    products_limit = len(result_categories) - limit
-    result_products = []
-    if products_limit:
-        result_products = catalog_search(Product, term)[:products_limit]
-
-    if not (result_categories + result_products):
-        return JsonResponse({})
-
-    prepared_categories = prepare_categories(result_categories)
-    prepared_products = prepare_products(result_products)
-    result_items = prepared_categories + prepared_products + [last_item()]
-
-    return JsonResponse(result_items, safe=False)
-
-
 @require_POST
 def one_click_buy(request):
     Cart(request.session).clear()
@@ -312,27 +268,6 @@ def yandex_aviso(request):
                   'ecommerce/yandex_aviso.xml',
                   {'invoice': invoice_id},
                   content_type='application/xhtml+xml')
-def search(request):
-
-    term = request.GET['search']
-    limit = settings.SEARCH_LIMIT
-
-    categories = catalog_search(Category, term)[:limit]
-    products_limit = len(categories) - limit
-    products = []
-    if products_limit:
-        products = catalog_search(Product, term)[:products_limit]
-
-    template = 'shopelectro/search/{}.html'.format(
-        'results' if (products + categories) else 'no_results')
-
-    return render(request, template, {
-        'categories': categories,
-        'products': products,
-        'query': term,
-    })
-
-
 @cart_modifier
 @require_POST
 def add_to_cart(request):

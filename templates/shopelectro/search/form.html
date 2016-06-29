@@ -1,8 +1,7 @@
 <div class="search-result">
-  <form class="search-result-form" method="GET" action="/search/">
+  <form class="search-result-form" method="GET" action="{% url 'catalog:search' %}">
     <input class="search-result-input" type="text" name="search"
          placeholder="Например: Acer" value="{{ query }}">
-    <button class="form-btn btn fa fa-search" type="submit" name="search-submit"
-        alt="submit"></button>
+    <button class="form-btn btn fa fa-search" type="submit"></button>
   </form>
 </div>
