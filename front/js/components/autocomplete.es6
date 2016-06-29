@@ -3,15 +3,29 @@ const autocomplete = (() => {
     url: '/search/autocomplete/',
     searchInput: '.js-search-input',
     minChars: 2,
+    itemsTypes: ['see_all', 'category', 'product'],
   };
 
+  const init = () => {
+    new autoComplete(constructorArgs);
+  };
+
+  /**
+   * Highlight term in search results
+   * Behind the scenes JavaScript autoComplete lib use this highlight code
+   * Proof link: https://goodies.pixabay.com/javascript/auto-complete/demo.html
+   *
+   * @param name
+   * @param search
+   * @returns string
+   */
   const highlight = (name, search) => {
-    const prepared_search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const re = new RegExp("(" + prepared_search.split(' ').join('|') + ")", "gi");
-    return name.replace(re, "<b>$1</b>");
+    const preparedSearch = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const regexp = new RegExp("(" + preparedSearch.split(' ').join('|') + ")", "gi");
+    return name.replace(regexp, "<b>$1</b>");
   };
 
-  const renderCatalogItem = (item, term) => {
+  const renderItem = (item, term) => {
     const context = {
       url: item.url,
       name: `<span>${highlight(item.name, term)}</span>`,
@@ -27,7 +41,7 @@ const autocomplete = (() => {
   };
 
   const renderLastItem = (item, term) => {
-    const searchPageUrl = '/search/' + '?search=' + term;
+    const searchPageUrl = `/search/?search=${term}`;
     return `
       <div class="autocomplete-suggestion autocomplete-last-item">
         <a href="${searchPageUrl}">${item.name}</a>
@@ -50,11 +64,10 @@ const autocomplete = (() => {
       });
     },
     renderItem: (item, term) => {
-      const possible_item_types = ['see_all', 'category', 'product'];
-      console.assert(possible_item_types.includes(item.type));
+      console.assert(CONFIG.itemsTypes.includes(item.type));
 
       if (['category', 'product'].includes(item.type)) {
-        return renderCatalogItem(item, term);
+        return renderItem(item, term);
       }
 
       if (item.type === 'see_all') {
@@ -70,12 +83,5 @@ const autocomplete = (() => {
     },
   };
 
-  return {
-    init: (autoComplete) => {
-      new autoComplete(constructorArgs);
-    }
-  };
-
+  init();
 })();
-
-autocomplete.init(autoComplete);
