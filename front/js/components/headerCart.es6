@@ -26,7 +26,7 @@ const headerCart = (() => {
    * @param data
    */
   const render = (event, data) => {
-    DOM.cart.html(data['cart']);
+    DOM.cart.html(data.header);
   };
   
   const setUpListeners = () => {

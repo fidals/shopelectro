@@ -1,5 +1,7 @@
 {% load staticfiles %}
 {% load humanize %}
+{% load widget_tweaks %}
+
 {% if cart|length %}
   <h1>Оформление заказа</h1>
   <table class="table table-bordered order-list">
@@ -93,7 +95,7 @@
               </td>
               <td class="form-order data">
                 {{ form.name.errors }}
-                {{ form.name }}
+                {{ form.name|add_class:"form-control" }}
               </td>
             </tr>
             <tr>
@@ -103,7 +105,7 @@
               </td>
               <td class="form-order data">
                 {{ form.phone.errors }}
-                {{ form.phone }}
+                {{ form.phone|add_class:"form-control" }}
               </td>
             </tr>
             <tr>
@@ -113,7 +115,7 @@
               </td>
               <td class="form-order data">
                 {{ form.email.errors }}
-                {{ form.email }}
+                {{ form.email|add_class:"form-control" }}
               </td>
             </tr>
             <tr>
@@ -123,7 +125,7 @@
               </td>
               <td class="form-order data">
                 {{ form.city.errors }}
-                {{ form.city }}
+                {{ form.city|add_class:"form-control" }}
               </td>
             </tr>
             <tr>
