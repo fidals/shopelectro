@@ -1,33 +1,25 @@
 """
 Shopelectro views.
 
-NOTE: They all should be 'zero-logic'. All logic should live in respective applications.
+NOTE: They all should be 'zero-logic'.
+All logic should live in respective applications.
 """
-from functools import wraps
-
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
-from django.template.loader import render_to_string
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
-from ecommerce import mailer
-from ecommerce.cart import Cart
-from ecommerce.models import Order
-from .forms import OrderForm
-from . import config
-from .models import Product
+from ecommerce.forms import OrderForm
 from blog.models import Post, get_crumbs as blog_crumbs
 from catalog.models import Category, get_crumbs as catalog_crumbs
 from ecommerce import mailer
 from ecommerce.cart import Cart
 from ecommerce.models import Order
 from ecommerce.views import get_keys_from_post, save_order_to_session
+from ecommerce.views import cart_modifier
 from . import config
 from .models import Product
-from catalog.models import search as catalog_search
 
 
 @ensure_csrf_cookie
@@ -146,24 +138,6 @@ def blog_post(request, type_=''):
         'breadcrumbs': blog_crumbs(settings.CRUMBS['blog']),
         'page': config.page_metadata(type_),
     })
-
-
-def admin_autocomplete(request):
-    """Returns autocompleted names as response."""
-
-    model_map = {'product': Product, 'category': Category}
-    term = request.GET['q']
-    limit = settings.AUTOCOMPLETE_LIMIT
-    page_type = request.GET['pageType']
-
-    if page_type not in ['product', 'category']:
-        return
-    current_model = model_map[page_type]
-
-    result_items = catalog_search(current_model, term)[:limit]
-    names = [item.name for item in result_items]
-
-    return JsonResponse(names, safe=False)
 
 
 @require_POST
@@ -333,7 +307,12 @@ def one_click_buy(request):
 @require_POST
 def order_call(request):
     phone, time, url = get_keys_from_post(request, 'phone', 'time', 'url')
-    mailer.order_call(config.EMAIL_SUBJECTS['call'], phone, time, url)
+    mailer.order_call(
+        subject=settings.EMAIL_SUBJECTS['call'],
+        phone=phone,
+        time=time,
+        url=url
+    )
     return HttpResponse('ok')
 
 

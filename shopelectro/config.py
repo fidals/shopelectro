@@ -201,3 +201,10 @@ SHOP = {
     'local_delivery_cost': 300,
     'local_delivery_cost_threshold': 5000
 }
+
+EMAIL_SUBJECTS = {
+    'call': 'Обратный звонок',
+    'order': 'Заказ №{0.id}',
+    'yandex_order': 'Заказ №{0.id} | Яндекс.Касса',
+    'one_click': 'Заказ в один клик №{}',
+}
