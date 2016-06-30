@@ -489,7 +489,7 @@ class BlogPageSeleniumTests(TestCase):
         return self.browser.find_element_by_id('js-accordion-title-navigation')
 
     @property
-    def _accordion_content(self):
+    def accordion_content(self):
         return self.browser.find_element_by_id(
             'js-accordion-content-navigation')
 
@@ -498,14 +498,14 @@ class BlogPageSeleniumTests(TestCase):
 
         self.browser.get(self.test_blog_page)
         wait()
-        self.assertFalse(self._accordion_content.is_displayed())
+        self.assertFalse(self.accordion_content.is_displayed())
 
     def test_accordion_expand(self):
         """Accordion item should expand by click on title"""
 
         self.browser.get(self.test_blog_page)
         accordion_title = self._accordion_title
-        accordion_content = self._accordion_content
+        accordion_content = self.accordion_content
         accordion_title.click()
         wait()
         self.assertTrue(accordion_content.is_displayed())
@@ -515,7 +515,7 @@ class BlogPageSeleniumTests(TestCase):
 
         self.browser.get(self.test_blog_page)
         accordion_title = self._accordion_title
-        accordion_content = self._accordion_content
+        accordion_content = self.accordion_content
         accordion_title.click()
         wait()
         accordion_title.click()
