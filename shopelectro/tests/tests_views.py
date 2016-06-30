@@ -755,7 +755,7 @@ class SearchTests(TestCase):
         Autocomplete should minimize by removing search query
         """
         self.fill_input()
-        # ... and autocomplete expands
+        # fill input and autocomplete expands
         self.assertTrue(self.autocomplete.is_displayed())
 
         # remove search term ...
