@@ -5,35 +5,60 @@ shopelectro.ru site's code
 Run `pip install --user -r requirements.txt`
 
 
-### Available managements commands
-- `python manage.py catalog` - import catalog from 1C, create all prices.
-- `python manage.py excel` - generate Excel file with prices
-- `python manage.py price` - generate .yml price files for YM and Price.ru.
-- `python manage.py redirects` - insert the old and new path to django_redirect table and update default domain name to
-                                 the actual.
-- `python manage.py common_test` - runs tests for project and for every refarm-* application.
-
-## Setup mail configuration
-- Define SHOP_EMAIL const in your settings.local module `SHOP_EMAIL = my@mail.com`
-- Define smtp server connection settings:
+### Configuring host-specific settings
+All host-specific settings should be placed in `shopelectro.settings.local`
+What needs to be specified:
+- Database:
 ```
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'my@gmail.com'
-EMAIL_HOST_PASSWORD = 'my_pass'
+DATABASES = {
+  'default': {
+      'ENGINE': 'django.db.backends.postgresql_psycopg2',
+      'NAME': 'test',
+      'USER': 'John Doe',
+      'PASSWORD': '123',
+      'HOST': '',
+      'PORT': '',
+  },
+}
+```
+- Mailer configuration:
+```
 EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'john@doe.net'
+EMAIL_HOST_PASSWORD = '123'
+DEFAULT_FROM_EMAIL = 'john@doe.net'
+DEFAULT_TO_EMAIL = 'john@doe.net'
+SHOP_EMAIL = 'john@doe.net'
+```
+- Domain name (needed for sites framework):
+```
+SITE_DOMAIN_NAME = www.example.com
 ```
 
-## Run Selenium-based tests
 
-### Setup your shopelectro project
-- Create admin user `python manage.py createsuperuser`
-- Set admin panel credentials at your settings.py
-```
-# settings.py
-ADMIN_LOGIN = 'user'
-ADMIN_PASS = 'your_password'
-```
+### Running tests
+There are 6 types of tests in this project:
+- commands tests (testing output of management commands)
+- models (shopelectro-specific behaviour)
+- views (using Django's TestClient)
+- selenium (using Selenium)
+- wholesale (wholesale algorithms)
+- tests in `refarm-*` applications
+
+You can run them all it once by running `python manage.py common_tests` command.
+
+Also, you can run only shopelectro tests by running `python manage.py test`
+
+
+### Available managements commands
+- `catalog` - import catalog from 1C, create all prices.
+- `excel` - generate Excel file with prices
+- `price` - generate .yml price files for YM and Price.ru.
+- `redirects` - insert the old and new path to django_redirect table and update default domain name to
+                                 the actual.
+- `test_db` - generate random testing data. Runs only on `test` database to prevent mistakes.
 
 
 ### Install selenium
@@ -41,7 +66,3 @@ ADMIN_PASS = 'your_password'
 - Install [Selenium ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 - Start Django's development server `python manage.py runserver`
 - Run tests: `python manage.py test` and go have a coffee :)
-
-### Local settings
-- DATABASES - settings for your database
-- SITE_DOMAIN_NAME - this const needed for "sites" and sitemap frameworks. Format: www.example.com

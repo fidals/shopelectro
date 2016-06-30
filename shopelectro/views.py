@@ -300,3 +300,25 @@ def yandex_aviso(request):
                   'ecommerce/yandex_aviso.xml',
                   {'invoice': invoice_id},
                   content_type='application/xhtml+xml')
+
+
+def create_test_db(request):
+
+
+
+
+    def create_products(category):
+        for i in range(10):
+            p, _ = Product.objects.get_or_create(name='Root category #{}'.format(i),
+                                                  position=i,
+                                                  parent=category)
+            p.save()
+
+
+    roots = create_roots()
+    for r in roots:
+        create_children(r)
+
+    for category in Category.objects.all():
+        create_products(category)
+

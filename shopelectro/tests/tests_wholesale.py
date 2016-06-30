@@ -7,6 +7,7 @@ from catalog.models import Category
 from shopelectro.models import Product
 from shopelectro.cart import recalculate_price
 
+
 class WholesaleCartTest(TestCase):
 
     @classmethod
@@ -39,7 +40,7 @@ class WholesaleCartTest(TestCase):
         Return the approximate number of products with wholesale price type for
         tests.
         """
-        wholesale_price_type  = {
+        wholesale_price_type = {
             'price': 14000,
             'wholesale_small': 15000,
             'wholesale_medium': 40000,
@@ -56,11 +57,11 @@ class WholesaleCartTest(TestCase):
         first_product_price = float(getattr(self.first_product, price_type))
         second_product_price = float(getattr(self.second_product, price_type))
         first_product_quantity = (self.wholesale_quantity(price_type) //
-                                 self.item_quantity)
+                                  self.item_quantity)
         second_product_quantity = (self.wholesale_quantity(price_type) -
-                                  first_product_quantity)
+                                   first_product_quantity)
         total_sum = (first_product_price * first_product_quantity +
-                    second_product_price * second_product_quantity)
+                     second_product_price * second_product_quantity)
 
         return {
             'cart': self.cart,
@@ -73,7 +74,7 @@ class WholesaleCartTest(TestCase):
 
     def test_add_method_for_wholesale_small(self):
         """
-        If the sum of products prices on column small wholesale type price greater than
+        If the sum of prices on small wholesale is greater than
         15 000 rub. then price for every product equated small wholesale price.
         """
         setup_data = self.setup_for_tests('wholesale_small')
@@ -91,7 +92,7 @@ class WholesaleCartTest(TestCase):
 
     def test_add_method_for_wholesale_medium(self):
         """
-        If the sum of products prices on column medium wholesale type price greater than
+        If the sum of prices on medium wholesale is greater than
         40 000 rub. then price for every product equated medium wholesale price.
         """
         setup_data = self.setup_for_tests('wholesale_medium')
@@ -107,21 +108,27 @@ class WholesaleCartTest(TestCase):
                 [setup_data['first_product_price'],
                  setup_data['second_product_price']]
             )
-        self.assertEqual(setup_data['total_sum'], setup_data['cart'].total_price)
+        self.assertEqual(setup_data['total_sum'],
+                         setup_data['cart'].total_price)
 
     def test_add_method_for_wholesale_large(self):
         """
-        If the sum of products prices on column large wholesale type price greater than
+        If the sum of prices on large wholesale is greater than
         100 000 rub. then price for every product equated large wholesale price.
         """
         setup_data = self.setup_for_tests('wholesale_large')
 
-        setup_data['cart'].add(self.first_product, setup_data['first_product_quantity'])
-        setup_data['cart'].add(self.second_product, setup_data['second_product_quantity'])
+        setup_data['cart'].add(self.first_product, setup_data[
+                               'first_product_quantity'])
+        setup_data['cart'].add(self.second_product, setup_data[
+                               'second_product_quantity'])
 
         for item in setup_data['cart']:
-            self.assertIn(item['price'], [setup_data['first_product_price'], setup_data['second_product_price']])
-        self.assertEqual(setup_data['total_sum'], setup_data['cart'].total_price)
+            self.assertIn(item['price'],
+                          [setup_data['first_product_price'],
+                           setup_data['second_product_price']])
+        self.assertEqual(setup_data['total_sum'],
+                         setup_data['cart'].total_price)
 
     def setup_for_remove_method(self, before, after):
         before = self.setup_for_tests(before)
@@ -131,7 +138,7 @@ class WholesaleCartTest(TestCase):
         before['cart'].add(self.second_product,
                            before['second_product_quantity'])
         total_sum = (after['first_product_price'] *
-                    before['first_product_quantity'])
+                     before['first_product_quantity'])
 
         return {
             'cart': before['cart'],
@@ -142,7 +149,7 @@ class WholesaleCartTest(TestCase):
 
     def test_remove_method_for_wholesale_small(self):
         """
-        If the sum of products prices on column small wholesale type price lesser than
+        If the sum of prices on small wholesale is less than
         15 000 rub. then price for every product equated default price.
         """
         setup_data = self.setup_for_remove_method('wholesale_small', 'price')
@@ -157,7 +164,7 @@ class WholesaleCartTest(TestCase):
 
     def test_remove_method_for_wholesale_medium(self):
         """
-        If the sum of products prices on column medium wholesale type price lesser than
+        If the sum of prices on medium wholesale is less than
         40 000 rub. then price for every product equated small price.
         """
         setup_data = self.setup_for_remove_method('wholesale_medium',
@@ -171,10 +178,9 @@ class WholesaleCartTest(TestCase):
         self.assertEqual(setup_data['total_sum'],
                          setup_data['cart'].total_price)
 
-
     def test_remove_method_for_wholesale_large(self):
         """
-        If the sum of products prices on column large wholesale type price lesser than
+        If the sum of prices on large wholesale is less than
         100 000 rub. then price for every product equated medium price.
         """
         setup_data = self.setup_for_remove_method('wholesale_large',
@@ -196,9 +202,9 @@ class WholesaleCartTest(TestCase):
         before['cart'].add(self.second_product,
                            before['second_product_quantity'])
         total_sum = (after['first_product_price'] *
-                    before['first_product_quantity'] +
-                    after['second_product_price'] *
-                    after['second_product_quantity'])
+                     before['first_product_quantity'] +
+                     after['second_product_price'] *
+                     after['second_product_quantity'])
 
         return {
             'cart': before['cart'],
@@ -209,7 +215,7 @@ class WholesaleCartTest(TestCase):
 
     def test_set_product_quantity_method_for_wholesale_small(self):
         """
-        If the sum of products prices on column small wholesale type price lesser than
+        If the sum of prices on small wholesale is less than
         15 000 rub. then price for every product equated default price.
         """
         setup_data = self.setup_for_set_product_quantity(
@@ -217,7 +223,8 @@ class WholesaleCartTest(TestCase):
         )
 
         setup_data['cart'].set_product_quantity(
-            self.second_product, setup_data['after']['second_product_quantity']
+            self.second_product,
+            setup_data['after']['second_product_quantity']
         )
 
         self.assertEqual(setup_data['total_sum'],
@@ -225,7 +232,7 @@ class WholesaleCartTest(TestCase):
 
     def test_set_product_quantity_method_for_wholesale_medium(self):
         """
-        If the sum of products prices on column medium wholesale type price lesser than
+        If the sum of prices on medium wholesale is less than
         40 000 rub. then price for every product equated small price.
         """
         setup_data = self.setup_for_set_product_quantity(
@@ -233,7 +240,8 @@ class WholesaleCartTest(TestCase):
         )
 
         setup_data['cart'].set_product_quantity(
-            self.second_product,setup_data['after']['second_product_quantity']
+            self.second_product,
+            setup_data['after']['second_product_quantity']
         )
 
         self.assertEqual(setup_data['total_sum'],
@@ -241,7 +249,7 @@ class WholesaleCartTest(TestCase):
 
     def test_set_product_quantity_method_for_wholesale_large(self):
         """
-        If the sum of products prices on column large wholesale type price lesser than
+        IIf the sum of prices on large wholesale is less than
         40 000 rub. then price for every product equated medium price.
         """
         setup_data = self.setup_for_set_product_quantity(
@@ -249,7 +257,8 @@ class WholesaleCartTest(TestCase):
         )
 
         setup_data['cart'].set_product_quantity(
-            self.second_product, setup_data['after']['second_product_quantity']
+            self.second_product,
+            setup_data['after']['second_product_quantity']
         )
 
         self.assertEqual(setup_data['total_sum'],

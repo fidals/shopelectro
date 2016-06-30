@@ -20,6 +20,7 @@ from shopelectro.management.commands import catalog
 
 
 class ImportTest(TestCase):
+    # TODO: testing XMLs are needed
 
     @classmethod
     def setUpTestData(cls):
@@ -29,9 +30,10 @@ class ImportTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        super(ImportTest, cls).tearDownClass()
         os.remove('priceru.xml')
-        os.remove('yandex.yml')
         os.remove('pricelist.xlsx')
+        os.remove('yandex.yml')
 
     def test_removed_files(self):
         """After performing command there should be no files."""
