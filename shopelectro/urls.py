@@ -14,6 +14,7 @@ from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
 
 from . import views, sitemaps, config
+from .cart import recalculate_price
 
 category_urls = [
     url(r'^(?P<category_slug>[\w-]+)/$',
@@ -63,7 +64,7 @@ urlpatterns = [
     url(r'^catalog/products/(?P<product_id>[0-9]+)/$',
         views.product_page, name='product'),
     url(r'^blog/', include('blog.urls')),
-    url(r'^shop/', include('ecommerce.urls')),
+    url(r'^shop/', include('ecommerce.urls'), {'apply_wholesale': recalculate_price}),
     url(r'^blog/posts/(?P<type_>[\w-]+)/$', views.blog_post, name='posts'),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
