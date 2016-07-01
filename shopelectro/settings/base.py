@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LOCALE_NAME = 'ru_RU'
 
 TIME_ZONE = 'UTC'
 
@@ -154,6 +154,10 @@ LOCALHOST = 'http://127.0.0.1:8000/'
 BASE_URL = 'https://www.shopelectro.ru'
 
 IMAGE_THUMBNAIL = 'images/logo.png'
+
+AUTOCOMPLETE_LIMIT = 20
+SEARCH_LIMIT = 500
+SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'

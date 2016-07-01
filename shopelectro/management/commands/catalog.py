@@ -95,7 +95,6 @@ def delete_and_create(model_generator_mapping: list) -> result_message:
 
     with transaction.atomic():
         for model_class, generator in model_generator_mapping:
-            # TODO: Should we pass parameters to local funcs?
             purge_table(model_class)
             save_instances(generator)
     return 'Товары и Категории успешно сохранены.'

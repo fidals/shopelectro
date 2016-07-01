@@ -1474,17 +1474,12 @@ h3 {
 // ================================================================
 // SEARCH RESULT PAGE
 // ================================================================
-.catalog {
-  &-search {
-    margin: 0 0 20px;
-  }
+.search-result {
+  margin: 0 0 20px;
+  display: inline-block;
 
-  &-search-top p {
-    display: inline-block;
-    margin: 10px 5px 0 0;
-  }
 
-  &-search-form {
+  &-form {
     display: inline-block;
     vertical-align: top;
 
@@ -1495,7 +1490,7 @@ h3 {
     }
   }
 
-  &-search-input {
+  &-input {
     background: @c-white;
     border: none;
     border-radius: 3px;
@@ -2210,4 +2205,73 @@ a.main-link {
 .date-pub {
   padding: 7px 0 0;
   margin: 0;
+}
+
+.autocomplete-suggestions {
+  background: @c-white;
+  border: 1px solid @c-grey-body-main;
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 3px 7px -2px @c-subway-station;
+  margin: 0 10px 15px 10px;
+  padding: 10px 10px 0;
+  position: relative;
+  width: 572px !important;
+  z-index: 4;
+
+  div {
+    border-bottom: 1px dotted @c-tooltip-img-border;
+    display: block;
+    cursor: pointer;
+    font-size: @f-size-base - 1;
+    line-height: 18px;
+    min-height: 40px;
+    padding: 3px 5px;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: @c-block-link-hover;
+    }
+
+    &:last-child {
+      border-bottom: none;
+      color: @c-black-lighter-x;
+      font-family: @proxima-light;
+      font-size: @f-size-base;
+      padding: 11px 5px 0;
+    }
+
+    &:first-child {
+      padding: 3px 5px;
+    }
+
+
+    a {
+      color: @c-black-lighter-x;
+      display: block;
+      text-decoration: none;
+      border-radius: 4px;
+
+      &:hover span {
+        color: @c-black;
+      }
+
+      span {
+        color: @c-blue-cats-bg;
+        display: table-cell;
+        font-size: @f-size-base;
+        font-family: @proxima;
+        height: 34px;
+        text-align: right;
+        vertical-align: middle;
+        width: 210px;
+
+        &:first-child {
+          color: @c-black-lighter-x;
+          font-family: @proxima-light;
+          text-align: left;
+          width: 85%;
+        }
+      }
+    }
+  }
 }

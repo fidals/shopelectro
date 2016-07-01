@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Chrome
 
+from selenium.webdriver.common.keys import Keys
 from django.core.management import call_command
 from django.test import TestCase
 from django.conf import settings
@@ -28,10 +29,10 @@ def wait(seconds=1):
     """Simple wrapper on time.sleep() method."""
     time.sleep(seconds)
 
-success_order_page = settings.LOCALHOST + 'shop/success-order/'
+SUCCESS_ORDER_PAGE = settings.LOCALHOST + 'shop/success-order/'
 
 
-class Header(TestCase):
+class HeaderTests(TestCase):
     """Selenium-based tests for header."""
 
     def setUp(self):
@@ -47,8 +48,7 @@ class Header(TestCase):
         self.browser.quit()
 
     def test_call_modal_not_visible(self):
-        """By default we shouldn't see call modal."""
-        """After clicking on call button we should see call modal."""
+        """By default we shouldn't see call modal"""
         modal = self.browser.find_element_by_id('back-call-modal')
         self.assertFalse(modal.is_displayed())
 
@@ -62,7 +62,7 @@ class Header(TestCase):
     def test_order_call(self):
         """After filling modal's fields we can successfully order call."""
         self.call_button.click()
-        wait(3)
+        wait()
         self.browser.find_element_by_id(
             'back-call-phone').send_keys('22222222222')
         day_time = self.browser.find_element_by_xpath(
@@ -87,7 +87,7 @@ class Header(TestCase):
         self.assertTrue(cart.is_displayed())
 
 
-class CategoryPage(TestCase):
+class CategoryPageTests(TestCase):
     """Selenium-based tests for category page UI."""
 
     def setUp(self):
@@ -227,7 +227,7 @@ class CategoryPage(TestCase):
         self.assertFalse(cart_is_empty.is_displayed())
 
 
-class ProductPage(TestCase):
+class ProductPageTests(TestCase):
     """
     Selenium-based tests for product page UI.
     """
@@ -280,14 +280,14 @@ class ProductPage(TestCase):
 
     def test_images_switch(self):
         """If product has > 1 image, we could to switch them by clicking."""
-        product_main_img = self.browser.find_element_by_id('product-image-big')
-        self.assertTrue('main' in product_main_img.get_attribute('src'))
+        product_big_img = self.browser.find_element_by_id('product-image-big')
+        self.assertTrue('main' in product_big_img.get_attribute('src'))
 
         next_product_img = self.browser.find_element_by_xpath(
-            '//*[@id="product-images"]/div[2]/img')
+            '//*[@id="product-images"]/div[3]/img')
         next_product_img.click()
         wait()
-        self.assertFalse('main' in product_main_img.get_attribute('src'))
+        self.assertFalse('main' in product_big_img.get_attribute('src'))
 
     def test_one_click_buy_disabled_with_empty_phone(self):
         """By default .btn-one-click-order should be disabled"""
@@ -306,7 +306,7 @@ class ProductPage(TestCase):
             'input-one-click-phone').send_keys('22222222222')
         self.one_click.click()
         wait()
-        self.assertEqual(self.browser.current_url, success_order_page)
+        self.assertEqual(self.browser.current_url, SUCCESS_ORDER_PAGE)
 
     def test_add_to_cart(self):
         """We can add item to cart from it's page."""
@@ -321,6 +321,7 @@ class ProductPage(TestCase):
         wait()
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         hover(self.browser, cart_parent)
+        wait()
         cart = self.browser.find_element_by_class_name('basket-wrapper')
         self.assertTrue('Аккумулятор Panasonic' in cart.text)
 
@@ -334,7 +335,7 @@ class ProductPage(TestCase):
         self.assertTrue('42' in cart_size.text)
 
 
-class OrderPage(TestCase):
+class OrderPageTests(TestCase):
 
     def setUp(self):
         """Sets up testing url and dispatches selenium webdriver."""
@@ -415,7 +416,8 @@ class OrderPage(TestCase):
 
     def test_change_product_count(self):
         """
-        We can change product's count from table and see the changes both in table and dropdown.
+        We can change product's count from table and see the changes
+        both in table and dropdown
         """
         add_one_more = self.browser.find_element_by_xpath(
             '//*[@id="4023"]/td[4]/div[2]/span[3]/button[1]/i')
@@ -437,7 +439,7 @@ class OrderPage(TestCase):
         wait()
         self.fill_and_submit_form()
         wait()
-        self.assertEqual(self.browser.current_url, success_order_page)
+        self.assertEqual(SUCCESS_ORDER_PAGE, self.browser.current_url)
 
     def fill_and_submit_form(self, yandex=False):
         self.browser.find_element_by_id('id_name').send_keys('Name')
@@ -485,7 +487,7 @@ class BlogPageSeleniumTests(TestCase):
         self.browser.quit()
 
     @property
-    def _accordion_title(self):
+    def accordion_title(self):
         return self.browser.find_element_by_id('js-accordion-title-navigation')
 
     @property
@@ -493,34 +495,23 @@ class BlogPageSeleniumTests(TestCase):
         return self.browser.find_element_by_id(
             'js-accordion-content-navigation')
 
-    def test_accordion_minimized(self):
-        """Accordion item should be minimized by default"""
-
-        self.browser.get(self.test_blog_page)
-        wait()
-        self.assertFalse(self.accordion_content.is_displayed())
-
-    def test_accordion_expand(self):
+    def test_accordion_can_expand_and_minimize(self):
         """Accordion item should expand by click on title"""
 
         self.browser.get(self.test_blog_page)
-        accordion_title = self._accordion_title
-        accordion_content = self.accordion_content
-        accordion_title.click()
+        self.accordion_title.click()
         wait()
-        self.assertTrue(accordion_content.is_displayed())
+        self.assertTrue(self.accordion_content.is_displayed())
 
     def test_accordion_minimize_by_double_click(self):
         """Accordion item should be minimized by two clicks on title"""
 
         self.browser.get(self.test_blog_page)
-        accordion_title = self._accordion_title
-        accordion_content = self.accordion_content
-        accordion_title.click()
+        self.accordion_title.click()
         wait()
-        accordion_title.click()
+        self.accordion_title.click()
         wait()
-        self.assertFalse(accordion_content.is_displayed())
+        self.assertFalse(self.accordion_content.is_displayed())
 
 
 class AdminPageSeleniumTests(TestCase):
@@ -534,8 +525,8 @@ class AdminPageSeleniumTests(TestCase):
         """
 
         self.admin_page = settings.LOCALHOST + 'admin'
-        self.login = 'admin'
-        self.password = 'asdfjkl;'
+        self.login = settings.ADMIN_LOGIN
+        self.password = settings.ADMIN_PASS
         self.title_text = 'Shopelectro administration'
         self.products_list_link = '//*[@id="content-main"]/div[5]/table/tbody/tr/th/a'
         self.product_price_filter_link = '//*[@id="changelist-filter"]/ul[1]/li[4]'
@@ -544,8 +535,8 @@ class AdminPageSeleniumTests(TestCase):
         self.products_activity_state_img = '//*[@id="result_list"]/tbody/tr[1]/td[6]/img'
         self.autocomplete_text = 'Фонарь'
         self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(5)
         self.browser.maximize_window()
+        self.browser.implicitly_wait(5)
 
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
@@ -565,6 +556,11 @@ class AdminPageSeleniumTests(TestCase):
 
         self.browser.quit()
 
+    def go_to_products_list(self):
+        products_link = self.browser.find_element_by_xpath(self.products_list_link)
+        products_link.click()
+        time.sleep(1)
+
     def test_login(self):
         """
         We are able to login to Admin page.
@@ -574,13 +570,10 @@ class AdminPageSeleniumTests(TestCase):
 
     def test_admin_product(self):
         """
-        Admin products page has icon links for Edit\View.
+        Admin products page has icon links for Edit/View.
         And it should has Search field.
         """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
-        wait()
+        self.go_to_products_list()
         edit_links = self.browser.find_element_by_class_name('field-links')
         search_field = self.browser.find_element_by_id('changelist-search')
         self.assertTrue(edit_links)
@@ -591,10 +584,7 @@ class AdminPageSeleniumTests(TestCase):
         Price filter is able to filter products by set range.
         In this case we filter products with 1000 - 2000 price range.
         """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
-        wait()
+        self.go_to_products_list()
 
         filter_link = self.browser.find_element_by_xpath(
             self.product_price_filter_link)
@@ -605,13 +595,25 @@ class AdminPageSeleniumTests(TestCase):
 
         self.assertTrue(first_product_price >= 1000)
 
-    def test_is_active_filter(self):
+    def test_filter_active_items(self):
         """
         Activity filter returns only active or non active items.
         """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
+        self.go_to_products_list()
+
+        filter_link = self.browser.find_element_by_xpath(
+            self.show_active_products_link)
+        filter_link.click()
+        wait()
+        first_product = self.browser.find_element_by_xpath(
+            self.products_activity_state_img)
+        first_product_state = first_product.get_attribute('alt')
+
+        self.assertTrue(first_product_state == 'true')
+
+    def test_is_active_filter(self):
+        """Activity filter returns only active or non active items."""
+        self.go_to_products_list()
         wait()
 
         filter_link = self.browser.find_element_by_xpath(
@@ -632,13 +634,8 @@ class AdminPageSeleniumTests(TestCase):
         self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
-        """
-        Search field could autocomplete.
-        """
-        products_link = self.browser.find_element_by_xpath(
-            self.products_list_link)
-        products_link.click()
-        wait()
+        """Search field could autocomplete"""
+        self.go_to_products_list()
 
         filter_link = self.browser.find_element_by_id('searchbar')
         filter_link.send_keys(self.autocomplete_text)
@@ -651,7 +648,7 @@ class AdminPageSeleniumTests(TestCase):
         self.assertTrue(self.autocomplete_text in first_suggested_item_text)
 
 
-class YandexKassa(TestCase):
+class YandexKassaTests(TestCase):
 
     def setUp(self):
         self.browser = Chrome()
@@ -721,3 +718,82 @@ class SitemapPageTests(TestCase):
         response = self.client.get(model_url_text)
 
         self.assertEqual(response.status_code, 200)
+
+
+class SearchTests(TestCase):
+    """
+    Selenium-based tests for Search
+    """
+
+    def setUp(self):
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(5)
+        self.browser.get(settings.LOCALHOST)
+        self.input = self.browser.find_element_by_class_name('js-search-input')
+        self.autocomplete = self.browser.find_element_by_class_name(
+            'autocomplete-suggestions ')
+        self.query = 'Батар'
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def fill_input(self):
+        """Enter correct search term"""
+        self.input.send_keys(self.query)  # enter correct search term ...
+        wait()
+
+    def test_autocomplete_can_expand_and_collapse(self):
+        """
+        Autocomplete should minimize during user typing correct search query
+        Autocomplete should minimize by removing search query
+        """
+        self.fill_input()
+        # fill input and autocomplete expands
+        self.assertTrue(self.autocomplete.is_displayed())
+
+        # remove search term ...
+        self.input.send_keys(Keys.BACKSPACE*len(self.query))
+        wait()
+        # ... and autocomplete collapse
+        self.assertFalse(self.autocomplete.is_displayed())
+
+    def test_autocomplete_item_link(self):
+        """First autocomplete item should link on category page by click"""
+        self.fill_input()
+        first_item = self.autocomplete.find_element_by_css_selector(
+            ':first-child')
+        first_item.click()
+        wait()
+        self.assertTrue('/catalog/category/' in self.browser.current_url)
+
+    def test_autocomplete_see_all_item(self):
+        """
+        Autocomplete should contain "see all" item.
+        "See all" item links on search results page
+        """
+        self.fill_input()
+        last_item = self.autocomplete.find_element_by_class_name(
+            'autocomplete-last-item')
+        last_item.click()
+        wait()
+        self.assertTrue('/search/' in self.browser.current_url)
+
+    def test_search_have_results(self):
+        """Search results page should contain links on relevant pages"""
+        self.fill_input()
+        search_form = self.browser.find_element_by_class_name('search-form')
+        search_form.submit()
+        wait()
+        self.assertTrue(self.browser.find_element_by_link_text('Батарейки AA'))
+        self.assertTrue(self.browser.find_element_by_link_text(
+            'Батарейки часовые'))
+        self.assertTrue(self.browser.find_element_by_link_text(
+            'Батарейка Energizer BASE Alkaline, 1.5 В, LR03 BL2'))
+
+    def test_search_results_empty(self):
+        """Search results for wrong term should contain empty result set"""
+        self.input.send_keys('Not existing search query')
+        button_submit = self.browser.find_element_by_id('search-submit')
+        button_submit.click()
+        h1 = self.browser.find_element_by_tag_name('h1')
+        self.assertTrue('По вашему запросу ничего не найдено' == h1.text)

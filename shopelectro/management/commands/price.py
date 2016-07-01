@@ -63,5 +63,5 @@ class Command(BaseCommand):
     @staticmethod
     def write_yml(file_to_write, context):
         """Write generated context to file."""
-        with open(file_to_write, 'w') as file:
+        with open(file_to_write, 'w', encoding='utf-8') as file:
             file.write(render_to_string('prices/price.yml', context).strip())

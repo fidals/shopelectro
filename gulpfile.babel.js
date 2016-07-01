@@ -40,6 +40,7 @@ const PATH = {
         'front/js/vendors/js.cookie.js',
         'front/js/vendors/jscrollpane.js',
         'front/js/vendors/jquery.bootstrap-touchspin.min.js',
+        'front/js/vendors/auto-complete.min.js',
       ],
 
       common: [
@@ -47,6 +48,7 @@ const PATH = {
         'front/js/components/orderCall.es6',
         'front/js/components/headerCart.es6',
         'front/js/components/main.es6',
+        'front/js/components/autocomplete.es6',
       ],
 
       pages: [

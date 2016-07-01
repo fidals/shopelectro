@@ -1,11 +1,11 @@
 """
 Shopelectro views.
 
-NOTE: They all should be 'zero-logic'. All logic should live in respective applications.
+NOTE: They all should be 'zero-logic'.
+All logic should live in respective applications.
 """
-
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
@@ -138,33 +138,6 @@ def blog_post(request, type_=''):
     })
 
 
-def get_models_names(model_type, search_term):
-    """
-    Returns related names for models.
-    """
-
-    return model_type.objects.filter(name__contains=search_term).values('name')
-
-
-def admin_autocomplete(request):
-    """
-    Returns autocompleted names as response.
-    """
-
-    model_map = {'product': Product, 'category': Category}
-    search_term = request.GET['q']
-    page_term = request.GET['pageType']
-
-    if page_term not in ['product', 'category']:
-        return
-
-    query_objects = get_models_names(model_map[page_term], search_term)
-    names = [item['name'] for item in query_objects]
-
-    return JsonResponse(names, safe=False)
-
-
-
 @require_POST
 def one_click_buy(request):
     Cart(request.session).clear()
@@ -190,7 +163,6 @@ def order_call(request):
                       time=time,
                       url=url)
     return HttpResponse('ok')
-
 
 
 def test_yandex(request):

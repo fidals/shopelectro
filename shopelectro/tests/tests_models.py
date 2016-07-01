@@ -1,6 +1,5 @@
 """Defines tests for models in Shopelectro app."""
 
-import os
 from django.conf import settings
 from django.test import TestCase
 
@@ -15,19 +14,19 @@ class ModelsTests(TestCase):
         """
         Defines testing data.
         """
-        self.category, _ = Category.objects.get_or_create(
+        self.category = Category.objects.create(
             name='Test category'
         )
 
-        self.product, _ = Product.objects.get_or_create(
-            id=3993,
+        self.product = Product.objects.create(
+            id=99999,
+            category=self.category,
             wholesale_small=10,
             wholesale_medium=10,
             wholesale_large=10,
-            category=self.category,
         )
 
-        self.trademark, _ = Property.objects.get_or_create(
+        self.trademark = Property.objects.create(
             name='Товарный знак',
             is_numeric=False,
             value='TM',
@@ -50,7 +49,10 @@ class ModelsTests(TestCase):
             self.assertEqual(image_name, settings.IMAGE_THUMBNAIL)
 
     def test_get_trademark(self):
-        """Trademark property of Product object should return value of respective Property object."""
+        """
+        Trademark property of Product object should return
+        value of respective Property object
+        """
         self.assertEqual(self.product.trademark, self.trademark.value)
 
     def test_main_image(self):
