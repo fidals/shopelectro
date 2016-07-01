@@ -6,7 +6,7 @@ const admin = (() => {
 
   const CONFIG = {
     autoComplete: {
-      completeURL: '/admin-autocomplete/',
+      completeURL: '/catalog/search/autocomplete/admin/',
       searchFieldId: '#searchbar',
       minChars: 3,
     },

@@ -6,18 +6,16 @@ All logic should live in respective applications.
 """
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
-from ecommerce.forms import OrderForm
 from blog.models import Post, get_crumbs as blog_crumbs
 from catalog.models import Category, get_crumbs as catalog_crumbs
 from ecommerce import mailer
 from ecommerce.cart import Cart
 from ecommerce.models import Order
 from ecommerce.views import get_keys_from_post, save_order_to_session
-from ecommerce.views import cart_modifier
 from . import config
 from .models import Product
 

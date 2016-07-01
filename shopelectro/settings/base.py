@@ -157,6 +157,7 @@ IMAGE_THUMBNAIL = 'images/logo.png'
 
 AUTOCOMPLETE_LIMIT = 20
 SEARCH_LIMIT = 500
+SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
