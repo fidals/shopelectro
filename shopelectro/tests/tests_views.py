@@ -48,10 +48,7 @@ class HeaderTests(TestCase):
         self.browser.quit()
 
     def test_call_modal_not_visible(self):
-        """
-        By default we shouldn't see call modal
-        After clicking on call button we should see call modal
-        """
+        """By default we shouldn't see call modal"""
         modal = self.browser.find_element_by_id('back-call-modal')
         self.assertFalse(modal.is_displayed())
 
@@ -615,9 +612,7 @@ class AdminPageSeleniumTests(TestCase):
         self.assertTrue(first_product_state == 'true')
 
     def test_is_active_filter(self):
-        """
-        Activity filter returns only active or non active items.
-        """
+        """Activity filter returns only active or non active items."""
         self.go_to_products_list()
         wait()
 
@@ -639,9 +634,7 @@ class AdminPageSeleniumTests(TestCase):
         self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
-        """
-        Search field could autocomplete.
-        """
+        """Search field could autocomplete"""
         self.go_to_products_list()
 
         filter_link = self.browser.find_element_by_id('searchbar')
