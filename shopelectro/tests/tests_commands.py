@@ -6,6 +6,7 @@ Note: tests running pretty long.
 
 import os
 import types
+
 from collections import namedtuple
 from xml.etree import ElementTree
 

@@ -1,15 +1,15 @@
 const product = (() => {
   const DOM = {
-    imageBig: $('#product-image-big'),
-    imagesToSwitch: $('.js-image-switch'),
-    fancybox: $('.fancybox'),
-    addToCart: $('#btn-to-basket'),
-    phone: $('#input-one-click-phone'),
-    oneClick: $('#btn-one-click-order'),
-    counter: $('#product-count')
+    $imageBig: $('#product-image-big'),
+    $imagesToSwitch: $('.js-image-switch'),
+    $fancybox: $('.fancybox'),
+    $addToCart: $('#btn-to-basket'),
+    $phone: $('#input-one-click-phone'),
+    $oneClick: $('#btn-one-click-order'),
+    $counter: $('#product-count'),
   };
 
-  const productId = () => DOM.addToCart.attr('data-id');
+  const productId = () => DOM.$addToCart.attr('data-id');
 
   const init = () => {
     setUpListeners();
@@ -17,11 +17,11 @@ const product = (() => {
   };
 
   const setUpListeners = () => {
-    DOM.imageBig.click(fancyBoxStart);
-    DOM.imagesToSwitch.click(productImgSwitch);
-    DOM.phone.keyup(changeOneClickButtonState);
-    DOM.addToCart.click(() => buyProduct());
-    DOM.oneClick.click(() => oneClick());
+    DOM.$imageBig.click(fancyBoxStart);
+    DOM.$imagesToSwitch.click(productImgSwitch);
+    DOM.$phone.keyup(changeOneClickButtonState);
+    DOM.$addToCart.click(() => buyProduct());
+    DOM.$oneClick.click(() => oneClick());
     mediator.subscribe('onOneClickBuy', successOrder);
   };
 
@@ -29,11 +29,9 @@ const product = (() => {
    * Initialize fancyBox on index image.
    */
   const fancyBoxStart = () => {
-    let index = DOM.imageBig.attr('data-index');
-
     $.fancybox(
-      DOM.fancybox, {
-        index: index,
+      DOM.$fancybox, {
+        index: DOM.$imageBig.attr('data-index'),
         helpers: {
           overlay: {
             locked: false,
@@ -45,28 +43,30 @@ const product = (() => {
   };
 
   const oneClick = () => {
-    const phone = DOM.phone.val();
-    const count = DOM.counter.val();
+    const phone = DOM.$phone.val();
+    const count = DOM.$counter.val();
 
-    oneClickBuy(productId(), count, phone).then(() => mediator.publish('onOneClickBuy'));
+    server.oneClickBuy(productId(), count, phone).then(() => mediator.publish('onOneClickBuy'));
   };
 
   /**
-   * Phone validation on keypress
+   * Phone validation on keypress.
    */
-  const changeOneClickButtonState = () => DOM.oneClick.attr('disabled', !isPhoneValid(DOM.phone.val()));
+  const changeOneClickButtonState = () => {
+    DOM.$oneClick.attr('disabled', !validator.isPhoneValid(DOM.$phone.val()));
+  };
 
   /**
-   * Переключение картинок товара:
+   * Switch product images.
    *
-   * @param event - миниатюра, по которой был произведен клик;
+   * @param event - click on image preview;
    */
   const productImgSwitch = (event) => {
-    let targetSrc = event.target.getAttribute('src');
-    let dataIndex = event.target.getAttribute('data-index');
+    const targetSrc = event.target.getAttribute('src');
+    const dataIndex = event.target.getAttribute('data-index');
 
-    if (targetSrc !== DOM.imageBig.attr('src')) {
-      DOM.imageBig.attr({
+    if (targetSrc !== DOM.$imageBig.attr('src')) {
+      DOM.$imageBig.attr({
         src: targetSrc,
         'data-index': dataIndex,
       });
@@ -74,16 +74,15 @@ const product = (() => {
   };
 
   const buyProduct = () => {
-    let {id, count} = {
+    const { id, count } = {
       id: productId(),
-      count: DOM.counter.val()
+      count: DOM.$counter.val(),
     };
 
-    addToCart(id, count).then((data) => mediator.publish('onCartUpdate', data));
+    server.addToCart(id, count).then(data => mediator.publish('onCartUpdate', data));
   };
 
   const successOrder = () => location.href = '/shop/success-order';
 
   init();
 })();
-

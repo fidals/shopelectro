@@ -1,0 +1,10 @@
+{% load staticfiles %}
+
+<ul class="images-list">
+  {% for image in images %}
+    <li class="images-list-item js-list-item">
+      <i class="fa fa-times js-remove-image" title="Удалить" data-id="{{ image }}"></i>
+      <img src="/media/{{ image }}" class="images-item" alt="{{ image }}">
+    </li>
+  {% endfor %}
+</ul>

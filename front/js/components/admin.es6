@@ -1,35 +1,65 @@
 const admin = (() => {
   const DOM = {
-    categoryPage: $('.model-category'),
-    productPage: $('.model-product'),
+    $productPage: $('.model-product'),
+    $removeIcon: $('.js-remove-image'),
+    $imageItem: $('.js-list-item'),
   };
 
-  const CONFIG = {
-    autoComplete: {
-      completeURL: '/catalog/search/autocomplete/admin/',
-      searchFieldId: '#searchbar',
-      minChars: 3,
-    },
+  const UPLOAD = {
+    $: $('.js-file-input'),
+    removeUrl: '/admin/remove-image/',
   };
 
+  const AUTOCOMPLETE = {
+    completeURL: '/catalog/search/autocomplete/admin/',
+    searchFieldId: '#searchbar',
+    minChars: 3,
+  };
 
   let pageType = '';
 
-  const search = new autoComplete({
-    selector: CONFIG.autoComplete.searchFieldId,
-    minChars: CONFIG.autoComplete.minChars,
-    source: (term, response) => {
-      $.getJSON(CONFIG.autoComplete.completeURL, {
-        q: term,
-        pageType: getCurrentPageType(),
-      }, (namesArray) => {
-        response(namesArray);
-      });
-    },
-  });
+  const init = () => {
+    setupXHR();
+    search();
+    setUpListeners();
+  };
+
+  // TODO: move to config module
+  // http://youtrack.stkmail.ru/issue/dev-748
+  const setupXHR = () => {
+    const csrfUnsafeMethod = (method) => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    const token = Cookies.get('csrftoken');
+
+    $.ajaxSetup({
+      beforeSend: (xhr, settings) => {
+        if (csrfUnsafeMethod(settings.type)) {
+          xhr.setRequestHeader('X-CSRFToken', token);
+        }
+      },
+    });
+  };
+
+  const setUpListeners = () => {
+    DOM.$removeIcon.click(removeImage);
+  };
+
+  const search = () => {
+    return new autoComplete({
+      selector: AUTOCOMPLETE.searchFieldId,
+      minChars: AUTOCOMPLETE.minChars,
+      source: (term, response) => {
+        $.getJSON(AUTOCOMPLETE.completeURL, {
+          q: term,
+          pageType: getCurrentPageType(),
+        }, (namesArray) => {
+          response(namesArray);
+        });
+      },
+    });
+  };
 
   const getCurrentPageType = () => {
-    if (DOM.productPage.size() > 0) {
+    if (DOM.$productPage.size() > 0) {
       pageType = 'product';
     } else {
       pageType = 'category';
@@ -37,4 +67,17 @@ const admin = (() => {
 
     return pageType;
   };
+
+  const removeImage = () => {
+    const $target = $(event.target);
+
+    $.post(
+      UPLOAD.removeUrl, {
+        csrfmiddlewaretoken: Cookies.get('csrftoken'),
+        url: $target.data('id'),
+      }
+    ).success(() => $target.closest(DOM.$imageItem).slideUp());
+  };
+
+  init();
 })();

@@ -1,94 +1,100 @@
-/**
- * Sends information about order call.
- * @param phone
- * @param time
- * @param url
- */
-const sendOrderCall = (phone, time, url) => {
-  return $.post(
-    '/shop/order-call/',
-    {
-      phone: phone,
-      time: time,
-      url: url
-    }
-  );
-};
+const server = (() => {
+  const CONFIG = {
+    orderCallUrl: '/shop/order-call/',
+    addToCartUrl: '/shop/cart-add/',
+    oneClickBuyUrl: '/shop/one-click-buy/',
+    changeCartUrl: '/shop/cart-change/',
+    removeFromCartUrl: '/shop/cart-remove/',
+    flushCartUrl: '/shop/cart-flush/',
+    yandexOrderUrl: '/shop/yandex-order/',
+    setViewTypeUrl: '/set-view-type/',
+  };
 
-const fetchProducts = (url) => fetch(url).then((response) => response.text());
+  /**
+   * Sends information about order call.
+   * @param phone
+   * @param time
+   * @param url
+   */
+  const sendOrderCall = (phone, time, url) => $.post(CONFIG.orderCallUrl, { phone, time, url });
 
-const sendViewType = (event, viewType) => {
-  $.post('/set-view-type/', {view_type: viewType});
-};
+  /**
+   * @param url
+   */
+  const fetchProducts = url => fetch(url).then((response) => response.text());
 
-/**
- * Add product to backend's Cart.
- * @param productId
- * @param quantity
- */
-const addToCart = (productId, quantity) => {
-  return $.post(
-    '/shop/cart-add/',
-    {
-      quantity: quantity,
-      product: productId
-    }
-  );
-};
+  /**
+   * Sends viewType to store user's default view type.
+   * @param event
+   * @param viewType
+   */
+  const sendViewType = (event, viewType) => $.post(CONFIG.setViewTypeUrl, { view_type: viewType });
 
-/**
- * Flush (or clear) the cart on backend.
- */
-const flushCart = () => $.post('/shop/cart-flush/');
+  /**
+   * Add product to backend's Cart.
+   * @param productId
+   * @param quantity
+   */
+  const addToCart = (productId, quantity) => {
+    return $.post(
+      CONFIG.addToCartUrl,
+      {
+        product: productId,
+        quantity,
+      }
+    );
+  };
 
-/**
- * Handle one-click-buy feature. Sends:
- * @param productId - id of a bought product
- * @param quantity - selected quantity
- * @param phone - customer's phone
- */
-const oneClickBuy = (productId, quantity, phone) => {
-  return $.post(
-    '/shop/one-click-buy/',
-    {
-      product: productId,
-      quantity: quantity,
-      phone: phone
-    }
-  );
-};
+  /**
+   * Flush (clear) the cart on backend.
+   */
+  const flushCart = () => $.post(CONFIG.flushCartUrl);
 
-/**
- * Remove given product from cart.
- * @param productId
- */
-const removeFromCart = (productId) => {
-  return $.post(
-    '/shop/cart-remove/',
-    {
-      product: productId
-    }
-  );
-};
+  /**
+   * Handle one-click-buy feature. Sends:
+   * @param product - id of a bought product
+   * @param quantity  - selected quantity
+   * @param phone     - customer's phone
+   */
+  const oneClickBuy = (product, quantity, phone) => {
+    return $.post(
+      CONFIG.oneClickBuyUrl,
+      { product, quantity, phone }
+    );
+  };
 
-/**
- * Return $.post request, which changes quantity of a given product in Cart.
- * @param productId
- * @param quantity - new quantity of a product
- */
-const changeInCart = (productId, quantity) => {
-  return $.post(
-    '/shop/cart-change/',
-    {
-      product: productId,
-      quantity: quantity
-    }
-  );
-};
+  /**
+   * Remove given product from Cart.
+   * @param productId
+   */
+  const removeFromCart = productId => $.post(CONFIG.removeFromCartUrl, { product: productId });
 
-const sendYandexOrder = (data) => {
-  return $.post(
-    '/shop/yandex-order/',
-    data
-  );
-};
+  /**
+   * Return $.post request, which changes quantity of a given Product in Cart.
+   * @param productId
+   * @param quantity - new quantity of a product
+   */
+  const changeInCart = (productId, quantity) => {
+    return $.post(
+      CONFIG.changeCartUrl,
+      {
+        product: productId,
+        quantity,
+      }
+    );
+  };
+
+  const sendYandexOrder = data => $.post(CONFIG.yandexOrderUrl, data);
+
+  return {
+    sendOrderCall,
+    fetchProducts,
+    sendViewType,
+    addToCart,
+    flushCart,
+    oneClickBuy,
+    removeFromCart,
+    changeInCart,
+    sendYandexOrder,
+  };
+})();
