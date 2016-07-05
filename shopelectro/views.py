@@ -4,8 +4,10 @@ Shopelectro views.
 NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
+import os
+
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
@@ -16,7 +18,7 @@ from ecommerce import mailer
 from ecommerce.cart import Cart
 from ecommerce.models import Order
 from ecommerce.views import get_keys_from_post, save_order_to_session
-from . import config
+from . import config, images
 from .models import Product
 
 
@@ -82,16 +84,11 @@ def product_page(request, product_id):
     """
 
     product = get_object_or_404(Product.objects, id=product_id)
-    images = product.images
-    main_image = settings.IMAGE_THUMBNAIL
-
-    if images:
-        main_image = [image for image in images if image.find('main') != -1][0]
 
     context = {
         'breadcrumbs': catalog_crumbs(product),
-        'images': images,
-        'main_image': main_image,
+        'main_image': images.get_image(product),
+        'images': images.get_images_without_small(product),
         'product': product,
     }
 
@@ -136,6 +133,62 @@ def blog_post(request, type_=''):
         'breadcrumbs': blog_crumbs(settings.CRUMBS['blog']),
         'page': config.page_metadata(type_),
     })
+
+
+def get_models_names(model_type, search_term):
+    """Return related names for Models."""
+
+    return model_type.objects.filter(name__contains=search_term).values('name')
+
+
+def admin_autocomplete(request):
+    """Return autocompleted Model names as response."""
+
+    model_map = {'product': Product, 'category': Category}
+    page_term = request.GET['pageType']
+
+    if page_term not in model_map:
+        return
+
+    query_objects = get_models_names(model_map[page_term], request.GET['q'])
+    names = [item['name'] for item in query_objects]
+
+    return JsonResponse(names, safe=False)
+
+
+def admin_remove_image(request):
+    """Remove Entity image by url"""
+    image_dir_path = os.path.join(settings.MEDIA_ROOT, request.POST['url'])
+    os.remove(image_dir_path)
+
+    return HttpResponse('ok')
+
+
+@require_POST
+def admin_upload_images(request):
+    """Upload Entity image"""
+
+    def handle_upload(file, image_dir_path):
+        """Write files in media directory"""
+
+        with open(os.path.join(image_dir_path, str(file)), 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+
+    referer_url = request.META['HTTP_REFERER']
+    referer_list = referer_url.split('/')
+    image_entity_type = ('products' if referer_url.index('product')
+                         else 'categories')
+    # -3 is an index for entity id part from HTTP_REFERER.
+    entity_id = referer_list[-3]
+    image_upload_url = '{}/{}'.format(image_entity_type, entity_id)
+
+    image_dir_path = os.path.join(settings.MEDIA_ROOT, image_upload_url)
+
+    for file in request.FILES.getlist('files'):
+        handle_upload(file, image_dir_path)
+
+    return HttpResponseRedirect(referer_url)
 
 
 @require_POST
@@ -189,7 +242,8 @@ def yandex_check(request):
     Handle Yandex check.
 
     We simply accept every check.
-    It's marked with @csrf_exempt, because we don't need to check CSRF in yandex-requests.
+    It's marked with @csrf_exempt, because we don't need
+    to check CSRF in yandex-requests.
     """
     return render(request,
                   'ecommerce/yandex_check.xml',
@@ -201,13 +255,16 @@ def yandex_check(request):
 def yandex_aviso(request):
     """
     Handle Yandex Aviso check.
-    It's marked with @csrf_exempt, because we don't need to check CSRF in yandex-requests.
+    It's marked with @csrf_exempt, because we don't need to
+    check CSRF in yandex-requests.
 
     1. Retrieve order number from request, find in in DB.
-    2. If it's a first aviso check (there might be more than one, depends on Yandex)
+    2. If it's a first aviso check (there might be more than one,
+       depends on Yandex)
        send different emails to client and shop.
     3. Get invoice id from request and return XML to Yandex.
     """
+
     def first_aviso(order):
         return not order.paid
 
@@ -220,7 +277,11 @@ def yandex_aviso(request):
                           subject=settings.EMAIL_SUBJECTS['yandex_order'],
                           order=order,
                           to_customer=False,
-                          extra_context={'paid': paid, 'profit': profit, 'comission': commission})
+                          extra_context={
+                              'paid': paid,
+                              'profit': profit,
+                              'comission': commission
+                          })
 
     def send_mail_to_customer(order):
         mailer.send_order(subject=settings.EMAIL_SUBJECTS['yandex_order'],

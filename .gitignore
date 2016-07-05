@@ -5,7 +5,6 @@ __pycache__/
 front/build
 env/
 src/
-env/
 *.sqlite*
 *.htaccess
 node_modules
@@ -19,6 +18,7 @@ shopelectro/xls/price-list-shopelectro.ru.xlsx
 shopelectro/css/
 shopelectro/js/
 static/**/*
+media/**/*
 !static/assets/
 !static/template.xlsx
 front/images/catalog
@@ -28,4 +28,3 @@ pricelist.xlsx
 priceru.xml
 yandex.yml
 shopelectro/migrations/
-

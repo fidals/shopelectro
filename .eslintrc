@@ -1,6 +1,7 @@
 {
   "extends": "airbnb-base",
   "globals": {
-    "$": true
+    "$": true,
+    "Cookies": true
   }
 }

@@ -1,4 +1,4 @@
-{% extends "shopelectro/base.html" %}
+{% extends "layout/base.html" %}
 {% load breadcrumb_extras %}
 {% load staticfiles %}
 {% block title %}{{ product.title }}{% endblock %}
@@ -32,20 +32,21 @@
       <div class="product-top">
         <div class="product-images" id="product-images">
           <div class="product-image-big box-product">
-            <img class="img-centered img-responsive" id="product-image-big" src="{% static main_image %}" data-index="1"
+            <img class="img-centered img-responsive" id="product-image-big"
+                 src="/media/{{ main_image }}" data-index="0"
                  alt="{{ product.name }}">
           </div>
 
           {% for image in images %}
             <div class="product-image-small box-product">
-              <img class="img-responsive js-image-switch" src="{% static image %}"
+              <img class="img-responsive js-image-switch" src="/media/{{ image }}"
                    data-index="{{ forloop.counter0 }}">
             </div>
           {% endfor %}
 
           {% for hidden_image in images %}
-            <a class="fancybox hidden" href="{% static hidden_image %}" rel="product-cart-gallery">
-              <img src="{% static hidden_image %}">
+            <a class="fancybox hidden" href="/media/{{ hidden_image }}" rel="product-cart-gallery">
+              <img src="/media/{{ hidden_image }}">
             </a>
           {% endfor %}
         </div>
@@ -74,7 +75,7 @@
             </table>
           {% endif %}
 
-          {% include 'catalog/product_in_stock_section.html' %}
+          {% include 'catalog/product_in_stock.html' %}
 
           <div class="product-price-btn-wrapper">
             <input class="input-switcher js-touchspin" id="product-count" type="number" min="1" value="1">
@@ -97,7 +98,7 @@
 
         <div class="pr-chars">
           <div class="pr-chars-order">
-            {% include 'shopelectro/order_notice.html' %}
+            {% include 'catalog/order_notice.html' %}
           </div>
         </div>
       </div>
@@ -111,7 +112,7 @@
         </div>
       </div>
 
-      {% include 'catalog/product_delivery_section.html' %}
+      {% include 'catalog/product_delivery.html' %}
     </div>
   </div>
 {% endblock %}
