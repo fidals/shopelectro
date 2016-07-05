@@ -1,27 +1,23 @@
-import os
-import subprocess
+import os, subprocess, sys
 
-from django.core.management.base import BaseCommand
 from django.core import management
-from django.core.management.base import CommandError
+from django.core.management.base import BaseCommand, CommandError
 
-import catalog
-import ecommerce
-import blog
-import seo
+import blog, catalog, ecommerce, seo
 
 
 class Command(BaseCommand):
+    """Runs tests for project and for every refarm-* application."""
 
     def handle(self, *args, **options):
         try:
-            management.call_command('tests')
+            management.call_command('test')
         except CommandError as err:
             print(err)
 
-        for app in (catalog, blog, ecommerce, seo):
+        for app in (blog, catalog, ecommerce, seo):
             path2test = os.path.dirname(os.path.dirname(app.__file__))
             test_name = 'runtests.py'
             subprocess.call(
-                    ['python', os.path.join(path2test, test_name)],
+                    [sys.executable, os.path.join(path2test, test_name)],
                     stdout=self.stdout, stderr=self.stderr)
