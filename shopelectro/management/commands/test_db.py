@@ -32,6 +32,10 @@ class Command(BaseCommand):
             self.create_children(r)
         self.create_deep_children()
         self.create_products()
+        self.save_dump()
+
+    def save_dump(self):
+        """Save .json dump to fixtures."""
         call_command('dumpdata',
                      'shopelectro.Product',
                      'catalog.Product',
@@ -39,6 +43,7 @@ class Command(BaseCommand):
                      output='shopelectro/fixtures/dump.json')
 
     def create_roots(self):
+        """Create 2 root categories."""
         roots = []
         for i in range(2):
             r, _ = Category.objects.get_or_create(name='Root category #{}'.format(i))
@@ -46,19 +51,22 @@ class Command(BaseCommand):
         return roots
 
     def create_children(self, category):
+        """Create 3 children of a given category."""
         for i in range(3):
-            c, _ = Category.objects.get_or_create(name='Child #{} of #{}'.format(i, category),
-                                                  position=i,
-                                                  parent=category)
+            Category.objects.create(name='Child #{} of #{}'.format(i, category),
+                                    position=i,
+                                    parent=category)
 
     def create_deep_children(self):
+        """Create children of a last added non-root category."""
         last_child = Category.objects.last()
         self.create_children(last_child)
 
     def create_products(self):
+        """Create a random quantity of product for every non-root category."""
         for c in Category.objects.exclude(parent=None):
             for i in range(1, randint(10, 50)):
-                p, _ = Product.objects.get_or_create(
+                Product.objects.create(
                     name='Product of {}'.format(c),
                     price=i * randint(1, 100),
                     category=c,
@@ -68,5 +76,6 @@ class Command(BaseCommand):
                 )
 
     def clear_tables(self):
+        """Remove everything from Category and Product tables."""
         Category.objects.all().delete()
         Product.objects.all().delete()

@@ -61,7 +61,6 @@ class Header(SeleniumTestCase):
 
     def test_call_modal_not_visible(self):
         """By default we shouldn't see call modal."""
-        """After clicking on call button we should see call modal."""
         modal = self.browser.find_element_by_id('back-call-modal')
         self.assertFalse(modal.is_displayed())
 
@@ -78,9 +77,8 @@ class Header(SeleniumTestCase):
         wait()
         self.browser.find_element_by_id(
             'back-call-phone').send_keys('22222222222')
-        day_time = self.browser.find_element_by_xpath(
-            '//*[@id="back-call-time"]/option[3]')
-        day_time.click()
+        self.browser.find_element_by_xpath(
+            '//*[@id="back-call-time"]/option[3]').click()
         self.browser.find_element_by_class_name('js-send-backcall').click()
         wait()
         self.assertTrue(self.browser.find_element_by_class_name(
@@ -487,7 +485,7 @@ class OrderPage(SeleniumTestCase):
         self.assertIn('телефон', alert.text)
 
 
-class BlogPageSeleniumTests(SeleniumTestCase):
+class BlogPage(SeleniumTestCase):
     """
     Selenium-based tests for product page UI.
     """
@@ -539,7 +537,7 @@ class BlogPageSeleniumTests(SeleniumTestCase):
         self.assertFalse(accordion_content.is_displayed())
 
 
-class AdminPageSeleniumTests(SeleniumTestCase):
+class AdminPage(SeleniumTestCase):
     """
     Selenium-based tests for Admin page UI.
     """
@@ -676,7 +674,7 @@ class YandexKassa(SeleniumTestCase):
         self.assertTrue('invoiceId="42"' in response.text)
 
 
-class SearchTests(SeleniumTestCase):
+class Search(SeleniumTestCase):
     """Selenium-based tests for Search"""
 
     def setUp(self):
