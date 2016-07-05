@@ -52,7 +52,7 @@
      js-basket-calculations">
     <p class="basket-price-sum">
       Итого:
-      <span class="js-basket-price-sum">{{ cart.total_price }}</span>
+      <span class="js-basket-price-sum">{{ cart.total_price|floatformat|intcomma }}</span>
       <span class="table-units"> руб.</span>
     </p>
     <p class="basket-info">без учета стоимости доставки</p>
