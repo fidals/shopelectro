@@ -11,6 +11,7 @@ Run `pip install --user -r requirements.txt`
 - `python manage.py price` - generate .yml price files for YM and Price.ru.
 - `python manage.py redirects` - insert the old and new path to django_redirect table and update default domain name to
                                  the actual.
+- `python manage.py common_test` - runs tests for project and for every refarm-* application.
 
 ## Setup mail configuration
 - Define SHOP_EMAIL const in your settings.local module `SHOP_EMAIL = my@mail.com`
