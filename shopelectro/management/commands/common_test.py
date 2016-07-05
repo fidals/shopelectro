@@ -22,4 +22,6 @@ class Command(BaseCommand):
         for app in (catalog, blog, ecommerce, seo):
             path2test = os.path.dirname(os.path.dirname(app.__file__))
             test_name = 'runtests.py'
-            subprocess.call(['python', os.path.join(path2test, test_name)], stdout=self.stdout, stderr=self.stderr)
+            subprocess.call(
+                    ['python', os.path.join(path2test, test_name)],
+                    stdout=self.stdout, stderr=self.stderr)
