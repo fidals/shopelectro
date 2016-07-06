@@ -1,3 +1,8 @@
-from . import tests_commands
-from . import tests_models
-from . import tests_views
+"""
+Module for running every test in shopelectro project.
+Consists of:
+- commands test
+- models test
+- views test
+- selenium test
+"""

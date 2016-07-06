@@ -37,8 +37,8 @@ sitemaps = OrderedDict([
 cached_view = cache_page(config.cached_time())
 
 service_urls = [
-    url(r'^ya-kassa/aviso/$', views.yandex_aviso),
-    url(r'^ya-kassa/check/$', views.yandex_check),
+    url(r'^ya-kassa/aviso/$', views.yandex_aviso, name='yandex_aviso'),
+    url(r'^ya-kassa/check/$', views.yandex_check, name='yandex_check'),
 ]
 
 shop_urls = [
