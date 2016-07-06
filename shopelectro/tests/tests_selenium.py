@@ -492,7 +492,7 @@ class BlogPage(SeleniumTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(BlogPageSeleniumTests, cls).setUpClass()
+        super(BlogPage, cls).setUpClass()
 
         # TODO: Duke, how it can be reversed?
         cls.test_blog_page = (cls.live_server_url +
@@ -546,7 +546,7 @@ class AdminPage(SeleniumTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(AdminPageSeleniumTests, cls).setUpClass()
+        super(AdminPage, cls).setUpClass()
         cls.admin_page = cls.live_server_url + reverse('admin:index')
         cls.login = 'admin'
         cls.password = 'asdfjkl;'
