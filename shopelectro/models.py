@@ -1,11 +1,11 @@
 from django.db import models
 from django.conf import settings
 
-from catalog import models as catalog_models
+from catalog.models import AbstractProduct
 from . import images
 
 
-class Product(catalog_models.Product):
+class Product(AbstractProduct):
     wholesale_small = models.FloatField()
     wholesale_medium = models.FloatField()
     wholesale_large = models.FloatField()
