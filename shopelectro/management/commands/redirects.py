@@ -7,7 +7,8 @@ import psycopg2
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
-from catalog.models import Category
+from shopelectro.models import Category
+
 
 class Command(BaseCommand):
     """
@@ -59,19 +60,19 @@ class Command(BaseCommand):
     def change_domain_name_in_the_db(self, cur):
         """Change default domain name to the actual."""
         DOMAIN_NAME = settings.SITE_DOMAIN_NAME
+        UPDATE_QUERY = 'UPDATE django_site SET domain=(%s), name=(%s);'
 
-        print("Domain name changed on {}.".format(DOMAIN_NAME))
-        cur.execute(
-            "UPDATE django_site SET domain=(%s), name=(%s);",
-            (DOMAIN_NAME, DOMAIN_NAME)
-        )
+        print('Domain name changed on {}.'.format(DOMAIN_NAME))
+        cur.execute(UPDATE_QUERY, (DOMAIN_NAME, DOMAIN_NAME))
 
     def insert_data_to_django_redirect(self, cur, links, categories):
         """Insert new records in a django_redirect."""
         SITE_ID = settings.SITE_ID
+        INSERT_REDIRECTS = 'INSERT INTO django_redirect VALUES (%s, %s, %s, %s);'
 
-        from_old_path = lambda category: self.CATALOG_ROOT + \
-                                         links[str(category.id)] + "/"
+        from_old_path = lambda category: (self.CATALOG_ROOT +
+                                          links[str(category.id)] +
+                                          "/")
         to_new_path = lambda category: self.CATALOG_ROOT + category.slug + "/"
 
         insertions_data = [(category.id,
@@ -79,9 +80,5 @@ class Command(BaseCommand):
                             from_old_path(category),
                             to_new_path(category)) for category in categories]
 
-        print("Insert {} rows to django_redirect.".format(len(insertions_data)))
-        cur.executemany(
-            "INSERT INTO django_redirect VALUES (%s, %s, %s, %s);",
-            insertions_data
-        )
-
+        print('Insert {} rows to django_redirect.'.format(len(insertions_data)))
+        cur.executemany(INSERT_REDIRECTS, insertions_data)

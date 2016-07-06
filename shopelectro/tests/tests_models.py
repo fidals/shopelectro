@@ -5,8 +5,7 @@ import os
 from django.conf import settings
 from django.test import TestCase
 
-from catalog.models import Category
-from shopelectro.models import Product, Property
+from shopelectro.models import Product, Category, Property
 from .. import images
 
 
@@ -21,7 +20,7 @@ class ModelsTests(TestCase):
         )
 
         self.product, _ = Product.objects.get_or_create(
-            id=3993,
+            id=1,
             wholesale_small=10,
             wholesale_medium=10,
             wholesale_large=10,

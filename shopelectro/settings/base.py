@@ -187,15 +187,18 @@ EMAIL_SUBJECTS = {
     'one_click': 'Заказ в один клик №{}',
 }
 
-MODEL_TYPES = {
+MODEL_TYPES = {  #
     'Product': {
         'app_name': 'shopelectro',
         'dir_name': 'products',
     },
     'Category': {
-        'app_name': 'catalog',
+        'app_name': 'shopelectro',
         'dir_name': 'categories',
     }
 }
+
+# Used mostly in breadcrumbs to generate URL for catalog's root.
+CATEGORY_TREE_URL = 'category_tree'
 
 from .local import *
