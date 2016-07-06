@@ -7,19 +7,108 @@ All logic should live in respective applications.
 import os
 
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.utils.decorators import method_decorator
 
 from pages.models import Post, get_crumbs as pages_crumbs
-from catalog.models import Category, get_crumbs as catalog_crumbs
+from catalog.views import catalog, search
 from ecommerce import mailer
 from ecommerce.cart import Cart
 from ecommerce.models import Order
 from ecommerce.views import get_keys_from_post, save_order_to_session
+
 from . import config, images
-from .models import Product
+from .models import Product, Category
+
+# TODO: maybe we should split views.py. See refarm-catalog for example.
+
+### Helpers ###
+
+# Sets CSRF-cookie to CBVs.
+set_csrf_cookie = method_decorator(ensure_csrf_cookie, name='dispatch')
+MODEL_MAP = {'product': Product, 'category': Category}
+
+
+### Search views ###
+
+class AdminAutocomplete(search.AdminAutocomplete):
+    """Override model_map for autocomplete."""
+    model_map = MODEL_MAP
+
+
+class Search(search.Search):
+    """Override model references to SE-specific ones."""
+    model_map = MODEL_MAP
+
+
+class Autocomplete(search.Autocomplete):
+    """Override model references to SE-specific ones."""
+    model_map = MODEL_MAP
+    see_all_label = settings.SEARCH_SEE_ALL_LABEL
+    search_url = 'search'
+
+
+### Catalog views ###
+
+class CategoryTree(catalog.CategoryTree):
+    """Override model attribute to SE-specific Category."""
+    model = Category
+
+
+@set_csrf_cookie
+class CategoryPage(catalog.CategoryPage):
+    """
+    Override model attribute to SE-specific Category.
+
+    Extend get_context_data.
+    """
+    model = Category
+
+    def get_context_data(self, **kwargs):
+        """Extended method. Add sorting options and view_types."""
+        context = super(CategoryPage, self).get_context_data(**kwargs)
+
+        sorting = int(self.kwargs.get('sorting', 0))
+        sorting_option = config.category_sorting(sorting)
+
+        # if there is no view_type specified, default will be tile
+        view_type = self.request.session.get('view_type', 'tile')
+        products, total_count = (self.get_object()
+                                 .get_recursive_products_with_count(sorting=sorting_option))
+
+        context['products'] = products
+        context['total_products'] = total_count
+        context['sorting_options'] = config.category_sorting()
+        context['sort'] = sorting
+        context['view_type'] = view_type
+
+        return context
+
+
+@set_csrf_cookie
+class ProductPage(catalog.ProductPage):
+    """
+    Override model attribute to SE-specific Product.
+
+    Extend get_context_data.
+    """
+    model = Product
+
+    def get_context_data(self, **kwargs):
+        """Extended method. Add product's images to context.."""
+        context = super(ProductPage, self).get_context_data(**kwargs)
+        product = self.get_object()
+
+        context['main_image'] = images.get_image(product)
+        context['images'] = images.get_images_without_small(product)
+
+        return context
+
+
+### Shopelectro-specific views ###
 
 
 @ensure_csrf_cookie
@@ -36,63 +125,7 @@ def index(request):
         'top_products': top_products,
     }
 
-    return render(
-        request, 'index/index.html', context)
-
-
-@ensure_csrf_cookie
-def category_page(request, category_slug, sorting=0):
-    """
-    Category page: all it's subcategories and products.
-
-    :param sorting: preferred sorting index from CATEGORY_SORTING tuple
-    :param category_slug: given category's slug
-    :param request: HttpRequest object
-    :return:
-    """
-
-    sorting = int(sorting)
-    sorting_option = config.category_sorting(sorting)
-
-    # if there is no view_type specified, default will be tile
-    view_type = request.session.get('view_type', 'tile')
-    category = get_object_or_404(Category.objects, slug=category_slug)
-    products, total_count = category.get_recursive_products_with_count(
-        sorting=sorting_option)
-
-    context = {
-        'category': category,
-        'products': products,
-        'total_products': total_count,
-        'sorting_options': config.category_sorting(),
-        'sort': sorting,
-        'breadcrumbs': catalog_crumbs(category),
-        'view_type': view_type
-    }
-
-    return render(request, 'catalog/category.html', context)
-
-
-@ensure_csrf_cookie
-def product_page(request, product_id):
-    """
-    Product page.
-
-    :param product_id: given product's id
-    :param request: HttpRequest object
-    :return:
-    """
-
-    product = get_object_or_404(Product.objects, id=product_id)
-
-    context = {
-        'breadcrumbs': catalog_crumbs(product),
-        'main_image': images.get_image(product),
-        'images': images.get_images_without_small(product),
-        'product': product,
-    }
-
-    return render(request, 'catalog/product.html', context)
+    return render(request, 'index/index.html', context)
 
 
 def load_more(request, category_slug, offset=0, sorting=0):
@@ -135,27 +168,6 @@ def pages_post(request, type_=''):
     })
 
 
-def get_models_names(model_type, search_term):
-    """Return related names for Models."""
-
-    return model_type.objects.filter(name__contains=search_term).values('name')
-
-
-def admin_autocomplete(request):
-    """Return autocompleted Model names as response."""
-
-    model_map = {'product': Product, 'category': Category}
-    page_term = request.GET['pageType']
-
-    if page_term not in model_map:
-        return
-
-    query_objects = get_models_names(model_map[page_term], request.GET['q'])
-    names = [item['name'] for item in query_objects]
-
-    return JsonResponse(names, safe=False)
-
-
 def admin_remove_image(request):
     """Remove Entity image by url"""
     image_dir_path = os.path.join(settings.MEDIA_ROOT, request.POST['url'])
@@ -176,11 +188,11 @@ def admin_upload_images(request):
                 destination.write(chunk)
 
     referer_url = request.META['HTTP_REFERER']
-    referer_list = referer_url.split('/')
-    image_entity_type = ('products' if referer_url.index('product')
-                         else 'categories')
-    # -3 is an index for entity id part from HTTP_REFERER.
-    entity_id = referer_list[-3]
+    referer_list, entity_id_index = referer_url.split('/'), -3
+    image_entity_type = ('products'
+                         if 'product' in referer_list else
+                         'categories')
+    entity_id = referer_list[entity_id_index]
     image_upload_url = '{}/{}'.format(image_entity_type, entity_id)
 
     image_dir_path = os.path.join(settings.MEDIA_ROOT, image_upload_url)
@@ -193,6 +205,12 @@ def admin_upload_images(request):
 
 @require_POST
 def one_click_buy(request):
+    """
+    Handle one-click-buy.
+
+    Accept XHR, save Order to DB, send mail about it
+    and return 200 OK.
+    """
     Cart(request.session).clear()
 
     cart = Cart(request.session)
@@ -280,8 +298,7 @@ def yandex_aviso(request):
                           extra_context={
                               'paid': paid,
                               'profit': profit,
-                              'comission': commission
-                          })
+                              'comission': commission})
 
     def send_mail_to_customer(order):
         mailer.send_order(subject=settings.EMAIL_SUBJECTS['yandex_order'],

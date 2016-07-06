@@ -5,11 +5,15 @@ import datetime
 from django import template
 from django.conf import settings
 
-from catalog.models import Category
-from ..models import Product
-from ..images import get_images_without_small
+from shopelectro.models import Category
+from shopelectro.images import get_images_without_small
 
 register = template.Library()
+
+
+@register.assignment_tag
+def roots():
+    return Category.objects.root_nodes().order_by('position')
 
 
 @register.filter
@@ -63,7 +67,8 @@ def time_to_call():
 def upload_form(model):
     """Check if template with current Model should have upload form"""
 
-    models_with_upload_form, model_type = ['Category', 'Product'], type(model).__name__
+    models_with_upload_form, model_type = (['Category', 'Product'],
+                                           type(model).__name__)
     return model_type in models_with_upload_form
 
 

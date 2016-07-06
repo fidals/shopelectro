@@ -7,8 +7,7 @@ import openpyxl
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
-from catalog.models import Category
-from shopelectro.models import Product
+from shopelectro.models import Product, Category
 
 
 class Command(BaseCommand):

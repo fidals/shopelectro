@@ -157,7 +157,8 @@
   </div>
 {% else %}
   <h1>Корзина пуста</h1>
-  <span class="page-info-message">В вашей корзине пока нет товаров. <a
-      href="{% url 'catalog:category_tree' %}">Перейти к каталогу</a></span>
+  <span class="page-info-message">В вашей корзине пока нет товаров.
+    <a href="{% url 'category_tree' %}">Перейти к каталогу</a>
+  </span>
 {% endif %}
 

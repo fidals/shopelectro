@@ -1,6 +1,6 @@
 const autocomplete = (() => {
   const CONFIG = {
-    url: '/catalog/search/autocomplete/',
+    url: '/search/autocomplete/',
     searchInput: '.js-search-input',
     minChars: 2,
     itemsTypes: ['see_all', 'category', 'product'],

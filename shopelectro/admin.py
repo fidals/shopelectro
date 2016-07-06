@@ -11,8 +11,8 @@ from django.db import models
 from django.forms import TextInput
 from collections import namedtuple
 
-from catalog.models import Category
-from shopelectro import models as shopelectro_models
+from shopelectro.models import Category, Product
+
 
 # Override templates
 admin.sites.AdminSite.site_header = 'Shopelectro administration'
@@ -71,7 +71,8 @@ class PriceRange(admin.SimpleListFilter):
         if self.value() == '10':
             return queryset.filter(price__gt=10000)
 
-        price_ranges = {i: (i * 1000, (i + 1) * 1000) for i in range(0, 10)}  # Логика мб другая
+        price_ranges = {i: (i * 1000, (i + 1) * 1000)
+                        for i in range(0, 10)}
         range_for_query = price_ranges[int(self.value())]
         return queryset.filter(price__in=range(*range_for_query))
 
@@ -89,7 +90,8 @@ class AbstractChangeListAdmin(admin.ModelAdmin):
         updated_rows = queryset.update(is_active=1)
         message_prefix = after_action_message(updated_rows)
 
-        self.message_user(request, '{} marked as active.'.format(message_prefix))
+        self.message_user(request,
+                          '{} marked as active.'.format(message_prefix))
 
     make_items_active.short_description = 'Mark items active'
 
@@ -97,7 +99,8 @@ class AbstractChangeListAdmin(admin.ModelAdmin):
         updated_rows = queryset.update(is_active=0)
         message_prefix = after_action_message(updated_rows)
 
-        self.message_user(request, '{} marked as non-active.'.format(message_prefix))
+        self.message_user(request,
+                          '{} marked as non-active.'.format(message_prefix))
 
     make_items_non_active.short_description = 'Mark items NOT active'
 
@@ -114,7 +117,7 @@ class CategoryShopelectroAdmin(AbstractChangeListAdmin):
             return
 
         parent = model.parent
-        url = reverse('admin:catalog_category_change', args=(parent.id,))
+        url = reverse('admin:shopelectro_category_change', args=(parent.id,))
 
         return format_html(
             '<a href="{url}">{parent}</a>',
@@ -152,4 +155,4 @@ class ProductsShopelectroAdmin(AbstractChangeListAdmin):
     links.admin_order_field = 'name'
 
 admin.site.register(Category, CategoryShopelectroAdmin)
-admin.site.register(shopelectro_models.Product, ProductsShopelectroAdmin)
+admin.site.register(Product, ProductsShopelectroAdmin)

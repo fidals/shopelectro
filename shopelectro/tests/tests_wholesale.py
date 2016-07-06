@@ -3,8 +3,7 @@ from math import ceil
 from django.test import TestCase
 
 from ecommerce.cart import Cart
-from catalog.models import Category
-from shopelectro.models import Product
+from shopelectro.models import Product, Category
 from shopelectro.cart import recalculate_price
 
 

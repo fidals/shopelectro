@@ -161,18 +161,22 @@ IMAGES = {
     'thumbnail': 'logo.png'
 }
 
+# Autocomplete and search settings
 AUTOCOMPLETE_LIMIT = 20
 SEARCH_LIMIT = 500
 SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 
+# For sitemaps and sites framework
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 # Uncomment for http->https change
 # os.environ['HTTPS'] = 'on'
 
+# Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
-SHOP_EMAIL = ''  # Fill it in local.py
+
+# Used to define choices attr in definition of Order.payment_option field
 PAYMENT_OPTIONS = (('cash', 'Наличные'),
                    ('cashless', 'Безналичные и денежные переводы'),
                    ('AC', 'Банковская карта'),
@@ -180,6 +184,8 @@ PAYMENT_OPTIONS = (('cash', 'Наличные'),
                    ('GP', 'Связной (терминал)'),
                    ('AB', 'Альфа-Клик'),
                    ('MC', 'Мобильный телефон'))
+
+# Subjects for different types of emails sent from SE.
 EMAIL_SUBJECTS = {
     'call': 'Обратный звонок',
     'order': 'Заказ №{0.id}',
@@ -187,15 +193,22 @@ EMAIL_SUBJECTS = {
     'one_click': 'Заказ в один клик №{}',
 }
 
+# Fill it in local.py
+SHOP_EMAIL = ''
+
+# Used in admin image uploads
 MODEL_TYPES = {
     'Product': {
         'app_name': 'shopelectro',
         'dir_name': 'products',
     },
     'Category': {
-        'app_name': 'catalog',
+        'app_name': 'shopelectro',
         'dir_name': 'categories',
     }
 }
+
+# Used mostly in breadcrumbs to generate URL for catalog's root.
+CATEGORY_TREE_URL = 'category_tree'
 
 from .local import *
