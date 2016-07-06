@@ -3,7 +3,7 @@ import os, subprocess, sys
 from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
-import blog, catalog, ecommerce, seo
+import pages, catalog, ecommerce
 
 
 class Command(BaseCommand):
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         except CommandError as err:
             print(err)
 
-        for app in (blog, catalog, ecommerce, seo):
+        for app in (pages, catalog, ecommerce):
             path2test = os.path.dirname(os.path.dirname(app.__file__))
             test_name = 'runtests.py'
             subprocess.call(

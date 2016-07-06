@@ -43,9 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'mptt',
     'widget_tweaks',
-    'blog',
+    'pages',
     'catalog',
-    'seo',
     'ecommerce',
     'shopelectro',
 ]
@@ -130,12 +129,12 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# refarm-blog config
+# refarm-site config
 # Each post type can have it's own alias
 # For config below, page types will have different urls:
-# - article: /blog/1/
-# - news: /blog/news/1/
-# - navigation: /blog/navigation/1/
+# - article: /pages/1/
+# - news: /pages/news/1/
+# - navigation: /pages/navigation/1/
 # All aliases in config will be trimmed with "/" symbol
 APP_BLOG_POST_TYPES = {
     'navigation': {'name': 'Контакты, реквизиты, услуги', 'alias': '', 'default': True},
@@ -148,7 +147,7 @@ PRODUCTS_TO_LOAD = 30
 CRUMBS = {
     'main': 'Главная',
     'catalog': 'Каталог',
-    'blog': 'Список страниц',
+    'pages': 'Список страниц',
 }
 
 SITE_CREATED = datetime(2013, 1, 1)

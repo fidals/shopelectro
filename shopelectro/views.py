@@ -12,7 +12,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
-from blog.models import Post, get_crumbs as blog_crumbs
+from pages.models import Post, get_crumbs as pages_crumbs
 from catalog.models import Category, get_crumbs as catalog_crumbs
 from ecommerce import mailer
 from ecommerce.cart import Cart
@@ -127,10 +127,10 @@ def set_view_type(request):
     return HttpResponse('ok')  # Return 200 OK
 
 
-def blog_post(request, type_=''):
-    return render(request, 'blog/posts.html', {
+def pages_post(request, type_=''):
+    return render(request, 'pages/posts.html', {
         'posts': Post.objects.filter(type=type_),
-        'breadcrumbs': blog_crumbs(settings.CRUMBS['blog']),
+        'breadcrumbs': pages_crumbs(settings.CRUMBS['pages']),
         'page': config.page_metadata(type_),
     })
 

@@ -2,7 +2,7 @@ from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
 
 from catalog.models import Category
-from blog.models import Post
+from pages.models import Post
 from .models import Product
 
 

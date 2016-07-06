@@ -31,7 +31,7 @@ sitemaps = OrderedDict([
     ('index', sitemaps.IndexSitemap),
     ('category', sitemaps.CategorySitemap),
     ('products', sitemaps.ProductSitemap),
-    ('blog', sitemaps.BlogSitemap)
+    ('site', sitemaps.BlogSitemap)
 ])
 
 cached_view = cache_page(config.cached_time())
@@ -63,9 +63,8 @@ urlpatterns = [
     url(r'^catalog/categories/', include(category_urls)),
     url(r'^catalog/products/(?P<product_id>[0-9]+)/$',
         views.product_page, name='product'),
-    url(r'^blog/', include('blog.urls')),
+    url(r'^pages/', include('pages.urls')),
     url(r'^shop/', include('ecommerce.urls'), {'apply_wholesale': recalculate_price}),
-    url(r'^blog/posts/(?P<type_>[\w-]+)/$', views.blog_post, name='posts'),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
     }),

@@ -18,9 +18,10 @@ shopelectro/xls/price-list-shopelectro.ru.xlsx
 shopelectro/css/
 shopelectro/js/
 static/**/*
-media/**/*
 !static/assets/
 !static/template.xlsx
+media/**/*
+!media/products/1/*
 front/images/catalog
 categories.xml
 products.xml
