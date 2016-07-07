@@ -8,10 +8,11 @@ Every Selenium-based test suite uses fixture called dump.json.
 import time
 
 from selenium.webdriver.common.keys import Keys
-from seleniumrequests import Chrome  # We use this instead of standard selenium
 from selenium.webdriver.common.action_chains import ActionChains
+from seleniumrequests import Chrome  # We use this instead of standard selenium
 
 from django.test import LiveServerTestCase
+from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 
 from pages.models import Post
@@ -242,9 +243,7 @@ class CategoryPage(SeleniumTestCase):
 
 
 class ProductPage(SeleniumTestCase):
-    """
-    Selenium-based tests for product page UI.
-    """
+    """Selenium-based tests for product page UI."""
 
     fixtures = ['dump.json']
 
@@ -298,7 +297,7 @@ class ProductPage(SeleniumTestCase):
         self.assertTrue('main' in product_main_img.get_attribute('src'))
 
         next_product_img = self.browser.find_element_by_xpath(
-            '//*[@id="product-images"]/div[2]/img')
+            '//*[@id="product-images"]/div[3]/img')
         next_product_img.click()
         wait()
         product_main_img = self.browser.find_element_by_id('product-image-big')
@@ -460,26 +459,26 @@ class OrderPage(SeleniumTestCase):
         self.browser.find_element_by_id(submit).click()
 
     def test_yandex_order_without_phone(self):
+        """
+        We should see error text message when trying to
+        submit form without phone number.
+        """
         self.browser.find_element_by_id('id_payment_option_2').click()
         self.browser.find_element_by_id('id_name').send_keys('Name')
         self.browser.find_element_by_id('id_phone').clear()
         self.browser.find_element_by_id('btn-send-ya').click()
-        wait()
-        alert = self.browser.switch_to.alert
-        self.assertIn('телефон', alert.text)
+        error_text = self.browser.find_element_by_class_name('js-form-error-text')
+        self.assertTrue('телефон', error_text.is_displayed())
 
 
 class BlogPage(SeleniumTestCase):
-    """
-    Selenium-based tests for product page UI.
-    """
+    """Selenium-based tests for product page UI."""
 
     @classmethod
     def setUpClass(cls):
         super(BlogPage, cls).setUpClass()
 
-        cls.test_page = (cls.live_server_url +
-                         '/pages/contacts/')
+        cls.test_page = (cls.live_server_url + '/pages/contacts/')
 
     def setUp(self):
         Post.objects.create(name='contacts')
@@ -521,9 +520,7 @@ class BlogPage(SeleniumTestCase):
 
 
 class AdminPage(SeleniumTestCase):
-    """
-    Selenium-based tests for Admin page UI.
-    """
+    """Selenium-based tests for Admin page UI."""
 
     fixtures = ['dump.json', 'admin.json']
 
@@ -542,9 +539,7 @@ class AdminPage(SeleniumTestCase):
         cls.autocomplete_text = 'Prod'
 
     def setUp(self):
-        """
-        Sets up testing url and dispatches selenium webdriver.
-        """
+        """Sets up testing url and dispatches selenium webdriver."""
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
         login_field.clear()
@@ -557,9 +552,7 @@ class AdminPage(SeleniumTestCase):
         wait()
 
     def test_login(self):
-        """
-        We are able to login to Admin page.
-        """
+        """We are able to login to Admin page."""
         admin_title = self.browser.find_element_by_id('site-name')
         self.assertIn(self.title_text, admin_title.text)
 
@@ -597,9 +590,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue(first_product_price >= 1000)
 
     def test_is_active_filter(self):
-        """
-        Activity filter returns only active or non active items.
-        """
+        """Activity filter returns only active or non active items."""
         products_link = self.browser.find_element_by_xpath(
             self.products)
         products_link.click()
@@ -623,9 +614,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
-        """
-        Search field could autocomplete.
-        """
+        """Search field could autocomplete."""
         products_link = self.browser.find_element_by_xpath(
             self.products)
         products_link.click()
@@ -634,6 +623,7 @@ class AdminPage(SeleniumTestCase):
         filter_link = self.browser.find_element_by_id('searchbar')
         filter_link.send_keys(self.autocomplete_text)
         wait()
+
         first_suggested_item = self.browser.find_element_by_class_name(
             'autocomplete-suggestion')
         first_suggested_item_text = first_suggested_item.get_attribute(
@@ -643,6 +633,7 @@ class AdminPage(SeleniumTestCase):
 
 
 class YandexKassa(SeleniumTestCase):
+    """Selenium-based tests for YandexKassa"""
 
     @classmethod
     def setUpClass(cls):
@@ -655,6 +646,107 @@ class YandexKassa(SeleniumTestCase):
                                         self.yandex_check,
                                         data={"invoiceId": "42"})
         self.assertTrue('invoiceId="42"' in response.text)
+
+
+class YandexMetrika(SeleniumTestCase):
+    """Selenium-based tests for YandexMetrika"""
+
+    @override_settings(DEBUG=True)
+    def setUp(self):
+        """Sets up testing urls and dispatches selenium webdriver."""
+        self.browser.get(self.live_server_url)
+
+        server = self.live_server_url
+        self.product_page = server + reverse('product', args=['1'])
+        self.category_page = server + reverse('category', args=(
+            'child-1-of-root-category-1',))
+
+    @property
+    def get_goals(self):
+        """Return yaCounter20644114.goals array after goal triggering."""
+        return self.browser.execute_script('return yaCounter20644114.goals')
+
+    @staticmethod
+    def prevent_default(self, event, selector):
+        """Set prevent default for elements so web page wouldn't be reloaded."""
+        self.browser.execute_script(
+            'var target = document.querySelector("' + selector + '");'
+            'target.on' + event + ' = function(event) {'
+            'event.preventDefault();'
+            'return false;};'
+        )
+
+    @override_settings(DEBUG=True)
+    def test_download_header_price(self):
+        """User clicks Download price button in header"""
+        self.browser.find_element_by_class_name('js-download-price').click()
+
+        self.assertTrue('PRICE_HEADER' in self.get_goals)
+
+    @override_settings(DEBUG=True)
+    def test_download_footer_price(self):
+        """User clicks Download price button in footer"""
+        self.browser.find_element_by_class_name('js-download-price-footer')\
+            .click()
+
+        self.assertTrue('PRICE_FOOTER' in self.get_goals)
+
+    @override_settings(DEBUG=True)
+    def test_backcall_open(self):
+        """User clicks Back call button"""
+        self.browser.find_element_by_class_name('js-backcall-order')\
+            .click()
+
+        self.assertTrue('BACK_CALL_OPEN' in self.get_goals)
+
+    @override_settings(DEBUG=True)
+    def test_browse_product_open(self):
+        """User browses to product's page"""
+        self.browser.get(self.category_page)
+        self.prevent_default(self, 'click', '.js-browse-product')
+        self.browser.find_element_by_class_name('js-browse-product')\
+            .click()
+
+        self.assertTrue('PROD_BROWSE' in self.get_goals)
+
+    @override_settings(DEBUG=True)
+    def test_add_product_from_product_page(self):
+        """User adds product to cart on Product's page"""
+        self.browser.get(self.product_page)
+        self.browser.find_element_by_class_name('js-to-cart-on-product-page')\
+            .click()
+
+        self.assertTrue('PUT_IN_CART_FROM_PRODUCT' in self.get_goals)
+        self.assertTrue('CMN_PUT_IN_CART' in self.get_goals)
+
+    @override_settings(DEBUG=True)
+    def test_add_product_from_category_page(self):
+        """"User adds product to cart on Category's page"""
+        self.browser.get(self.category_page)
+        self.browser.find_element_by_class_name('js-product-to-cart').click()
+
+        self.assertTrue('PUT_IN_CART_FROM_CATEGORY' in self.get_goals)
+        self.assertTrue('CMN_PUT_IN_CART' in self.get_goals)
+
+    @override_settings(DEBUG=True)
+    def test_delete_product(self):
+        """User removes product from cart"""
+        self.browser.get(self.product_page)
+        self.browser.find_element_by_class_name('js-to-cart-on-product-page')\
+            .click()
+        wait()
+        self.browser.find_element_by_class_name('js-go-to-cart').click()
+        self.browser.find_element_by_class_name('js-remove').click()
+
+        self.assertTrue('DELETE_PRODUCT' in self.get_goals)
+
+    @override_settings(DEBUG=True)
+    def test_use_search(self):
+        """User uses search field"""
+        self.prevent_default(self, 'submit', '.js-search-form')
+        self.browser.find_element_by_class_name('js-search-form').submit()
+
+        self.assertTrue('USE_SEARCH_FORM' in self.get_goals)
 
 
 class Search(SeleniumTestCase):
@@ -696,7 +788,6 @@ class Search(SeleniumTestCase):
 
     def test_autocomplete_item_link(self):
         """First autocomplete item should link on category page by click"""
-
         self.fill_input()
         first_item = self.autocomplete.find_element_by_css_selector(
             ':first-child')
@@ -709,7 +800,6 @@ class Search(SeleniumTestCase):
         Autocomplete should contain "see all" item.
         "See all" item links on search results page
         """
-
         self.fill_input()
         last_item = self.autocomplete.find_element_by_class_name(
             'autocomplete-last-item')
@@ -719,7 +809,6 @@ class Search(SeleniumTestCase):
 
     def test_search_have_results(self):
         """Search results page should contain links on relevant pages"""
-
         self.fill_input()
         search_form = self.browser.find_element_by_class_name('search-form')
         search_form.submit()
@@ -731,10 +820,9 @@ class Search(SeleniumTestCase):
 
     def test_search_results_empty(self):
         """Search results for wrong term should contain empty result set"""
-
         self.input.send_keys('Not existing search query')
         button_submit = self.browser.find_element_by_id('search-submit')
         button_submit.click()
-        wait(1)
+        wait()
         h1 = self.browser.find_element_by_tag_name('h1')
         self.assertTrue(h1.text == 'По вашему запросу ничего не найдено')

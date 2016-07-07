@@ -72,6 +72,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.core.context_processors.static',
@@ -210,5 +211,10 @@ MODEL_TYPES = {
 
 # Used mostly in breadcrumbs to generate URL for catalog's root.
 CATEGORY_TREE_URL = 'category_tree'
+
+# This need for using {% debug %} variable in templates.
+INTERNAL_IPS = (
+    '127.0.0.1',
+)
 
 from .local import *

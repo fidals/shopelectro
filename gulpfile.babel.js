@@ -6,14 +6,15 @@ import changed from 'gulp-changed';
 import gulpIf from 'gulp-if';
 import babel from 'gulp-babel';
 import less from 'gulp-less';
-import autoprefixer from 'gulp-autoprefixer';
 import lessGlob from 'less-plugin-glob';
 import sourcemaps from 'gulp-sourcemaps';
+import autoprefixer from 'gulp-autoprefixer';
 import concat from 'gulp-concat';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import minifyCSS from 'gulp-cssnano';
 import plumber from 'gulp-plumber';
+import livereload from 'gulp-livereload';
 import sequence from 'run-sequence';
 
 // ================================================================
@@ -78,12 +79,11 @@ const PATH = {
   },
 
   watch: {
-    styles: 'front/less/**/*.less',
-    js: [
-      'front/js/**/*',
-    ],
-    images: 'src/images/**/*.*',
-    fonts: 'src/fonts/**/*.*',
+    styles: 'front/less/**/*',
+    js: 'front/js/**/*',
+    images: 'src/images/**/*',
+    fonts: 'src/fonts/**/*',
+    html: 'templates/**/*',
   },
 };
 
@@ -125,7 +125,8 @@ gulp.task('styles', () => {
     }))
     .pipe(gulpIf(ENV.production, minifyCSS()))
     .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
-    .pipe(gulp.dest(PATH.build.styles));
+    .pipe(gulp.dest(PATH.build.styles))
+    .pipe(livereload());
 });
 
 // ================================================================
@@ -159,7 +160,8 @@ gulp.task('js-common', () => {
     }))
     .pipe(gulpIf(ENV.production, uglify()))
     .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
-    .pipe(gulp.dest(PATH.build.js));
+    .pipe(gulp.dest(PATH.build.js))
+    .pipe(livereload());
 });
 
 // ================================================================
@@ -221,23 +223,14 @@ gulp.task('build-fonts', () => {
 });
 
 // ================================================================
-// LiveReload
-// ================================================================
-// gulp.task('connect', () => {
-// 	connect.server({
-// 		root: 'dist',
-// 		livereload : true
-// 	});
-// });
-
-// ================================================================
 // WATCH
 // ================================================================
 gulp.task('watch', () => {
+  livereload.listen();
   gulp.watch(PATH.watch.styles, ['styles']);
-  gulp.watch(PATH.watch.js, ['js-common']);
-  gulp.watch(PATH.watch.js, ['js-pages']);
-  gulp.watch(PATH.watch.js, ['js-admin']);
+  gulp.watch(PATH.watch.js, ['js-common', 'js-pages', 'js-admin']);
+  gulp.watch(PATH.watch.images, ['images']);
+  gulp.watch(PATH.watch.html, livereload.changed);
 });
 
 // ================================================================

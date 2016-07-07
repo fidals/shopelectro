@@ -1,6 +1,7 @@
 const order = (() => {
   const DOM = {
     $fancybox: $('.fancybox'),
+    $formErrorText: $('.js-form-error-text'),
     $order: $('.js-order-contain'),
     yandexSubmit: '#btn-send-ya',
     seSubmit: '#btn-send-se',
@@ -17,30 +18,18 @@ const order = (() => {
     yandexOrderInfo: {
       customer: 'input[name=customerNumber]',
       order: 'input[name=orderNumber]',
-      payment: 'input[name=paymentType]'
+      payment: 'input[name=paymentType]',
     },
   };
 
-  /**
-   * Config object.
-   * TODO: maybe we should move all the configs into separate file.
-   */
+  // TODO: maybe we should move all the configs into separate file.
   const CONFIG = {
     touchspin: {
       min: 1,
       max: 10000,
       verticalbuttons: true,
       verticalupclass: 'glyphicon glyphicon-plus',
-      verticaldownclass: 'glyphicon glyphicon-minus'
-    },
-    fancybox: {
-      openEffect: 'fade',
-      closeEffect: 'elastic',
-      helpers: {
-        overlay: {
-          locked: false,
-        },
-      },
+      verticaldownclass: 'glyphicon glyphicon-minus',
     },
     citiesAutocomplete: {
       types: ['(cities)'],
@@ -58,6 +47,51 @@ const order = (() => {
     fillSavedInputs();
     restoreSelectedPayment();
     selectPaymentSubmit();
+  };
+
+  const pluginsInit = () => {
+    const cityField = document.getElementById('id_city');
+    if (!cityField) return;
+
+    const citiesAutocomplete = new google.maps.places.Autocomplete(
+      cityField, CONFIG.citiesAutocomplete);
+
+    google.maps.event.addListener(citiesAutocomplete, 'place_changed', () => {
+      storeInput($(DOM.orderForm.city));
+    });
+  };
+
+  const setUpListeners = () => {
+    /**
+     * Bind events to parent's elements, because we can't bind event to dynamically added element.
+     * @param eventName - standard event name
+     * @param element - element, which is a child of parent's element (DOM.$order)
+     * @param handler - callable which will be dispatched on event
+     */
+    const subscribeOrderEvent = (eventName, element, handler) => {
+      DOM.$order.on(eventName, element, handler);
+    };
+    const getEventTarget = event => $(event.target);
+
+    subscribeOrderEvent('change', DOM.productCount, event => changeProductCount(event));
+    subscribeOrderEvent('click', DOM.remove, event => {
+      remove(event.target.getAttribute('productId'));
+    });
+    subscribeOrderEvent('keyup', 'input', event => storeInput(getEventTarget(event)));
+    subscribeOrderEvent('click', DOM.paymentOptions, event => {
+      selectPaymentSubmit(event.target.getAttribute('value'));
+    });
+    subscribeOrderEvent('click', DOM.yandexSubmit, submitYandexOrder);
+
+    mediator.subscribe('onCartUpdate', renderTable, touchSpinReInit);
+  };
+
+  /**
+   * Fill inputs, which have saved to localstorage value.
+   * Runs on page load, and on every cart's update.
+   */
+  const touchSpinReInit = () => {
+    $(DOM.productCount).TouchSpin(CONFIG.touchspin);
   };
 
   /**
@@ -95,36 +129,6 @@ const order = (() => {
     }
   };
 
-  const pluginsInit = () => {
-    const autocomplete = () => {
-      const cityField = document.getElementById('id_city');
-      if (!cityField) {
-        return;
-      }
-
-      const citiesAutocomplete = new google.maps.places.Autocomplete(
-        cityField, CONFIG.citiesAutocomplete);
-
-      google.maps.event.addListener(citiesAutocomplete, 'place_changed', () => {
-        storeInput($(DOM.orderForm.city));
-      });
-    };
-
-    const fancyBoxStart = () => {
-      DOM.$fancybox.fancybox(CONFIG.fancybox);
-    };
-
-    const touchSpin = () => {
-      $(DOM.productCount).TouchSpin(CONFIG.touchspin);
-    };
-
-    $(DOM.orderForm.phone).mask('+9 (999) 999 99 99');
-
-    autocomplete();
-    fancyBoxStart();
-    touchSpin();
-  };
-
   /**
    * Event handler for changing product's count in Cart.
    * We wait at least 100ms every time the user pressed the button.
@@ -135,8 +139,7 @@ const order = (() => {
 
     setTimeout(
       () => server.changeInCart(productID, newCount)
-        .then(data => mediator.publish('onCartUpdate', data)),
-      100
+        .then(data => mediator.publish('onCartUpdate', data)), 100
     );
   };
 
@@ -152,6 +155,11 @@ const order = (() => {
    * Select appropriate submit button, based on selected payment option.
    */
   const selectPaymentSubmit = () => {
+    const $yandexSubmit = $(DOM.yandexSubmit);
+    const $seSubmit = $(DOM.seSubmit);
+    const optionName = getSelectedPaymentName();
+    const isYandexPayment = CONFIG.sePayments.indexOf(optionName) === -1;
+
     const selectSE = () => {
       $yandexSubmit.addClass('hidden');
       $seSubmit.removeClass('hidden');
@@ -162,11 +170,6 @@ const order = (() => {
       $yandexSubmit.removeClass('hidden');
     };
 
-    let $yandexSubmit = $(DOM.yandexSubmit);
-    let $seSubmit = $(DOM.seSubmit);
-    let optionName = getSelectedPaymentName();
-    let isYandexPayment = CONFIG.sePayments.indexOf(optionName) === -1;
-
     isYandexPayment ? selectYandex() : selectSE();
     localStorage.setItem(CONFIG.paymentKey, optionName);
   };
@@ -175,7 +178,7 @@ const order = (() => {
    * Return hash with customer's info from form.
    */
   const getCustomerInfo = () => {
-    let customerInfo = {};
+    const customerInfo = {};
 
     $.each(DOM.orderForm, (name, field) => {
       customerInfo[name] = $(field).val();
@@ -193,7 +196,7 @@ const order = (() => {
    * 3. Fill Yandex-form
    * 4. Submit Yandex-form.
    */
-  const submitYandexOrder = (event) => {
+  const submitYandexOrder = event => {
     event.preventDefault();
 
     const getCustomerNumber = phone => phone.replace(/\D/g, '');
@@ -205,37 +208,21 @@ const order = (() => {
 
     const customerInfo = getCustomerInfo();
 
+    // TODO: Реализовать валидацию формы по телефону\почте.
+    // Сделать поля required. Нужно ковырять код компонентов.
+    // Задача добавлена в тех. долг.
     if (!validator.isPhoneValid(customerInfo.phone)) {
-      // TODO: modal (Yoz)
-      alert('Введите телефон.');
+      DOM.$formErrorText.removeClass('hidden').addClass('shake animated');
       return;
     }
 
-    server.sendYandexOrder(customerInfo).then(id => {
-      fillYandexForm(id);
-      $(DOM.yandexForm).submit();
-    });
-  };
+    server.sendYandexOrder(customerInfo)
+      .then(id => {
+        fillYandexForm(id);
+        $(DOM.yandexForm).submit();
 
-  const setUpListeners = () => {
-    /**
-     * Bind events to parent's elements, because we can't bind event to dynamically added element.
-     * @param eventName - standard event name
-     * @param element - element, which is a child of parent's element (DOM.$order)
-     * @param handler - callable which will be dispatched on event
-     */
-    const subscribeOrderEvent = (eventName, element, handler) => {
-      DOM.$order.on(eventName, element, handler);
-    };
-    const getEventTarget = event => $(event.target);
-
-    subscribeOrderEvent('change', DOM.productCount, event => changeProductCount(event));
-    subscribeOrderEvent('click', DOM.remove, event => remove(event.target.getAttribute('productId')));
-    subscribeOrderEvent('keyup', 'input', event => storeInput(getEventTarget(event)));
-    subscribeOrderEvent('click', DOM.paymentOptions, event => selectPaymentSubmit(event.target.getAttribute('value')));
-    subscribeOrderEvent('click', DOM.yandexSubmit, submitYandexOrder);
-
-    mediator.subscribe('onCartUpdate', renderTable, pluginsInit);
+        yaCounter20644114.reachGoal('FULL_BUY_SEND');
+      });
   };
 
   /**

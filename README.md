@@ -47,7 +47,7 @@ There are 6 types of tests in this project:
 - wholesale (wholesale algorithms)
 - tests in `refarm-*` applications
 
-You can run them all at once by running `python manage.py common_tests` command.
+You can run them all at once by running `python manage.py common_test` command.
 
 Also, you can run shopelectro tests only by running `python manage.py test`
 

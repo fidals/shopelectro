@@ -29,6 +29,8 @@
             {% if product.main_image == 'logo.png' %}
               <img src="{% static 'images/camera-icon.png' %}">
             {% else %}
+              {# TODO: Отрефакторить модуль images, что-бы можно было использовать вызов product.main_image #}
+              {# Добавлено в техю долг #}
               <a class="fancybox" rel="product-cart-gallery" href="{% static product.main_image %}"
                  title="{{ product.name }}">
                 <img src="{% static 'images/camera-icon-clr.png' %}">
@@ -87,7 +89,7 @@
         </td>
         <td>
           {% csrf_token %}
-          <p class="error-msg" id="order-form-error-text"></p>
+          <p class="error-msg hidden js-form-error-text">Введите ваш телефон и почтовый адрес</p>
           <table class="order-form-right form-horizontal">
             <tr>
               <td class="form-order title">
@@ -105,7 +107,7 @@
               </td>
               <td class="form-order data">
                 {{ form.phone.errors }}
-                {{ form.phone|add_class:"form-control" }}
+                {{ form.phone|add_class:"form-control js-masked-phone" }}
               </td>
             </tr>
             <tr>

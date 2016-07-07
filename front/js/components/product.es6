@@ -20,8 +20,8 @@ const product = (() => {
     DOM.$imageBig.click(fancyBoxStart);
     DOM.$imagesToSwitch.click(productImgSwitch);
     DOM.$phone.keyup(changeOneClickButtonState);
-    DOM.$addToCart.click(() => buyProduct());
-    DOM.$oneClick.click(() => oneClick());
+    DOM.$addToCart.click(buyProduct);
+    DOM.$oneClick.click(oneClick);
     mediator.subscribe('onOneClickBuy', successOrder);
   };
 
@@ -46,14 +46,20 @@ const product = (() => {
     const phone = DOM.$phone.val();
     const count = DOM.$counter.val();
 
-    server.oneClickBuy(productId(), count, phone).then(() => mediator.publish('onOneClickBuy'));
+    server.oneClickBuy(productId(), count, phone)
+      .then(() => {
+        mediator.publish('onOneClickBuy');
+        yaCounter20644114.reachGoal('ONE_CLICK_BUY_SEND');
+      });
   };
 
   /**
-   * Phone validation on keypress.
+   * Change button disable state.
    */
   const changeOneClickButtonState = () => {
-    DOM.$oneClick.attr('disabled', !validator.isPhoneValid(DOM.$phone.val()));
+    if (DOM.$oneClick.size() > 0) {
+      DOM.$oneClick.attr('disabled', !validator.isPhoneValid(DOM.$phone.val()));
+    }
   };
 
   /**

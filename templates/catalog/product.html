@@ -33,20 +33,20 @@
         <div class="product-images" id="product-images">
           <div class="product-image-big box-product">
             <img class="img-centered img-responsive" id="product-image-big"
-                 src="/media/{{ main_image }}" data-index="0"
+                 src="{{ MEDIA_URL }}{{ main_image }}" data-index="0"
                  alt="{{ product.name }}">
           </div>
 
           {% for image in images %}
             <div class="product-image-small box-product">
-              <img class="img-responsive js-image-switch" src="/media/{{ image }}"
+              <img class="img-responsive js-image-switch" src="{{ MEDIA_URL }}{{ image }}"
                    data-index="{{ forloop.counter0 }}">
             </div>
           {% endfor %}
 
           {% for hidden_image in images %}
-            <a class="fancybox hidden" href="/media/{{ hidden_image }}" rel="product-cart-gallery">
-              <img src="/media/{{ hidden_image }}">
+            <a class="fancybox hidden" href="{{ MEDIA_URL }}{{ hidden_image }}" rel="product-cart-gallery">
+              <img src="{{ MEDIA_URL }}{{ hidden_image }}">
             </a>
           {% endfor %}
         </div>
@@ -82,7 +82,8 @@
           </div>
 
           <div class="btn-wrapper-center">
-            <button class="btn btn-to-basket" id="btn-to-basket" data-id="{{ product.id }}">В корзину</button>
+            <button class="btn btn-to-basket js-to-cart-on-product-page" id="btn-to-basket" data-id="{{ product.id }}">В
+              корзину</button>
           </div>
 
           <p class="product-one-click">Заказ в 1 клик</p>
