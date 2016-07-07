@@ -10,14 +10,14 @@ const validator = (() => {
    *
    * @param data - phone number
    */
-  const isPhoneValid = (data) => data && !!data.match(CONFIG.regexpPhone);
+  const isPhoneValid = data => !!data.match(CONFIG.regexpPhone);
 
   /**
    * Returns boolean result of email validation.
    *
    * @param data - email
    */
-  const isEmailValid = (data) => !!data.toLowerCase().match(CONFIG.regexpEmail);
+  const isEmailValid = data => !!data.toLowerCase().match(CONFIG.regexpEmail);
 
   return {
     isPhoneValid,
