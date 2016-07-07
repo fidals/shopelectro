@@ -13,7 +13,10 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
 
+from . import views, sitemaps, config
+from .cart import recalculate_price
 from shopelectro import views, sitemaps, config
+
 
 category_urls = [
     url(r'^$', views.CategoryTree.as_view(), name='category_tree'),
@@ -31,7 +34,7 @@ sitemaps = OrderedDict([
     ('index', sitemaps.IndexSitemap),
     ('category', sitemaps.CategorySitemap),
     ('products', sitemaps.ProductSitemap),
-    ('site', sitemaps.BlogSitemap)
+    ('site', sitemaps.PagesSitemap)
 ])
 
 cached_view = cache_page(config.cached_time())

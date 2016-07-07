@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
 
-from pages.models import Post
+from pages.models import Page
 from .models import Product, Category
 
 
@@ -40,7 +40,7 @@ class ProductSitemap(AbstractSitemap):
         return Product.objects.filter(is_active=True)
 
 
-class BlogSitemap(AbstractSitemap):
+class PagesSitemap(AbstractSitemap):
 
     def items(self):
-        return Post.objects.filter(is_active=True)
+        return Page.objects.filter(is_active=True, type='page')

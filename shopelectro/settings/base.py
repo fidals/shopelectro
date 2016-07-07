@@ -130,26 +130,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# refarm-site config
-# Each post type can have it's own alias
-# For config below, page types will have different urls:
-# - article: /pages/1/
-# - news: /pages/news/1/
-# - navigation: /pages/navigation/1/
-# All aliases in config will be trimmed with "/" symbol
-APP_BLOG_POST_TYPES = {
-    'navigation': {'name': 'Контакты, реквизиты, услуги', 'alias': '', 'default': True},
-    'article': {'name': 'Статьи', 'alias': 'article'},
-    'news': {'name': 'Новости', 'alias': 'news'},
-}
-
 PRODUCTS_TO_LOAD = 30
-
-CRUMBS = {
-    'main': 'Главная',
-    'catalog': 'Каталог',
-    'pages': 'Список страниц',
-}
 
 SITE_CREATED = datetime(2013, 1, 1)
 
@@ -217,5 +198,30 @@ CATEGORY_TREE_URL = 'category_tree'
 INTERNAL_IPS = (
     '127.0.0.1',
 )
+
+# Some defaults for autocreation struct pages: index, catalog tree
+# Pages with this data are created in DB only once.
+PAGES = {
+    'index': {
+        'slug': 'index',
+        'route': 'index',
+        'title': 'Shopelectro | Элементы питания',
+        'h1': 'Элементы питания в СПб с доставкой по России',
+        'menu_title': 'Главная',
+        'date_published': SITE_CREATED,
+    },
+    'category_tree': {
+        'slug': 'category_tree',
+        'route': 'category_tree',
+        'title': 'Каталог товаров',
+        'menu_title': 'Каталог',
+        'date_published': SITE_CREATED,
+    },
+    'search': {
+        'slug': 'search',
+        'title': 'Результаты поиска',
+        'date_published': SITE_CREATED,
+    },
+}
 
 from .local import *

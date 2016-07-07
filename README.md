@@ -66,3 +66,19 @@ Also, you can run shopelectro tests only by running `python manage.py test`
 - Install [Selenium ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 - Start Django's development server `python manage.py runserver`
 - Run tests: `python manage.py test` and go have a coffee :)
+
+# Useful information
+Some useful information for site development
+
+## Page types list
+
+**DB pages**:
+- Category
+- Product
+- Static
+- List of static
+**Struct pages**:
+- Main
+- Category tree
+- Order
+- Search

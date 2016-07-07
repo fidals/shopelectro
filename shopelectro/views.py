@@ -13,7 +13,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 
-from pages.models import Post, get_crumbs as pages_crumbs
+from pages.models import Page, get_or_create_struct_page
 from catalog.views import catalog, search
 from ecommerce import mailer
 from ecommerce.cart import Cart
@@ -71,20 +71,23 @@ class CategoryPage(catalog.CategoryPage):
     def get_context_data(self, **kwargs):
         """Extended method. Add sorting options and view_types."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
+        category = self.get_object()
 
         sorting = int(self.kwargs.get('sorting', 0))
         sorting_option = config.category_sorting(sorting)
 
         # if there is no view_type specified, default will be tile
         view_type = self.request.session.get('view_type', 'tile')
-        products, total_count = (self.get_object()
-                                 .get_recursive_products_with_count(sorting=sorting_option))
+        products, total_count = (
+            category.get_recursive_products_with_count(sorting=sorting_option)
+        )
 
         context['products'] = products
         context['total_products'] = total_count
         context['sorting_options'] = config.category_sorting()
         context['sort'] = sorting
         context['view_type'] = view_type
+        context['page'] = category.page
 
         return context
 
@@ -105,6 +108,7 @@ class ProductPage(catalog.ProductPage):
 
         context['main_image'] = images.get_image(product)
         context['images'] = images.get_images_without_small(product)
+        context['page'] = product.page
 
         return context
 
@@ -144,6 +148,7 @@ def index(request):
     """Main page view: root categories, top products."""
 
     top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
+    page = get_or_create_struct_page(slug='index')
 
     context = {
         'meta': config.page_metadata('main'),
@@ -151,6 +156,7 @@ def index(request):
         'footer_links': config.FOOTER_LINKS,
         'href': config.HREFS,
         'top_products': top_products,
+        'page': page,
     }
 
     return render(request, 'index/index.html', context)
@@ -190,8 +196,7 @@ def set_view_type(request):
 
 def pages_post(request, type_=''):
     return render(request, 'pages/posts.html', {
-        'posts': Post.objects.filter(type=type_),
-        'breadcrumbs': pages_crumbs(settings.CRUMBS['pages']),
+        'posts': Page.objects.filter(type=type_),
         'page': config.page_metadata(type_),
     })
 

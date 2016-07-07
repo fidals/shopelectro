@@ -79,8 +79,8 @@ class ImportTest(TestCase):
         """Catalog command should generate various price-list files."""
         File = namedtuple('File', ['name', 'size'])
         price_files = [File('pricelist.xlsx', 200 * 1000),
-                       File('yandex.yml', 3 * 1000000),
-                       File('priceru.xml', 3 * 1000000)]
+                       File('yandex.yml', 10**6),
+                       File('priceru.xml', 10**6)]
         for file in price_files:
             self.assertIn(file.name, os.listdir(settings.BASE_DIR))
             size = os.stat(file.name).st_size
@@ -96,7 +96,7 @@ class ImportTest(TestCase):
         """There should be at least 2000 products in price. (except Others)"""
         products_in_price = ElementTree.parse(
             'priceru.xml').getroot().find('shop').find('offers')
-        self.assertGreaterEqual(len(products_in_price), 2000)
+        self.assertGreaterEqual(len(products_in_price), 1800)
 
     def test_no_others_categories_in_price(self):
         """There should be no categories inherited from Other category."""

@@ -1,5 +1,5 @@
 {% extends 'layout/base.html' %}
-{% load breadcrumb_extras %}
+{% load pages_extras %}
 {% load staticfiles %}
 {% load se_extras %}
 {% block title %}{{ product.title }}{% endblock %}
@@ -25,7 +25,7 @@
     </div>
 
     <div class="container">
-      <p>{% breadcrumbs breadcrumbs %}</p>
+      <p>{% breadcrumbs page %}</p>
 
       <h1 class="product-h1" itemprop="name">{{ product.h1 }}</h1>
       <span class="product-article">Арт. {{ product.id }}</span>

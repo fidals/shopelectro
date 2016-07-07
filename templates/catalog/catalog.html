@@ -1,6 +1,6 @@
 {% extends 'layout/base.html' %}
 {% load mptt_tags %}
-{% load breadcrumb_extras %}
+{% load pages_extras %}
 {% load staticfiles %}
 
 {% block stylesheets %}
@@ -10,13 +10,13 @@
 
 {% block content %}
   <div class="container">
-    <p>{% breadcrumbs breadcrumbs %}</p>
-    <h1>Карта каталога</h1>
+    <p>{% breadcrumbs page %}</p>
+    <h1>{{ page.h1 }}</h1>
 
     <ul class="catalog-list">
       {% recursetree nodes %}
         <li class="catalog-list-item">
-          <a href="{% url 'category' node.slug %}" class="catalog-list-item">{{ node.name }}</a>
+          <a href="{{ node.get_absolute_url }}" class="catalog-list-item">{{ node.name }}</a>
           {% if not node.is_leaf_node %}
             <ul class="catalog-list-children">
               {{ children }}

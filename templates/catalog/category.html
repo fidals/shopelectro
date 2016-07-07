@@ -1,6 +1,6 @@
 {% extends 'layout/base.html' %}
 {% load staticfiles %}
-{% load breadcrumb_extras %}
+{% load pages_extras %}
 {% load se_extras %}
 {% block title %}{{ category.title }}{% endblock %}
 {% block keywords %}{{ category.keywords }}{% endblock %}
@@ -19,7 +19,7 @@
 {% block content %}
   <div class="container">
     <div class="col-xs-12">
-      <p>{% breadcrumbs breadcrumbs %}</p>
+      <p>{% breadcrumbs page %}</p>
       <h1 class="category-title">{{ category.name }}</h1>
     </div>
 
