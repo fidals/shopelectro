@@ -14,7 +14,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 
-from blog.models import Post
+from pages.models import Post
 
 
 def wait(seconds=1):
@@ -298,7 +298,7 @@ class ProductPage(SeleniumTestCase):
         self.assertTrue('main' in product_main_img.get_attribute('src'))
 
         next_product_img = self.browser.find_element_by_xpath(
-            '//*[@id="product-images"]/div[2]/img')
+            '//*[@id="product-images"]/div[3]/img')
         next_product_img.click()
         wait()
         self.assertFalse('main' in product_main_img.get_attribute('src'))
@@ -436,23 +436,6 @@ class OrderPage(SeleniumTestCase):
         self.assertEqual(table_count, dropdown_count)
         self.assertEqual(table_count, '4')
 
-    def test_change_product_count(self):
-        """
-        We can change product's count from table
-        and see the changes both in table and dropdown.
-        """
-        add_one_more = self.browser.find_element_by_xpath(
-            self.add_product.format(self.first_product_id))
-        add_one_more.click()
-        wait()
-        count_input = self.browser.find_element_by_xpath(
-            self.product_count.format(self.first_product_id))
-        product_count, total_count = '2', '6'
-        self.assertTrue(product_count in count_input.get_attribute('value'))
-        self.assertTrue(total_count in
-                        self.browser
-                        .find_element_by_class_name('js-cart-size').text)
-
     def test_confirm_order(self):
         """After filling the form we should be able to confirm an order."""
         self.browser.find_element_by_id('id_payment_option_0').click()
@@ -494,15 +477,14 @@ class BlogPage(SeleniumTestCase):
     def setUpClass(cls):
         super(BlogPage, cls).setUpClass()
 
-        # TODO: Duke, how it can be reversed?
-        cls.test_blog_page = (cls.live_server_url +
-                              '/blog/contacts/')
+        cls.test_page = (cls.live_server_url +
+                              '/pages/contacts/')
 
     def setUp(self):
         Post.objects.create(name='contacts')
-        self.browser.get(self.test_blog_page)
+        self.browser.get(self.test_page)
         self.browser.execute_script('localStorage.clear();')
-        self.browser.get(self.test_blog_page)
+        self.browser.get(self.test_page)
         wait()
 
     @property
@@ -680,14 +662,19 @@ class Search(SeleniumTestCase):
     def setUp(self):
         self.browser.get(self.live_server_url)
         wait()
-        self.input = self.browser.find_element_by_class_name('js-search-input')
-        self.autocomplete = self.browser.find_element_by_class_name(
-            'autocomplete-suggestions')
         self.query = 'Cate'
+
+    @property
+    def autocomplete(self):
+        return self.browser.find_element_by_class_name(
+            'autocomplete-suggestions')
+
+    @property
+    def input(self):
+        return self.browser.find_element_by_class_name('js-search-input')
 
     def fill_input(self):
         """Enter correct search term"""
-
         self.input.send_keys(self.query)
         wait()
 
@@ -747,5 +734,6 @@ class Search(SeleniumTestCase):
         self.input.send_keys('Not existing search query')
         button_submit = self.browser.find_element_by_id('search-submit')
         button_submit.click()
+        wait(1)
         h1 = self.browser.find_element_by_tag_name('h1')
         self.assertTrue(h1.text == 'По вашему запросу ничего не найдено')

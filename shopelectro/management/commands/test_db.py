@@ -34,7 +34,8 @@ class Command(BaseCommand):
         self.create_products()
         self.save_dump()
 
-    def save_dump(self):
+    @staticmethod
+    def save_dump():
         """Save .json dump to fixtures."""
         call_command('dumpdata',
                      'shopelectro.Product',
@@ -42,15 +43,18 @@ class Command(BaseCommand):
                      'catalog.Category',
                      output='shopelectro/fixtures/dump.json')
 
-    def create_roots(self):
+    @staticmethod
+    def create_roots():
         """Create 2 root categories."""
         roots = []
         for i in range(2):
-            r, _ = Category.objects.get_or_create(name='Root category #{}'.format(i))
+            r, _ = Category.objects.get_or_create(
+                name='Root category #{}'.format(i))
             roots.append(r)
         return roots
 
-    def create_children(self, category):
+    @staticmethod
+    def create_children(category):
         """Create 3 children of a given category."""
         for i in range(3):
             Category.objects.create(name='Child #{} of #{}'.format(i, category),
@@ -62,7 +66,8 @@ class Command(BaseCommand):
         last_child = Category.objects.last()
         self.create_children(last_child)
 
-    def create_products(self):
+    @staticmethod
+    def create_products():
         """Create a random quantity of product for every non-root category."""
         for c in Category.objects.exclude(parent=None):
             for i in range(1, randint(10, 50)):
@@ -75,7 +80,8 @@ class Command(BaseCommand):
                     wholesale_large=10,
                 )
 
-    def clear_tables(self):
+    @staticmethod
+    def clear_tables():
         """Remove everything from Category and Product tables."""
         Category.objects.all().delete()
         Product.objects.all().delete()

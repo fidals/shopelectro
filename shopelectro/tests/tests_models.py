@@ -1,5 +1,7 @@
 """Defines tests for models in Shopelectro app."""
 
+import os
+
 from django.conf import settings
 from django.test import TestCase
 
@@ -41,7 +43,8 @@ class ModelsTests(TestCase):
             product=self.product
         )
 
-        self.main_image = 'products/{}/main.jpg'.format(self.product.id)
+        self.main_image = os.path.normpath(
+            'products/{}/main.jpg'.format(self.product.id))
 
     def test_product_images(self):
         """Get Product images."""

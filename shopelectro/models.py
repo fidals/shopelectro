@@ -1,8 +1,6 @@
 from django.db import models
-from django.conf import settings
 
 from catalog import models as catalog_models
-from . import images
 
 
 class Product(catalog_models.Product):
