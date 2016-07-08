@@ -50,7 +50,7 @@ class Autocomplete(search.Autocomplete):
     """Override model references to SE-specific ones."""
     product = Product
     category = Category
-    see_all_label = 'Посмотреть все'
+    see_all_label = settings.SEARCH_SEE_ALL_LABEL
     search_url = 'search'
 
 
