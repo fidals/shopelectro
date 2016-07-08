@@ -11,7 +11,7 @@ const admin = (() => {
   };
 
   const AUTOCOMPLETE = {
-    completeURL: '/catalog/search/autocomplete/admin/',
+    completeURL: '/admin/autocomplete/',
     searchFieldId: '#searchbar',
     minChars: 3,
   };

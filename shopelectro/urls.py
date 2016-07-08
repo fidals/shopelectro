@@ -13,15 +13,20 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
 
-from . import views, sitemaps, config
+from catalog.views import search
+
+from . import views, sitemaps, config, models
 from .cart import recalculate_price
 
 category_urls = [
-    url(r'^(?P<category_slug>[\w-]+)/$',
-        views.category_page, name='category'),
-    url(r'^(?P<category_slug>[\w-]+)/(?P<sorting>[0-9]*)/$',
-        views.category_page, name='category'),
-    url(r'^(?P<category_slug>[\w-]+)/load-more/'
+    url(r'^$', views.CategoryTree.as_view(), name='category_tree'),
+    url(r'^categories/(?P<slug>[\w-]+)/$',
+        views.CategoryPage.as_view(),
+        name='category'),
+    url(r'^categories/(?P<slug>[\w-]+)/(?P<sorting>[0-9]*)/$',
+        views.CategoryPage.as_view(),
+        name='category'),
+    url(r'categories/^(?P<category_slug>[\w-]+)/load-more/'
         r'(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/$',
         views.load_more, name='load_more'),
 ]
@@ -47,9 +52,14 @@ shop_urls = [
     url(r'^yandex-order/$', views.yandex_order),
 ]
 
+search_urls = [
+    url(r'^autocomplete/$', views.Autocomplete.as_view(), name='autocomplete'),
+    url(r'^$', views.Search.as_view(), name='search'),
+]
+
 admin_urls = [
     url(r'^remove-image/$', views.admin_remove_image),
-    url(r'^autocomplete/', views.admin_autocomplete),
+    url(r'^autocomplete/', views.AdminAutocomplete.as_view()),
     url(r'^uploads/$', views.admin_upload_images, name='admin_upload'),
 ]
 
@@ -59,16 +69,17 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^admin/', include(admin_urls)),
     url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
-    url(r'^catalog/', include('catalog.urls')),
-    url(r'^catalog/categories/', include(category_urls)),
+    url(r'^catalog/', include(category_urls)),
     url(r'^catalog/products/(?P<product_id>[0-9]+)/$',
-        views.product_page, name='product'),
+        views.ProductPage.as_view(), name='product'),
     url(r'^pages/', include('pages.urls')),
-    url(r'^shop/', include('ecommerce.urls'), {'apply_wholesale': recalculate_price}),
+    url(r'^shop/', include('ecommerce.urls'),
+        {'apply_wholesale': recalculate_price}),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
     }),
     url(r'^shop/', include(shop_urls)),
+    url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
 ]
 

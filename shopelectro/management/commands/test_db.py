@@ -15,12 +15,11 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from catalog.models import Category
-
-from shopelectro.models import Product
+from shopelectro.models import Product, Category
 
 
 class Command(BaseCommand):
+
     def handle(self, *args, **options):
         # We need to be sure that this command will run only on
         # 'test' DB.
@@ -39,8 +38,7 @@ class Command(BaseCommand):
         """Save .json dump to fixtures."""
         call_command('dumpdata',
                      'shopelectro.Product',
-                     'catalog.Product',
-                     'catalog.Category',
+                     'shopelectro.Category',
                      output='shopelectro/fixtures/dump.json')
 
     @staticmethod

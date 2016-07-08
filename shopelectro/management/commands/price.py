@@ -9,9 +9,8 @@ from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
-from catalog.models import Category
-from shopelectro.models import Product
 from shopelectro import config
+from shopelectro.models import Product, Category
 
 
 class Command(BaseCommand):

@@ -108,8 +108,7 @@ class CategoryPage(SeleniumTestCase):
         server = cls.live_server_url
         testing_url = lambda alias: server + reverse('category', args=[alias])
         cls.direct_child = testing_url('child-1-of-root-category-1')
-        cls.deep_category = testing_url('child-2-of-child-2-'
-                                        'of-root-category-1')
+        cls.deep_category = testing_url('child-2-of-root-category-0')
         cls.root_category = testing_url('root-category-1')
 
     @property
@@ -132,7 +131,7 @@ class CategoryPage(SeleniumTestCase):
         # In 'deep category' there should be more crumbs
         self.browser.get(self.deep_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
-        self.assertEqual(len(crumbs), 5)
+        self.assertEqual(len(crumbs), 4)
 
     def test_30_products_by_default(self):
         """By default any CategoryPage should contain 30 products."""
@@ -295,12 +294,14 @@ class ProductPage(SeleniumTestCase):
     def test_images_switch(self):
         """If product has > 1 image, we could to switch them by clicking."""
         product_main_img = self.browser.find_element_by_id('product-image-big')
+        wait()
         self.assertTrue('main' in product_main_img.get_attribute('src'))
 
         next_product_img = self.browser.find_element_by_xpath(
-            '//*[@id="product-images"]/div[3]/img')
+            '//*[@id="product-images"]/div[2]/img')
         next_product_img.click()
         wait()
+        product_main_img = self.browser.find_element_by_id('product-image-big')
         self.assertFalse('main' in product_main_img.get_attribute('src'))
 
     def test_one_click_buy_disabled_with_empty_phone(self):
@@ -356,7 +357,7 @@ class OrderPage(SeleniumTestCase):
         cls.category = reverse('category', args=(
             'child-1-of-root-category-1',))
         cls.cart_dropdown = 'basket-parent'
-        cls.first_product_id = '99'
+        cls.first_product_id = '111'
         cls.remove_product = '//*[@id="{}"]/td[6]/img'
         cls.product_count = '//*[@id="{}"]/td[4]/div[2]/input'
         cls.add_product = '//*[@id="{}"]/td[4]/div[2]/span[3]/button[1]/i'
@@ -478,7 +479,7 @@ class BlogPage(SeleniumTestCase):
         super(BlogPage, cls).setUpClass()
 
         cls.test_page = (cls.live_server_url +
-                              '/pages/contacts/')
+                         '/pages/contacts/')
 
     def setUp(self):
         Post.objects.create(name='contacts')
@@ -533,7 +534,7 @@ class AdminPage(SeleniumTestCase):
         cls.login = 'admin'
         cls.password = 'asdfjkl;'
         cls.title_text = 'Shopelectro administration'
-        cls.products = '//*[@id="content-main"]/div[5]/table/tbody/tr/th/a'
+        cls.products = '//*[@id="content-main"]/div[4]/table/tbody/tr[2]/th/a'
         cls.price_filter = '//*[@id="changelist-filter"]/ul[1]/li[4]'
         cls.active_products = '//*[@id="changelist-filter"]/ul[2]/li[2]/a'
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
@@ -701,7 +702,7 @@ class Search(SeleniumTestCase):
             ':first-child')
         first_item.click()
         wait()
-        self.assertTrue('/catalog/category/' in self.browser.current_url)
+        self.assertTrue('/catalog/categories/' in self.browser.current_url)
 
     def test_autocomplete_see_all_item(self):
         """
