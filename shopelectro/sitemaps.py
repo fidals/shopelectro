@@ -1,9 +1,8 @@
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
 
-from catalog.models import Category
 from pages.models import Post
-from .models import Product
+from .models import Product, Category
 
 
 class AbstractSitemap(Sitemap):
@@ -30,15 +29,18 @@ class IndexSitemap(Sitemap):
 
 
 class CategorySitemap(AbstractSitemap):
+
     def items(self):
         return Category.objects.filter(is_active=True)
 
 
 class ProductSitemap(AbstractSitemap):
+
     def items(self):
         return Product.objects.filter(is_active=True)
 
 
 class BlogSitemap(AbstractSitemap):
+
     def items(self):
         return Post.objects.filter(is_active=True)

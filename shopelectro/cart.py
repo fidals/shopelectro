@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from ecommerce.cart import Cart
 
+
 def recalculate_price(cart: Cart) -> Cart:
     """
     Function defines what type of price should use in cart and if need changes this
@@ -20,7 +21,6 @@ def recalculate_price(cart: Cart) -> Cart:
             'quantity': int(product['quantity'])
         } for product in cart]
 
-
     get_total_price_for_product = (lambda product:
                                    product['price'] * product['quantity'])
 
@@ -34,7 +34,8 @@ def recalculate_price(cart: Cart) -> Cart:
 
     def define_price_type() -> "Wholesale price type" or None:
         is_applicable = (lambda price_type:
-            wholesale_types[price_type] < total_wholesale_prices[price_type])
+                         wholesale_types[price_type] <
+                         total_wholesale_prices[price_type])
 
         for price_type in wholesale_types:
             if is_applicable(price_type):
@@ -49,4 +50,3 @@ def recalculate_price(cart: Cart) -> Cart:
         return cart.update_product_price(new_data)
 
     set_items_price(define_price_type())
-

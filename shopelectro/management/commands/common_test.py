@@ -1,9 +1,13 @@
-import os, subprocess, sys
+import os
+import subprocess
+import sys
 
 from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
-import pages, catalog, ecommerce
+import pages
+import catalog
+import ecommerce
 
 
 class Command(BaseCommand):
@@ -19,5 +23,5 @@ class Command(BaseCommand):
             path2test = os.path.dirname(os.path.dirname(app.__file__))
             test_name = 'runtests.py'
             subprocess.call(
-                    [sys.executable, os.path.join(path2test, test_name)],
-                    stdout=self.stdout, stderr=self.stderr)
+                [sys.executable, os.path.join(path2test, test_name)],
+                stdout=self.stdout, stderr=self.stderr)
