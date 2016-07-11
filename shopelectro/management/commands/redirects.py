@@ -72,8 +72,8 @@ class Command(BaseCommand):
 
         from_old_path = lambda category: (self.CATALOG_ROOT +
                                           links[str(category.id)] +
-                                          "/")
-        to_new_path = lambda category: self.CATALOG_ROOT + category.slug + "/"
+                                          '/')
+        to_new_path = lambda category: self.CATALOG_ROOT + category.slug + '/'
 
         insertions_data = [(category.id,
                             SITE_ID,

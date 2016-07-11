@@ -23,8 +23,6 @@ from ecommerce.views import get_keys_from_post, save_order_to_session
 from . import config, images
 from .models import Product, Category
 
-# TODO: maybe we should split views.py. See refarm-catalog for example.
-
 ### Helpers ###
 
 # Sets CSRF-cookie to CBVs.
