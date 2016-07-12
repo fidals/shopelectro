@@ -2,6 +2,10 @@
   "extends": "airbnb-base",
   "globals": {
     "$": true,
-    "Cookies": true
+    "Cookies": true,
+    "mediator": true,
+    "server": true,
+    "validator": true,
+    "google": true
   }
 }

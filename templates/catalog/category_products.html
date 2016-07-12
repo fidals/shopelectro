@@ -5,14 +5,14 @@
        itemscope itemtype="http://schema.org/Product">
     <meta itemprop="name" content="{{ product.name }}">
     <div class="img-wrp">
-      <a href="{% url "product" product.id %}">
-        <img class="img-centered img-responsive" src="/media/logo.png" itemprop="image">
+      <a class="js-browse-product" href="{% url "product" product.id %}">
+        <img class="img-centered img-responsive" src="{% static 'images/logo.png' %}" itemprop="image">
       </a>
     </div>
     <div class="text" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
       <div class="articul">Артикул: {{ product.id }}</div>
       <div class="desc">
-        <a class="product-card-desc" href="{% url "product" product.id %}">
+        <a class="product-card-desc js-browse-product" href="{% url "product" product.id %}">
           {{ product.name }}
         </a>
       </div>
