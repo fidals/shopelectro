@@ -177,27 +177,13 @@ def admin_remove_image(request):
 @require_POST
 def admin_upload_images(request):
     """Upload Entity image"""
-
-    def handle_upload(file, image_dir_path):
-        """Write files in media directory"""
-
-        with open(os.path.join(image_dir_path, str(file)), 'wb+') as destination:
-            for chunk in file.chunks():
-                destination.write(chunk)
-
     referer_url = request.META['HTTP_REFERER']
     referer_list, entity_id_index = referer_url.split('/'), -3
-    image_entity_type = ('products'
-                         if 'product' in referer_list else
-                         'categories')
+    entity_type = ('products'
+                   if 'product' in referer_list else
+                   'categories')
     entity_id = referer_list[entity_id_index]
-    image_upload_url = '{}/{}'.format(image_entity_type, entity_id)
-
-    image_dir_path = os.path.join(settings.MEDIA_ROOT, image_upload_url)
-
-    for file in request.FILES.getlist('files'):
-        handle_upload(file, image_dir_path)
-
+    images.upload(entity_type, entity_id, request.FILES.getlist('files'))
     return HttpResponseRedirect(referer_url)
 
 
