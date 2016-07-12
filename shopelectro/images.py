@@ -11,7 +11,8 @@ from django.conf import settings
 DEFAULT_SIZE = 800, 800
 PREVIEW_SIZE = 300, 300
 
-def upload(type_, id_, files):
+
+def upload(model_type, model_id, files):
     """Upload image for an entity of a given type_ with given id_."""
     def create_file(file, dir, name=None, size=DEFAULT_SIZE):
         """
@@ -33,15 +34,16 @@ def upload(type_, id_, files):
         image = Image.open(file)
 
         if image.size > size:
-            image.resize(size)
+            image = image.resize(size)
 
         return image.save(os.path.join(dir, '{}.{}'.format(name, ext)))
 
     def is_main_image(file):
         """Main image is an image which name contains 'main' substring."""
-        return 'main' in str(file)
+        return 'main' in str(file).split('.')[0]
 
-    upload_dir = os.path.join(settings.MEDIA_ROOT, '{}/{}'.format(type_, id_))
+    upload_dir = os.path.join(
+        settings.MEDIA_ROOT, '{}/{}'.format(model_type, model_id))
 
     for file in files:
         create_file(file, upload_dir)
