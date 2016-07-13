@@ -17,12 +17,13 @@ const product = (() => {
   };
 
   const setUpListeners = () => {
+    mediator.subscribe('onOneClickBuy', successOrder);
+    
     DOM.$imageBig.click(fancyBoxStart);
     DOM.$imagesToSwitch.click(productImgSwitch);
     DOM.$phone.keyup(changeOneClickButtonState);
-    DOM.$addToCart.click(() => buyProduct());
-    DOM.$oneClick.click(() => oneClick());
-    mediator.subscribe('onOneClickBuy', successOrder);
+    DOM.$addToCart.click(buyProduct);
+    DOM.$oneClick.click(oneClick);
   };
 
   /**
@@ -46,14 +47,19 @@ const product = (() => {
     const phone = DOM.$phone.val();
     const count = DOM.$counter.val();
 
-    server.oneClickBuy(productId(), count, phone).then(() => mediator.publish('onOneClickBuy'));
+    server.oneClickBuy(productId(), count, phone)
+      .then(() => {
+        mediator.publish('onOneClickBuy');
+      });
   };
 
   /**
-   * Phone validation on keypress.
+   * Change button disable state.
    */
   const changeOneClickButtonState = () => {
-    DOM.$oneClick.attr('disabled', !validator.isPhoneValid(DOM.$phone.val()));
+    if (DOM.$oneClick.size() > 0) {
+      DOM.$oneClick.attr('disabled', !validator.isPhoneValid(DOM.$phone.val()));
+    }
   };
 
   /**

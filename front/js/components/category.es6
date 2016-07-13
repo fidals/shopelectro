@@ -33,24 +33,25 @@ const category = (() => {
    * Subscribing on events using mediator.
    */
   const setUpListeners = () => {
-    DOM.$loadMore.click(loadProducts);
-    DOM.$sorting.change(changeSort);
-    DOM.tileView.$.click(() => mediator.publish('onViewTypeChange', DOM.tileView.mode));
-    DOM.listView.$.click(() => mediator.publish('onViewTypeChange', DOM.listView.mode));
-    DOM.$addToCart.click((event) => buyProduct(event));
     mediator.subscribe('onViewTypeChange', updateViewType, server.sendViewType);
     mediator.subscribe('onProductsLoad', updateLoadedCount, updateProductsList, updateButtonState);
+    DOM.tileView.$.click(() => mediator.publish('onViewTypeChange', DOM.tileView.mode));
+    DOM.listView.$.click(() => mediator.publish('onViewTypeChange', DOM.listView.mode));
+
+    DOM.$loadMore.click(loadProducts);
+    DOM.$sorting.change(changeSort);
+    DOM.$addToCart.click(buyProduct);
   };
 
   /**
-   * Changes sorting option and re-renders the whole screen.
+   * Change sorting option and re-renders the whole screen.
    */
   const changeSort = () => {
     location.href = sortingOption().attr('data-path');
   };
 
   /**
-   * Updates Products List DOM via appending html-list of loaded products
+   * Update Products List DOM via appending html-list of loaded products
    * to wrapper.
    *
    * @param {Event} event
@@ -59,7 +60,7 @@ const category = (() => {
   const updateProductsList = (event, products) => DOM.$productsList.append(products);
 
   /**
-   * Updates loaded products counter by a simple logic:
+   * Update loaded products counter by a simple logic:
    * 1) if we have less products left than we can fetch at a time, it means we have loaded them all,
    *    so we should set loaded count a value of total products
    * 2) otherwise, we simply add PRODUCTS_TO_FETCH to counter.
@@ -69,7 +70,7 @@ const category = (() => {
   );
 
   /**
-   * Adds 'hidden' class to button if there are no more products to load.
+   * Add 'hidden' class to button if there are no more products to load.
    */
   const updateButtonState = () => {
     if (productsLeft() === 0) {
@@ -78,7 +79,7 @@ const category = (() => {
   };
 
   /**
-   * Updates view of a product's list.
+   * Update view of a product's list.
    *
    * Removes old classes and adds new one depends on what view type was selected.
    * @param {Event} event
@@ -99,7 +100,7 @@ const category = (() => {
   };
 
   /**
-   * Returns selected sorting option.
+   * Return selected sorting option.
    */
   const sortingOption = () => DOM.$sorting.find(':selected');
 
@@ -113,14 +114,14 @@ const category = (() => {
   const productsLeft = () => parseInt(CONFIG.totalProductsCount - loadedProductsCount());
 
   /**
-   * Gets number of already loaded products
+   * Get number of already loaded products
    *
    * @returns {int} - number of products which are loaded and presented in DOM
    */
   const loadedProductsCount = () => parseInt(DOM.$loadedProducts.first().text());
 
   /**
-   * Loads products from back-end using promise-like fetch object fetchProducts.
+   * Load products from back-end using promise-like fetch object fetchProducts.
    * After products successfully loaded - publishes 'onProductLoad' event.
    */
   const loadProducts = () => {
@@ -137,14 +138,17 @@ const category = (() => {
     const buyInfo = () => {
       const product = $(event.target);
       const count = product.closest('.js-order').find('.js-product-count').val();
+
       return {
         count: parseInt(count),
         id: parseInt(product.attr('productId')),
       };
     };
 
-    const { id, count } = buyInfo(event);
-    server.addToCart(id, count).then((data) => mediator.publish('onCartUpdate', data));
+    const { id, count } = buyInfo();
+
+    server.addToCart(id, count)
+      .then(data => mediator.publish('onCartUpdate', data));
   };
 
   init();
