@@ -11,7 +11,7 @@ const server = (() => {
   };
 
   /**
-   * Sends information about order call.
+   * Send information about order call.
    * @param phone
    * @param time
    * @param url
@@ -21,10 +21,10 @@ const server = (() => {
   /**
    * @param url
    */
-  const fetchProducts = url => fetch(url).then((response) => response.text());
+  const fetchProducts = url => fetch(url).then(response => response.text());
 
   /**
-   * Sends viewType to store user's default view type.
+   * Send viewType to store user's default view type.
    * @param event
    * @param viewType
    */
@@ -52,15 +52,12 @@ const server = (() => {
 
   /**
    * Handle one-click-buy feature. Sends:
-   * @param product - id of a bought product
-   * @param quantity  - selected quantity
-   * @param phone     - customer's phone
+   * @param product  - id of a bought product
+   * @param quantity - selected quantity
+   * @param phone    - customer's phone
    */
   const oneClickBuy = (product, quantity, phone) => {
-    return $.post(
-      CONFIG.oneClickBuyUrl,
-      { product, quantity, phone }
-    );
+    return $.post(CONFIG.oneClickBuyUrl, { product, quantity, phone });
   };
 
   /**

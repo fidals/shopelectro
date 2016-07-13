@@ -13,7 +13,7 @@
         </div>
 
         <div class="header-price-wrapper">
-          <a href="{% static 'price-list-shopelectro.ru.xlsx' %}" id="download-pricelist-header" class="download">Скачать
+          <a href="{% static 'price-list-shopelectro.ru.xlsx' %}" class="download js-download-price">Скачать
             прайс-лист</a>
         </div>
 
@@ -44,15 +44,15 @@
 
         <div class="header-call clearfix">
           <div class="header-phone">
-            <span class="header-phone-cifre">
+            <span class="header-phone-cifre js-copy-phone">
               <span class="cifre-span">+7 (812)</span> <span class="ya-opt-phone">416-32-00</span>
             </span>
-            <p class="mail-wrapper">
+            <p class="mail-wrapper js-copy-mail">
               <a href="mailto:info@shopelectro.ru" class="mail">info@shopelectro.ru</a>
             </p>
           </div>
           <noindex>
-            <div class="feedback-but" data-toggle="modal" data-target="#back-call-modal">
+            <div class="feedback-but js-backcall-order" data-toggle="modal" data-target="#back-call-modal">
               <i class="fa fa-mobile"></i>
               <span class="feedback-but-btn">Заказать звонок</span>
             </div>
@@ -66,7 +66,7 @@
         <div class="middle-header-inner">
           <div class="row">
             <div class="col-xs-8">
-              <form class="navbar-form search-form" action="{% url 'search' %}" method="get">
+              <form class="navbar-form search-form js-search-form" action="{% url 'search' %}" method="get">
                 <div class="row">
                   <div class="col-xs-11">
                     <div class="form-group search-area">

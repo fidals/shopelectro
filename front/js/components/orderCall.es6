@@ -1,76 +1,92 @@
 const orderCall = (() => {
   const DOM = {
-    phoneInputs: $('.js-masked-phone'),
-    closeModal: $('.js-backcall-close'),
-    phone: $('#back-call-phone'),
-    orderButton: $('.js-send-backcall'),
-    successTag: $('.js-backcall-success'),
-    timeText: $('.js-backcall-time'),
-    timeTag: $('.js-select-time'),
-    timeToCall: $('#back-call-time')
+    $phone: $('#back-call-phone'),
+    $callModal: $('#back-call-modal'),
+    $phoneInputs: $('.js-masked-phone'),
+    $closeModal: $('.js-backcall-close'),
+    $orderButton: $('.js-send-backcall'),
+    $successTag: $('.js-backcall-success'),
+    $timeText: $('.js-backcall-time'),
+    $timeTag: $('.js-select-time'),
+    $timeToCall: $('#back-call-time'),
   };
 
   const CONFIG = {
-    isSend: false,
     callTime: 'callTime',
-    phone: 'phone'
+    phone: 'phone',
   };
 
   const init = () => {
     fillInUserData({
         phone: localStorage.getItem(CONFIG.phone),
-        time: localStorage.getItem(CONFIG.callTime)
+        time: localStorage.getItem(CONFIG.callTime),
     });
     pluginsInit();
     setUpListeners();
   };
 
   const pluginsInit = () => {
-    DOM.phoneInputs
+    DOM.$phoneInputs
+      .attr('placeholder', '+7 (999) 000 00 00')
       .mask('+9 (999) 999 99 99')
-      .on('keyup', function () {
+      .on('keyup', () => {
         localStorage.setItem(CONFIG.phone, $(this).val());
       });
   };
 
   const setUpListeners = () => {
-      DOM.orderButton.on('click', order);
-      DOM.timeTag.on('change', storeBackcallTime.bind(this));
+    DOM.$orderButton.on('click', orderCall);
+    DOM.$timeTag.on('change', storeBackcallTime.bind(this));
+    DOM.$callModal.on('hidden.bs.modal', resetModal);
   };
 
   const fillInUserData = data => {
     if (data.phone) {
-      $.each(DOM.phoneInputs, () => {
+      $.each(DOM.$phoneInputs, () => {
         $(this).val(data.phone);
       });
     }
     if (data.time) {
-      DOM.timeTag.find('[data-time=' + data.time + ']').attr('selected', true);
+      DOM.$timeTag.find('[data-time=' + data.time + ']').attr('selected', true);
     }
   };
 
-  const order = () => {
-    let phone = DOM.phone.val();
-    let time = DOM.timeToCall.val();
-    let url = location.href;
+  const orderCall = () => {
+    const phone = DOM.$phone.val();
+    const time = DOM.$timeToCall.val();
+    const url = location.href;
+
+    if (!validator.isPhoneValid(phone)) {
+      DOM.$phone
+        .addClass('shake animated')
+        .closest('.form-group').addClass('has-error');
+      return;
+    }
 
     server.sendOrderCall(phone, time, url).then(() => {
-      DOM.timeText.text(DOM.timeTag.val());
-      showSuccessModal();
+      DOM.$timeText.text(DOM.$timeTag.val());
+
+      mediator.publish('onBackCallSend');
     });
   };
 
-  const showSuccessModal = () => {
-    DOM.orderButton.toggleClass('hidden');
-    DOM.closeModal.toggleClass('hidden');
-    DOM.successTag
+  const toggleSuccessModal = () => {
+    DOM.$orderButton.toggleClass('hidden');
+    DOM.$closeModal.toggleClass('hidden');
+    DOM.$successTag
       .toggleClass('hidden')
       .siblings().toggleClass('hidden');
-    CONFIG.isSend = true;
+  };
+
+  const resetModal = () => {
+    DOM.$phone
+      .removeClass('shake animated')
+      .closest('.form-group').removeClass('has-error');
   };
 
   const storeBackcallTime = (selectedOption) => {
-    let selectedTime = $(selectedOption.target).find(':selected').data('time');
+    const selectedTime = $(selectedOption.target).find(':selected').data('time');
+
     localStorage.setItem(CONFIG.callTime, selectedTime);
   };
 
