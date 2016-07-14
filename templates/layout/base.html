@@ -31,7 +31,7 @@
   <link rel="canonical" href="{% block canonical %}{{ meta.site_url }}{% endblock %}">
 
   {% block stylesheets %}
-    <link rel="stylesheet" href="{% static "css/styles.min.css" %}">
+    <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
   {% endblock %}
 </head>
 <body>
@@ -53,11 +53,11 @@
 {% include "layout/back_call_modal.html" %}
 
 {% block jslibs %}
-  <script src="{% static "js/vendors.min.js" %}"></script>
+  <script src="{% static 'js/vendors.min.js' %}"></script>
 {% endblock %}
 
 {% block jslinks %}
-  <script src="{% static "js/main.min.js" %}"></script>
+  <script src="{% static 'js/main.min.js' %}"></script>
 {% endblock %}
 
 {% include "layout/marketing.html" %}

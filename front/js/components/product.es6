@@ -18,16 +18,16 @@ const product = (() => {
 
   const setUpListeners = () => {
     mediator.subscribe('onOneClickBuy', successOrder);
-    
+
     DOM.$imageBig.click(fancyBoxStart);
     DOM.$imagesToSwitch.click(productImgSwitch);
-    DOM.$phone.keyup(changeOneClickButtonState);
     DOM.$addToCart.click(buyProduct);
     DOM.$oneClick.click(oneClick);
+    DOM.$phone.keyup(changeOneClickButtonState);
   };
 
   /**
-   * Initialize fancyBox on index image.
+   * Initialize fancyBox on specific index image.
    */
   const fancyBoxStart = () => {
     $.fancybox(
@@ -43,14 +43,12 @@ const product = (() => {
     return false;
   };
 
+  /**
+   * Send product data & redirect page.
+   */
   const oneClick = () => {
-    const phone = DOM.$phone.val();
-    const count = DOM.$counter.val();
-
-    server.oneClickBuy(productId(), count, phone)
-      .then(() => {
-        mediator.publish('onOneClickBuy');
-      });
+    server.oneClickBuy(productId(), DOM.$counter.val(), DOM.$phone.val())
+      .then(() => mediator.publish('onOneClickBuy'));
   };
 
   /**
@@ -67,9 +65,9 @@ const product = (() => {
    *
    * @param event - click on image preview;
    */
-  const productImgSwitch = (event) => {
-    const targetSrc = event.target.getAttribute('src');
-    const dataIndex = event.target.getAttribute('data-index');
+  const productImgSwitch = event => {
+    const targetSrc = $(event.target).attr('src');
+    const dataIndex = $(event.target).attr('data-index');
 
     if (targetSrc !== DOM.$imageBig.attr('src')) {
       DOM.$imageBig.attr({
@@ -85,7 +83,8 @@ const product = (() => {
       count: DOM.$counter.val(),
     };
 
-    server.addToCart(id, count).then(data => mediator.publish('onCartUpdate', data));
+    server.addToCart(id, count)
+      .then(data => mediator.publish('onCartUpdate', data));
   };
 
   const successOrder = () => location.href = '/shop/success-order';

@@ -2,7 +2,6 @@ const orderCall = (() => {
   const DOM = {
     $phone: $('#back-call-phone'),
     $callModal: $('#back-call-modal'),
-    $phoneInputs: $('.js-masked-phone'),
     $closeModal: $('.js-backcall-close'),
     $orderButton: $('.js-send-backcall'),
     $successTag: $('.js-backcall-success'),
@@ -11,44 +10,16 @@ const orderCall = (() => {
     $timeToCall: $('#back-call-time'),
   };
 
-  const CONFIG = {
-    callTime: 'callTime',
-    phone: 'phone',
-  };
-
   const init = () => {
-    fillInUserData({
-        phone: localStorage.getItem(CONFIG.phone),
-        time: localStorage.getItem(CONFIG.callTime),
-    });
-    pluginsInit();
     setUpListeners();
   };
 
-  const pluginsInit = () => {
-    DOM.$phoneInputs
-      .attr('placeholder', '+7 (999) 000 00 00')
-      .mask('+9 (999) 999 99 99')
-      .on('keyup', () => {
-        localStorage.setItem(CONFIG.phone, $(this).val());
-      });
-  };
-
   const setUpListeners = () => {
+    mediator.subscribe('onBackCallSend', showSuccessModal);
+
     DOM.$orderButton.on('click', orderCall);
     DOM.$timeTag.on('change', storeBackcallTime.bind(this));
-    DOM.$callModal.on('hidden.bs.modal', resetModal);
-  };
-
-  const fillInUserData = data => {
-    if (data.phone) {
-      $.each(DOM.$phoneInputs, () => {
-        $(this).val(data.phone);
-      });
-    }
-    if (data.time) {
-      DOM.$timeTag.find('[data-time=' + data.time + ']').attr('selected', true);
-    }
+    DOM.$callModal.on('hidden.bs.modal', resetErrorClass);
   };
 
   const orderCall = () => {
@@ -63,22 +34,22 @@ const orderCall = (() => {
       return;
     }
 
-    server.sendOrderCall(phone, time, url).then(() => {
-      DOM.$timeText.text(DOM.$timeTag.val());
-
-      mediator.publish('onBackCallSend');
-    });
+    server.sendOrderCall(phone, time, url)
+      .then(() => {
+        DOM.$timeText.text(DOM.$timeTag.val());
+        mediator.publish('onBackCallSend');
+      });
   };
 
-  const toggleSuccessModal = () => {
-    DOM.$orderButton.toggleClass('hidden');
-    DOM.$closeModal.toggleClass('hidden');
+  const showSuccessModal = () => {
+    DOM.$orderButton.addClass('hidden');
+    DOM.$closeModal.removeClass('hidden');
     DOM.$successTag
-      .toggleClass('hidden')
-      .siblings().toggleClass('hidden');
+      .removeClass('hidden')
+      .siblings().addClass('hidden');
   };
 
-  const resetModal = () => {
+  const resetErrorClass = () => {
     DOM.$phone
       .removeClass('shake animated')
       .closest('.form-group').removeClass('has-error');
@@ -87,7 +58,7 @@ const orderCall = (() => {
   const storeBackcallTime = (selectedOption) => {
     const selectedTime = $(selectedOption.target).find(':selected').data('time');
 
-    localStorage.setItem(CONFIG.callTime, selectedTime);
+    localStorage.setItem(configs.LABELS.callTime, selectedTime);
   };
 
   init();

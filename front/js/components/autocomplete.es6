@@ -21,8 +21,8 @@ const autocomplete = (() => {
    */
   const highlight = (name, search) => {
     const preparedSearch = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const regexp = new RegExp("(" + preparedSearch.split(" ").join("|") + ")", "gi");
-    return name.replace(regexp, "<b>$1</b>");
+    const regexp = new RegExp(`(${preparedSearch.split(' ').join('|')})`, 'gi');
+    return name.replace(regexp, '<b>$1</b>');
   };
 
   const renderItem = (item, term) => {
@@ -40,7 +40,7 @@ const autocomplete = (() => {
     `;
   };
 
-  const renderLastItem = (item) => {
+  const renderLastItem = item => {
     return `
       <div class="autocomplete-suggestion autocomplete-last-item">
         <a href="${item.url}">${item.name}</a>
@@ -58,13 +58,11 @@ const autocomplete = (() => {
     source: (term, response) => {
       $.getJSON(CONFIG.url, {
         q: term,
-      }, (namesArray) => {
+      }, namesArray => {
         response(namesArray);
       });
     },
     renderItem: (item, term) => {
-      console.assert(CONFIG.itemsTypes.includes(item.type));
-
       if (['category', 'product'].includes(item.type)) {
         return renderItem(item, term);
       }
@@ -74,10 +72,8 @@ const autocomplete = (() => {
       }
     },
     onSelect: (event, term, item) => {
-      const isRightClick = (event) => event.button === 2 || event.which === 3;
-      if (isRightClick(event)) {
-        return false;
-      }
+      const isRightClick = event => event.button === 2 || event.which === 3;
+      if (isRightClick(event)) return false;
       window.location = $(item).find('a').attr('href');
     },
   };
