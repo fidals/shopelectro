@@ -3,49 +3,33 @@ const admin = (() => {
     $productPage: $('.model-product'),
     $removeIcon: $('.js-remove-image'),
     $imageItem: $('.js-list-item'),
-  };
-
-  const UPLOAD = {
-    $: $('.js-file-input'),
-    removeUrl: '/admin/remove-image/',
-  };
-
-  const AUTOCOMPLETE = {
-    completeURL: '/admin/autocomplete/',
     searchFieldId: '#searchbar',
+  };
+
+  const CONFIG = {
+    removeUrl: '/admin/remove-image/',
+    completeURL: '/admin/autocomplete/',
     minChars: 3,
   };
 
   const init = () => {
     pluginsInit();
-    setupXHR();
     setUpListeners();
   };
 
-  // TODO: move to config module
-  // http://youtrack.stkmail.ru/issue/dev-748
-  const setupXHR = () => {
-    const csrfUnsafeMethod = (method) => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    const token = Cookies.get('csrftoken');
-
-    $.ajaxSetup({
-      beforeSend: (xhr, settings) => {
-        if (csrfUnsafeMethod(settings.type)) {
-          xhr.setRequestHeader('X-CSRFToken', token);
-        }
-      },
-    });
+  const pluginsInit = () => {
+    autoCompleteInit();
   };
 
-  const pluginsInit = () => {
+  const autoCompleteInit = () => {
     return new autoComplete({
-      selector: AUTOCOMPLETE.searchFieldId,
-      minChars: AUTOCOMPLETE.minChars,
+      selector: DOM.searchFieldId,
+      minChars: CONFIG.minChars,
       source: (term, response) => {
-        $.getJSON(AUTOCOMPLETE.completeURL, {
+        $.getJSON(CONFIG.completeURL, {
           q: term,
           pageType: getCurrentPageType(),
-        }, (namesArray) => {
+        }, namesArray => {
           response(namesArray);
         });
       },
@@ -56,15 +40,15 @@ const admin = (() => {
     DOM.$removeIcon.click(removeImage);
   };
 
-  const getCurrentPageType = () => {
+  function getCurrentPageType() {
     return (DOM.$productPage.size() > 0) ? 'product' : 'category';
-  };
+  }
 
   const removeImage = () => {
     const $target = $(event.target);
 
     $.post(
-      UPLOAD.removeUrl, {
+      CONFIG.removeUrl, {
         url: $target.data('id'),
       }
     )

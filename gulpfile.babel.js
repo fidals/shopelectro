@@ -44,7 +44,7 @@ const PATH = {
         'front/js/vendors/auto-complete.min.js',
       ],
 
-      common: [
+      main: [
         'front/js/shared/*.es6',
         'front/js/components/orderCall.es6',
         'front/js/components/headerCart.es6',
@@ -97,7 +97,7 @@ gulp.task('build', (callback) => {
   sequence(
     'styles',
     'js-vendors',
-    'js-common',
+    'js-main',
     'js-pages',
     'js-admin',
     'build-imgs',
@@ -144,10 +144,10 @@ gulp.task('js-vendors', () => {
 });
 
 // ================================================================
-// JS : Build common scripts
+// JS : Build main scripts
 // ================================================================
-gulp.task('js-common', () => {
-  gulp.src(PATH.src.js.common)
+gulp.task('js-main', () => {
+  gulp.src(PATH.src.js.main)
     .pipe(changed(PATH.build.js, { extension: '.js' }))
     .pipe(gulpIf(ENV.development, sourcemaps.init()))
     .pipe(plumber())
@@ -228,7 +228,7 @@ gulp.task('build-fonts', () => {
 gulp.task('watch', () => {
   livereload.listen();
   gulp.watch(PATH.watch.styles, ['styles']);
-  gulp.watch(PATH.watch.js, ['js-common', 'js-pages', 'js-admin']);
+  gulp.watch(PATH.watch.js, ['js-main', 'js-pages', 'js-admin']);
   gulp.watch(PATH.watch.images, ['images']);
   gulp.watch(PATH.watch.html, livereload.changed);
 });

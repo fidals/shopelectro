@@ -4,7 +4,7 @@
 {% block extrastyle %}
   <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
   {{ block.super }}
-  <link rel="stylesheet" href="{% static "css/admin.min.css" %}">
+  <link rel="stylesheet" href="{% static 'css/admin.min.css' %}">
 {% endblock %}
 
 {% block result_list %}
@@ -15,6 +15,7 @@
 {% block footer %}
   {{ block.super }}
 
-  <script src="{% static "js/vendors.min.js" %}"></script>
-  <script src="{% static "js/admin.min.js" %}"></script>
+  <script src="{% static 'js/vendors.min.js' %}"></script>
+  <script src="{% static 'js/main.min.js' %}"></script>
+  <script src="{% static 'js/admin.min.js' %}"></script>
 {% endblock %}

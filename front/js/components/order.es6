@@ -22,17 +22,8 @@ const order = (() => {
     },
   };
 
-  // TODO: maybe we should move all the configs into separate file.
-  // http://youtrack.stkmail.ru/issue/dev-748
   const CONFIG = {
-    touchspin: {
-      min: 1,
-      max: 10000,
-      verticalbuttons: true,
-      verticalupclass: 'glyphicon glyphicon-plus',
-      verticaldownclass: 'glyphicon glyphicon-minus',
-    },
-    citiesAutocomplete: {
+    autocomplete: {
       types: ['(cities)'],
       componentRestrictions: {
         country: 'ru',
@@ -47,61 +38,52 @@ const order = (() => {
     setUpListeners();
     fillSavedInputs();
     restoreSelectedPayment();
-    selectPaymentSubmit();
+    selectSubmitBtn();
   };
 
   const pluginsInit = () => {
-    googleAutocomplete();
+    cityAutocomplete();
   };
 
   const setUpListeners = () => {
     $(DOM.yandexForm).submit(() => mediator.publish('onOrderSend'));
+    mediator.subscribe('onCartUpdate', renderTable, fillSavedInputs,
+      touchSpinReinit, restoreSelectedPayment, cityAutocomplete);
 
     /**
      * Bind events to parent's elements, because we can't bind event to dynamically added element.
-     * @param eventName - standard event name
-     * @param element - element, which is a child of parent's element (DOM.$order)
-     * @param handler - callable which will be dispatched on event
      */
-    const subscribeOrderEvent = (eventName, element, handler) => {
-      DOM.$order.on(eventName, element, handler);
-    };
-    const getEventTarget = event => $(event.target);
-
-    subscribeOrderEvent('change', DOM.productCount, event => changeProductCount(event));
-    subscribeOrderEvent('click', DOM.remove, event => {
-      remove(event.target.getAttribute('productId'));
-    });
-    subscribeOrderEvent('keyup', 'input', event => storeInput(getEventTarget(event)));
-    subscribeOrderEvent('click', DOM.paymentOptions, event => {
-      selectPaymentSubmit(event.target.getAttribute('value'));
-    });
-    subscribeOrderEvent('click', DOM.yandexSubmit, submitYandexOrder);
-
-    mediator.subscribe('onCartUpdate', renderTable, touchSpinReInit);
+    DOM.$order.on('click', DOM.yandexSubmit, submitYandexOrder);
+    DOM.$order.on('click', DOM.remove, () => removeProduct(getElAttr(event, 'productId')));
+    DOM.$order.on('click', DOM.paymentOptions, () => selectSubmitBtn(getElAttr(event, 'value')));
+    DOM.$order.on('change', DOM.productCount, event => changeProductCount(event));
+    DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
   };
+
+  /**
+   * Return element's attribute value by value name.
+   */
+  const getElAttr = (event, attributeName) => event.target.getAttribute(attributeName);
 
   /**
    * Init google cities autocomplete.
    */
-  const googleAutocomplete = () => {
+  const cityAutocomplete = () => {
     const cityField = document.getElementById('id_city');
     if (!cityField) return;
 
-    const citiesAutocomplete = new google.maps.places.Autocomplete(
-      cityField, CONFIG.citiesAutocomplete);
+    const cityAutocomplete = new google.maps.places.Autocomplete(cityField, CONFIG.autocomplete);
 
-    google.maps.event.addListener(citiesAutocomplete, 'place_changed', () => {
+    google.maps.event.addListener(cityAutocomplete, 'place_changed', () => {
       storeInput($(DOM.orderForm.city));
     });
   };
 
   /**
-   * Fill inputs, which have saved to localstorage value.
-   * Runs on page load, and on every cart's update.
+   * Reinit touchspin plugin cause of dynamic DOM.
    */
-  const touchSpinReInit = () => {
-    $(DOM.productCount).TouchSpin(CONFIG.touchspin);
+  const touchSpinReinit = () => {
+    $(DOM.productCount).TouchSpin(configs.PLUGINS.touchspin);
   };
 
   /**
@@ -133,8 +115,7 @@ const order = (() => {
       const isSelected = $option => $option.val() === savedPayment;
 
       $(DOM.paymentOptions).each((_, el) => {
-        const $inputOption = $(el);
-        $inputOption.attr('checked', isSelected($inputOption));
+        $(el).attr('checked', isSelected($(el)));
       });
     }
   };
@@ -143,8 +124,8 @@ const order = (() => {
    * Event handler for changing product's count in Cart.
    * We wait at least 100ms every time the user pressed the button.
    */
-  const changeProductCount = (event) => {
-    const productID = event.target.getAttribute('productId');
+  const changeProductCount = event => {
+    const productID = getElAttr(event, 'productId');
     const newCount = event.target.value;
 
     setTimeout(
@@ -156,15 +137,12 @@ const order = (() => {
   /**
    * Return name (which is value) of a selected payment option.
    */
-  const getSelectedPaymentName = () => {
-    const $selectedOption = $(DOM.paymentOptions + ':checked');
-    return $selectedOption.val();
-  };
+  const getSelectedPaymentName = () => $(`${DOM.paymentOptions}:checked`).val();
 
   /**
    * Select appropriate submit button, based on selected payment option.
    */
-  const selectPaymentSubmit = () => {
+  const selectSubmitBtn = () => {
     const $yandexSubmit = $(DOM.yandexSubmit);
     const $seSubmit = $(DOM.seSubmit);
     const optionName = getSelectedPaymentName();
@@ -210,13 +188,12 @@ const order = (() => {
     event.preventDefault();
 
     const getCustomerNumber = phone => phone.replace(/\D/g, '');
+    const customerInfo = getCustomerInfo();
     const fillYandexForm = orderId => {
       $(DOM.yandexOrderInfo.order).val(orderId);
       $(DOM.yandexOrderInfo.customer).val(getCustomerNumber(customerInfo.phone));
       $(DOM.yandexOrderInfo.payment).val(getSelectedPaymentName());
     };
-
-    const customerInfo = getCustomerInfo();
 
     // TODO: Form phone & mail validation need to be realize.
     // Fields should have required attr. The code locates in rf-components.
@@ -242,7 +219,7 @@ const order = (() => {
   /**
    * Remove product from cart's table and dispatches 'onCartUpdate' event.
    */
-  const remove = productId => {
+  const removeProduct = productId => {
     server.removeFromCart(productId).then(data => {
       mediator.publish('onCartUpdate', data);
     });
@@ -252,12 +229,7 @@ const order = (() => {
    * Render table and form.
    * After that, fill in saved form data.
    */
-  const renderTable = (event, data) => {
-    DOM.$order.html(data.table);
-    fillSavedInputs();
-    restoreSelectedPayment();
-    selectPaymentSubmit();
-  };
+  const renderTable = (event, data) => DOM.$order.html(data.table);
 
   init();
 })();

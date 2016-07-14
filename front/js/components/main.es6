@@ -3,62 +3,33 @@ const mainPage = (() => {
     $btnScrollTop: $('#btn-scroll-to-top'),
     $scrollWrapper: $('#scroll-wrapper'),
     $touchspin: $('.js-touchspin'),
-  };
-
-  // TODO: maybe we should move all the configs into separate file.
-  // http://youtrack.stkmail.ru/issue/dev-748
-  const CONFIG = {
-    scrollbar: {
-      autoReinitialise: true,
-      mouseWheelSpeed: 30,
-    },
-    touchspin: {
-      min: 1,
-      max: 10000,
-      verticalbuttons: true,
-      verticalupclass: 'glyphicon glyphicon-plus',
-      verticaldownclass: 'glyphicon glyphicon-minus',
-    },
-    fancybox: {
-      openEffect: 'fade',
-      closeEffect: 'elastic',
-      helpers: {
-        overlay: {
-          locked: false,
-        },
-      },
-    },
+    $timeTag: $('.js-select-time'),
+    $phoneInputs: $('.js-masked-phone'),
   };
 
   const init = () => {
-    pluginsInit();
-    setupXHR();
+    fillInUserData({
+      phone: localStorage.getItem(configs.LABELS.phone),
+      time: localStorage.getItem(configs.LABELS.callTime),
+    });
     setUpListeners();
   };
 
-  // TODO: move to config module
-  // http://youtrack.stkmail.ru/issue/dev-748
-  const setupXHR = () => {
-    const csrfUnsafeMethod = (method) => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    const token = Cookies.get('csrftoken');
-
-    $.ajaxSetup({
-      beforeSend: (xhr, settings) => {
-        if (csrfUnsafeMethod(settings.type)) {
-          xhr.setRequestHeader('X-CSRFToken', token);
-        }
-      },
-    });
+  /**
+   * Fill in user stored data in inputs.
+   */
+  const fillInUserData = data => {
+    if (data.phone) {
+      $.each(DOM.$phoneInputs, (_, item) => $(item).val(data.phone));
+    }
+    if (data.time) {
+      DOM.$timeTag.find(`[data-time=${data.time}]`).attr('selected', true);
+    }
   };
 
   const setUpListeners = () => {
     $(window).scroll(toggleToTopBtn);
     DOM.$btnScrollTop.click(() => $('html, body').animate({ scrollTop: 0 }, 300));
-  };
-
-  const pluginsInit = () => {
-    DOM.$scrollWrapper.jScrollPane(CONFIG.scrollbar);
-    DOM.$touchspin.TouchSpin(CONFIG.touchspin);
   };
 
   const enableScrollToTop = () => {
@@ -70,7 +41,7 @@ const mainPage = (() => {
   };
 
   /**
-   * Toggle to top button.
+   * Show\hide to top button.
    */
   const toggleToTopBtn = () => {
     ($(window).scrollTop() > 300) ? enableScrollToTop() : disableScrollToTop();

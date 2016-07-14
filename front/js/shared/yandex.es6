@@ -29,7 +29,7 @@ const yandex = (() => {
     mediator.subscribe('onOneClickBuy', () => reachGoal('ONE_CLICK_BUY_SEND'));
     mediator.subscribe('onProductRemove', () => reachGoal('DELETE_PRODUCT'));
     mediator.subscribe('onOrderSend', () => reachGoal('FULL_BUY_SEND'));
-    mediator.subscribe('onBackCallSend', reachGoal('BACK_CALL_SEND'));
+    mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));
     DOM.$removeFromCart.click(() => reachGoal('DELETE_PRODUCT'));
     DOM.$goToCartLink.click(() => reachGoal('CART_OPEN'));
