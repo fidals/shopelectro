@@ -15,6 +15,7 @@ class Category(AbstractCategory):
     superclass.
     """
     product_relation = 'products'
+    spam_text = models.TextField(null=True, blank=True)
 
     def get_absolute_url(self):
         """Return url for model."""

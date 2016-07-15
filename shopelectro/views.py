@@ -23,7 +23,7 @@ from ecommerce.views import get_keys_from_post, save_order_to_session
 
 from . import config, images
 from .models import Product, Category, Order
-from .cart import recalculate_price
+from .cart import WholesaleCart
 from .forms import OrderForm
 
 ### Helpers ###
@@ -115,22 +115,21 @@ class OrderPage(ec_views.OrderPage):
 
 
 class AddToCart(ec_views.AddToCart):
-    wholesale = recalculate_price
+    cart = WholesaleCart
     order_form = OrderForm
 
 
 class RemoveFromCart(ec_views.RemoveFromCart):
-    wholesale = recalculate_price
-    order_form = OrderForm
-
-
-class FlushCart(ec_views.FlushCart):
-    wholesale = recalculate_price
+    cart = WholesaleCart
     order_form = OrderForm
 
 
 class ChangeCount(ec_views.ChangeCount):
-    wholesale = recalculate_price
+    cart = WholesaleCart
+    order_form = OrderForm
+
+
+class FlushCart(ec_views.FlushCart):
     order_form = OrderForm
 
 

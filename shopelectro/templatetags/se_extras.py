@@ -4,6 +4,9 @@ import datetime
 
 from django import template
 from django.conf import settings
+from django.core.urlresolvers import reverse, resolve
+from django.template.defaultfilters import floatformat
+from django.contrib.humanize.templatetags.humanize import intcomma
 
 from shopelectro.models import Category
 from shopelectro.images import get_images_without_small
@@ -80,3 +83,13 @@ def get_model_images(model):
         'dir_path': settings.BASE_URL + settings.MEDIA_URL,
         'images': get_images_without_small(model, url='products')
     }
+
+
+@register.simple_tag
+def full_url(path='index', *args):
+    return settings.BASE_URL + reverse(path, args=args)
+
+
+@register.filter
+def humanize_price(price):
+    return intcomma(floatformat(price, 0))

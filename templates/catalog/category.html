@@ -1,6 +1,7 @@
 {% extends "layout/base.html" %}
 {% load staticfiles %}
 {% load breadcrumb_extras %}
+{% load se_extras %}
 {% block title %}{{ category.title }}{% endblock %}
 {% block keywords %}{{ category.keywords }}{% endblock %}
 {% block description %}{{ category.description }}{% endblock %}
@@ -48,7 +49,7 @@
                 id="btn-load-products" type="button">Загрузить ещё
         </button>
         <p class="products-showed-text">
-          Показанно товаров
+          Показано товаров
           <span class="js-products-showed-count">{{ products|length }}</span> из
           <span class="js-total-products">{{ total_products }}</span>
         </p>

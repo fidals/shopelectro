@@ -2,9 +2,8 @@ from math import ceil
 
 from django.test import TestCase
 
-from ecommerce.cart import Cart
 from shopelectro.models import Product, Category
-from shopelectro.cart import recalculate_price
+from shopelectro.cart import WholesaleCart
 
 
 class WholesaleCartTest(TestCase):
@@ -32,7 +31,7 @@ class WholesaleCartTest(TestCase):
     @property
     def cart(self):
         """Return Cart object for test."""
-        return Cart(self.session, recalculate_price)
+        return WholesaleCart(self.session)
 
     def wholesale_quantity(self, price_type):
         """

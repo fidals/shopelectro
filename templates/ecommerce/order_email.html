@@ -25,9 +25,9 @@
         Благодарим
       {% endif %}
       за использование корзины в интернет-магазине
-      <a href="{% url 'index' %}" target="_blank">www.shopelectro.ru</a>
+      <a href="{% full_url %}" target="_blank">www.shopelectro.ru</a>
       <br>
-      Ваш заказ оплачен, сумма {{ order.total_price }} руб.
+      Ваш заказ {{ order.paid|yesno:'оплачен,,' }} на сумму {{ order.total_price|humanize_price }} руб.
     </p>
     <p>Номер заказа: <b>{{ order.id }}</b></p>
     <table width="100%" cellspacing="0" cellpadding="3px" border="0"
@@ -51,12 +51,12 @@
             <tr>
               <td align="left" style="padding:5px 10px;">{{ product.id }}</td>
               <td align="left" style="padding:5px 10px;">
-                <a href="{% url 'product' product.id %}">
+                <a href="{% full_url 'product' product.id  %}">
                   {{ product.name }}
                 </a>
               </td>
               <td align="right" style="padding:5px 10px;">{{ position.quantity }} шт.</td>
-              <td align="right" style="padding:5px 10px;">{{ position.price }} руб.</td>
+              <td align="right" style="padding:5px 10px;">{{ position.price|humanize_price }} руб.</td>
               <td align="right" style="padding:5px 10px;">{{ position.cost }} руб.</td>
             </tr>
           {% endwith %}
@@ -67,7 +67,7 @@
         <tr>
           <td colspan="2" style="padding:5px 10px;">&nbsp;</td>
           <td align="right" colspan="2" style="padding:5px 10px; font-weight: bold;">Итого:</td>
-          <td align="right" style="padding:5px 10px;">{{ order.total_price }} руб</td>
+          <td align="right" style="padding:5px 10px;">{{ order.total_price|humanize_price }} руб</td>
         </tr>
         </tbody>
       </table>

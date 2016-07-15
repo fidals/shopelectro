@@ -9,6 +9,7 @@ const order = (() => {
     productCount: '.js-prod-count',
     remove: '.js-remove',
     paymentOptions: 'input[name=payment_option]',
+    defaultPaymentOptions: 'input[for=id_payment_option_0]',
     orderForm: {
       name: '#id_name',
       phone: '#id_phone',
@@ -54,6 +55,7 @@ const order = (() => {
      * Bind events to parent's elements, because we can't bind event to dynamically added element.
      */
     DOM.$order.on('click', DOM.yandexSubmit, submitYandexOrder);
+    DOM.$order.on('click', DOM.seSubmit, submitSiteOrder);
     DOM.$order.on('click', DOM.remove, () => removeProduct(getElAttr(event, 'productId')));
     DOM.$order.on('click', DOM.paymentOptions, () => selectSubmitBtn(getElAttr(event, 'value')));
     DOM.$order.on('change', DOM.productCount, event => changeProductCount(event));
@@ -117,6 +119,8 @@ const order = (() => {
       $(DOM.paymentOptions).each((_, el) => {
         $(el).attr('checked', isSelected($(el)));
       });
+    } else {
+      $(DOM.defaultPaymentOptions).attr('checked', true);
     }
   };
 
@@ -159,7 +163,7 @@ const order = (() => {
     };
 
     isYandexPayment ? selectYandex() : selectSE();
-    localStorage.setItem(CONFIG.paymentKey, optionName);
+    if (optionName) localStorage.setItem(CONFIG.paymentKey, optionName);
   };
 
   /**
@@ -174,6 +178,8 @@ const order = (() => {
 
     return customerInfo;
   };
+
+  const isValid = customerInfo => validator.isPhoneValid(customerInfo.phone) && validator.isEmailValid(customerInfo.email);
 
   /**
    * Submit Yandex order if user's phone is provided.
@@ -195,9 +201,7 @@ const order = (() => {
       $(DOM.yandexOrderInfo.payment).val(getSelectedPaymentName());
     };
 
-    // TODO: Form phone & mail validation need to be realize.
-    // Fields should have required attr. The code locates in rf-components.
-    if (!validator.isPhoneValid(customerInfo.phone)) {
+    if (!isValid(customerInfo)) {
       DOM.$formErrorText.removeClass('hidden').addClass('shake animated');
       return;
     }
@@ -207,6 +211,15 @@ const order = (() => {
         fillYandexForm(id);
         $(DOM.yandexForm).submit();
       });
+  };
+
+  const submitSiteOrder = event => {
+    const customerInfo = getCustomerInfo();
+
+    if (!isValid(customerInfo)) {
+      event.preventDefault();
+      DOM.$formErrorText.removeClass('hidden').addClass('shake animated');
+    }
   };
 
   /**

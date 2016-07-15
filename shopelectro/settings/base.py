@@ -159,7 +159,7 @@ BASE_URL = 'https://www.shopelectro.ru'
 IMAGES = {
     'large': 'main',
     'small': 'small',
-    'thumbnail': 'logo.png'
+    'thumbnail': 'logo.svg'
 }
 
 # Autocomplete and search settings
