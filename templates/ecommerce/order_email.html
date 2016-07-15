@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load humanize %}
 {% load se_extras %}
 
 <div style="padding:0 30px;">
@@ -27,7 +28,7 @@
       за использование корзины в интернет-магазине
       <a href="{% url 'index' %}" target="_blank">www.shopelectro.ru</a>
       <br>
-      Ваш заказ оплачен, сумма {{ order.total_price }} руб.
+      Ваш заказ оплачен, сумма {{ order.total_price|floatformat:'0'|intcomma }} руб.
     </p>
     <p>Номер заказа: <b>{{ order.id }}</b></p>
     <table width="100%" cellspacing="0" cellpadding="3px" border="0"
@@ -51,12 +52,12 @@
             <tr>
               <td align="left" style="padding:5px 10px;">{{ product.id }}</td>
               <td align="left" style="padding:5px 10px;">
-                <a href="{% url 'product' product.id %}">
+                <a href="{% product.get_absolute_url %}">
                   {{ product.name }}
                 </a>
               </td>
               <td align="right" style="padding:5px 10px;">{{ position.quantity }} шт.</td>
-              <td align="right" style="padding:5px 10px;">{{ position.price }} руб.</td>
+              <td align="right" style="padding:5px 10px;">{{ position.price|floatformat:'0'|intcomma }} руб.</td>
               <td align="right" style="padding:5px 10px;">{{ position.cost }} руб.</td>
             </tr>
           {% endwith %}
@@ -67,7 +68,7 @@
         <tr>
           <td colspan="2" style="padding:5px 10px;">&nbsp;</td>
           <td align="right" colspan="2" style="padding:5px 10px; font-weight: bold;">Итого:</td>
-          <td align="right" style="padding:5px 10px;">{{ order.total_price }} руб</td>
+          <td align="right" style="padding:5px 10px;">{{ order.total_price|floatformat:'0'|intcomma }} руб</td>
         </tr>
         </tbody>
       </table>

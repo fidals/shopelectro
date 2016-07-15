@@ -1,6 +1,7 @@
 {% extends "layout/base.html" %}
 {% load breadcrumb_extras %}
 {% load staticfiles %}
+{% load humanize %}
 {% block title %}{{ product.title }}{% endblock %}
 {% block keywords %}{{ product.keywords }}{% endblock %}
 {% block og_title %}{{ product.title }}{% endblock %}
@@ -18,7 +19,7 @@
 {% block content %}
   <div itemscope itemtype="http://schema.org/Product" class="page-product custom-input-checkbox">
     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
-      <span itemprop="price">{{ product.price }}</span>
+      <span itemprop="price">{{ product.price|floatformat:'0'|intcomma }}</span>
       <span itemprop="priceCurrency">RUB</span>
       <link itemprop="availability" href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}">
     </div>
@@ -53,7 +54,7 @@
 
         <div class="product-price-wrapper" id="product-price">
           <p class="product-label-price-retail">Розничная цена:</p>
-          <p class="product-price active">{{ product.price }} руб / шт</p>
+          <p class="product-price active">{{ product.price|floatformat:'0'|intcomma }} руб / шт</p>
 
           {% if product.wholesale_small %}
             <p class="product-label-price-whole">Оптовая цена:</p>
@@ -108,7 +109,12 @@
         <div class="product-desc">
           {% if product.content %}
             <h3 class="product-desc-title">Описание</h3>
-            <p class="product-text">{{ product.content }}</p>
+            <p class="product-text">
+              {% autoescape off %}
+                {{ product.content }}
+              {% endautoescape %}
+
+            </p>
           {% endif %}
         </div>
       </div>

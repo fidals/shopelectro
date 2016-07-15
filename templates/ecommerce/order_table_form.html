@@ -21,12 +21,12 @@
       <th>Цена</th>
       <th></th>
     </tr>
-    {% for position in cart %}
+    {% for position in cart|dictsort:'product.name' %}
       {% with product=position.product %}
         <tr id="{{ product.id }}">
           <td>{{ product.id }}</td>
           <td class="photo text-center">
-            {% if product.main_image == 'logo.png' %}
+            {% if product.main_image == 'logo.svg' %}
               <img src="{% static 'images/camera-icon.png' %}">
             {% else %}
               {# TODO: Images module needs refactoring. We should have #}
@@ -49,10 +49,10 @@
                 <i class="fa fa-circle out-stock" title="Под заказ"></i>
               {% endif %}
             </div>
-            <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" name="prod-count"
+            <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" type="number" name="prod-count"
                    productId="{{ product.id }}">
           </td>
-          <td class="price js-product-price" productId="{{ product.id }}">{{ position.price }} руб</td>
+          <td class="price js-product-price" productId="{{ product.id }}">{{ position.price|floatformat:'0'|intcomma }} руб</td>
           <td class="product-delete">
             <img class="btn-cart js-remove" productId="{{ product.id }}" src="{% static 'images/btn-close-icon.png' %}"
                  alt="Убрать из корзины" title="Убрать из заказа">
@@ -68,7 +68,7 @@
         <b><span id="cart-page-prods-count">{{ cart.total_quantity }}</span> шт.</b>
       </td>
       <td class="order-sum" colspan="2">
-        <b><span id="cart-page-sum">{{ cart.total_price|floatformat|intcomma }}</span> руб.</b>
+        <b><span id="cart-page-sum">{{ cart.total_price|floatformat:'0'|intcomma }}</span> руб.</b>
       </td>
     </tr>
   </table>
@@ -128,7 +128,7 @@
               </td>
               <td class="form-order data">
                 {{ form.city.errors }}
-                {{ form.city|add_class:"form-control" }}
+                {{ form.city|add_class:'form-control' }}
               </td>
             </tr>
             <tr>

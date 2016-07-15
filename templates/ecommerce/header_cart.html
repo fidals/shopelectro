@@ -8,7 +8,7 @@
     {% else %}
       <span class="js-cart-is-empty hidden" id="cart-is-empty">Корзина пуста</span>
       <a class="price-in-cart js-go-to-cart" href="{% url 'ecommerce:order_page' %}">
-        {{ cart.total_price|floatformat|intcomma }} руб.
+        {{ cart.total_price|floatformat:'0'|intcomma }} руб.
       </a>
     {% endif %}
     <a href="#" class="opener"><i class="fa fa-chevron-down"></i></a>
@@ -38,9 +38,9 @@
               {% endif %}
             </p>
             <div class="basket-stuff-price">
-              <span class="basket-price js-basket-price">{{ position.price }} руб</span> х
+              <span class="basket-price js-basket-price">{{ position.price|floatformat:'0'|intcomma }} руб</span> х
               <span class="basket-count js-basket-count">{{ position.quantity }} шт.</span> =
-              <span class="basket-sum js-basket-sum">{{ position.total|floatformat|intcomma }} руб.</span>
+              <span class="basket-sum js-basket-sum">{{ position.total|floatformat:'0'|intcomma }} руб.</span>
             </div>
             <div class="basket-remove js-cart-remove" id="{{ product.id }}" title="Удалить товар"></div>
           </li>
@@ -53,7 +53,7 @@
      js-basket-calculations">
     <p class="basket-price-sum">
       Итого:
-      <span class="js-basket-price-sum">{{ cart.total_price|floatformat|intcomma }}</span>
+      <span class="js-basket-price-sum">{{ cart.total_price|floatformat:'0'|intcomma }}</span>
       <span class="table-units"> руб.</span>
     </p>
     <p class="basket-info">без учета стоимости доставки</p>
