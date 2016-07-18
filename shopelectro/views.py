@@ -123,6 +123,7 @@ class RemoveFromCart(ec_views.RemoveFromCart):
     wholesale = recalculate_price
     order_form = OrderForm
 
+
 class FlushCart(ec_views.FlushCart):
     wholesale = recalculate_price
     order_form = OrderForm
