@@ -139,7 +139,6 @@ class SuccessOrder(ec_views.SuccessOrder):
 
 ### Shopelectro-specific views ###
 
-
 @ensure_csrf_cookie
 def index(request):
     """Main page view: root categories, top products."""
@@ -332,3 +331,18 @@ def yandex_aviso(request):
                   'ecommerce/yandex_aviso.xml',
                   {'invoice': invoice_id},
                   content_type='application/xhtml+xml')
+
+
+@require_POST
+@csrf_exempt
+def ya_feedback_request(request):
+    """Send email to user with Я.Маркет feedback request"""
+    mailer.ya_feedback()
+
+    return render(request, 'ecommerce/yandex_feedback_success.html',
+                  {'email': request.POST['email']})
+
+
+def ya_feedback_with_redirect(request):
+    """Redirect user to Я.Маркет for feedback"""
+    return render(request, 'ecommerce/yandex_feedback_redirect.html')

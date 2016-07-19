@@ -1,0 +1,36 @@
+{% load se_extras %}
+
+<div style="padding:0 30px;">
+  <div style="width:100%;margin-bottom:35px;">
+    <span style="float: right; font: 16px Arial; color: rgb(118, 122, 123); margin-top: 15px;">
+      <span class="wmi-callto">
+        <small style="position: relative; top: -0.2em;">(812)</small>
+        <span style="color: #CC0000; font-size:25px;" class="ya-opt-phone">
+          <a href="tel:+78124163200">416-32-00</a>
+        </span>
+      </span>
+    </span>
+
+    <div style="padding:10px 0 8px;">
+      <span style="color: #CC0000; font-size:25px; font-family: Arial, sans-serif; font-weight: bold;
+      ">ShopElectro</span>
+      <div
+        style="color: #515151; display: block; font-family: Arial, sans-serif; font-size: 13px; font-style: normal;
+        font-weight: normal; margin: -6px 0 0 15px; white-space: nowrap;">
+      </div>
+    </div>
+    <div style="width: 100%; background-color: rgb(215, 215, 215); height: 1px;"></div>
+  </div>
+
+  <div style="font-size: 1.077em; line-height: 1.43; margin:35px 0;">
+    <p>Спасибо за то, что выбрали нас!</p>
+    <p>
+      <a href="{% full_url 'ya_feedback_with_redirect' %}?utm_source=Feedback&utm_medium=email&utm_campaign=YM">
+        Оставьте отзыв на Маркете</a>, если вам понравился товар и обслуживание.
+    </p>
+    <p>Если вас не устроило качество товара или обслуживание, вы можете отправить письмо по адресу <a
+      href="mailto:client@shopelectro.ru">client@shopelectro.ru</a>. Мы обязательно рассмотрим вашу жалобу и улучшим
+      сервис.</p>
+    <p>Удачных покупок!</p>
+  </div>
+</div>

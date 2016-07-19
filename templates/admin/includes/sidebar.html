@@ -1,0 +1,28 @@
+{% load admin_urls %}
+
+<aside class="sidebar">
+  <div class="sidebar-tree" id="js-tree"></div>
+
+  <ul class="sidebar-links list-unstyled" id="sidebar-links">
+    <li class="sidebar-links-item sidebar-search-field">
+      <form action="{% url 'ya_feedback_request' %}" method="POST" class="form-inline">
+        <div class="form-group">
+          <input type="email" class="form-control" id="user-email" name="email" placeholder="email клиента для отзыва">
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+      </form>
+    </li>
+
+    <li class="sidebar-links-item">
+      <a href="{% url 'admin:shopelectro_category_changelist' %}" class="sidebar-link">Категории</a>
+    </li>
+    <li class="sidebar-links-item">
+      <a href="{% url 'admin:shopelectro_product_changelist' %}" class="sidebar-link">Продукты</a>
+    </li>
+    <li class="sidebar-links-item">
+      <a href="{% url 'admin:pages_post_changelist' %}" class="sidebar-link">Страницы</a>
+    </li>
+  </ul>
+
+  <a href="#" id="link-to-go"></a>
+</aside>

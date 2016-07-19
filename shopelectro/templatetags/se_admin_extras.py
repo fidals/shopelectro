@@ -9,7 +9,7 @@ from ..images import get_images_without_small
 register = template.Library()
 
 
-@register.inclusion_tag('admin/images_list.html')
+@register.inclusion_tag('admin/includes/images_list.html')
 def entity_images(entity):
     """:return: Entity images without small variant"""
 

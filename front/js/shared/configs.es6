@@ -4,7 +4,7 @@
  */
 const configs = (() => {
   const DOM = {
-    $scrollWrapper: $('#scroll-wrapper'),
+    scrollWrapper: '#scroll-wrapper',
     $touchspin: $('.js-touchspin'),
     $phoneInputs: $('.js-masked-phone'),
   };
@@ -58,7 +58,7 @@ const configs = (() => {
   };
 
   const pluginsInit = () => {
-    DOM.$scrollWrapper.jScrollPane(PLUGINS.scrollbar);
+    $(DOM.scrollWrapper).jScrollPane(PLUGINS.scrollbar);
     DOM.$touchspin.TouchSpin(PLUGINS.touchspin);
 
     DOM.$phoneInputs
@@ -69,7 +69,9 @@ const configs = (() => {
       });
   };
 
+  const scrollbarReinit = () => $(DOM.scrollWrapper).jScrollPane(PLUGINS.scrollbar);
+
   init();
 
-  return { PLUGINS, setupXHR, LABELS };
+  return { PLUGINS, setupXHR, LABELS, scrollbarReinit };
 })();
