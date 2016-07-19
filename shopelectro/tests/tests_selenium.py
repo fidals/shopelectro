@@ -305,7 +305,8 @@ class ProductPage(SeleniumTestCase):
 
     def test_one_click_buy_disabled_with_empty_phone(self):
         """By default .btn-one-click-order should be disabled"""
-        self.browser.find_element_by_id('input-one-click-phone').send_keys(Keys.BACKSPACE)
+        self.browser.find_element_by_id(
+            'input-one-click-phone').send_keys(Keys.BACKSPACE)
         self.assertTrue(self.one_click.get_attribute('disabled'))
 
     def test_one_click_buy_active_with_phone_filled(self):
@@ -467,7 +468,8 @@ class OrderPage(SeleniumTestCase):
         self.browser.find_element_by_id('id_name').send_keys('Name')
         self.browser.find_element_by_id('id_phone').clear()
         self.browser.find_element_by_id('btn-send-ya').click()
-        error_text = self.browser.find_element_by_class_name('js-form-error-text')
+        error_text = self.browser.find_element_by_class_name(
+            'js-form-error-text')
         self.assertTrue('телефон', error_text.is_displayed())
 
 

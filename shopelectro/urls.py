@@ -46,15 +46,20 @@ service_urls = [
     url(r'^ya-kassa/check/$', views.yandex_check, name='yandex_check'),
 ]
 
-shop_urls = [
-    url(r'^order-call/$', views.order_call),
-    url(r'^one-click-buy/$', views.one_click_buy),
-    url(r'^yandex-order/$', views.yandex_order),
-]
-
 search_urls = [
     url(r'^autocomplete/$', views.Autocomplete.as_view(), name='autocomplete'),
     url(r'^$', views.Search.as_view(), name='search'),
+]
+
+ecommerce_urls = [
+    url(r'^cart-add/$', views.AddToCart.as_view(), name='cart_add'),
+    url(r'^cart-change/$', views.ChangeCount.as_view(), name='cart_set_count'),
+    url(r'^cart-flush/$', views.FlushCart.as_view(), name='cart_flush'),
+    url(r'^cart-remove/$', views.RemoveFromCart.as_view(), name='cart_remove'),
+    url(r'^order/$', views.OrderPage.as_view(), name='order_page'),
+    url(r'^order-call/$', views.order_call),
+    url(r'^one-click-buy/$', views.one_click_buy),
+    url(r'^yandex-order/$', views.yandex_order),
 ]
 
 admin_urls = [
@@ -73,12 +78,11 @@ urlpatterns = [
     url(r'^catalog/products/(?P<product_id>[0-9]+)/$',
         views.ProductPage.as_view(), name='product'),
     url(r'^pages/', include('pages.urls')),
-    url(r'^shop/', include('ecommerce.urls'),
-        {'apply_wholesale': recalculate_price}),
+    url(r'^shop/', include(ecommerce_urls)),
+    url(r'^shop/', include('ecommerce.urls')),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
     }),
-    url(r'^shop/', include(shop_urls)),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
 ]

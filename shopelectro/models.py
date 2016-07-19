@@ -1,7 +1,9 @@
 from django.db import models
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from catalog.models import AbstractProduct, AbstractCategory
+from ecommerce.models import Order as ecOrder
 
 
 class Category(AbstractCategory):
@@ -55,3 +57,16 @@ class Property(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def _default_payment():
+    """Return default payment option, which is first element of first tuple in options."""
+    assert settings.PAYMENT_OPTIONS[0][0], 'No payment options!'
+    return settings.PAYMENT_OPTIONS[0][0]
+
+
+class Order(ecOrder):
+    """Extended Order model."""
+    payment_option = models.CharField(max_length=255,
+                                      choices=settings.PAYMENT_OPTIONS,
+                                      default=_default_payment())
