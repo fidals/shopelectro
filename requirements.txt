@@ -7,6 +7,6 @@ selenium-requests
 psycopg2
 openpyxl
 unidecode
--e git+https@github.com:fidals/refarm-catalog.git#egg=refarm-catalog
--e git+https@github.com:fidals/refarm-site.git#egg=refarm-site
--e git+https@github.com:fidals/refarm-ecommerce.git#egg=refarm-ecommerce
+-e git+git@github.com:fidals/refarm-catalog.git#egg=refarm-catalog
+-e git+git@github.com:fidals/refarm-site.git#egg=refarm-site
+-e git+git@github.com:fidals/refarm-ecommerce.git#egg=refarm-ecommerce

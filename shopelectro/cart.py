@@ -1,13 +1,18 @@
 from collections import OrderedDict
+from functools import wraps
+
 from ecommerce.cart import Cart
 
 
-def recalculate_price(cart: Cart) -> Cart:
-    """
-    Function defines what type of price should use in cart and if need changes this
-    price to the actual.
-    """
+def recalculate(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        recalculate_price(func(*args, **kwargs))
+    return wrapper
 
+
+def recalculate_price(cart: Cart) -> Cart:
+    """Define what type of price should be used in cart. Actualize price if needed."""
     wholesale_types = OrderedDict(sorted({
         "wholesale_large": 100000,
         "wholesale_medium": 40000,
@@ -43,10 +48,29 @@ def recalculate_price(cart: Cart) -> Cart:
 
     def set_items_price(price_type: str) -> Cart:
         """
-        If price_type is NoneType, then it is retail price, set price from
-        Product.price.
-        """
+        If price_type is NoneType, then it is retail price, set price from Product.price"""
         new_data = get_product_data(price_type)
-        return cart.update_product_price(new_data)
+        cart.update_product_price(new_data)
 
     set_items_price(define_price_type())
+
+
+class WholesaleCart(Cart):
+    """Override Cart class for Wholesale features"""
+    @recalculate
+    def add(self, product, quantity=1):
+        """Override add method because it changing state of the Cart instance"""
+        super(WholesaleCart, self).add(product, quantity)
+        return self
+
+    @recalculate
+    def set_product_quantity(self, product, quantity):
+        """Override set_product_quantity method because it changing state of the Cart instance"""
+        super(WholesaleCart, self).set_product_quantity(product, quantity)
+        return self
+
+    @recalculate
+    def remove(self, product):
+        """Override remove method because it changing state of the Cart instance"""
+        super(WholesaleCart, self).remove(product)
+        return self

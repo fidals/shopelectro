@@ -1,7 +1,7 @@
 <div class="block">
   {% if category.get_children %}
     <ul class="subcategory-list list-unstyled">
-      {% for child in category.get_children %}
+      {% for child in category.get_children_sorted_by_position %}
         <li class="subcategory-list-item">
           <a class="subcategory-list-link" href="{% url 'category' child.slug %}">
             {{ child.name }}

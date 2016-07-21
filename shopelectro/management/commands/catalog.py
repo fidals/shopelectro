@@ -157,7 +157,7 @@ class Command(BaseCommand):
                 yield Category(id=category_id(category),
                                name=category.text.strip(),
                                position=CATEGORY_POSITIONS.get(
-                                   category_id(category), 0),
+                                   category_id(category), 10000),
                                parent_id=parent_id_or_none(category))
         return categories_generator(self.categories_in_xml)
 

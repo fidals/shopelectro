@@ -13,10 +13,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
 
-from catalog.views import search
-
-from . import views, sitemaps, config, models
-from .cart import recalculate_price
+from shopelectro import views, sitemaps, config
 
 category_urls = [
     url(r'^$', views.CategoryTree.as_view(), name='category_tree'),
