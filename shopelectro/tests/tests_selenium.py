@@ -99,6 +99,18 @@ class Header(SeleniumTestCase):
         cart = self.browser.find_element_by_class_name('basket-wrapper')
         self.assertTrue(cart.is_displayed())
 
+    def test_cart_flush(self):
+        """We can flush cart from header's cart dropdown"""
+        self.browser.get(self.live_server_url + reverse('product', args=['1']))
+        self.browser.find_element_by_class_name('btn-to-basket').click()
+        wait()
+        cart_parent = self.browser.find_element_by_class_name('basket-parent')
+        hover(self.browser, cart_parent)
+        cart = self.browser.find_element_by_class_name('basket-reset').click()
+        wait()
+        cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
+        self.assertTrue(cart_is_empty.is_displayed())
+
 
 class CategoryPage(SeleniumTestCase):
     """Selenium-based tests for Category Page."""
