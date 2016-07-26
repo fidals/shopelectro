@@ -192,6 +192,7 @@ EMAIL_SUBJECTS = {
     'order': 'Заказ №{0.id}',
     'yandex_order': 'Заказ №{0.id} | Яндекс.Касса',
     'one_click': 'Заказ в один клик №{}',
+    'ya_feedback_request': 'Оцените нас на Яндекс.Маркете',
 }
 
 # Fill it in local.py

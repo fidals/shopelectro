@@ -3,12 +3,12 @@
 
 <div style="padding:0 30px;">
   <div style="width:100%;margin-bottom:35px;">
-            <span style="float: right; font: 16px Arial; color: rgb(118, 122, 123); margin-top:15px;">
-                <span class="wmi-callto">
-                    <small style="position:relative; top:-.2em;">(812)</small>
-                    <span style="color:#CC0000; font-size:25px;" class="ya-opt-phone"><a href="tel:+78124163200">416-32-00</a> </span>
-                </span>
-            </span>
+    <span style="float: right; font: 16px Arial; color: rgb(118, 122, 123); margin-top:15px;">
+      <span class="wmi-callto">
+        <small style="position:relative; top:-.2em;">(812)</small>
+        <span style="color:#CC0000; font-size:25px;" class="ya-opt-phone"><a href="tel:+78124163200">416-32-00</a> </span>
+      </span>
+    </span>
     <div style="padding:10px 0 8px;">
       <span style="color:#CC0000; font-size:25px; font-family: arial, sans-serif; font-weight: bold;">ShopElectro</span>
       <div style="color: #515151; display: block; font-family: arial, sans-serif; font-size: 13px; font-style: normal;
@@ -17,6 +17,7 @@
     </div>
     <div style="width: 100%; background-color: rgb(215, 215, 215); height:1px;"></div>
   </div>
+
   <div style="font-size: 1.077em; line-height: 1.43; margin:35px 0;">
     <p style="margin:0 0 1.15em; font-family: arial, sans-serif;">
       {% if order.name %}
@@ -51,9 +52,7 @@
             <tr>
               <td align="left" style="padding:5px 10px;">{{ product.id }}</td>
               <td align="left" style="padding:5px 10px;">
-                <a href="{% full_url 'product' product.id  %}">
-                  {{ product.name }}
-                </a>
+                <a href="{% full_url 'product' product.id  %}">{{ product.name }}</a>
               </td>
               <td align="right" style="padding:5px 10px;">{{ position.quantity }} шт.</td>
               <td align="right" style="padding:5px 10px;">{{ position.price|humanize_price }} руб.</td>
@@ -99,12 +98,12 @@
       </tr>
     </table>
     <div
-        style="width: 100%; text-align: right; border-top:1px solid rgb(242, 242, 242); padding:5px 0; font-style:italic;">
+      style="width: 100%; text-align: right; border-top:1px solid rgb(242, 242, 242); padding:5px 0; font-style:italic;">
       <span style="font: bold 1.077em arial;"></span>
       <br/>
       <em></em>
     </div>
-    {% block se_info %}
-    {% endblock %}
+
+    {% block se_info %}{% endblock %}
   </div>
 </div>

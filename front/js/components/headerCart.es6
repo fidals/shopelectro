@@ -35,10 +35,12 @@ const headerCart = (() => {
 
   /**
    * Render new cart's html.
-   * @param event
    * @param data
    */
-  const render = (event, data) => DOM.$cart.html(data.header);
+  const render = (_, data) => {
+    DOM.$cart.html(data.header);
+    configs.scrollbarReinit();
+  };
 
   init();
 })();

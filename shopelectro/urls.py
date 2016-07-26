@@ -18,11 +18,9 @@ from shopelectro import views, sitemaps, config
 category_urls = [
     url(r'^$', views.CategoryTree.as_view(), name='category_tree'),
     url(r'^categories/(?P<slug>[\w-]+)/$',
-        views.CategoryPage.as_view(),
-        name='category'),
+        views.CategoryPage.as_view(), name='category'),
     url(r'^categories/(?P<slug>[\w-]+)/(?P<sorting>[0-9]*)/$',
-        views.CategoryPage.as_view(),
-        name='category'),
+        views.CategoryPage.as_view(), name='category'),
     url(r'categories/^(?P<category_slug>[\w-]+)/load-more/'
         r'(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/$',
         views.load_more, name='load_more'),
@@ -41,6 +39,10 @@ cached_view = cache_page(config.cached_time())
 service_urls = [
     url(r'^ya-kassa/aviso/$', views.yandex_aviso, name='yandex_aviso'),
     url(r'^ya-kassa/check/$', views.yandex_check, name='yandex_check'),
+    url(r'^ya-feedback/redirect/$',
+        views.ya_feedback_with_redirect, name='ya_feedback_with_redirect'),
+    url(r'^ya-feedback/request/$',
+        views.ya_feedback_request, name='ya_feedback_request'),
 ]
 
 search_urls = [

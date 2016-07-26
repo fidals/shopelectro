@@ -1,4 +1,4 @@
-{% extends "layout/base.html" %}
+{% extends 'layout/base.html' %}
 {% load breadcrumb_extras %}
 {% load staticfiles %}
 {% load se_extras %}
@@ -13,7 +13,7 @@
 
 {% block stylesheets %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
+  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
 {% endblock %}
 
 {% block content %}

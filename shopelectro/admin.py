@@ -1,14 +1,10 @@
 """Django admin module."""
 
-import os
 from django.contrib import admin
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
-from django.db import models
-from django.forms import TextInput
 from collections import namedtuple
 
 from shopelectro.models import Category, Product
@@ -16,10 +12,6 @@ from shopelectro.models import Category, Product
 
 # Override templates
 admin.sites.AdminSite.site_header = 'Shopelectro administration'
-admin.ModelAdmin.change_list_template = os.path.join(settings.BASE_DIR,
-                                                     'templates/admin/change_list.html')
-admin.ModelAdmin.change_form_template = os.path.join(settings.BASE_DIR,
-                                                     'templates/admin/change_form.html')
 
 
 def after_action_message(updated_rows):
@@ -109,7 +101,6 @@ class CategoryShopelectroAdmin(AbstractChangeListAdmin):
     # Settings
     search_fields = ['name']
     list_display = ['name', 'custom_parent', 'is_active']
-    list_display_links = ['name']
 
     # Custom fields
     def custom_parent(self, model):
@@ -130,29 +121,69 @@ class CategoryShopelectroAdmin(AbstractChangeListAdmin):
 
 
 class ProductsShopelectroAdmin(AbstractChangeListAdmin):
+    """
+    Custom Fieldsets for model
+    https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#django.contrib.admin.ModelAdmin.fieldsets
+    """
+    fieldsets = (
+        ('Основные характеристики', {
+            'classes': ('primary-chars',),
+            'fields': (
+                'name',
+                'category',
+                ('price', 'wholesale_small'),
+                ('in_stock', 'is_popular')
+            )
+        }),
+        ('Дополнительные характеристики', {
+            'classes': ('secondary-chars',),
+            'fields': (
+                'content',
+            ),
+        }),
+        ('SEO', {
+            'classes': ('seo-chars',),
+            'fields': (
+                'title',
+                '_menu_title',
+                'h1',
+                'keywords',
+                'description'
+            ),
+        }),
+    )
+
     # Settings
     search_fields = ['name', 'category__name']
-    list_display = ['name', 'links', 'category', 'price', 'is_active']
-    list_editable = ['name', 'category', 'price']
+    list_display = ['name', 'custom_category', 'price', 'links', 'is_active']
     list_filter = [PriceRange, 'is_active']
-    list_display_links = None
-
-    # Input fields attributes
-    formfield_overrides = {
-        models.CharField: {'widget': TextInput(attrs={'class': 'field-editable'})},
-    }
 
     # Custom fields
     def links(self, model):
         context = {
             'site_url': model.get_absolute_url(),
-            'admin_url': '/admin/shopelectro/product/' + str(model.id) + '/change',
         }
 
-        return render_to_string('admin/items_list_row.html', context)
+        return render_to_string('admin/includes/items_list_row.html', context)
 
     links.short_description = 'Links'
     links.admin_order_field = 'name'
+
+    def custom_category(self, model):
+        if not model.category:
+            return
+
+        category = model.category
+        url = reverse('admin:shopelectro_category_change', args=(category.id,))
+
+        return format_html(
+            '<a href="{url}">{parent}</a>',
+            parent=category,
+            url=url
+        )
+
+    custom_category.short_description = 'Category'
+    custom_category.admin_order_field = 'category'
 
 admin.site.register(Category, CategoryShopelectroAdmin)
 admin.site.register(Product, ProductsShopelectroAdmin)

@@ -1,4 +1,4 @@
-{% extends "layout/base.html" %}
+{% extends 'layout/base.html' %}
 {% load se_extras %}
 {% block title %}Спасибо за Ваш заказ{% endblock %}
 
@@ -29,8 +29,8 @@
         <li>ПТ 10:00-17:00</li>
         <li>СБ-ВС - выходной</li>
       </ul>
+
       <a href="{% url 'index' %}">Вернуться на главную</a>
     </div>
   </div>
 {% endblock %}
-

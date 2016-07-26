@@ -1,6 +1,7 @@
 const accordion = (() => {
   const ITEM_KEY = 'activeItem';
   const DOM = {
+    $accordion: $('.js-accordion'),
     panels: $('.js-accordion-content'),
     titles: $('.js-accordion-title'),
     savedItem: $(`#${localStorage.getItem(ITEM_KEY)}`),
@@ -19,7 +20,7 @@ const accordion = (() => {
    * @param $clickedItem - accordion item as jQuery object
    */
   const switchItem = $clickedItem => {
-    if (!$clickedItem) return;
+    if (!($clickedItem && accordionOnPage())) return;
 
     saveItem($clickedItem);
 
@@ -29,6 +30,8 @@ const accordion = (() => {
       openItem($clickedItem);
     }
   };
+
+  const accordionOnPage = () => DOM.$accordion.size();
 
   const openItem = $clickedItem => {
     collapseAccordion();

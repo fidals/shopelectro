@@ -1,0 +1,18 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+  <div class="container">
+    Перенаправляем на
+    <a href="http://market.yandex.ru/shop/103499/reviews?utm_source=Feedback&utm_medium=email&utm_campaign=YM">
+      Яндекс.Маркет
+    </a>, подождите секунду ...
+  </div>
+
+  <script>
+    (function() {
+      setTimeout(function() {
+        window.location.replace('http://market.yandex.ru/shop/103499/reviews?utm_source=Feedback&utm_medium=email&utm_campaign=YM');
+      }, 2000);
+    })();
+  </script>
+{% endblock %}

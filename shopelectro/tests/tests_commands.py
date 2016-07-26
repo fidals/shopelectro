@@ -96,7 +96,7 @@ class ImportTest(TestCase):
         """There should be at least 2000 products in price. (except Others)"""
         products_in_price = ElementTree.parse(
             'priceru.xml').getroot().find('shop').find('offers')
-        self.assertGreaterEqual(len(products_in_price), 2400)
+        self.assertGreaterEqual(len(products_in_price), 2000)
 
     def test_no_others_categories_in_price(self):
         """There should be no categories inherited from Other category."""

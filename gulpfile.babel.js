@@ -62,7 +62,7 @@ const PATH = {
       ],
 
       admin: [
-        'front/js/vendors/auto-complete.min.js',
+        'front/js/vendors/jquery.slimscroll.min.js',
         'front/js/components/admin.es6',
       ],
     },
