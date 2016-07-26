@@ -1,4 +1,4 @@
-{% load se_extras %}
+﻿{% load se_extras %}
 {% load staticfiles %}
 {% roots as root_categories %}
 <div class="header">
@@ -112,6 +112,22 @@
                       </a></li>
                     {% endfor %}
                   </ul>
+                  {% random_products root as product %}
+                  {% if product %}
+                    <div class="popular-product">
+                      <a class="popular-product-link" href="{% url 'product' product.id %}">
+                      <div class="label">Популярный товар</div>
+                      <div class="popular-product-image-wrapper">
+                        <img class="img-centered img-responsive" src={% static product.image %}
+                                alt={{ product.name }}>
+                      </div>
+                      <div class="text">
+                        <div class="price">{{ product.price }} руб.</div>
+                        <div class="desc"><span>{{ product.name }}</span></div>
+                      </div>
+                      </a>
+                    </div>
+                  {% endif %}
                 </div>
               {% endif %}
             </li>
