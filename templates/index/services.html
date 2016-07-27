@@ -1,17 +1,16 @@
 {% load staticfiles %}
 <div class="page-front-news">
-  <div class="page-front-news-item">
+  <div class="page-front-news-item" onclick="location.href='{% url 'pages:navigation' 'delivery' %}#russia'">
     <div class="page-front-news-img">
       <img src="{% static 'images/services-01.jpg' %}" class="page-front-news-img-inner"
            alt="Доставка по всей России">
     </div>
     <div class="page-front-news-title">Доставка по всей России</div>
     <div class="page-front-news-text">
-      Доставка товаров по всей России курьером, почтой, транспортной компанией.
-      Доставка во все города и уголки страны
+      Доставка товаров по всей России курьером, почтой, транспортной компанией
     </div>
   </div>
-  <div class="page-front-news-item">
+  <div class="page-front-news-item" onclick="location.href='{% url 'pages:navigation' 'soldering' %}'">
     <div class="page-front-news-img">
       <img src="{% static 'images/services-02.jpg' %}" class="page-front-news-img-inner" alt="Пайка на заказ">
     </div>
@@ -21,15 +20,15 @@
       характеристиками
     </div>
   </div>
-  <div class="page-front-news-item">
+  <div class="page-front-news-item" onclick="location.href='{% url 'pages:navigation' 'remont-akkumulyatorov' %}'">
     <div class="page-front-news-img">
       <img src="{% static 'images/services-03.jpg' %}" class="page-front-news-img-inner"
            alt="Ремонт аккумуляторов">
     </div>
     <div class="page-front-news-title">Ремонт аккумуляторов</div>
     <div class="page-front-news-text">
-      Политика обмена и возврата товара. Обмен и возврат.
-      Если купленная в магазине вещь вам не подошла, ее можно обменять или вернуть
+      Ремонтируем аккумуляторы для раций, шуруповертов, видеокамер, пылесосов и т.д. за 3 дня.
+      Даем гарантию на 4 месяца
     </div>
   </div>
 </div>

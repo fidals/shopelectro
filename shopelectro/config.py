@@ -152,10 +152,6 @@ MAIN_PAGE_TILE = {
     'multimeters': [
         {'name': 'MY68 Master Professional',
          'alias': 'multimetry-master-professional'},
-        {'name': 'MY67 Master Professional',
-         'alias': 'multimetry-master-professional'},
-        {'name': 'MY65 Master Professional',
-         'alias': 'multimetry-master-professional'},
     ],
     'adapters': [
         {'id': 1, 'name': '220В для ноутбуков',
@@ -169,8 +165,9 @@ MAIN_PAGE_TILE = {
 
 FOOTER_LINKS = {
     'services': [
-        {'id': 1, 'name': 'Ремонт аккумуляторов', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Пайка на заказ', 'alias': 'Текст'},
+        {'id': 1, 'name': 'Ремонт аккумуляторов', 'alias': 'remont-akkumulyatorov'},
+        {'id': 1, 'name': 'Пайка на заказ', 'alias': 'soldering'},
+        # {'id': 1, 'name': 'Доставка по России', 'alias': 'delivery#russia'},
     ],
     'articles': [
         {'id': 1, 'name': 'Аккумуляторная батарея', 'alias': 'Текст'},
@@ -179,11 +176,11 @@ FOOTER_LINKS = {
         {'id': 1, 'name': 'Батарейка типа АА', 'alias': 'Текст'},
     ],
     'about': [
-        {'id': 1, 'name': 'Реквизиты', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Нормативные документы', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Оптовым покупателям', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Гарантии и возврат', 'alias': 'Текст'},
-        {'id': 1, 'name': 'Карта сайта', 'alias': 'Текст'},
+        {'id': 1, 'name': 'Реквизиты', 'alias': 'rekvisity'},
+        {'id': 1, 'name': 'Нормативные документы', 'alias': 'norm-docs'},
+        # {'id': 1, 'name': 'Оптовым покупателям', 'alias': 'wholesale'},
+        # {'id': 1, 'name': 'Гарантии и возврат', 'alias': 'return-goods-instr'},
+        # {'id': 1, 'name': 'Карта сайта', 'alias': 'sitemap'},
     ],
 }
 

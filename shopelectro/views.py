@@ -144,6 +144,8 @@ def index(request):
     """Main page view: root categories, top products."""
 
     top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
+    for product in top_products:
+        product.image = images.get_image(product, settings.IMAGES['small'])
 
     context = {
         'meta': config.page_metadata('main'),

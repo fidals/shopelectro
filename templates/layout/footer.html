@@ -33,7 +33,7 @@
   <div class="middle-footer">
     <div class="container">
       <div class="row middle-footer-row">
-        <div class="col-xs-3 middle-footer-col">
+        <div class="col-xs-4 middle-footer-col">
           <div class="middle-footer-title">
             <a class="middle-footer-title-link" href="/catalog/">Каталог товаров</a>
           </div>
@@ -45,42 +45,38 @@
             {% endfor %}
           </ul>
         </div>
-        <div class="col-xs-3 middle-footer-col">
+        <div class="col-xs-4 middle-footer-col">
           <div class="middle-footer-title">Услуги</div>
           <ul class="list-unstyled">
             {% for item in footer_links.services %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' item.id %}">{{ item.name }}</a>
-              </li>
-              <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' 1 %}#russia">
-                  Доставка по всей России
-                </a>
+                <a class="footer-list-link" href="{% url 'pages:navigation' item.alias %}">{{ item.name }}</a>
               </li>
             {% endfor %}
             <li class="footer-list-item">
-              <a class="footer-list-link" href="{{ HREF.istok_plus }}" target="_blank">Купить оптом</a>
+              <a class="footer-list-link" href="{% url 'pages:navigation' "delivery" %}#russia">
+                  Доставка по всей России
+              </a>
             </li>
           </ul>
         </div>
-        <div class="col-xs-3 middle-footer-col">
-          <div class="middle-footer-title">Статьи</div>
-          <ul class="list-unstyled">
-            {% for item in footer_links.articles %}
-              <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' item.id %}">{{ item.name }}</a>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="col-xs-3 middle-footer-col">
+        <div class="col-xs-4 middle-footer-col">
           <div class="middle-footer-title">О компании</div>
           <ul class="list-unstyled">
             {% for item in footer_links.about %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' item.id %}">{{ item.name }}</a>
+                <a class="footer-list-link" href="{% url 'pages:navigation' item.alias %}">{{ item.name }}</a>
               </li>
             {% endfor %}
+            <li class="footer-list-item">
+              <a class="footer-list-link" href="pages/articles/wholesale">Оптовым покупателям</a>
+            </li>
+            <li class="footer-list-item">
+              <a class="footer-list-link" href="{% url 'pages:navigation' 'return-goods-instr' %}">Гарантии и возврат</a>
+            </li>
+            <li class="footer-list-item">
+              <a class="footer-list-link" href="sitemap">Карта сайта</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -133,6 +129,10 @@
             </a>
           </div>
         </div>
+      </div>
+      <div class="footer-copyright text-center">
+        <p>Все права защищены. 2000-2016 ООО «Исток-Плюс» (Москва, Санкт-Петербург)</p>
+        <p>Делаем сложные магазины. <a href="https://fidals.com/blog/se-project.html?utm_source=SE_site&utm_medium=backlink&utm_campaign=backlink_traffic" target="_blank">Fidals.com</a></p>
       </div>
     </div>
   </div>
