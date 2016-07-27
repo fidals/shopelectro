@@ -1,6 +1,7 @@
 """Shopelectro template tags"""
 
 import datetime
+import random
 
 from django import template
 from django.conf import settings
@@ -8,6 +9,7 @@ from django.core.urlresolvers import reverse, resolve
 from django.template.defaultfilters import floatformat
 from django.contrib.humanize.templatetags.humanize import intcomma
 
+from shopelectro import images
 from shopelectro.models import Category
 from shopelectro.images import get_images_without_small
 
@@ -18,6 +20,28 @@ register = template.Library()
 def roots():
     return Category.objects.root_nodes().order_by('position')
 
+@register.simple_tag
+def random_products(root):
+    subcategories = []
+    for subcategory in root.get_children():
+        products = subcategory.products.all()
+        if products:
+            subcategories.append(products)
+    if not subcategories:
+        return ""
+    subcategory_idx = random.randint(0, len(subcategories)-1)
+    subcategory = subcategories[subcategory_idx]
+    product_idx = random.randint(0, len(subcategory)-1)
+    product = subcategory[product_idx]
+    small_images = images.get_images_without_small(product)
+    if small_images:
+        image = small_images[0]
+    else:
+        image = images.get_image(product)
+        if settings.IMAGES['thumbnail'] == image:
+            image = 'images/' + image
+    product.image = image
+    return product
 
 @register.filter
 def class_name(model):
