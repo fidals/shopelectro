@@ -36,10 +36,10 @@ const PATH = {
     js: {
       vendors: [
         'front/js/vendors/jquery-2.2.3.min.js',
-        'front/js/vendors/jquery.mask.min.js',
         'front/js/vendors/bootstrap.min.js',
         'front/js/vendors/js.cookie.js',
         'front/js/vendors/jscrollpane.js',
+        'front/js/vendors/jquery.mask.min.js',
         'front/js/vendors/jquery.bootstrap-touchspin.min.js',
         'front/js/vendors/auto-complete.min.js',
       ],
