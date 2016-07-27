@@ -857,7 +857,7 @@ class Search(SeleniumTestCase):
         first_item = self.autocomplete.find_element_by_css_selector(
             ':first-child')
         first_item.click()
-        wait(1)
+        wait()
         self.assertTrue('/catalog/categories/' in self.browser.current_url)
         self.clear_input()
 

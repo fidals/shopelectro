@@ -15,8 +15,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from shopelectro.models import Product, Category
-from pages.models import Page
+from catalog.models import Category
+from shopelectro.models import Product
 
 
 class Command(BaseCommand):
@@ -32,7 +32,6 @@ class Command(BaseCommand):
             self.create_children(r)
         self.create_deep_children()
         self.create_products()
-        self.create_products()
         self.save_dump()
 
     @staticmethod
@@ -40,8 +39,8 @@ class Command(BaseCommand):
         """Save .json dump to fixtures."""
         call_command('dumpdata',
                      'shopelectro.Product',
-                     'shopelectro.Category',
-                     'pages.Page',
+                     'catalog.Product',
+                     'catalog.Category',
                      output='shopelectro/fixtures/dump.json')
 
     @staticmethod
@@ -50,8 +49,7 @@ class Command(BaseCommand):
         roots = []
         for i in range(2):
             r, _ = Category.objects.get_or_create(
-                name='Root category #{}'.format(i)
-            )
+                name='Root category #{}'.format(i))
             roots.append(r)
         return roots
 
@@ -74,25 +72,13 @@ class Command(BaseCommand):
         for c in Category.objects.exclude(parent=None):
             for i in range(1, randint(10, 50)):
                 Product.objects.create(
-                    name='Product of {} with num #{}'.format(c, i),
+                    name='Product of {}'.format(c),
                     price=i * randint(1, 100),
                     category=c,
                     wholesale_small=10,
                     wholesale_medium=10,
                     wholesale_large=10,
-                )    @staticmethod
-
-    @staticmethod
-    def create_pages():
-        """Create a random quantity of product for every non-root category."""
-        Page.objects.create(
-            name='Product of {} with num #{}'.format(c, i),
-            price=i * randint(1, 100),
-            category=c,
-            wholesale_small=10,
-            wholesale_medium=10,
-            wholesale_large=10,
-        )
+                )
 
     @staticmethod
     def clear_tables():

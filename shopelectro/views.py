@@ -14,6 +14,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 
 from pages.models import Page, get_or_create_struct_page
+from pages import views as pages_views
 from catalog.views import catalog, search
 from ecommerce import mailer
 from ecommerce.cart import Cart
@@ -21,10 +22,10 @@ from ecommerce.models import Order
 from ecommerce import views as ec_views
 from ecommerce.views import get_keys_from_post, save_order_to_session
 
-from . import config, images
-from .models import Product, Category, Order
-from .cart import WholesaleCart
-from .forms import OrderForm
+from shopelectro import config, images
+from shopelectro.models import Product, Category, Order
+from shopelectro.cart import WholesaleCart
+from shopelectro.forms import OrderForm
 
 ### Helpers ###
 
@@ -143,25 +144,44 @@ class SuccessOrder(ec_views.SuccessOrder):
 
 ### Shopelectro-specific views ###
 
-@ensure_csrf_cookie
-def index(request):
-    """Main page view: root categories, top products."""
 
-    top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
-    page = get_or_create_struct_page(slug='index')
+@set_csrf_cookie
+class IndexPage(pages_views.IndexPage):
 
-    context = {
-        'meta': config.page_metadata('main'),
-        'category_tile': config.MAIN_PAGE_TILE,
-        'footer_links': config.FOOTER_LINKS,
-        'href': config.HREFS,
-        'top_products': top_products,
-        'page': page,
-    }
+    def get_context_data(self, **kwargs):
+        """Extended method. Add product's images to context.."""
+        context = super(IndexPage, self).get_context_data(**kwargs)
 
-    return render(request, 'index/index.html', context)
+        top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
 
+        context.update({
+            'meta': config.page_metadata('main'),
+            'category_tile': config.MAIN_PAGE_TILE,
+            'footer_links': config.FOOTER_LINKS,
+            'href': config.HREFS,
+            'top_products': top_products,
+        })
 
+        return context
+
+# def index(request):
+#     """Main page view: root categories, top products."""
+#
+#     top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
+#     page = get_or_create_struct_page(slug='index')
+#
+#     context = {
+#         'meta': config.page_metadata('main'),
+#         'category_tile': config.MAIN_PAGE_TILE,
+#         'footer_links': config.FOOTER_LINKS,
+#         'href': config.HREFS,
+#         'top_products': top_products,
+#         'page': page,
+#     }
+#
+#     return render(request, 'index/index.html', context)
+#
+#
 def load_more(request, category_slug, offset=0, sorting=0):
     """
     Loads more products of a given category.

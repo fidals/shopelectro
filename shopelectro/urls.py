@@ -71,7 +71,7 @@ admin_urls = [
 ]
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.IndexPage.as_view(), name='index'),
     url(r'^test-ya-kassa/$', views.test_yandex, name='test_yandex'),
     url(r'^admin/', admin.site.urls),
     url(r'^admin/', include(admin_urls)),
