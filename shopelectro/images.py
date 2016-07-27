@@ -80,7 +80,7 @@ def get_image(model, size=settings.IMAGES['large']):
     if images:
         image = os.path.join(settings.MEDIA_URL, images[0])
     else:
-        image = os.path.join(settings.STATIC_URL, "images", settings.IMAGES['thumbnail'])
+        image = os.path.join(settings.STATIC_URL, 'images', settings.IMAGES['thumbnail'])
     return image
 
 

@@ -23,7 +23,7 @@ def roots():
 def random_product(category):
     products, count = category.get_recursive_products_with_count(size=None)
     if not products:
-        return ""
+        return ''
     product = products[random.randint(0, count - 1)]
     product.image = images.get_image(product, settings.IMAGES['small'])
     return product
