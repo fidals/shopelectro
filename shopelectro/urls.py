@@ -85,6 +85,7 @@ urlpatterns = [
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
     }),
+    url(r'^robots\.txt$', views.robots),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
 ]

@@ -204,10 +204,16 @@ class Command(BaseCommand):
         }
         try:
             product_data['category'] = Category.objects.get(id=category_id())
+            assert product_data['price']
         except Category.DoesNotExist:
             print('Внимание! Категории {} не существует, '
                   'поэтому товар {} не будет сохранен.'
                   .format(category_id(), product_data['id']))
+            return
+        except AssertionError:
+            print('Внимание! Не указана цена товара, '
+                  'поэтому этот товар {} не будет сохранен.'
+                  .format(product_data['id']))
             return
         return product_data
 

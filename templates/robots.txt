@@ -1,0 +1,22 @@
+{% if debug %}User-agent: *
+Disallow: /
+{% else %}User-agent: *
+Disallow: /search-results/
+Disallow: /service/
+Disallow: /*.css$
+Disallow: /*.js$
+Disallow: /*.txt$
+Clean-param: utm_source&utm_medium&utm_campaign&block&keyword&position /
+
+User-agent: Yandex
+Disallow: /search-results/
+Disallow: /service/
+Disallow: /*.css$
+Disallow: /*.js$
+Disallow: /*.txt$
+Clean-param: utm_source&utm_medium&utm_campaign&block&keyword&position /
+
+Host: www.stroyprombeton.ru
+
+Sitemap: http://www.stroyprombeton.ru/sitemap.xml
+{% endif %}
