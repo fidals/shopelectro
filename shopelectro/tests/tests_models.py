@@ -55,7 +55,7 @@ class ModelsTests(TestCase):
         """Get Product image thumbnail."""
 
         images_list = images.get_image(self.non_existing_product)
-        self.assertEqual(images_list, settings.IMAGES['thumbnail'])
+        self.assertEqual(settings.IMAGES['thumbnail'] in images_list)
 
     def test_main_image(self):
         """Main image property should return image."""

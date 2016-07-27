@@ -112,6 +112,22 @@
                       </a></li>
                     {% endfor %}
                   </ul>
+                  {% random_product root as product %}
+                  {% if product %}
+                    <div class="popular-product">
+                      <a class="popular-product-link" href="{% url 'product' product.id %}">
+                      <div class="label">Популярный товар</div>
+                      <div class="popular-product-image-wrapper">
+                        <img class="img-centered img-responsive" src={{ product.image }}
+                                alt={{ product.name }}>
+                      </div>
+                      <div class="text">
+                        <div class="price">{{ product.price }} руб.</div>
+                        <div class="desc"><span>{{ product.name }}</span></div>
+                      </div>
+                      </a>
+                    </div>
+                  {% endif %}
                 </div>
               {% endif %}
             </li>

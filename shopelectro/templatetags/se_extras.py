@@ -1,15 +1,16 @@
 """Shopelectro template tags"""
 
 import datetime
+import random
 
 from django import template
 from django.conf import settings
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 from django.contrib.humanize.templatetags.humanize import intcomma
 
+from shopelectro import images
 from shopelectro.models import Category
-from shopelectro.images import get_images_without_small
 
 register = template.Library()
 
@@ -18,6 +19,14 @@ register = template.Library()
 def roots():
     return Category.objects.root_nodes().order_by('position')
 
+@register.simple_tag
+def random_product(category):
+    products, count = category.get_recursive_products_with_count(size=None)
+    if not products:
+        return ''
+    product = products[random.randint(0, count - 1)]
+    product.image = images.get_image(product, settings.IMAGES['small'])
+    return product
 
 @register.filter
 def class_name(model):
@@ -81,7 +90,7 @@ def get_model_images(model):
 
     return {
         'dir_path': settings.BASE_URL + settings.MEDIA_URL,
-        'images': get_images_without_small(model, url='products')
+        'images': images.get_images_without_small(model, url='products')
     }
 
 
