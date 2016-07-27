@@ -76,8 +76,12 @@ def get_image(model, size=settings.IMAGES['large']):
     :return: large\small variant of Product image
     """
 
-    image = [img for img in get_all_images(model) if img.find(size) != -1]
-    return image[0] if image else settings.IMAGES['thumbnail']
+    images = [img for img in get_all_images(model) if img.find(size) != -1]
+    if images:
+        image = os.path.join(settings.MEDIA_URL, images[0])
+    else:
+        image = os.path.join(settings.STATIC_URL, "images", settings.IMAGES['thumbnail'])
+    return image
 
 
 def get_images_without_small(model, url='products'):
