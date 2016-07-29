@@ -108,7 +108,7 @@ class CategoryPage(SeleniumTestCase):
         """Sets up testing urls."""
         super(CategoryPage, cls).setUpClass()
         server = cls.live_server_url
-        testing_url = lambda alias: server + reverse('category', args=[alias])
+        testing_url = lambda slug: server + reverse('category', args=(slug,))
         cls.direct_child = testing_url('child-1-of-root-category-1')
         cls.deep_category = testing_url('child-2-of-child-2-of-root-category-1')
         cls.root_category = testing_url('root-category-1')
@@ -541,6 +541,7 @@ class SitePage(SeleniumTestCase):
         """Accordion item should expand by click on title"""
         accordion_title = self.accordion_title
         accordion_content = self.accordion_content
+        accordion_title.click()
         wait()
         self.assertTrue(accordion_content.is_displayed())
 

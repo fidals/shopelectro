@@ -40,7 +40,7 @@
           <ul class="list-unstyled">
             {% for root in root_categories %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' root.slug %}">{{ root.name }}</a>
+                <a class="footer-list-link" href="{{ root.get_absolute_url }}">{{ root.name }}</a>
               </li>
             {% endfor %}
           </ul>
@@ -50,10 +50,10 @@
           <ul class="list-unstyled">
             {% for item in footer_links.services %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' item.id %}">{{ item.name }}</a>
+                <a class="footer-list-link" href="{{ item.get_absolute_url }}">{{ item.name }}</a>
               </li>
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' 1 %}#russia">
+                <a class="footer-list-link" href="/delivery#russia">
                   Доставка по всей России
                 </a>
               </li>
@@ -64,21 +64,11 @@
           </ul>
         </div>
         <div class="col-xs-3 middle-footer-col">
-          <div class="middle-footer-title">Статьи</div>
-          <ul class="list-unstyled">
-            {% for item in footer_links.articles %}
-              <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' item.id %}">{{ item.name }}</a>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="col-xs-3 middle-footer-col">
           <div class="middle-footer-title">О компании</div>
           <ul class="list-unstyled">
             {% for item in footer_links.about %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'category' item.id %}">{{ item.name }}</a>
+                <a class="footer-list-link" href="{{ item.get_absolute_url }}">{{ item.name }}</a>
               </li>
             {% endfor %}
           </ul>
