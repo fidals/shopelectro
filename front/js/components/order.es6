@@ -23,7 +23,7 @@ const order = (() => {
     },
   };
 
-  const CONFIG = {
+  const config = {
     autocomplete: {
       types: ['(cities)'],
       componentRestrictions: {
@@ -74,7 +74,7 @@ const order = (() => {
     const cityField = document.getElementById('id_city');
     if (!cityField) return;
 
-    const cityAutocomplete = new google.maps.places.Autocomplete(cityField, CONFIG.autocomplete);
+    const cityAutocomplete = new google.maps.places.Autocomplete(cityField, config.autocomplete);
 
     google.maps.event.addListener(cityAutocomplete, 'place_changed', () => {
       storeInput($(DOM.orderForm.city));
@@ -111,7 +111,7 @@ const order = (() => {
    * Select saved payment if there is one.
    */
   const restoreSelectedPayment = () => {
-    const savedPayment = localStorage.getItem(CONFIG.paymentKey);
+    const savedPayment = localStorage.getItem(config.paymentKey);
 
     if (savedPayment) {
       const isSelected = $option => $option.val() === savedPayment;
@@ -150,7 +150,7 @@ const order = (() => {
     const $yandexSubmit = $(DOM.yandexSubmit);
     const $seSubmit = $(DOM.seSubmit);
     const optionName = getSelectedPaymentName();
-    const isYandexPayment = CONFIG.sePayments.indexOf(optionName) === -1;
+    const isYandexPayment = config.sePayments.indexOf(optionName) === -1;
 
     const selectSE = () => {
       $yandexSubmit.addClass('hidden');
@@ -163,7 +163,7 @@ const order = (() => {
     };
 
     isYandexPayment ? selectYandex() : selectSE();
-    if (optionName) localStorage.setItem(CONFIG.paymentKey, optionName);
+    if (optionName) localStorage.setItem(config.paymentKey, optionName);
   };
 
   /**
@@ -179,7 +179,9 @@ const order = (() => {
     return customerInfo;
   };
 
-  const isValid = customerInfo => validator.isPhoneValid(customerInfo.phone) && validator.isEmailValid(customerInfo.email);
+  function isValid(customerInfo) {
+    return validator.isPhoneValid(customerInfo.phone) && validator.isEmailValid(customerInfo.email);
+  }
 
   /**
    * Submit Yandex order if user's phone is provided.

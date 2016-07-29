@@ -14,6 +14,7 @@ PREVIEW_SIZE = 300, 300
 
 def upload(model_type, model_id, files):
     """Upload image for an entity of a given type_ with given id_."""
+
     def name_and_extension(file):
         return str(file).rsplit('.', 1)
 

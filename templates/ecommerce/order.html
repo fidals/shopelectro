@@ -4,7 +4,7 @@
 
 {% block stylesheets %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static "css/pages.min.css" %}">
+  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -16,5 +16,5 @@
 {% block jslinks %}
   {{ block.super }}
   <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=ru"></script>
-  <script src="{% static "js/pages.min.js" %}"></script>
+  <script src="{% static 'js/pages.min.js' %}"></script>
 {% endblock %}

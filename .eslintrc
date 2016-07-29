@@ -3,9 +3,16 @@
   "globals": {
     "$": true,
     "Cookies": true,
+    "configs": true,
     "mediator": true,
     "server": true,
     "validator": true,
     "google": true
+  },
+  "rules": {
+    "no-use-before-define": ["error", {
+      "functions": false,
+      "classes": false
+    }]
   }
 }

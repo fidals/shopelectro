@@ -9,12 +9,12 @@ const configs = (() => {
     $phoneInputs: $('.js-masked-phone'),
   };
 
-  const LABELS = {
+  const labels = {
     callTime: 'callTime',
     phone: 'phone',
   };
 
-  const PLUGINS = {
+  const plugins = {
     scrollbar: {
       autoReinitialise: true,
       mouseWheelSpeed: 30,
@@ -58,19 +58,21 @@ const configs = (() => {
   };
 
   const pluginsInit = () => {
-    $(DOM.scrollWrapper).jScrollPane(PLUGINS.scrollbar);
-    DOM.$touchspin.TouchSpin(PLUGINS.touchspin);
+    $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
+    DOM.$touchspin.TouchSpin(plugins.touchspin);
 
     DOM.$phoneInputs
-      .mask('+0 (000) 000 00 00', {'placeholder': '+7 (999) 000 00 00'})
+      .mask('+0 (000) 000 00 00', {
+        placeholder: '+7 (999) 000 00 00',
+      })
       .on('keyup', (event) => {
-        localStorage.setItem(LABELS.phone, $(event.target).val());
+        localStorage.setItem(labels.phone, $(event.target).val());
       });
   };
 
-  const scrollbarReinit = () => $(DOM.scrollWrapper).jScrollPane(PLUGINS.scrollbar);
+  const scrollbarReinit = () => $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
 
   init();
 
-  return { PLUGINS, setupXHR, LABELS, scrollbarReinit };
+  return { plugins, setupXHR, labels, scrollbarReinit };
 })();

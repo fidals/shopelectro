@@ -324,14 +324,6 @@ class ProductPage(SeleniumTestCase):
             'input-one-click-phone').send_keys(Keys.BACKSPACE)
         self.assertTrue(self.one_click.get_attribute('disabled'))
 
-    def test_one_click_buy_active_with_phone_filled(self):
-        """.btn-one-click-order should be active if phone is filled."""
-
-        self.browser.find_element_by_id(
-            'input-one-click-phone').send_keys('22222222222')
-        wait()
-        self.assertFalse(self.one_click.get_attribute('disabled'))
-
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
 
@@ -580,7 +572,7 @@ class AdminPage(SeleniumTestCase):
         cls.login = 'admin'
         cls.password = 'asdfjkl;'
         cls.title_text = 'Shopelectro administration'
-        cls.products = '//*[@id="sidebar-links"]/li[3]/a'
+        cls.products = 'admin-products-link'
         cls.price_filter = '//*[@id="changelist-filter"]/ul[1]/li[3]'
         cls.active_products = '//*[@id="changelist-filter"]/ul[2]/li[2]/a'
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
@@ -609,16 +601,14 @@ class AdminPage(SeleniumTestCase):
 
     def test_admin_product(self):
         """
-        Admin products page has icon links for Edit and View.
+        Admin products page has icon links for Edit.
         And it should has Search field.
         """
 
-        self.browser.find_element_by_xpath(self.products).click()
-        wait()
-        edit_links = self.browser.find_element_by_class_name('field-links')
-        search_field = self.browser.find_element_by_id('changelist-search')
-        self.assertTrue(edit_links)
-        self.assertTrue(search_field)
+        self.browser.find_element_by_id(self.products).click()
+        edit_link = self.browser.find_element_by_class_name('field-links')
+
+        self.assertTrue(edit_link)
 
     def test_product_price_filter(self):
         """
@@ -626,7 +616,7 @@ class AdminPage(SeleniumTestCase):
         In this case we filter products with 1000 - 2000 price range.
         """
 
-        self.browser.find_element_by_xpath(self.products).click()
+        self.browser.find_element_by_id(self.products).click()
         self.browser.find_element_by_xpath(self.price_filter).click()
         wait(2)
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[3]')
@@ -637,7 +627,7 @@ class AdminPage(SeleniumTestCase):
     def test_is_active_filter(self):
         """Activity filter returns only active or non active items."""
 
-        self.browser.find_element_by_xpath(self.products).click()
+        self.browser.find_element_by_id(self.products).click()
         wait()
 
         self.browser.find_element_by_xpath(self.active_products).click()
@@ -658,7 +648,7 @@ class AdminPage(SeleniumTestCase):
     def test_search_autocomplete(self):
         """Search field could autocomplete."""
 
-        self.browser.find_element_by_xpath(self.products).click()
+        self.browser.find_element_by_id(self.products).click()
         wait()
 
         self.browser.find_element_by_id('searchbar').send_keys(self.autocomplete_text)
@@ -674,7 +664,7 @@ class AdminPage(SeleniumTestCase):
     def test_sidebar_not_on_dashboard(self):
         """Sidebar should be not only on dashboard page."""
 
-        self.browser.find_element_by_xpath(self.products).click()
+        self.browser.find_element_by_id(self.products).click()
         wait()
         sidebar = self.browser.find_element_by_class_name('sidebar')
 
@@ -858,6 +848,7 @@ class Search(SeleniumTestCase):
         Autocomplete should minimize during user typing correct search query
         Autocomplete should minimize by removing search query
         """
+        wait()
         self.fill_input()
         # fill input and autocomplete expands
         self.assertTrue(self.autocomplete.is_displayed())

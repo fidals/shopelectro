@@ -2,7 +2,8 @@
 // IMPORTS
 // ================================================================
 @import "common/variables";
-@import "vendors/font-awesome.less";
+@import "vendors/ui.jqgrid-bootstrap";
+@import "vendors/font-awesome";
 
 // ================================================================
 // VARIABLES
@@ -10,6 +11,7 @@
 @c-body-bg: #ecf0f5;
 @c-sidebar-bg: #222d32;
 @c-sidebar-border: #444;
+@c-modal-overlay: #0c7678;
 
 @header-height: 60px;
 @sidebar-width: 450px;
@@ -18,12 +20,17 @@
 // Common
 body.admin {
   background: @c-body-bg;
-  font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
-}
+  font-family: "Roboto", "Lucida Grande", Arial, sans-serif;
 
-td,
-th {
-  padding: 15px 8px;
+  .table > thead > tr > th {
+    color: @c-black;
+  }
+
+  td,
+  th {
+    font-size: @f-size-base - 2;
+    padding: 15px 8px;
+  }
 }
 
 .module.filtered {
@@ -33,6 +40,11 @@ th {
 .admin {
   input:not([type="checkbox"]) {
     height: @input-height;
+  }
+
+  .content {
+    height: 100%;
+    position: relative;
   }
 }
 
@@ -93,6 +105,10 @@ body.admin div#header {
       top: 0;
       width: 100%;
       z-index: 2;
+
+      .login & {
+        display: none;
+      }
     }
   }
 
@@ -190,7 +206,7 @@ div.breadcrumbs {
       padding: 0 20px 5px;
       white-space: nowrap;
     }
-    
+
     .form-control {
       background: fade(@c-white, 80%);
       width: 250px;
@@ -200,11 +216,13 @@ div.breadcrumbs {
   &-link {
     display: block;
     padding: 10px 20px;
+    transition: all 0.5s ease;
 
     &:hover,
     &.active {
       background: rgba(250, 250, 250, 0.1);
       text-decoration: none;
+      text-indent: 5px;
     }
   }
 
@@ -226,9 +244,9 @@ div.breadcrumbs {
 // Content
 .main-content {
   height: 100%;
-  margin-left: @sidebar-width;
+  margin-left: 450px;
   min-width: 750px;
-  padding: 15px;
+  padding: 80px 15px 15px;
 
   .collapsed & {
     margin-left: 0;
@@ -241,10 +259,6 @@ div.breadcrumbs {
   .dashboard & {
     width: auto;
   }
-}
-
-.content {
-  position: relative;
 }
 
 .admin #changelist #toolbar form #searchbar {
@@ -300,7 +314,7 @@ div.autocomplete-suggestion {
 
 .field-link {
   display: block;
-  font-size: 17px;
+  font-size: @f-size-base + 1;
   text-align: center;
 }
 
@@ -326,7 +340,7 @@ div.autocomplete-suggestion {
     .fa {
       text-shadow: 0 1px 3px @c-white;
       cursor: pointer;
-      font-size: 24px;
+      font-size: @f-size-base + 8;
       left: 0;
       margin: auto;
       opacity: 0.7;
@@ -338,8 +352,7 @@ div.autocomplete-suggestion {
   }
 
   &-list-item {
-    vertical-align: top;
-    border: 1px solid #ccc;
+    border: 1px solid @c-sidebar-border;
     border-radius: 4px;
     display: inline-block;
     height: 150px;
@@ -348,6 +361,7 @@ div.autocomplete-suggestion {
     position: relative;
     text-align: center;
     top: 0;
+    vertical-align: top;
     width: 150px;
 
     &:hover {
@@ -374,6 +388,7 @@ div.autocomplete-suggestion {
     margin: 10px 0 25px;
   }
 
+  &.table-editor,
   &[class*="app-"] {
     h1 {
       margin-top: 35px;
@@ -393,4 +408,123 @@ ul.messagelist {
     background-position: 14px 12px;
     padding-left: 40px;
   }
+}
+
+// Table editor
+.table-editor {
+  .btn {
+    height: @input-height;
+    padding-top: 5px;
+  }
+}
+
+.jqgrid {
+  &-search-field {
+    width: 230px;
+  }
+
+  &-secondary {
+    background: fade(@c-black, 8%);
+  }
+
+  &-actions {
+    margin-bottom: 25px;
+  }
+
+  &-remove-icon {
+    cursor: pointer;
+  }
+
+  &.table {
+    > tbody > tr > td {
+      padding: 8px;
+    }
+
+    .jqgfirstrow > td {
+      padding: 0;
+    }
+  }
+
+  td,
+  th {
+    font-size: @f-size-base - 2;
+  }
+}
+
+.ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td {
+  white-space: inherit;
+}
+
+// Confirm modal
+.modal-wrapper {
+  backface-visibility: hidden;
+  height: auto;
+  left: 50%;
+  max-width: 950px;
+  position: fixed;
+  top: 45%;
+  transform: translateX(-50%) translateY(-50%);
+  visibility: hidden;
+  width: 50%;
+  z-index: 2000;
+}
+
+.modal-box {
+  color: @c-white;
+  opacity: 0;
+  transition: all 0.5s ease;
+  transform: translateY(-5%);
+
+  &-title {
+    font-size: @f-size-base + 24;
+    line-height: 140%;
+  }
+
+  &-buttons {
+    padding: 15px 0 0;
+    text-align: center;
+  }
+
+  .modal-show & {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .btn {
+    color: @c-white;
+    height: 40px;
+    font-size: @f-size-base;
+    margin: 0 12px;
+    min-width: 200px;
+    padding: 8px;
+    text-transform: uppercase;
+    transition: all 0.5s ease;
+  }
+}
+
+.modal-show {
+  display: block;
+  visibility: visible;
+
+  ~ .modal-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  ~ .container {
+    transition: all 0.5s ease;
+  }
+}
+
+.modal-overlay {
+  background: fade(@c-modal-overlay, 90%);
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  transition: all 0.8s;
+  visibility: hidden;
+  width: 100%;
+  z-index: 1500;
 }

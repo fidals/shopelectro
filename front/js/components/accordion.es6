@@ -1,10 +1,10 @@
 const accordion = (() => {
-  const ITEM_KEY = 'activeItem';
+  const itemKey = 'activeItem';
   const DOM = {
     $accordion: $('.js-accordion'),
     panels: $('.js-accordion-content'),
     titles: $('.js-accordion-title'),
-    savedItem: $(`#${localStorage.getItem(ITEM_KEY)}`),
+    savedItem: $(`#${localStorage.getItem(itemKey)}`),
   };
 
   const init = () => {
@@ -52,11 +52,11 @@ const accordion = (() => {
   };
 
   const saveItem = $item => {
-    localStorage.setItem(ITEM_KEY, $item.attr('id'));
+    localStorage.setItem(itemKey, $item.attr('id'));
   };
 
   const removeItem = () => {
-    localStorage.removeItem(ITEM_KEY);
+    localStorage.removeItem(itemKey);
   };
 
   const collapseAccordion = () => {

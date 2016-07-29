@@ -9,8 +9,8 @@ const mainPage = (() => {
 
   const init = () => {
     fillInUserData({
-      phone: localStorage.getItem(configs.LABELS.phone),
-      time: localStorage.getItem(configs.LABELS.callTime),
+      phone: localStorage.getItem(configs.labels.phone),
+      time: localStorage.getItem(configs.labels.callTime),
     });
     setUpListeners();
   };

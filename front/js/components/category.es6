@@ -19,7 +19,7 @@ const category = (() => {
     $sorting: $('.selectpicker'),
   };
 
-  const CONFIG = {
+  const config = {
     productsToFetch: 30,
     totalProductsCount: parseInt($('.js-total-products').first().text()),
   };
@@ -66,7 +66,7 @@ const category = (() => {
    * 2) otherwise, we simply add PRODUCTS_TO_FETCH to counter.
    */
   const updateLoadedCount = () => DOM.$loadedProducts.text(
-    loadedProductsCount() + Math.min(productsLeft(), CONFIG.productsToFetch)
+    loadedProductsCount() + Math.min(productsLeft(), config.productsToFetch)
   );
 
   /**
@@ -111,7 +111,7 @@ const category = (() => {
    *
    * @returns {Number} - number of products left to fetch
    */
-  const productsLeft = () => parseInt(CONFIG.totalProductsCount - loadedProductsCount());
+  const productsLeft = () => parseInt(config.totalProductsCount - loadedProductsCount());
 
   /**
    * Get number of already loaded products
@@ -131,7 +131,7 @@ const category = (() => {
     const url = `${categoryUrl}load-more/${offset}/${sorting}`;
 
     server.fetchProducts(url)
-      .then((products) => mediator.publish('onProductsLoad', products));
+      .then(products => mediator.publish('onProductsLoad', products));
   };
 
   const buyProduct = (event) => {

@@ -12,7 +12,7 @@ from shopelectro.models import Product, Category
 
 class Command(BaseCommand):
     """Command class."""
-    TEMPLATE = 'template.xlsx'
+    TEMPLATE = 'templates/ecommerce/template.xlsx'
     NAME = 'pricelist.xlsx'
     SHEET_TITLE = 'Прайс-лист Shopelectro'
     CATEGORY_FILL = openpyxl.styles.PatternFill(start_color='99D699',
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         and active price sheet.
         """
         file = openpyxl.load_workbook(os.path.join(
-            settings.STATIC_ROOT, self.TEMPLATE))
+            settings.BASE_DIR, self.TEMPLATE))
         return file, file.get_sheet_by_name('Прайслист')
 
     def fill_header(self, sheet):
