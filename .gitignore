@@ -21,7 +21,7 @@ static/**/*
 !static/assets/
 !static/template.xlsx
 media/**/*
-!media/products/1/*
+!media/products/280/*
 front/images/catalog
 categories.xml
 products.xml

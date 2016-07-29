@@ -1,8 +1,10 @@
 from django.db import models
-from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from catalog.models import AbstractProduct, AbstractCategory
+from pages.models import Page
+from .images import get_image
 from ecommerce.models import Order as ecOrder
 
 
@@ -17,6 +19,11 @@ class Category(AbstractCategory):
     product_relation = 'products'
     spam_text = models.TextField(null=True, blank=True)
 
+    @property
+    def image(self):
+        products = self.products.all()
+        return products[0].image if products else None
+
     def get_absolute_url(self):
         """Return url for model."""
         return reverse('category', args=(self.slug,))
@@ -29,9 +36,14 @@ class Product(AbstractProduct):
     Define n:1 relation with SE-Category and 1:n with Property.
     Add wholesale prices.
     """
-    category = models.ForeignKey(Category,
-                                 on_delete=models.CASCADE,
-                                 related_name='products')
+
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE,
+        default=None, related_name='products'
+    )
+    # TODO - remove it during admin refactor in dev-774
+    is_active = models.BooleanField(default=True)
+
     wholesale_small = models.FloatField()
     wholesale_medium = models.FloatField()
     wholesale_large = models.FloatField()
@@ -47,6 +59,14 @@ class Product(AbstractProduct):
             return self.property_set.get(name='Товарный знак').value
         except Property.DoesNotExist:
             return
+
+    @property
+    def image(self):
+        size = settings.IMAGES['small'] or 'small'
+        return get_image(self, size)
+
+    def save(self, *args, **kwargs):
+        super(Product, self).save(*args, **kwargs)
 
 
 class Property(models.Model):

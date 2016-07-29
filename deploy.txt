@@ -1,0 +1,13 @@
+Deploy tasks for SE version 1:
+- Put productions local.py or env vars
+- Run catalog command
+- Run redirects command
+- Run texts command
+- Move pages content from Symfony with hands
+- Run gulp build
+- Check all phones on site
+
+
+After deploy:
+- Remove texts command
+- Remove redirects command

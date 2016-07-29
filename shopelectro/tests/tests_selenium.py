@@ -16,7 +16,7 @@ from django.test import LiveServerTestCase
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 
-from pages.models import Post
+from pages.models import Page
 
 
 def wait(seconds=1):
@@ -108,9 +108,9 @@ class CategoryPage(SeleniumTestCase):
         """Sets up testing urls."""
         super(CategoryPage, cls).setUpClass()
         server = cls.live_server_url
-        testing_url = lambda alias: server + reverse('category', args=[alias])
+        testing_url = lambda slug: server + reverse('category', args=(slug,))
         cls.direct_child = testing_url('child-1-of-root-category-1')
-        cls.deep_category = testing_url('child-2-of-root-category-0')
+        cls.deep_category = testing_url('child-2-of-child-2-of-root-category-1')
         cls.root_category = testing_url('root-category-1')
 
     @property
@@ -133,7 +133,7 @@ class CategoryPage(SeleniumTestCase):
         # In 'deep category' there should be more crumbs
         self.browser.get(self.deep_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
-        self.assertEqual(len(crumbs), 4)
+        self.assertEqual(len(crumbs), 5)
 
     def test_30_products_by_default(self):
         """By default any CategoryPage should contain 30 products."""
@@ -245,16 +245,17 @@ class CategoryPage(SeleniumTestCase):
 class ProductPage(SeleniumTestCase):
     """Selenium-based tests for product page UI."""
 
-    fixtures = ['dump.json']
+    PRODUCT_ID = 280
 
     def setUp(self):
         """Sets up testing url and dispatches selenium webdriver."""
 
         server = self.live_server_url
 
-        self.test_product_page = server + reverse('product', args=['1'])
+        self.test_product_page = server + reverse(
+            'product', args=(self.PRODUCT_ID,))
         self.success_order = server + reverse('ecommerce:order_success')
-        self.product_name = 'Product of Child #0 of #Root category #0'
+        self.product_name = 'Product of Child #1 of #Root category #0 with num #7'
         self.browser.get(self.test_product_page)
         self.one_click = self.browser.find_element_by_id('btn-one-click-order')
 
@@ -316,6 +317,7 @@ class ProductPage(SeleniumTestCase):
 
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys('22222222222')
+        wait()
         self.assertFalse(self.one_click.get_attribute('disabled'))
 
     def test_one_click_buy_action(self):
@@ -340,7 +342,7 @@ class ProductPage(SeleniumTestCase):
         wait()
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         hover(self.browser, cart_parent)
-        cart = self.browser.find_element_by_class_name('basket-wrapper')
+        cart = cart_parent.find_element_by_class_name('basket-wrapper')
         self.assertTrue(self.product_name in cart.text)
 
     def test_actual_product_count_in_cart_dropdown(self):
@@ -355,19 +357,37 @@ class ProductPage(SeleniumTestCase):
 
 class OrderPage(SeleniumTestCase):
 
+    @staticmethod
+    def get_cell(pos, col):
+        # table columns mapping:  http://prntscr.com/bsv5hp
+        COLS = {
+            'id': 1,
+            'name': 3,
+            'count': 4,
+            'price': 5,
+            'remove': 6,
+        }
+        product_row = \
+            '//*[@id="js-order-list"]/tbody/tr[{pos}]/td[{col}]'
+
+        return product_row.format(pos=pos, col=COLS[col])
+
+
     @classmethod
     def setUpClass(cls):
         super(OrderPage, cls).setUpClass()
         cls.category = reverse('category', args=(
             'child-1-of-root-category-1',))
         cls.cart_dropdown = 'basket-parent'
-        cls.first_product_id = '111'
-        cls.remove_product = '//*[@id="{}"]/td[6]/img'
-        cls.product_count = '//*[@id="{}"]/td[4]/div[2]/input'
-        cls.add_product = '//*[@id="{}"]/td[4]/div[2]/span[3]/button[1]/i'
+        cls.first_product_id = '405'
+        cls.remove_product = cls.get_cell(pos=4, col='remove') + '/img'
+        cls.product_count = cls.get_cell(pos=4, col='count') + '/div[2]/input'
+        cls.add_product = \
+            cls.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
 
     def setUp(self):
         self.__buy_products()
+        wait()
         self.browser.get(self.live_server_url +
                          reverse('ecommerce:order_page'))
 
@@ -390,9 +410,9 @@ class OrderPage(SeleniumTestCase):
 
     def test_remove_product_from_table(self):
         """We can remove product from table and see the changes immediately."""
-
-        self.browser.find_element_by_xpath(self.remove_product.format(
-            self.first_product_id)).click()
+        first_row_remove = self.browser.find_element_by_xpath(
+            self.remove_product)
+        first_row_remove.click()
         wait()
         self.assertFalse(
             self.first_product_id in
@@ -450,8 +470,7 @@ class OrderPage(SeleniumTestCase):
         """After filling the form we should be able to confirm an order."""
 
         self.browser.find_element_by_id('id_payment_option_0').click()
-        add_one_more = self.browser.find_element_by_xpath(
-            self.add_product.format(self.first_product_id))
+        add_one_more = self.browser.find_element_by_xpath(self.add_product)
         add_one_more.click()  # perform some operations on cart
         wait()
         self.fill_and_submit_form()
@@ -484,30 +503,34 @@ class OrderPage(SeleniumTestCase):
         self.assertTrue('телефон', error_text.is_displayed())
 
 
-class BlogPage(SeleniumTestCase):
-    """Selenium-based tests for product page UI."""
-
-    @classmethod
-    def setUpClass(cls):
-        super(BlogPage, cls).setUpClass()
-
-        cls.test_page = (cls.live_server_url + '/pages/contacts/')
+class SitePage(SeleniumTestCase):
 
     def setUp(self):
-        Post.objects.create(name='contacts')
-        self.browser.get(self.test_page)
+        self.page_top = Page.objects.create(
+            title='Navigation',
+            slug='navi',
+            type=Page.DEFAULT_TYPE
+        )
+        self.page_last = Page.objects.create(
+            title='Contacts',
+            slug='contacts',
+            type=Page.DEFAULT_TYPE,
+            parent=self.page_top
+        )
+        self.browser.get(self.live_server_url + self.page_last.get_absolute_url())
         self.browser.execute_script('localStorage.clear();')
-        self.browser.get(self.test_page)
+        self.browser.get(self.live_server_url + self.page_last.get_absolute_url())
         wait()
 
     @property
-    def _accordion_title(self):
-        return self.browser.find_element_by_id('js-accordion-title-navigation')
+    def accordion_title(self):
+        return self.browser.find_element_by_id(
+            'js-accordion-title-{}'.format(self.page_top.id))
 
     @property
     def accordion_content(self):
         return self.browser.find_element_by_id(
-            'js-accordion-content-navigation')
+            'js-accordion-content-{}'.format(self.page_top.id))
 
     def test_accordion_minimized(self):
         """Accordion item should be minimized by default"""
@@ -516,16 +539,15 @@ class BlogPage(SeleniumTestCase):
 
     def test_accordion_expand(self):
         """Accordion item should expand by click on title"""
-
-        self._accordion_title.click()
+        accordion_title = self.accordion_title
         accordion_content = self.accordion_content
+        accordion_title.click()
         wait()
         self.assertTrue(accordion_content.is_displayed())
 
     def test_accordion_minimize_by_double_click(self):
         """Accordion item should be minimized by two clicks on title"""
-
-        accordion_title = self._accordion_title
+        accordion_title = self.accordion_title
         accordion_content = self.accordion_content
         accordion_title.click()
         wait()
@@ -594,7 +616,7 @@ class AdminPage(SeleniumTestCase):
 
         self.browser.find_element_by_xpath(self.products).click()
         self.browser.find_element_by_xpath(self.price_filter).click()
-        wait()
+        wait(2)
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[3]')
         product_price = float(product.text)
 
@@ -666,8 +688,7 @@ class AdminPage(SeleniumTestCase):
 
         self.browser.find_element_by_class_name('js-toggle-sidebar').click()
         email_field = self.browser.find_element_by_id('user-email')
-        email_field.send_keys(settings.EMAIL_HOST_USER)
-        email_field.send_keys(Keys.RETURN)
+        email_field.send_keys(settings.EMAIL_HOST_USER + Keys.RETURN)
         wait()
 
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
@@ -699,9 +720,9 @@ class YandexMetrika(SeleniumTestCase):
 
         cls.browser.get(cls.live_server_url)
         server = cls.live_server_url
-        cls.product_page = server + reverse('product', args=('1',))
-        cls.category_page = server + reverse('category', args=(
-            'child-1-of-root-category-1',))
+        cls.product_page = server + reverse('product', args=('274',))
+        cls.category_page = server + reverse(
+            'category', args=('child-1-of-root-category-1',))
 
     @property
     def reached_goals(self):
@@ -785,10 +806,13 @@ class YandexMetrika(SeleniumTestCase):
 class Search(SeleniumTestCase):
     """Selenium-based tests for Search"""
 
-    def setUp(self):
-        self.browser.get(self.live_server_url)
+    QUERY = 'Cate'
+
+    @classmethod
+    def setUpClass(cls):
+        super(Search, cls).setUpClass()
+        cls.browser.get(cls.live_server_url)
         wait()
-        self.query = 'Cate'
 
     @property
     def autocomplete(self):
@@ -801,7 +825,12 @@ class Search(SeleniumTestCase):
 
     def fill_input(self):
         """Enter correct search term"""
-        self.input.send_keys(self.query)
+        self.input.send_keys(self.QUERY)
+        wait()
+
+    def clear_input(self):
+        """Enter correct search term"""
+        self.input.send_keys(Keys.BACKSPACE*len(self.QUERY))
         wait()
 
     def test_autocomplete_can_expand_and_collapse(self):
@@ -814,10 +843,11 @@ class Search(SeleniumTestCase):
         self.assertTrue(self.autocomplete.is_displayed())
 
         # remove search term ...
-        self.input.send_keys(Keys.BACKSPACE * len(self.query))
+        self.input.send_keys(Keys.BACKSPACE * len(self.QUERY))
         wait()
         # ... and autocomplete collapse
         self.assertFalse(self.autocomplete.is_displayed())
+        self.clear_input()
 
     def test_autocomplete_item_link(self):
         """First autocomplete item should link on category page by click"""
@@ -827,6 +857,7 @@ class Search(SeleniumTestCase):
         first_item.click()
         wait()
         self.assertTrue('/catalog/categories/' in self.browser.current_url)
+        self.clear_input()
 
     def test_autocomplete_see_all_item(self):
         """
@@ -839,6 +870,7 @@ class Search(SeleniumTestCase):
         last_item.click()
         wait()
         self.assertTrue('/search/' in self.browser.current_url)
+        self.clear_input()
 
     def test_search_have_results(self):
         """Search results page should contain links on relevant pages"""
@@ -850,6 +882,7 @@ class Search(SeleniumTestCase):
             'Child #0 of #Root category #0'))
         self.assertTrue(self.browser.find_element_by_link_text(
             'Child #1 of #Root category #0'))
+        self.clear_input()
 
     def test_search_results_empty(self):
         """Search results for wrong term should contain empty result set"""
@@ -859,3 +892,4 @@ class Search(SeleniumTestCase):
         wait()
         h1 = self.browser.find_element_by_tag_name('h1')
         self.assertTrue(h1.text == 'По вашему запросу ничего не найдено')
+        self.clear_input()

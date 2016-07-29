@@ -15,7 +15,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from shopelectro.models import Product, Category
+from catalog.models import Category
+from shopelectro.models import Product
 
 
 class Command(BaseCommand):
@@ -38,7 +39,8 @@ class Command(BaseCommand):
         """Save .json dump to fixtures."""
         call_command('dumpdata',
                      'shopelectro.Product',
-                     'shopelectro.Category',
+                     'catalog.Product',
+                     'catalog.Category',
                      output='shopelectro/fixtures/dump.json')
 
     @staticmethod

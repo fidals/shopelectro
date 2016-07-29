@@ -35,10 +35,10 @@
 
         <div class="header-sub-wrapper-right">
           <ul class="navbar navbar-default hed-mnu">
-            <li><a href="{% url 'pages:navigation' 'delivery' %}">Доставка</a></li>
-            <li><a href="{% url 'pages:navigation' 'pay' %}">Оплата</a></li>
-            <li><a href="{% url 'pages:posts' 'news' %}">Новости</a></li>
-            <li><a href="{% url 'pages:navigation' 'contacts' %}">Контакты</a></li>
+            <li><a href="{% url 'pages:page' 'delivery' %}">Доставка</a></li>
+            <li><a href="{% url 'pages:page' 'pay' %}">Оплата</a></li>
+            <li><a href="{% url 'pages:page' 'news' %}">Новости</a></li>
+            <li><a href="{% url 'pages:page' 'contacts' %}">Контакты</a></li>
           </ul>
         </div>
 
@@ -102,12 +102,12 @@
         <ul class="nav-category list-unstyled clearfix">
           {% for root in root_categories %}
             <li class="nav-category-item">
-              <a class="nav-category-link" href="{% url 'category' root.slug %}">{{ root.menu_title }}</a>
+              <a class="nav-category-link" href="{{ root.get_absolute_url }}">{{ root.page.menu_title }}</a>
               {% if root.get_children %}
                 <div class="nav-menu-dropdown">
                   <ul class="list-unstyled">
                     {% for child in root.get_children %}
-                      <li><a href="{% url 'category' child.slug %}" class="nav-menu-dropdown-link">
+                      <li><a href="{{ child.get_absolute_url }}" class="nav-menu-dropdown-link">
                         {{ child.name }}
                       </a></li>
                     {% endfor %}

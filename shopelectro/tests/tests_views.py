@@ -72,9 +72,10 @@ class AdminPage(TestCase):
     def test_model_fieldsets(self):
         """Models should has fields printed in 3 fieldset groups."""
 
-        response = self.client.get(reverse('admin:shopelectro_product_change', args=(1,)))
-        page_body = response.content.decode('utf-8')
+        response = self.client.get(
+            reverse('admin:shopelectro_product_change', args=(462,))
+        )
 
-        self.assertTrue('Основные характеристики' in page_body)
-        self.assertTrue('Дополнительные характеристики' in page_body)
-        self.assertTrue('SEO' in page_body)
+        self.assertContains(response, 'Основные характеристики')
+        self.assertContains(response, 'Дополнительные характеристики')
+        self.assertContains(response, 'SEO')

@@ -197,11 +197,10 @@ class Command(BaseCommand):
             'id': int(node.attrib['element_id']),
             'name': node.attrib['element_name'].strip(),
             'in_stock': stock_or_zero(),
-            'content': node[0].text if node[0].text else '',
             'price': float(node[2][0].attrib['price_cost']),
             'wholesale_small': float(node[2][1].attrib['price_cost']),
             'wholesale_medium': float(node[2][2].attrib['price_cost']),
-            'wholesale_large': float(node[2][3].attrib['price_cost'])
+            'wholesale_large': float(node[2][3].attrib['price_cost']),
         }
         try:
             product_data['category'] = Category.objects.get(id=category_id())

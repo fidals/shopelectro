@@ -1,15 +1,7 @@
 {% extends 'layout/base.html' %}
 {% load staticfiles %}
-{% load breadcrumb_extras %}
+{% load pages_extras %}
 {% load se_extras %}
-{% block title %}{{ category.title }}{% endblock %}
-{% block keywords %}{{ category.keywords }}{% endblock %}
-{% block description %}{{ category.description }}{% endblock %}
-{% block og_title %}{{ category.title }}{% endblock %}
-{% block og_description %}{{ category.description }}{% endblock %}
-{% block unique_url %}{% url 'category' category.slug %}{% endblock %}
-{% block unique_img %}{% url 'index' %}{% endblock %}
-{% block canonical %}{% url 'category' category.slug %}{% endblock %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -19,8 +11,8 @@
 {% block content %}
   <div class="container">
     <div class="col-xs-12">
-      <p>{% breadcrumbs breadcrumbs %}</p>
-      <h1 class="category-title">{{ category.name }}</h1>
+      <p>{% breadcrumbs page %}</p>
+      <h1 class="category-title">{{ page.h1 }}</h1>
     </div>
 
     <div class="col-xs-3 category-left">
@@ -29,7 +21,7 @@
 
     <div class="col-xs-9 category-right view-mode-{{ view_type }}" id="category-right">
       {% if category.spam_text %}
-        <div class="category-text" id="category-text">{{ category.spam_text }}</div>
+        <div class="category-text" id="category-text">{{ page.seo_text }}</div>
       {% endif %}
 
       {% include "catalog/category_navigation.html" %}
@@ -45,7 +37,7 @@
       </div>
 
       <div class="text-center">
-        <button class="btn-blue btn btn-primary js-load-more" data-url="{% url 'category' category.slug %}"
+        <button class="btn-blue btn btn-primary js-load-more" data-url="{{ category.get_absolute_url }}"
                 id="btn-load-products" type="button">Загрузить ещё
         </button>
         <p class="products-showed-text">

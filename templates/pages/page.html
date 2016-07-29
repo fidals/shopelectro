@@ -1,6 +1,5 @@
 {% extends 'layout/base.html' %}
 {% load staticfiles %}
-{% load breadcrumb_extras %}
 {% load pages_extras %}
 {% block title %}{{ page.title }}{% endblock %}
 {% block keywords %}{{ page.keywords }}{% endblock %}
@@ -23,7 +22,7 @@
     </div>
 
     <div class="col-xs-9 right-col">
-      <p>{% breadcrumbs breadcrumbs %}</p>
+      <p>{% breadcrumbs page %}</p>
       <h1>{{ page.h1 }}</h1>
       {% if page.type != 'navigation' and page.date_published %}
         <p class="date-pub-article">
@@ -35,6 +34,9 @@
           {{ page.content }}
         {% endif %}
       {% endautoescape %}
+      {% if page.is_section %}
+        {% include 'pages/pages.html' with pages=page.children.all only %}
+      {% endif %}
     </div>
   </div>
 {% endblock %}

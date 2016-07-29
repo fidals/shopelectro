@@ -138,17 +138,19 @@ class ProductsShopelectroAdmin(AbstractChangeListAdmin):
         ('Дополнительные характеристики', {
             'classes': ('secondary-chars',),
             'fields': (
-                'content',
+                # TODO - will be fixed at dev-774
+                # 'content',
             ),
         }),
         ('SEO', {
             'classes': ('seo-chars',),
             'fields': (
-                'title',
-                '_menu_title',
-                'h1',
-                'keywords',
-                'description'
+                # TODO - will be fixed at dev-774
+                # 'title',
+                # '_menu_title',
+                # 'h1',
+                # 'keywords',
+                # 'description'
             ),
         }),
     )
