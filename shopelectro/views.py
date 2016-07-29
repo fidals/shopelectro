@@ -149,7 +149,7 @@ class SuccessOrder(ec_views.SuccessOrder):
 class IndexPage(pages_views.IndexPage):
 
     def get_context_data(self, **kwargs):
-        """Extended method. Add product's images to context.."""
+        """Extended method. Add product's images to context."""
         context = super(IndexPage, self).get_context_data(**kwargs)
 
         top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
@@ -164,24 +164,7 @@ class IndexPage(pages_views.IndexPage):
 
         return context
 
-# def index(request):
-#     """Main page view: root categories, top products."""
-#
-#     top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
-#     page = get_or_create_struct_page(slug='index')
-#
-#     context = {
-#         'meta': config.page_metadata('main'),
-#         'category_tile': config.MAIN_PAGE_TILE,
-#         'footer_links': config.FOOTER_LINKS,
-#         'href': config.HREFS,
-#         'top_products': top_products,
-#         'page': page,
-#     }
-#
-#     return render(request, 'index/index.html', context)
-#
-#
+
 def load_more(request, category_slug, offset=0, sorting=0):
     """
     Loads more products of a given category.

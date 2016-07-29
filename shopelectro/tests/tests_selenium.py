@@ -245,7 +245,6 @@ class CategoryPage(SeleniumTestCase):
 class ProductPage(SeleniumTestCase):
     """Selenium-based tests for product page UI."""
 
-    fixtures = ['dump.json']
     PRODUCT_ID = 280
 
     def setUp(self):
@@ -318,6 +317,7 @@ class ProductPage(SeleniumTestCase):
 
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys('22222222222')
+        wait()
         self.assertFalse(self.one_click.get_attribute('disabled'))
 
     def test_one_click_buy_action(self):
@@ -522,9 +522,6 @@ class SitePage(SeleniumTestCase):
         self.browser.get(self.live_server_url + self.page_last.get_absolute_url())
         wait()
 
-    def tearDown(self):
-        pass
-
     @property
     def accordion_title(self):
         return self.browser.find_element_by_id(
@@ -618,7 +615,7 @@ class AdminPage(SeleniumTestCase):
 
         self.browser.find_element_by_xpath(self.products).click()
         self.browser.find_element_by_xpath(self.price_filter).click()
-        wait()
+        wait(2)
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[3]')
         product_price = float(product.text)
 
