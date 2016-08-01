@@ -357,7 +357,10 @@ def ya_feedback_with_redirect(request):
 
 
 def robots(request):
-    """Render robots.txt and send response with it"""
+    """Render robots.txt and send it as response"""
     return render_to_response(
-        'robots.txt', {'debug': settings.DEBUG}, content_type="text/plain"
+        'robots.txt',
+        {'debug': settings.DEBUG,
+         'url': request.scheme + '://' + request.META['HTTP_HOST']},
+        content_type='text/plain'
     )

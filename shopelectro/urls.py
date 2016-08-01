@@ -84,7 +84,7 @@ urlpatterns = [
     url(r'^shop/', include('ecommerce.urls')),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
-    }),
+    }, name='sitemap'),
     url(r'^robots\.txt$', views.robots),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),

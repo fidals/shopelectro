@@ -1,8 +1,6 @@
-{% if debug %}User-agent: *
+User-agent: *{% if False %}
 Disallow: /
-{% else %}User-agent: *
-Disallow: /search-results/
-Disallow: /service/
+{% else %}Disallow: /service/
 Disallow: /*.css$
 Disallow: /*.js$
 Disallow: /*.txt$
@@ -16,7 +14,6 @@ Disallow: /*.js$
 Disallow: /*.txt$
 Clean-param: utm_source&utm_medium&utm_campaign&block&keyword&position /
 
-Host: www.stroyprombeton.ru
-
-Sitemap: http://www.stroyprombeton.ru/sitemap.xml
+Host: {{ url }}
+Sitemap: {{ url }}{% url 'sitemap' %}
 {% endif %}

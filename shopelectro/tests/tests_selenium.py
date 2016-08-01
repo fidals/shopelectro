@@ -106,7 +106,7 @@ class Header(SeleniumTestCase):
         wait()
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         hover(self.browser, cart_parent)
-        cart = self.browser.find_element_by_class_name('basket-reset').click()
+        self.browser.find_element_by_class_name('basket-reset').click()
         wait()
         cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
         self.assertTrue(cart_is_empty.is_displayed())
