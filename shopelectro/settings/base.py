@@ -144,8 +144,6 @@ IMAGES = {
 }
 
 # Autocomplete and search settings
-AUTOCOMPLETE_LIMIT = 20
-SEARCH_LIMIT = 500
 SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 
 # For sitemaps and sites framework

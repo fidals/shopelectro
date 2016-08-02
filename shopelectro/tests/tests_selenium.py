@@ -99,6 +99,18 @@ class Header(SeleniumTestCase):
         cart = self.browser.find_element_by_class_name('basket-wrapper')
         self.assertTrue(cart.is_displayed())
 
+    def test_cart_flush(self):
+        """We can flush cart from header's cart dropdown"""
+        self.browser.get(self.live_server_url + reverse('product', args=(250,)))
+        self.browser.find_element_by_class_name('btn-to-basket').click()
+        wait()
+        cart_parent = self.browser.find_element_by_class_name('basket-parent')
+        hover(self.browser, cart_parent)
+        self.browser.find_element_by_class_name('basket-reset').click()
+        wait()
+        cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
+        self.assertTrue(cart_is_empty.is_displayed())
+
 
 class CategoryPage(SeleniumTestCase):
     """Selenium-based tests for Category Page."""
@@ -718,11 +730,17 @@ class YandexMetrika(SeleniumTestCase):
     def setUpClass(cls):
         super(YandexMetrika, cls).setUpClass()
 
-        cls.browser.get(cls.live_server_url)
         server = cls.live_server_url
         cls.product_page = server + reverse('product', args=('274',))
         cls.category_page = server + reverse(
             'category', args=('child-1-of-root-category-1',))
+
+    def setUp(self):
+        """
+        We should use self.browser.get(...) in this case, because we
+        faced a problems with it in setUpClass.
+        """
+        self.browser.get(self.live_server_url)
 
     @property
     def reached_goals(self):
@@ -808,10 +826,12 @@ class Search(SeleniumTestCase):
 
     QUERY = 'Cate'
 
-    @classmethod
-    def setUpClass(cls):
-        super(Search, cls).setUpClass()
-        cls.browser.get(cls.live_server_url)
+    def setUp(self):
+        """
+        We should use self.browser.get(...) in this case, because we
+        faced a problems with it in setUpClass.
+        """
+        self.browser.get(self.live_server_url)
         wait()
 
     @property

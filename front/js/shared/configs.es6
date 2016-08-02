@@ -62,8 +62,7 @@ const configs = (() => {
     DOM.$touchspin.TouchSpin(PLUGINS.touchspin);
 
     DOM.$phoneInputs
-      .attr('placeholder', '+7 (999) 000 00 00')
-      .mask('+9 (999) 999 99 99')
+      .mask('+0 (000) 000 00 00', {'placeholder': '+7 (999) 000 00 00'})
       .on('keyup', (event) => {
         localStorage.setItem(LABELS.phone, $(event.target).val());
       });

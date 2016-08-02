@@ -193,22 +193,34 @@ class Command(BaseCommand):
             """Get int category id."""
             return int(node.attrib['parent_id2_1'])
 
-        product_data = {
+        assertions_data = {
             'id': int(node.attrib['element_id']),
+            'price': float(node[2][0].attrib['price_cost']),
+        }
+
+        try:
+            assertions_data['category'] = Category.objects.get(id=category_id())
+            assert assertions_data['price']
+        except Category.DoesNotExist:
+            print('Внимание! Категории {} не существует, '
+                  'поэтому товар {} не будет сохранен.'
+                  .format(category_id(), assertions_data['id']))
+            return
+        except AssertionError:
+            print('Внимание! Не указана цена товара, '
+                  'поэтому этот товар {} не будет сохранен.'
+                  .format(assertions_data['id']))
+            return
+
+        product_data = {
+            **assertions_data,
             'name': node.attrib['element_name'].strip(),
             'in_stock': stock_or_zero(),
-            'price': float(node[2][0].attrib['price_cost']),
             'wholesale_small': float(node[2][1].attrib['price_cost']),
             'wholesale_medium': float(node[2][2].attrib['price_cost']),
             'wholesale_large': float(node[2][3].attrib['price_cost']),
         }
-        try:
-            product_data['category'] = Category.objects.get(id=category_id())
-        except Category.DoesNotExist:
-            print('Внимание! Категории {} не существует, '
-                  'поэтому товар {} не будет сохранен.'
-                  .format(category_id(), product_data['id']))
-            return
+
         return product_data
 
     @process('Загрузка файлов')

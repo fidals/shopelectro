@@ -22,10 +22,10 @@ def roots():
 
 @register.simple_tag
 def random_product(category):
-    products, count = category.get_recursive_products_with_count(size=None)
+    products, _ = category.get_recursive_products_with_count(size=None)
     if not products:
         return ''
-    product = products[random.randint(0, count - 1)]
+    product = products[random.randint(0, len(products) - 1)]
     return product
 
 
