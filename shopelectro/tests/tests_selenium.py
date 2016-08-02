@@ -101,7 +101,7 @@ class Header(SeleniumTestCase):
 
     def test_cart_flush(self):
         """We can flush cart from header's cart dropdown"""
-        self.browser.get(self.live_server_url + reverse('product', args=['1']))
+        self.browser.get(self.live_server_url + reverse('product', args=(250,)))
         self.browser.find_element_by_class_name('btn-to-basket').click()
         wait()
         cart_parent = self.browser.find_element_by_class_name('basket-parent')

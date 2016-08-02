@@ -8,7 +8,7 @@ import os
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
@@ -354,13 +354,3 @@ def ya_feedback_request(request):
 def ya_feedback_with_redirect(request):
     """Redirect user to Я.Маркет for feedback"""
     return render(request, 'ecommerce/yandex_feedback_redirect.html')
-
-
-def robots(request):
-    """Render robots.txt and send it as response"""
-    return render_to_response(
-        'robots.txt',
-        {'debug': settings.DEBUG,
-         'url': request.scheme + '://' + request.META['HTTP_HOST']},
-        content_type='text/plain'
-    )

@@ -13,8 +13,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
 
-from . import views, sitemaps, config
-from .cart import recalculate_price
+from pages.views import robots
 from shopelectro import views, sitemaps, config
 
 
@@ -24,7 +23,7 @@ category_urls = [
         views.CategoryPage.as_view(), name='category'),
     url(r'^categories/(?P<slug>[\w-]+)/(?P<sorting>[0-9]*)/$',
         views.CategoryPage.as_view(), name='category'),
-    url(r'categories/^(?P<category_slug>[\w-]+)/load-more/'
+    url(r'categories/(?P<category_slug>[\w-]+)/load-more/'
         r'(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/$',
         views.load_more, name='load_more'),
 ]
@@ -85,7 +84,7 @@ urlpatterns = [
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
     }, name='sitemap'),
-    url(r'^robots\.txt$', views.robots),
+    url(r'^robots\.txt$', robots),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
 ]
