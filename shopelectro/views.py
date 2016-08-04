@@ -303,7 +303,7 @@ def one_click_buy(request):
     product = get_object_or_404(Product, id=request.POST['product'])
     cart.add(product, request.POST['quantity'])
     order = Order(phone=request.POST['phone'])
-    order.set_items(cart)
+    order.set_positions(cart)
     save_order_to_session(request.session, order)
     mailer.send_order(subject=settings.EMAIL_SUBJECTS['order'],
                       order=order,
@@ -336,7 +336,7 @@ def yandex_order(request):
     cart = Cart(request.session)
     name, phone, email = get_keys_from_post(request, 'name', 'phone', 'email')
     order = Order(name=name, phone=phone, email=email)
-    order.set_items(cart)
+    order.set_positions(cart)
     return HttpResponse(order.id)
 
 

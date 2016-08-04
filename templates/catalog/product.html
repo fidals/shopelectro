@@ -33,7 +33,7 @@
       <div class="product-top">
         <div class="product-images" id="product-images">
           <div class="product-image-big box-product">
-            <img class="img-centered img-responsive" id="product-image-big"
+            <img itemprop="image" class="img-centered img-responsive" id="product-image-big"
                  src="{{ product.image }}" data-index="0"
                  alt="{{ product.name }}">
           </div>
@@ -107,11 +107,11 @@
 
       <div class="product-bottom">
         <div class="product-desc">
-          {% if product.content %}
+          {% if product.page.content %}
             <h3 class="product-desc-title">Описание</h3>
             <p class="product-text">
               {% autoescape off %}
-                {{ product.content }}
+                {{ product.page.content }}
               {% endautoescape %}
             </p>
           {% endif %}

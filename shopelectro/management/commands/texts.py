@@ -76,7 +76,7 @@ def process(procedure_name: str) -> callable:
             """Print result before function call and after it."""
             print('{}...'.format(procedure_name))
             result = procedure(*args, **kwargs)
-            print(result or 'Завершено: {}'.format(procedure_name))
+            print(result or 'Completed: {}'.format(procedure_name))
         return wrapper
     return inner
 
@@ -110,7 +110,7 @@ class Command(BaseCommand):
         """Return a list of products nodes presented in xml."""
         return ElementTree.parse(self.XML_FILES[1]).getroot()
 
-    @process('Импорт каталога')
+    @process('Load info to DB')
     def handle(self, *args: tuple, **options: dict) -> str:
         """Run 'import' command."""
         start_time = time.time()
@@ -118,7 +118,7 @@ class Command(BaseCommand):
         self.update_category_pages()
         self.update_product_pages()
         self.remove_xml()
-        return 'Импорт завершен! Затрачено {0:.1f} секунд'.format(time.time() - start_time)
+        return 'Completed: {0:.1f} seconds'.format(time.time() - start_time)
 
     def update_category_pages(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
@@ -158,7 +158,7 @@ class Command(BaseCommand):
                 product.page.content = xml_content
                 product.page.save()
 
-    @process('Загрузка файлов')
+    @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
         def download_file():
@@ -169,9 +169,9 @@ class Command(BaseCommand):
         for xml_file in self.XML_FILES:
             with FTP(**self.FTP_CONNECTION) as ftp, open(xml_file, 'wb') as save_xml:
                 download_file()
-        return 'XML файлы загружены.'
+        return 'XML files downloaded.'
 
-    @process('Удаление файлов')
+    @process('Remove files')
     def remove_xml(self) -> result_message:
         """Remove downloaded xml files."""
         for xml in self.XML_FILES:

@@ -384,8 +384,8 @@ class OrderPage(SeleniumTestCase):
     @classmethod
     def setUpClass(cls):
         super(OrderPage, cls).setUpClass()
-        cls.category = reverse('category', args=(
-            'child-1-of-root-category-1',))
+        cls.category = reverse(
+            'category', args=('child-1-of-root-category-1',))
         cls.cart_dropdown = 'basket-parent'
         cls.first_product_id = '405'
         cls.remove_product = cls.get_cell(pos=4, col='remove') + '/img'
@@ -483,9 +483,10 @@ class OrderPage(SeleniumTestCase):
         wait()
         self.fill_and_submit_form()
         wait()
-        self.assertEqual(self.browser.current_url,
-                         self.live_server_url +
-                         reverse('ecommerce:order_success'))
+        self.assertEqual(
+            self.browser.current_url,
+            self.live_server_url + reverse('ecommerce:order_success')
+        )
 
     def fill_and_submit_form(self, yandex=False):
         self.browser.find_element_by_id('id_name').send_keys('Name')

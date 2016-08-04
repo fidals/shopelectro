@@ -1,0 +1,21 @@
+version: "2"
+
+
+services:
+
+  webapp:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: fidals/se
+    environment:
+      ALLOWED_HOSTS: "*"
+    volumes:  # TODO - divide volumes on dev/ and prod/
+      - /opt/media/shopelectro:/opt/shopelectro/app/media
+
+  db:
+    image: postgres:9.5
+    environment:
+      POSTGRES_PASSWORD: "$DB_PASS"
+    volumes:
+      - /var/lib/postgresql/data

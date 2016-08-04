@@ -187,7 +187,7 @@ HREFS = {
 }
 
 SHOP = {
-    'id': '39965',
+    'id': '69886',
     'scid': '27590',
     'success_url': 'https://www.shopelectro.ru/shop/pay-success/',
     'fail_url': 'https://www.shopelectro.ru/',

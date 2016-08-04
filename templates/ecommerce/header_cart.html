@@ -19,32 +19,30 @@
   <p>В корзине <span class="js-basket-amount-count">{{ cart|length }}</span> позиций</p>
   <div class="scroll-wrapper {% if cart.total_price == 0 %}empty{% endif %}" id="scroll-wrapper">
     <ul class="basket-list list-unstyled" id="basket-list">
-      {% for position in cart %}
-        {% with product=position.product %}
-          <li class="basket-item">
-            <a class="basket-stuff-link" href="{% url 'product' product.id %}">
-              <img class="basket-stuff-img img-responsive" src="">
+      {% for id, position in cart %}
+        <li class="basket-item">
+          <a class="basket-stuff-link" href="{{ position.get_absolute_url }}">
+            <img class="basket-stuff-img img-responsive" src="">
+          </a>
+          <div class="basket-stuff-about">
+            <a class="basket-stuff-title" href="{{ position.get_absolute_url }}">
+              {{ position.name }}
             </a>
-            <div class="basket-stuff-about">
-              <a class="basket-stuff-title" href="{% url 'product' product.id %}">
-                {{ product.name }}
-              </a>
-            </div>
-            <p class="basket-stock">
-              {% if product.in_stock %}
-                <i class="fa fa-circle in-stock"></i> В наличии: {{ product.in_stock }} шт.
-              {% else %}
-                <i class="fa fa-circle out-stock"></i> Под заказ
-              {% endif %}
-            </p>
-            <div class="basket-stuff-price">
-              <span class="basket-price js-basket-price">{{ position.price|humanize_price }} руб</span> х
-              <span class="basket-count js-basket-count">{{ position.quantity }} шт.</span> =
-              <span class="basket-sum js-basket-sum">{{ position.total|humanize_price }} руб.</span>
-            </div>
-            <div class="basket-remove js-cart-remove" id="{{ product.id }}" title="Удалить товар"></div>
-          </li>
-        {% endwith %}
+          </div>
+          <p class="basket-stock">
+            {% if position.in_stock %}
+              <i class="fa fa-circle in-stock"></i> В наличии: {{ position.in_stock }} шт.
+            {% else %}
+              <i class="fa fa-circle out-stock"></i> Под заказ
+            {% endif %}
+          </p>
+          <div class="basket-stuff-price">
+            <span class="basket-price js-basket-price">{{ position.price|humanize_price }} руб</span> х
+            <span class="basket-count js-basket-count">{{ position.quantity }} шт.</span> =
+            <span class="basket-sum js-basket-sum">{{ position.total|humanize_price }} руб.</span>
+          </div>
+          <div class="basket-remove js-cart-remove" id="{{ position.id }}" title="Удалить товар"></div>
+        </li>
       {% endfor %}
     </ul>
   </div>

@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from functools import wraps
 
+from shopelectro.models import Product
 from ecommerce.cart import Cart
 
 
@@ -14,17 +15,19 @@ def recalculate(func):
 def recalculate_price(cart: Cart) -> Cart:
     """Define what type of price should be used in cart. Actualize price if needed."""
     wholesale_types = OrderedDict(sorted({
-        "wholesale_large": 100000,
-        "wholesale_medium": 40000,
-        "wholesale_small": 15000,
+        'wholesale_large': 100000,
+        'wholesale_medium': 40000,
+        'wholesale_small': 15000,
     }.items(), key=lambda type: type[1], reverse=True))
 
     def get_product_data(price_type: str) -> list:
+        product_ids = [item[0] for item in cart]
+        products = Product.objects.filter(id__in=product_ids)
         return [{
-            'id': str(product['product'].id),
-            'price': float(getattr(product['product'], price_type or 'price')),
-            'quantity': int(product['quantity'])
-        } for product in cart]
+            'id': id_,
+            'price': getattr(products.get(id=id_), price_type or 'price'),
+            'quantity': position['quantity']
+        } for id_, position in cart]
 
     get_total_price_for_product = (lambda product:
                                    product['price'] * product['quantity'])
@@ -46,13 +49,13 @@ def recalculate_price(cart: Cart) -> Cart:
             if is_applicable(price_type):
                 return price_type
 
-    def set_items_price(price_type: str) -> Cart:
+    def set_position_prices(price_type: str):
         """
         If price_type is NoneType, then it is retail price, set price from Product.price"""
         new_data = get_product_data(price_type)
-        cart.update_product_price(new_data)
+        cart.update_product_prices(new_data)
 
-    set_items_price(define_price_type())
+    set_position_prices(define_price_type())
 
 
 class WholesaleCart(Cart):

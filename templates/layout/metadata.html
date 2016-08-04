@@ -16,6 +16,7 @@
 <meta property="og:title" content="{{ page.title }}">
 <meta property="og:url" content="{{ page.get_absolute_url }}">
 <meta property="og:article:published_time" content="{{ page.date_published }}">
+<meta property="og:name" content="{{ page.title }}">
 <meta property="og:description" content="{{ page.description }}">
 {% if page.image %}<meta property="og:image" content="{{ page.image }}">{% endif %}
 
@@ -31,4 +32,6 @@
 <meta property="author" content="ShopElectro">
 
 <link rel="canonical" href="{{ page.get_absolute_url }}">
-<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+<link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+<link rel="android-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+<link rel="apple-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">

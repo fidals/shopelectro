@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 from datetime import datetime
+import dj_database_url
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(
@@ -26,7 +28,8 @@ SECRET_KEY = 'gl9syc68r%rmb*1&yzz(4%cotfpb$dy&wkb_y5_d0*be0pfulq'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# setting from docker example: https://github.com/satyrius/paid/
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')]
 
 # Application definition
 
@@ -73,9 +76,9 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.template.context_processors.media',
+                'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.core.context_processors.static',
                 'ecommerce.context_processors.cart',
                 'shopelectro.context_processors.shop'
             ],
@@ -106,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LOCALE_NAME = 'ru_RU'
+LOCALE_NAME = 'en_US'
 
 TIME_ZONE = 'UTC'
 
@@ -121,14 +124,24 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+ASSETS_DIR = os.path.join(BASE_DIR, 'static/assets')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'front/build'),
-    os.path.join(BASE_DIR, 'templates/assets'),
+    ASSETS_DIR,
 ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DATABASE_URL = 'postgres://postgres:11@db/shopelectro'
+
+DATABASES = {
+    'default': dj_database_url.config(
+        env='DATABASE_URL',
+        default='postgres://localhost/shopelectro'
+    )
+}
 
 PRODUCTS_TO_LOAD = 30
 
@@ -149,8 +162,6 @@ SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 # For sitemaps and sites framework
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
-# Uncomment for http->https change
-# os.environ['HTTPS'] = 'on'
 
 # Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'
