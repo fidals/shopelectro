@@ -1,20 +1,9 @@
 // ================================================================
 // IMPORTS
 // ================================================================
+const $ = require('gulp-load-plugins')();
 import gulp from 'gulp';
-import changed from 'gulp-changed';
-import gulpIf from 'gulp-if';
-import babel from 'gulp-babel';
-import less from 'gulp-less';
 import lessGlob from 'less-plugin-glob';
-import sourcemaps from 'gulp-sourcemaps';
-import autoprefixer from 'gulp-autoprefixer';
-import concat from 'gulp-concat';
-import uglify from 'gulp-uglify';
-import rename from 'gulp-rename';
-import minifyCSS from 'gulp-cssnano';
-import plumber from 'gulp-plumber';
-import livereload from 'gulp-livereload';
 import sequence from 'run-sequence';
 
 // ================================================================
@@ -121,22 +110,22 @@ gulp.task('build', (callback) => {
 // ================================================================
 gulp.task('styles', () => {
   gulp.src(PATH.src.styles)
-    .pipe(changed(PATH.build.styles, { extension: '.css' }))
-    .pipe(gulpIf(ENV.development, sourcemaps.init()))
-    .pipe(plumber())
-    .pipe(less({
+    .pipe($.changed(PATH.build.styles, { extension: '.css' }))
+    .pipe($.if(ENV.development, $.sourcemaps.init()))
+    .pipe($.plumber())
+    .pipe($.less({
       plugins: [lessGlob],
     }))
-    .pipe(gulpIf(ENV.production, autoprefixer({
+    .pipe($.if(ENV.production, $.autoprefixer({
       browsers: ['last 3 versions'],
     })))
-    .pipe(rename({
+    .pipe($.rename({
       suffix: '.min',
     }))
-    .pipe(gulpIf(ENV.production, minifyCSS()))
-    .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
+    .pipe($.if(ENV.production, $.cssnano()))
+    .pipe($.if(ENV.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(PATH.build.styles))
-    .pipe(livereload());
+    .pipe($.livereload());
 });
 
 // ================================================================
@@ -144,12 +133,12 @@ gulp.task('styles', () => {
 // ================================================================
 gulp.task('js-vendors', () => {
   gulp.src(PATH.src.js.vendors)
-    .pipe(changed(PATH.build.js, { extension: '.js' }))
-    .pipe(concat('vendors.js'))
-    .pipe(rename({
+    .pipe($.changed(PATH.build.js, { extension: '.js' }))
+    .pipe($.concat('vendors.js'))
+    .pipe($.rename({
       suffix: '.min',
     }))
-    .pipe(uglify())
+    .pipe($.uglify())
     .pipe(gulp.dest(PATH.build.js));
 });
 
@@ -158,21 +147,21 @@ gulp.task('js-vendors', () => {
 // ================================================================
 gulp.task('js-main', () => {
   gulp.src(PATH.src.js.main)
-    .pipe(changed(PATH.build.js, { extension: '.js' }))
-    .pipe(gulpIf(ENV.development, sourcemaps.init()))
-    .pipe(plumber())
-    .pipe(babel({
+    .pipe($.changed(PATH.build.js, { extension: '.js' }))
+    .pipe($.if(ENV.development, $.sourcemaps.init()))
+    .pipe($.plumber())
+    .pipe($.babel({
       presets: ['es2015'],
       compact: false,
     }))
-    .pipe(concat('main.js'))
-    .pipe(rename({
+    .pipe($.concat('main.js'))
+    .pipe($.rename({
       suffix: '.min',
     }))
-    .pipe(gulpIf(ENV.production, uglify()))
-    .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
+    .pipe($.if(ENV.production, $.uglify()))
+    .pipe($.if(ENV.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(PATH.build.js))
-    .pipe(livereload());
+    .pipe($.livereload());
 });
 
 // ================================================================
@@ -180,18 +169,19 @@ gulp.task('js-main', () => {
 // ================================================================
 gulp.task('js-pages', () => {
   gulp.src(PATH.src.js.pages)
-    .pipe(changed(PATH.build.js, { extension: '.js' }))
-    .pipe(gulpIf(ENV.development, sourcemaps.init()))
-    .pipe(plumber())
-    .pipe(babel({
+    .pipe($.changed(PATH.build.js, { extension: '.js' }))
+    .pipe($.if(ENV.development, $.sourcemaps.init()))
+    .pipe($.plumber())
+    .pipe($.babel({
       presets: ['es2015'],
+      compact: false,
     }))
-    .pipe(concat('pages.js'))
-    .pipe(rename({
+    .pipe($.concat('pages.js'))
+    .pipe($.rename({
       suffix: '.min',
     }))
-    .pipe(gulpIf(ENV.production, uglify()))
-    .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
+    .pipe($.if(ENV.production, $.uglify()))
+    .pipe($.if(ENV.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(PATH.build.js));
 });
 
@@ -200,12 +190,12 @@ gulp.task('js-pages', () => {
 // ================================================================
 gulp.task('js-admin-vendors', () => {
   gulp.src(PATH.src.js.adminVendors)
-    .pipe(changed(PATH.build.js, { extension: '.js' }))
-    .pipe(concat('admin-vendors.js'))
-    .pipe(rename({
+    .pipe($.changed(PATH.build.js, { extension: '.js' }))
+    .pipe($.concat('admin-vendors.js'))
+    .pipe($.rename({
       suffix: '.min',
     }))
-    .pipe(uglify())
+    .pipe($.uglify())
     .pipe(gulp.dest(PATH.build.js));
 });
 
@@ -214,18 +204,18 @@ gulp.task('js-admin-vendors', () => {
 // ================================================================
 gulp.task('js-admin', () => {
   gulp.src(PATH.src.js.admin)
-    .pipe(changed(PATH.build.js, { extension: '.js' }))
-    .pipe(gulpIf(ENV.development, sourcemaps.init()))
-    .pipe(plumber())
-    .pipe(babel({
+    .pipe($.changed(PATH.build.js, { extension: '.js' }))
+    .pipe($.if(ENV.development, $.sourcemaps.init()))
+    .pipe($.plumber())
+    .pipe($.babel({
       presets: ['es2015'],
     }))
-    .pipe(concat('admin.js'))
-    .pipe(rename({
+    .pipe($.concat('admin.js'))
+    .pipe($.rename({
       suffix: '.min',
     }))
-    .pipe(gulpIf(ENV.production, uglify()))
-    .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
+    .pipe($.if(ENV.production, $.uglify()))
+    .pipe($.if(ENV.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(PATH.build.js));
 });
 
@@ -233,8 +223,8 @@ gulp.task('js-admin', () => {
 // Images : Copy images
 // ================================================================
 gulp.task('build-imgs', () => {
-  return gulp.src(PATH.src.images)
-    .pipe(changed(PATH.build.images))
+  gulp.src(PATH.src.images)
+    .pipe($.changed(PATH.build.images))
     .pipe(gulp.dest(PATH.build.images));
 });
 
@@ -242,8 +232,8 @@ gulp.task('build-imgs', () => {
 // Fonts : Copy fonts
 // ================================================================
 gulp.task('build-fonts', () => {
-  return gulp.src(PATH.src.fonts)
-    .pipe(changed(PATH.build.fonts))
+  gulp.src(PATH.src.fonts)
+    .pipe($.changed(PATH.build.fonts))
     .pipe(gulp.dest(PATH.build.fonts));
 });
 
@@ -251,11 +241,11 @@ gulp.task('build-fonts', () => {
 // WATCH
 // ================================================================
 gulp.task('watch', () => {
-  livereload.listen();
+  $.livereload.listen();
   gulp.watch(PATH.watch.styles, ['styles']);
   gulp.watch(PATH.watch.js, ['js-main', 'js-pages', 'js-admin']);
   gulp.watch(PATH.watch.images, ['images']);
-  gulp.watch(PATH.watch.html, livereload.changed);
+  gulp.watch(PATH.watch.html, $.livereload.changed);
 });
 
 // ================================================================

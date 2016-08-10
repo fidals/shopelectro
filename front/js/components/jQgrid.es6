@@ -1,124 +1,152 @@
-const jQgridComponent = (() => {
-  const jQgrid = {
-    $: $('#jqGrid'),
-    $editAllBtn: $('#edit-all-mode'),
-    $saveRowsBtn: $('#save-rows'),
-    $searchField: $('#search-field'),
-    autocompleteUrl: '/admin/autocomplete/',
-    entityId: 0,
-    selectedRowData: {},
-    clientSettings: [
-      {
-        label: 'ID',
-        name: 'id',
-        key: true,
-        width: 30,
-        sorttype: 'integer',
-      },
-      {
-        label: 'Name',
-        name: 'name',
-        width: 250,
-        editable: true,
-      },
-      {
-        name: 'category_id',
-        hidden: true,
-      },
-      {
-        label: 'Category',
-        name: 'category_name',
-        width: 150,
-        editable: true,
-        editoptions: {
-          dataInit(el) {
-            // Инициализируем jQuery autocomplete.
-            $(el).autocomplete({
-              source(request, response) {
-                $.ajax({
-                  type: 'GET',
-                  url: jQgrid.autocompleteUrl,
-                  data: {
-                    q: request.term,
-                    pageType: 'category',
-                  },
-                  success(responseData) {
-                    response(responseData);
-                  },
-                  error(jqXhr, textStatus, errorThrown) {
-                    console.group('Autocomplete failed.');
-                    console.log(jqXhr);
-                    console.log(textStatus);
-                    console.log(errorThrown);
-                    console.groupEnd();
-                  },
-                });
-              },
-              select(_, ui) {
-                // Подставляем надпись в поле ввода
-                $(el).val(ui.item.label);
-
-                return false;
-              },
-            });
-
-            $(el).on('keydown', event => {
-              if (event.which === 13) {
-                event.preventDefault();
-                setTimeout(() => saveCurrentRow(), 500);
-              }
-            });
-          },
-        },
-      },
-      {
-        label: 'Price',
-        name: 'price',
-        width: 50,
-        editable: true,
-        editrules: {
-          minValue: 0,
-          required: true,
-        },
-        sorttype: 'integer',
-        formatter: 'currencyFmatter',
-      },
-      {
-        label: 'In stock',
-        width: 50,
-        align: 'center',
-        formatter: 'checkbox',
-        editable: true,
-      },
-      {
-        label: 'Is popular',
-        width: 50,
-        align: 'center',
-        formatter: 'checkbox',
-        editable: true,
-      },
-      {
-        label: 'Remove',
-        width: 50,
-        align: 'center',
-        formatter: 'removeTag',
-      },
-    ],
+(() => {
+  const urls = {
+    autocomplete: '/admin/autocomplete/',
+    generate: '/admin/generate-table-data',
+    create: '/admin/product-create/',
+    update: '/admin/product-update/',
+    delete: '/admin/product-delete/',
   };
 
-  const MODAL = {
+  const jQgrid = {
+    $: $('#jqGrid'),
+    $searchField: $('#search-field'),
+    wasFiltered: false,
+  };
+
+  /**
+   * jQgrid colModel Options
+   * @link http://goo.gl/MH03xr
+   */
+  const jQgridSettings = [
+    {
+      key: true,
+      label: 'ID',
+      name: 'id',
+      sorttype: 'integer',
+      width: 20,
+    },
+    {
+      editable: true,
+      editrules: {
+        required: true,
+      },
+      label: 'Название',
+      name: 'name',
+      width: 230,
+    },
+    {
+      editable: true,
+      editoptions: {
+        dataInit(elem) {
+          autocompleteInit(elem);
+        },
+      },
+      label: 'Категория',
+      name: 'category_name',
+      width: 150,
+    },
+    {
+      hidden: true,
+      name: 'category_id',
+    },
+    {
+      editable: true,
+      editoptions: {
+        type: 'number',
+        step: '1.00',
+        min: '0.00',
+        pattern: '[0-9]',
+      },
+      editrules: {
+        minValue: 0,
+        required: true,
+        number: true,
+      },
+      formatter: 'currency',
+      formatoptions: {
+        decimalSeparator: '.',
+        thousandsSeparator: ' ',
+        prefix: '₽ ',
+      },
+      label: 'Цена',
+      name: 'price',
+      sorttype: 'integer',
+      width: 48,
+    },
+    {
+      align: 'center',
+      editable: true,
+      editoptions: { value: '1:0' },
+      edittype: 'checkbox',
+      formatter: 'checkbox',
+      label: 'Активность',
+      name: 'page_is_active',
+      width: 44,
+    },
+    {
+      align: 'center',
+      editable: true,
+      editoptions: { value: '1:0' },
+      edittype: 'checkbox',
+      formatter: 'checkbox',
+      label: 'Топ',
+      name: 'is_popular',
+      width: 42,
+    },
+    {
+      align: 'center',
+      formatter: 'removeTag',
+      label: 'Удалить',
+      sortable: false,
+      width: 35,
+    },
+  ];
+
+  const modal = {
     $: $('#confirm-modal'),
     $removeBtn: $('.js-modal-delete'),
     $cancelBtn: $('.js-modal-delete-cancel'),
-    $forEntityName: $('#entity-to-remove'),
+    $forProductName: $('#product-to-remove'),
     deleteClass: 'js-confirm-delete-modal',
   };
 
-  const selectedData = {
+  const lastSelectedData = {
     id: 0,
     cellIndex: 0,
     fullData: {},
   };
+
+  /**
+   * Init jQuery autocomplete for category cell.
+   */
+  function autocompleteInit(el) {
+    $(el).autocomplete({
+      source(request, response) {
+        $.ajax({
+          type: 'GET',
+          url: urls.autocomplete,
+          data: {
+            q: request.term,
+            pageType: 'category',
+          },
+          success(responseData) {
+            response(responseData);
+          },
+          error(jqXhr, textStatus, errorThrown) {
+            console.group('Autocomplete failed.');
+            console.log(jqXhr);
+            console.log(textStatus);
+            console.log(errorThrown);
+            console.groupEnd();
+          },
+        });
+      },
+      // Set autocompleted value to input.
+      select(_, ui) {
+        $(el).val(ui.item.label);
+      },
+    });
+  }
 
   const init = () => {
     pluginsInit();
@@ -130,39 +158,31 @@ const jQgridComponent = (() => {
   }
 
   function setUpListeners() {
-    $(document).on('click', `.${MODAL.deleteClass}`, showConfirmModal);
-    jQgrid.$editAllBtn.click(startEdit);
-    jQgrid.$saveRowsBtn.click(saveRows);
+    $(document).on('click', `.${modal.deleteClass}`, showConfirmModal);
+    $(document).on('keyup', (event) => {
+      if (event.which === 27) {
+        closeConfirmModal(event);
+      }
+    });
     jQgrid.$searchField.on('keyup', searchInTable);
-    MODAL.$removeBtn.click(submitConfirmModal);
-    MODAL.$cancelBtn.click(closeConfirmModal);
+    modal.$removeBtn.click(deleteProduct);
+    modal.$cancelBtn.click(closeConfirmModal);
+  }
+
+  function jQgridAfterLoad() {
+    filterTableBySearchQuery();
   }
 
   /**
+   * Render html for Product removing.
    * Extend jQgrid formatter.
-   * Add currency sign for price text value on render.
-   * @link http://www.trirand.com/jqgridwiki/doku.php?id=wiki:custom_formatter
+   * @link http://goo.gl/9xcr7q
    */
   $.extend($.fn.fmatter, {
-    currencyFormatter: cellValue => `$${cellValue}`,
-  });
-
-  /**
-   * Remove currency sign for price text value in edit mode.
-   */
-  $.extend($.fn.fmatter.currencyFormatter, {
-    unformat: cellValue => cellValue.replace('$', ''),
-  });
-
-  /**
-   * Render html for entity removing.
-   */
-  $.extend($.fn.fmatter, {
-    removeTag(_, options) {
+    removeTag() {
       return `
-        <div class="jqgrid-remove-icon ${MODAL.deleteClass} glyphicon glyphicon-trash"
-             title="Удалить запись" data-id="${options.rowId}" data-toggle="modal"
-             data-target="#remove-modal">
+        <div class="jqgrid-remove-icon ${modal.deleteClass} glyphicon glyphicon-trash"
+             title="Удалить запись" data-toggle="modal" data-target="#remove-modal">
         </div>
       `;
     },
@@ -170,42 +190,28 @@ const jQgridComponent = (() => {
 
   /**
    * Init jQgrid with settings came from server.
+   * @lin http://goo.gl/qwgGCz
    */
   function jQgridInit() {
     jQgrid.$.jqGrid({
-      url: '/admin/generate-table-data',
-      // editurl: '/admin/edit/',
+      url: urls.generate,
       editurl: 'clientArray',
       styleUI: 'Bootstrap',
       altRows: true,
       altclass: 'jqgrid-secondary',
       autoencode: true,
       datatype: 'json',
-      colModel: jQgrid.clientSettings,
+      colModel: jQgridSettings,
       loadonce: true,
       viewrecords: true,
       width: 1400,
       height: 480,
       rowNum: 30,
       pager: '#jqGridPager',
-      beforeSelectRow: beforeSelect,
       onSelectRow: editRow,
       onCellSelect: collectCellData,
-      loadComplete: filterTableByUrlSearchParam,
+      loadComplete: jQgridAfterLoad,
     });
-  }
-
-  /**
-   * Collect row data before row selecting if row is not in edit mode.
-   * @param rowId - id of jQgrid row;
-   */
-  function beforeSelect(rowId) {
-    const $parentRow = $(event.target).closest('.jqgrow');
-    const isInEditMode = !!($parentRow.find('.inline-edit-cell').size());
-
-    if (!isInEditMode) {
-      jQgrid.selectedRowData = getRowData(rowId);
-    }
   }
 
   /**
@@ -218,149 +224,169 @@ const jQgridComponent = (() => {
   function editRow(rowId) {
     jQgrid.$.jqGrid('restoreRow', lastSelectedRowId);
 
+    // Prevent method by click on delete button:
+    if ($(event.target).hasClass(modal.deleteClass)) return;
+
     jQgrid.$.jqGrid('editRow', rowId, {
       keys: true,
-      focusField: selectedData.cellIndex,
+      focusField: lastSelectedData.cellIndex,
+      aftersavefunc() {
+        updateProduct(rowId);
+      },
     });
 
     lastSelectedRowId = rowId;
   }
 
-  const getRowData = rowId => jQgrid.$.getRowData(rowId);
+  function getRowData(rowId) {
+    return jQgrid.$.jqGrid('getRowData', rowId);
+  }
 
-  const getRowsDataByCategoryId = categoryId =>
-    jQgrid.$.getGridParam('data').filter(cell => cell.category_id === Number(categoryId));
+  function collectCellData(rowId, cellIndex) {
+    const $parentRow = $(event.target).closest('.jqgrow');
+    const isInEditMode = !!($parentRow.find('.inline-edit-cell').size());
+
+    if (!isInEditMode) {
+      lastSelectedData.id = rowId;
+      lastSelectedData.cellIndex = cellIndex;
+      lastSelectedData.fullData = getRowData(rowId);
+    }
+  }
 
   /**
-   * Get request's value from request's body
+   * Get request's search value from url.
    * @param key - request's key
    */
-  const getSearchValue = (key) => {
-    const searchBodyPair = decodeURIComponent(document.location.search).slice(1).split('&');
-    const splitedPair = searchBodyPair.map(item => item.split('='));
-    const [[_, searchValue]] = splitedPair.filter(item => {
-      const [searchKey, _] = item;
-      return searchKey === key;
-    });
-    return searchValue;
+  const getSearchValue = key => {
+    const searchQuery = decodeURIComponent(document.location.search).slice(1).split('&');
+    const splitedPairs = searchQuery.map(item => item.split('='));
+    const arrayWithSearchTerm = splitedPairs.filter(item => item.includes(key))[0];
+
+    return arrayWithSearchTerm[1];
   };
 
-  const insertValueToFilterField = value => {
-    $(jQgrid.$searchField).val(value);
-    searchInTable();
+  const insertFilterValue = value => {
+    jQgrid.$searchField
+      .val(value)
+      .focus()
+      .trigger('keyup');
+
+    jQgrid.wasFiltered = true;
   };
 
   const hasUrlSearchKey = requestKey =>
     document.location.search.indexOf(requestKey) !== -1;
 
-  function filterTableByUrlSearchParam() {
-    const jsTreeSearchKey = 'category_id';
-    if (hasUrlSearchKey(jsTreeSearchKey)) {
-      const categoryId = getSearchValue(jsTreeSearchKey);
-      const rowsData = getRowsDataByCategoryId(categoryId);
-      if (rowsData) {
-        insertValueToFilterField(rowsData[0]['category_name']);
-      }
-    }
-  }
+  function filterTableBySearchQuery() {
+    if (jQgrid.wasFiltered) return;
+    const jsTreeSearchKey = 'search_term';
 
-  /**
-   * Get cell data by row id.
-   * @param rowId - id of jQgrid row;
-   * @param cellIndex - cell index of selected row;
-   */
-  function collectCellData(rowId, cellIndex) {
-    selectedData.id = rowId;
-    selectedData.cellIndex = cellIndex;
-    selectedData.fullData = getRowData(rowId);
+    if (hasUrlSearchKey(jsTreeSearchKey)) {
+      const searchTerm = getSearchValue(jsTreeSearchKey);
+
+      insertFilterValue(searchTerm);
+    }
   }
 
   /**
    * Filter table data by live search on client side.
+   * @link http://goo.gl/NFoUvf
    */
   function searchInTable() {
     const searchText = jQgrid.$searchField.val();
 
-    const filter = {
-      groupOp: 'OR',
-      rules: [{
-        field: 'OrderID',
-        op: 'cn',
-        data: searchText,
-      }, {
-        field: 'CustomerID',
-        op: 'cn',
-        data: searchText,
-      }, {
-        field: 'Freight',
-        op: 'cn',
-        data: searchText,
-      }, {
-        field: 'ShipName',
-        op: 'cn',
-        data: searchText,
-      }],
+    setTimeout(() => {
+      const filter = {
+        groupOp: 'OR',
+        rules: [{
+          field: 'id',
+          op: 'cn',
+          data: searchText,
+        }, {
+          field: 'name',
+          op: 'cn',
+          data: searchText,
+        }, {
+          field: 'category_name',
+          op: 'cn',
+          data: searchText,
+        }, {
+          field: 'price',
+          op: 'cn',
+          data: searchText,
+        }],
+      };
+
+      jQgrid.$[0].p.search = filter.rules.length > 0;
+      $.extend(jQgrid.$[0].p.postData, {
+        filters: JSON.stringify(filter),
+      });
+
+      jQgrid.$.trigger('reloadGrid', [{ page: 1 }]);
+    }, 200);
+  }
+
+  /**
+   * Confirm remove Product modal methods.
+   */
+  function showConfirmModal(event) {
+    event.stopImmediatePropagation();
+
+    jQgrid.$.jqGrid('resetSelection');
+    modal.$forProductName.text(lastSelectedData.fullData.name);
+    modal.$.addClass('modal-show');
+  }
+
+  function closeConfirmModal(event) {
+    event.stopImmediatePropagation();
+    modal.$.removeClass('modal-show');
+  }
+
+  /**
+   * Update Product on server if row was changed.
+   */
+  function updateProduct() {
+    const newRowData = getRowData(lastSelectedData.id);
+    const isChanged = JSON.stringify(lastSelectedData.fullData) === JSON.stringify(newRowData);
+
+    if (!isChanged) {
+      $.post(urls.update, destructFields(newRowData))
+        .success(response => {
+          // TODO: Make UI feedback for user about success/fail.
+          console.log(response);
+        });
+    }
+  }
+
+  /**
+   * Return destructured fields from newRowData for ajax data argument.
+   */
+  function destructFields(newRowData) {
+    const {
+      id, name, category_name, category_id,
+      price, is_popular, page_is_active,
+    } = newRowData;
+
+    return {
+      id, name, category_name, category_id,
+      price, is_popular, page_is_active,
     };
+  }
 
-    jQgrid.$[0].p.search = filter.rules.length > 0;
-    $.extend(jQgrid.$[0].p.postData, {
-      filters: JSON.stringify(filter),
+  /**
+   * Delete Product on server by modal submitting.
+   */
+  function deleteProduct(event) {
+    event.stopImmediatePropagation();
+
+    $.post(urls.delete, {
+      id: lastSelectedData.id,
+    }).success(response => {
+      jQgrid.$.jqGrid('delRowData', lastSelectedData.id);
+      // TODO: Make UI feedback for user about success/fail.
+      console.log(response);
+      closeConfirmModal(event);
     });
-
-    jQgrid.$.trigger('reloadGrid', [{ page: 1 }]);
-  }
-
-  /**
-   * Edit all mode and saving grid data.
-   */
-  const getJqGridIds = () => jQgrid.$.jqGrid('getDataIDs');
-
-  function startEdit() {
-    const ids = getJqGridIds();
-
-    for (let i = ids.length; i >= 0; i--) {
-      jQgrid.$.jqGrid('editRow', ids[i]);
-    }
-  }
-
-  function saveRows() {
-    const ids = getJqGridIds();
-
-    for (let i = 0; i < ids.length; i++) {
-      jQgrid.$.jqGrid('saveRow', ids[i]);
-    }
-  }
-
-  /**
-   * Confirm remove entity modal methods.
-   */
-  function showConfirmModal() {
-    jQgrid.entityId = $(event.target).attr('data-id');
-    // TODO: CustomerID will be replaced by entity name.
-    MODAL.$forEntityName.text(jQgrid.selectedRowData.CustomerID);
-    MODAL.$.addClass('modal-show');
-  }
-
-  function submitConfirmModal() {
-    // TODO: We need to make Ajax request with id of entity to remove.
-    alert(`Product's id to delete is ${jQgrid.entityId}`);
-    jQgrid.$.jqGrid('delRowData', selectedData.id);
-    closeConfirmModal();
-  }
-
-  function closeConfirmModal() {
-    MODAL.$.removeClass('modal-show');
-  }
-
-  /**
-   * Save row manually.
-   */
-  function saveCurrentRow() {
-    console.log('Was');
-    console.log(jQgrid.selectedRowData);
-    console.log('Came');
-    console.log(getRowData(jQgrid.selectedRowData.id));
-    // jQgrid.$.saveRow(jQgrid.selectedRowData.id);
   }
 
   init();

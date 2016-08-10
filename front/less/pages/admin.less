@@ -4,7 +4,8 @@
 @c-body-bg: #ecf0f5;
 @c-sidebar-bg: #222d32;
 @c-sidebar-border: #444;
-@c-modal-overlay: #0c7678;
+@c-sidebar-link: #eee;
+@c-turquoise-green: #0c7678;
 
 @header-height: 60px;
 @sidebar-width: 450px;
@@ -171,20 +172,17 @@ div.breadcrumbs {
   }
 
   .jstree {
-
     &-anchor {
-      -webkit-user-select: none;
+      color: @c-sidebar-link;
       user-select: none;
       display: inline-block;
       text-overflow: ellipsis;
       overflow: hidden;
       width: 90%;
-      color: #AAA !important;
-
     }
 
     &-hovered, &-clicked {
-      background: #0C7678;
+      background: @c-turquoise-green;
       box-shadow: none;
     }
 
@@ -195,7 +193,8 @@ div.breadcrumbs {
   }
 
   .slimScrollBar {
-    background: #27B1B4 !important;
+    background: @c-turquoise-green !important;
+    opacity: 1 !important;
   }
 
   &-tree {
@@ -260,6 +259,11 @@ div.breadcrumbs {
   a {
     color: @c-white;
   }
+}
+
+.jstree-leaf .jstree-icon {
+  visibility: hidden;
+  width: 12px !important;
 }
 
 // jsTree contextmenu
@@ -424,7 +428,8 @@ div.autocomplete-suggestion {
 
 // Messagelist
 ul.messagelist {
-  margin: 35px 0 -40px 450px;
+  //margin: 35px 0 -40px 450px;
+  margin: 95px 0 -105px 450px;
 
   .collapsed & {
     margin-left: 0;
@@ -444,9 +449,9 @@ ul.messagelist {
   }
 }
 
-.jqgrid {
+.admin .jqgrid {
   &-search-field {
-    width: 230px;
+    width: 546px;
   }
 
   &-secondary {
@@ -463,7 +468,7 @@ ul.messagelist {
 
   &.table {
     > tbody > tr > td {
-      padding: 8px;
+      padding: 8px 8px 6px;
     }
 
     .jqgfirstrow > td {
@@ -472,8 +477,26 @@ ul.messagelist {
   }
 
   td,
-  th {
+  th,
+  .form-control {
     font-size: @f-size-base - 2;
+  }
+
+  .inline-edit-cell {
+    margin: -6px 0 -4px;
+  }
+
+  input {
+    height: 31px;
+    width: 100% !important;
+  }
+
+  input[type="checkbox"] {
+    height: 16px;
+  }
+
+  input[type="checkbox"].editable {
+    cursor: pointer;
   }
 }
 
@@ -543,7 +566,7 @@ ul.messagelist {
 }
 
 .modal-overlay {
-  background: fade(@c-modal-overlay, 90%);
+  background: fade(@c-turquoise-green, 90%);
   height: 100%;
   left: 0;
   opacity: 0;
