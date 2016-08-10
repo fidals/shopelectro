@@ -61,8 +61,13 @@ const PATH = {
         'front/js/components/accordion.es6',
       ],
 
-      admin: [
+      adminVendors: [
         'front/js/vendors/jquery.slimscroll.min.js',
+        'front/js/vendors/jqGrid.locale-ru.js',
+        'front/js/vendors/jqGrid.min.js',
+      ],
+
+      admin: [
         'front/js/components/admin.es6',
       ],
     },
@@ -99,6 +104,7 @@ gulp.task('build', (callback) => {
     'js-vendors',
     'js-main',
     'js-pages',
+    'js-admin-vendors',
     'js-admin',
     'build-imgs',
     'build-fonts',
@@ -153,6 +159,7 @@ gulp.task('js-main', () => {
     .pipe(plumber())
     .pipe(babel({
       presets: ['es2015'],
+      compact: false,
     }))
     .pipe(concat('main.js'))
     .pipe(rename({
@@ -181,6 +188,20 @@ gulp.task('js-pages', () => {
     }))
     .pipe(gulpIf(ENV.production, uglify()))
     .pipe(gulpIf(ENV.development, sourcemaps.write('.')))
+    .pipe(gulp.dest(PATH.build.js));
+});
+
+// ================================================================
+// JS : Build admin vendors js only
+// ================================================================
+gulp.task('js-admin-vendors', () => {
+  gulp.src(PATH.src.js.adminVendors)
+    .pipe(changed(PATH.build.js, { extension: '.js' }))
+    .pipe(concat('admin-vendors.js'))
+    .pipe(rename({
+      suffix: '.min',
+    }))
+    .pipe(uglify())
     .pipe(gulp.dest(PATH.build.js));
 });
 

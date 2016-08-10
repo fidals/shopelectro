@@ -1,5 +1,5 @@
 const server = (() => {
-  const CONFIG = {
+  const config = {
     orderCallUrl: '/shop/order-call/',
     addToCartUrl: '/shop/cart-add/',
     oneClickBuyUrl: '/shop/one-click-buy/',
@@ -16,7 +16,7 @@ const server = (() => {
    * @param time
    * @param url
    */
-  const sendOrderCall = (phone, time, url) => $.post(CONFIG.orderCallUrl, { phone, time, url });
+  const sendOrderCall = (phone, time, url) => $.post(config.orderCallUrl, { phone, time, url });
 
   /**
    * @param url
@@ -28,7 +28,7 @@ const server = (() => {
    * @param event
    * @param viewType
    */
-  const sendViewType = (event, viewType) => $.post(CONFIG.setViewTypeUrl, { view_type: viewType });
+  const sendViewType = (event, viewType) => $.post(config.setViewTypeUrl, { view_type: viewType });
 
   /**
    * Add product to backend's Cart.
@@ -37,7 +37,7 @@ const server = (() => {
    */
   const addToCart = (productId, quantity) => {
     return $.post(
-      CONFIG.addToCartUrl,
+      config.addToCartUrl,
       {
         product: productId,
         quantity,
@@ -48,7 +48,7 @@ const server = (() => {
   /**
    * Flush (clear) the cart on backend.
    */
-  const flushCart = () => $.post(CONFIG.flushCartUrl);
+  const flushCart = () => $.post(config.flushCartUrl);
 
   /**
    * Handle one-click-buy feature. Sends:
@@ -57,14 +57,14 @@ const server = (() => {
    * @param phone    - customer's phone
    */
   const oneClickBuy = (product, quantity, phone) => {
-    return $.post(CONFIG.oneClickBuyUrl, { product, quantity, phone });
+    return $.post(config.oneClickBuyUrl, { product, quantity, phone });
   };
 
   /**
    * Remove given product from Cart.
    * @param productId
    */
-  const removeFromCart = productId => $.post(CONFIG.removeFromCartUrl, { product: productId });
+  const removeFromCart = productId => $.post(config.removeFromCartUrl, { product: productId });
 
   /**
    * Return $.post request, which changes quantity of a given Product in Cart.
@@ -73,7 +73,7 @@ const server = (() => {
    */
   const changeInCart = (productId, quantity) => {
     return $.post(
-      CONFIG.changeCartUrl,
+      config.changeCartUrl,
       {
         product: productId,
         quantity,
@@ -81,7 +81,7 @@ const server = (() => {
     );
   };
 
-  const sendYandexOrder = data => $.post(CONFIG.yandexOrderUrl, data);
+  const sendYandexOrder = data => $.post(config.yandexOrderUrl, data);
 
   return {
     sendOrderCall,

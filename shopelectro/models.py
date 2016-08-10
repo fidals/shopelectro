@@ -62,8 +62,7 @@ class Product(AbstractProduct):
 
     @property
     def image(self):
-        size = settings.IMAGES['small'] or 'small'
-        return get_image(self, size)
+        return get_image(self)
 
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)

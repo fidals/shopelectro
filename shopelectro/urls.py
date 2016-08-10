@@ -15,7 +15,7 @@ from django.views.decorators.cache import cache_page
 
 from pages.views import robots
 from shopelectro import views, sitemaps, config
-
+from shopelectro.admin import table_editor_view
 
 category_urls = [
     url(r'^$', views.CategoryTree.as_view(), name='category_tree'),
@@ -66,27 +66,31 @@ ecommerce_urls = [
 admin_urls = [
     url(r'^remove-image/$', views.admin_remove_image),
     url(r'^autocomplete/', views.AdminAutocomplete.as_view()),
+    url(r'^remove-image/$', views.admin_remove_image),
     url(r'^uploads/$', views.admin_upload_images, name='admin_upload'),
+    url(r'^edit/$', views.admin_update_entity),
 ]
 
 urlpatterns = [
     url(r'^$', views.IndexPage.as_view(), name='index'),
-    url(r'^test-ya-kassa/$', views.test_yandex, name='test_yandex'),
     url(r'^admin/', admin.site.urls),
     url(r'^admin/', include(admin_urls)),
-    url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
+    url(r'^admin/', include(table_editor_view.urls)),
     url(r'^catalog/', include(category_urls)),
     url(r'^catalog/products/(?P<product_id>[0-9]+)/$',
         views.ProductPage.as_view(), name='product'),
     url(r'^pages/', include('pages.urls')),
+    url(r'^robots\.txt$', robots),
+    url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
     url(r'^shop/', include(ecommerce_urls)),
+    url(r'^search/', include(search_urls)),
+    url(r'^service/', include(service_urls)),
+    url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
     url(r'^shop/', include('ecommerce.urls')),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
     }, name='sitemap'),
-    url(r'^robots\.txt$', robots),
-    url(r'^search/', include(search_urls)),
-    url(r'^service/', include(service_urls)),
+    url(r'^test-ya-kassa/$', views.test_yandex, name='test_yandex'),
 ]
 
 if settings.DEBUG:

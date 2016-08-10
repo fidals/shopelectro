@@ -215,6 +215,7 @@ def admin_remove_image(request):
 @require_POST
 def admin_upload_images(request):
     """Upload Entity image"""
+
     referer_url = request.META['HTTP_REFERER']
     referer_list, entity_id_index = referer_url.split('/'), -3
     entity_type = ('products'
@@ -223,6 +224,15 @@ def admin_upload_images(request):
     entity_id = referer_list[entity_id_index]
     images.upload(entity_type, entity_id, request.FILES.getlist('files'))
     return HttpResponseRedirect(referer_url)
+
+
+@require_POST
+def admin_update_entity(request):
+    """Update Entity data from Table editor"""
+    # TODO: Logic for entity update is required
+    entity_id = request.POST['OrderID']
+
+    return HttpResponse('ok')
 
 
 @require_POST

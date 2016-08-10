@@ -16,7 +16,7 @@ const yandex = (() => {
     $downloadPriceInFooter: $('.js-download-price-footer'),
   };
 
-  const CONFIG = {
+  const config = {
     phoneRegexp: /\d{3}-\d{2}-\d{2}/g,
     fullEmail: 'info@shopelectro.ru',
   };
@@ -78,7 +78,7 @@ const yandex = (() => {
     }
   };
 
-  const isFullMailCopied = () => getSelectionText().indexOf(CONFIG.fullEmail) === 0;
+  const isFullMailCopied = () => getSelectionText().indexOf(config.fullEmail) === 0;
 
   /**
    * Returns copied text by user.

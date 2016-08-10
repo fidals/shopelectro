@@ -1,5 +1,5 @@
 const autocomplete = (() => {
-  const CONFIG = {
+  const config = {
     url: '/search/autocomplete/',
     searchInput: '.js-search-input',
     minChars: 2,
@@ -53,10 +53,10 @@ const autocomplete = (() => {
    * https://goodies.pixabay.com/javascript/auto-complete/demo.html
    */
   const constructorArgs = {
-    selector: CONFIG.searchInput,
-    minChars: CONFIG.minChars,
+    selector: config.searchInput,
+    minChars: config.minChars,
     source: (term, response) => {
-      $.getJSON(CONFIG.url, {
+      $.getJSON(config.url, {
         q: term,
       }, namesArray => {
         response(namesArray);

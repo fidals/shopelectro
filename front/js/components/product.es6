@@ -87,7 +87,9 @@ const product = (() => {
       .then(data => mediator.publish('onCartUpdate', data));
   };
 
-  const successOrder = () => location.href = '/shop/success-order';
+  function successOrder() {
+    location.href = '/shop/success-order';
+  }
 
   init();
 })();

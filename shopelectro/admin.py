@@ -1,14 +1,16 @@
 """Django admin module."""
 
+from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.admin import AdminSite
 from django.core.urlresolvers import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
 from collections import namedtuple
 
 from shopelectro.models import Category, Product
-
 
 # Override templates
 admin.sites.AdminSite.site_header = 'Shopelectro administration'
@@ -187,5 +189,31 @@ class ProductsShopelectroAdmin(AbstractChangeListAdmin):
     custom_category.short_description = 'Category'
     custom_category.admin_order_field = 'category'
 
+
+class TableEditorAdmin(AdminSite):
+    """
+    Render custom view for Table editor
+    https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_urls
+    """
+    def get_urls(self):
+        original_urls = super(TableEditorAdmin, self).get_urls()
+
+        custom_urls = [
+            url(r'^editor/$', self.admin_view(self.table_editor_view))
+        ]
+
+        return custom_urls + original_urls
+
+    def table_editor_view(self, request):
+        context = {
+            # Include common variables for rendering the admin template.
+            **self.each_context(request),
+            # Anything else you want in the context...
+            'title': 'Table editor'
+        }
+
+        return TemplateResponse(request, 'admin/table_editor.html', context)
+
+table_editor_view = TableEditorAdmin()
 admin.site.register(Category, CategoryShopelectroAdmin)
 admin.site.register(Product, ProductsShopelectroAdmin)

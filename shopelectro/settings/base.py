@@ -124,7 +124,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'front/build'),
-    os.path.join(BASE_DIR, 'static/assets'),
+    os.path.join(BASE_DIR, 'templates/assets'),
 ]
 
 MEDIA_URL = '/media/'
