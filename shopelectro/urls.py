@@ -69,6 +69,7 @@ admin_urls = [
     url(r'^remove-image/$', views.admin_remove_image),
     url(r'^uploads/$', views.admin_upload_images, name='admin_upload'),
     url(r'^edit/$', views.admin_update_entity),
+    url(r'^get-tree-items/$', views.admin_get_tree_items),
 ]
 
 urlpatterns = [

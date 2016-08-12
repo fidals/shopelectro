@@ -2,6 +2,7 @@
 // IMPORTS
 // ================================================================
 @import "common/variables";
+@import "vendors/jstree";
 @import "vendors/ui.jqgrid-bootstrap";
 @import "vendors/font-awesome";
 
@@ -175,6 +176,34 @@ div.breadcrumbs {
         margin-top: 4px;
       }
     }
+  }
+
+  .jstree {
+
+    &-anchor {
+      -webkit-user-select: none;
+      user-select: none;
+      display: inline-block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 90%;
+      color: #AAA !important;
+
+    }
+
+    &-hovered, &-clicked {
+      background: #0C7678;
+      box-shadow: none;
+    }
+
+    &-leaf &-icon {
+      visibility: hidden;
+      width: 12px !important;
+    }
+  }
+
+  .slimScrollBar {
+    background: #27B1B4 !important;
   }
 
   &-tree {

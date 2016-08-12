@@ -65,6 +65,7 @@ const PATH = {
         'front/js/vendors/jquery.slimscroll.min.js',
         'front/js/vendors/jqGrid.locale-ru.js',
         'front/js/vendors/jqGrid.min.js',
+        'front/js/vendors/jstree.min.js',
       ],
 
       admin: [

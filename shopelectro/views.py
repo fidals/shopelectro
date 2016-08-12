@@ -7,7 +7,7 @@ All logic should live in respective applications.
 import os
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
@@ -215,7 +215,6 @@ def admin_remove_image(request):
 @require_POST
 def admin_upload_images(request):
     """Upload Entity image"""
-
     referer_url = request.META['HTTP_REFERER']
     referer_list, entity_id_index = referer_url.split('/'), -3
     entity_type = ('products'
@@ -233,6 +232,39 @@ def admin_update_entity(request):
     entity_id = request.POST['OrderID']
 
     return HttpResponse('ok')
+
+
+def admin_get_tree_items(request):
+    """
+    Return JSON for jsTree's lazy load, with category's children or
+    category's products
+    """
+    def create_json_response(response_objects):
+        """Create JsonResponse and return it"""
+        setup_data = [
+            {
+                'text': object.name,
+                'id': object.id,
+                'children': True if isinstance(object, Category) else False,
+                'a_attr':
+                    {
+                        'site_page_href': object.get_absolute_url(),
+                        'admin_page_href': object.get_absolute_url()
+                    }
+            }
+            for object in response_objects
+        ]
+
+        return JsonResponse(setup_data, safe=False)
+
+    id_ = request.GET.get('id', None)
+
+    if id_ is not None:
+        category = Category.objects.get(id=id_)
+        return create_json_response(category.get_category_children_or_it_products())
+
+    root_categories = Category.objects.root_nodes().order_by('position')
+    return create_json_response(root_categories)
 
 
 @require_POST

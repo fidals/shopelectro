@@ -5,6 +5,7 @@ const admin = (() => {
     $imageItem: $('.js-list-item'),
     searchFieldId: '#searchbar',
     $sidebarToggle: $('.js-toggle-sidebar'),
+    $sidebarTree: $('#js-tree'),
   };
 
   const config = {
@@ -12,6 +13,7 @@ const admin = (() => {
     removeUrl: '/admin/remove-image/',
     completeURL: '/admin/autocomplete/',
     minChars: 3,
+    getTreeItemsUrl: '/admin/get-tree-items/',
   };
 
   const jQgrid = {
@@ -74,10 +76,10 @@ const admin = (() => {
       },
     ],
     dataURL:
-      'https://gist.githubusercontent.com/YozhEzhi/' +
-      '2d6ad664d8b9e1c98f4958cc13bd17a0/raw/' +
-      'e80143205a27570a45672fe5e6563d331c965a1f/' +
-      'jq_test_data.json',
+    'https://gist.githubusercontent.com/YozhEzhi/' +
+    '2d6ad664d8b9e1c98f4958cc13bd17a0/raw/' +
+    'e80143205a27570a45672fe5e6563d331c965a1f/' +
+    'jq_test_data.json',
     entityId: 0,
     selectedRowData: {},
   };
@@ -105,12 +107,14 @@ const admin = (() => {
   function pluginsInit() {
     autoCompleteInit();
     jQgridInit();
+    jsTreeInit();
   }
 
   function setUpListeners() {
     $(document).on('click', `.${MODAL.deleteClass}`, showConfirmModal);
     DOM.$removeIcon.click(removeImage);
     DOM.$sidebarToggle.click(toggleSidebar);
+    // DOM.$sidebarTree.on('select_node.jstree', getTreeItem);
     jQgrid.$editAllBtn.click(startEdit);
     jQgrid.$saveRowsBtn.click(saveRows);
     jQgrid.$searchField.on('keyup', searchInTable);
@@ -347,6 +351,33 @@ const admin = (() => {
   function closeConfirmModal() {
     MODAL.$.removeClass('modal-show');
   }
+  /*
+  jsTree plugin and listeners
+   */
+  function jsTreeInit() {
+    DOM.$sidebarTree
+      .jstree({
+        'core': {
+          'data': {
+            'url': config.getTreeItemsUrl,
+            'dataType': 'json',
+            'data': function (node) {
+              return node.id === '#' ? false : { 'id': node.id };
+            },
+          },
+          'check_callback': true,
+        },
+        'contextmenu': {
+          // 'items': jsTreeContextMenu,
+        },
+        'plugins': ['contextmenu', 'state'],
+      });
+  }
 
+  // function getTreeItem(node, selected, event) {
+  //   if(event.which === 1) {
+  //     const objectUrl = node.hasClass('jstree-lead') ? 
+  //   }
+  // }
   init();
 })();
