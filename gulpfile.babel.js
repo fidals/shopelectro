@@ -70,6 +70,7 @@ const PATH = {
 
       admin: [
         'front/js/components/admin.es6',
+        'front/js/components/admin_sidebar.es6',
       ],
     },
 

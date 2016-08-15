@@ -7,6 +7,8 @@ All logic should live in respective applications.
 import os
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.apps import apps
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -239,21 +241,25 @@ def admin_get_tree_items(request):
     Return JSON for jsTree's lazy load, with category's children or
     category's products
     """
-    def create_json_response(response_objects):
+    def __create_json_response(response_objects):
         """Create JsonResponse and return it"""
-        setup_data = [
-            {
-                'text': object.name,
-                'id': object.id,
-                'children': True if isinstance(object, Category) else False,
-                'a_attr':
-                    {
-                        'site_page_href': object.get_absolute_url(),
-                        'admin_page_href': object.get_absolute_url()
-                    }
-            }
-            for object in response_objects
-        ]
+        def __get_reversed_url_for_instance(instance):
+            app_name = apps.get_app_config('shopelectro').name
+            model_name = instance.__class__._meta.model_name
+            view_name = ('admin:{app_name}_{model_name}_change'
+                         .format(app_name=app_name, model_name=model_name))
+            return reverse(view_name, args=(instance.id,))
+
+        setup_data = \
+            [{
+                 'id': instance.id,
+                 'text': instance.name,
+                 'children': isinstance(instance, Category),
+                 'a_attr':{
+                     'href_site_page': instance.get_absolute_url(),
+                     'href_admin_page': __get_reversed_url_for_instance(instance),
+                 }
+             } for instance in list(response_objects)]
 
         return JsonResponse(setup_data, safe=False)
 
@@ -261,10 +267,12 @@ def admin_get_tree_items(request):
 
     if id_ is not None:
         category = Category.objects.get(id=id_)
-        return create_json_response(category.get_category_children_or_it_products())
+        children = category.children.all()
+        products = category.products.all()
+        return __create_json_response(children if children.exists() else products)
 
     root_categories = Category.objects.root_nodes().order_by('position')
-    return create_json_response(root_categories)
+    return __create_json_response(root_categories)
 
 
 @require_POST
