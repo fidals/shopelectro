@@ -45,6 +45,9 @@ const adminSidebar = (() => {
     localStorage.setItem(config.sidebarStateKey, isSidebarClosed() ? 0 : 1);
   }
 
+  /**
+   *setup jsTree plugin
+   */
   function jsTreeInit() {
     DOM.$sidebarTree
       .jstree({
@@ -58,8 +61,29 @@ const adminSidebar = (() => {
           },
           'check_callback': true,
         },
-        'contextmenu': {
-          'items': jsTreeContextMenu,
+        "contextmenu":{
+          "items": function($node) {
+            var tree = DOM.$sidebarTree.jstree(true);
+            return {
+              "to-site-page": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Table Editor",
+                'icon': 'fa fa-columns',
+                'action': data => {
+                },
+              },
+              "to-tableEditor": {
+                "separator_before": false,
+                "separator_after": false,
+                'label': 'На страницу',
+                'icon': 'fa fa-link',
+                'action': data =>
+                  window.location.pathname = $(data.reference[0]).attr('href_site_page')
+                ,
+              },
+            };
+          },
         },
         'plugins': ['contextmenu', 'state'],
       });
@@ -69,31 +93,9 @@ const adminSidebar = (() => {
     if (data.event.which === 1) {
       const pathname = $(data.event.target).attr('href_admin_page');
       if (pathname !== window.location.pathname) {
-        window.location.href = pathname;
+        window.location.pathname = pathname;
       }
     }
-  }
-
-  function jsTreeContextMenu() {
-    DOM.$sidebarTree.jstree(true);
-
-    return [
-      {
-        'separator_before': false,
-        'separator_after': false,
-        'label': 'TableGear',
-        'icon': 'fa fa-columns',
-        'action': () => console.log('asdasd'),
-      },
-
-      {
-        'separator_before': false,
-        'separator_after': false,
-        'label': 'На страницу',
-        'icon': 'fa fa-link',
-        'action': () => console.log('asdasd'),
-      },
-    ];
   }
   init();
 })();
