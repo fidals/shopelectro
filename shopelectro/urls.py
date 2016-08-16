@@ -17,6 +17,16 @@ from pages.views import robots
 from shopelectro import views, sitemaps, config
 from shopelectro.admin import table_editor_view
 
+admin_urls = [
+    url(r'^remove-image/$', views.admin_remove_image),
+    url(r'^autocomplete/', views.AdminAutocomplete.as_view()),
+    url(r'^remove-image/$', views.admin_remove_image),
+    url(r'^uploads/$', views.admin_upload_images, name='admin_upload'),
+    url(r'^edit/$', views.admin_update_entity),
+    url(r'^generate-table-data/$', views.admin_generate_table_editor_data),
+    url(r'^get-tree-items/$', views.admin_get_tree_items),
+]
+
 category_urls = [
     url(r'^$', views.CategoryTree.as_view(), name='category_tree'),
     url(r'^categories/(?P<slug>[\w-]+)/$',
@@ -61,15 +71,6 @@ ecommerce_urls = [
     url(r'^order-call/$', views.order_call),
     url(r'^one-click-buy/$', views.one_click_buy),
     url(r'^yandex-order/$', views.yandex_order),
-]
-
-admin_urls = [
-    url(r'^remove-image/$', views.admin_remove_image),
-    url(r'^autocomplete/', views.AdminAutocomplete.as_view()),
-    url(r'^remove-image/$', views.admin_remove_image),
-    url(r'^uploads/$', views.admin_upload_images, name='admin_upload'),
-    url(r'^edit/$', views.admin_update_entity),
-    url(r'^get-tree-items/$', views.admin_get_tree_items),
 ]
 
 urlpatterns = [

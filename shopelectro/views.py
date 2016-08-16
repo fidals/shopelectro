@@ -5,6 +5,7 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 import os
+import json
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -15,7 +16,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 
-from pages.models import Page, get_or_create_struct_page
+from pages.models import Page
 from pages import views as pages_views
 from catalog.views import catalog, search
 from ecommerce import mailer
@@ -227,13 +228,33 @@ def admin_upload_images(request):
     return HttpResponseRedirect(referer_url)
 
 
+@require_GET
+def admin_generate_table_editor_data(request):
+    """Generate Table Editor data"""
+
+    products = Product.objects.values()
+    categories = Category.objects.values()
+    categories_list = list(categories)
+
+    def get_category_name(id):
+        return [item['name'] for item in categories_list if item['id'] == id]
+
+    for product in products:
+        product['category_id'] = get_category_name(product['category_id'])
+        product['price'] = float(product['price'])
+
+    return HttpResponse(json.dumps(list(products), ensure_ascii=False),
+                        content_type='application/json; encoding=utf-8')
+
+
 @require_POST
 def admin_update_entity(request):
     """Update Entity data from Table editor"""
-    # TODO: Logic for entity update is required
-    entity_id = request.POST['OrderID']
 
-    return HttpResponse('ok')
+    # TODO: Logic for entity update is required
+    entity_id = request.POST['id']
+
+    return HttpResponse(entity_id)
 
 @require_GET
 def admin_get_tree_items(request):
