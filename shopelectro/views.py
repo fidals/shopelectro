@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.apps import apps
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 
@@ -235,44 +235,49 @@ def admin_update_entity(request):
 
     return HttpResponse('ok')
 
-
+@require_GET
 def admin_get_tree_items(request):
     """
     Return JSON for jsTree's lazy load, with category's children or
     category's products
     """
-    def __create_json_response(response_objects):
+    def __create_json(response_objects):
         """Create JsonResponse and return it"""
-        def __get_reversed_url_for_instance(instance):
+        def __setup_view_name(instance):
+            """Setup view's name (ex.'admin:shopelectro_category_change')"""
             app_name = apps.get_app_config('shopelectro').name
             model_name = instance.__class__._meta.model_name
-            view_name = ('admin:{app_name}_{model_name}_change'
-                         .format(app_name=app_name, model_name=model_name))
-            return reverse(view_name, args=(instance.id,))
+
+            return ('admin:{app_name}_{model_name}_change'
+                    .format(app_name=app_name, model_name=model_name))
+
+        view_name = __setup_view_name(response_objects[0])
+        is_has_children = isinstance(response_objects[0], Category)
 
         setup_data = \
             [{
                  'id': instance.id,
-                 'text': instance.name,
-                 'children': isinstance(instance, Category),
+                 'text': '[ {id} ] {name}'.format(id=instance.id, name=instance.name),
+                 'children': is_has_children,
                  'a_attr':{
                      'href_site_page': instance.get_absolute_url(),
-                     'href_admin_page': __get_reversed_url_for_instance(instance),
+                     'href_admin_page': reverse(view_name, args=(instance.id,)),
+                     'category_id': instance.id if is_has_children else instance.category.id,
                  }
              } for instance in list(response_objects)]
 
         return JsonResponse(setup_data, safe=False)
 
-    id_ = request.GET.get('id', None)
+    id_ = request.GET.get('id')
 
     if id_ is not None:
         category = Category.objects.get(id=id_)
         children = category.children.all()
         products = category.products.all()
-        return __create_json_response(children if children.exists() else products)
+        return __create_json(children if children.exists() else products)
 
     root_categories = Category.objects.root_nodes().order_by('position')
-    return __create_json_response(root_categories)
+    return __create_json(root_categories)
 
 
 @require_POST

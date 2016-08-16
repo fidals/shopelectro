@@ -112,6 +112,9 @@ const admin = (() => {
     jQgrid.$searchField.on('keyup', searchInTable);
     MODAL.$removeBtn.click(submitConfirmModal);
     MODAL.$cancelBtn.click(closeConfirmModal);
+    $(document).ready(() => {
+      const id = decodeURIComponent(window.location.search).split('=')[1];
+    });
   }
 
   function autoCompleteInit() {

@@ -18,12 +18,14 @@ const adminSidebar = (() => {
 
   function pluginsInit() {
     jsTreeInit();
+    initializeSlimScroll();
   }
 
   function setUpListeners() {
     DOM.$sidebarToggle.click(toggleSidebar);
     DOM.$sidebarTree.bind('state_ready.jstree',
       () => DOM.$sidebarTree.bind('select_node.jstree', redirectToEditePage));
+    $(window).on('resize orientationChange', initializeSlimScroll);
   }
 
   /**
@@ -61,41 +63,54 @@ const adminSidebar = (() => {
           },
           'check_callback': true,
         },
-        "contextmenu":{
-          "items": function($node) {
-            var tree = DOM.$sidebarTree.jstree(true);
-            return {
-              "to-site-page": {
-                "separator_before": false,
-                "separator_after": false,
-                "label": "Table Editor",
-                'icon': 'fa fa-columns',
-                'action': data => {
-                },
+        'plugins': ['contextmenu', 'state'],
+        'contextmenu': {
+          'items': {
+            'to-site-page': {
+              'separator_before': false,
+              'separator_after': false,
+              'label': 'Table Editor',
+              'icon': 'fa fa-columns',
+              'action': data => {
+                window.location.assign('/admin/editor/?category_id=' + $(data.reference[0]).attr('category_id'));
               },
-              "to-tableEditor": {
-                "separator_before": false,
-                "separator_after": false,
-                'label': 'На страницу',
-                'icon': 'fa fa-link',
-                'action': data =>
-                  window.location.pathname = $(data.reference[0]).attr('href_site_page')
-                ,
+            },
+            'to-tableEditor': {
+              'separator_before': false,
+              'separator_after': false,
+              'label': 'На страницу',
+              'icon': 'fa fa-link',
+              'action': data => {
+                window.location.assign($(data.reference[0]).attr('href_site_page'));
               },
-            };
+            },
           },
         },
-        'plugins': ['contextmenu', 'state'],
       });
   }
 
   function redirectToEditePage(e, data) {
     if (data.event.which === 1) {
-      const pathname = $(data.event.target).attr('href_admin_page');
-      if (pathname !== window.location.pathname) {
-        window.location.pathname = pathname;
+      const path = $(data.event.target).attr('href_admin_page');
+      if (path !== window.location.pathname) {
+        window.location.assign(path);
       }
     }
   }
+
+  /**
+   * setup SlimScroll pligin
+   */
+  function initializeSlimScroll() {
+    DOM.$sidebarTree.slimScroll({
+      destroy: true,
+    });
+    const size_ = $(window).height() - (2 * $('.admin-header-wrapper').height()) -
+      $('#sidebar-links').height();
+    DOM.$sidebarTree.slimScroll({
+      height: size_ + 'px',
+    });
+  }
+
   init();
 })();
