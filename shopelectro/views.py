@@ -234,13 +234,12 @@ def admin_generate_table_editor_data(request):
 
     products = Product.objects.values()
     categories = Category.objects.values()
-    categories_list = list(categories)
 
     def get_category_name(id):
-        return [item['name'] for item in categories_list if item['id'] == id]
+        return [item['name'] for item in categories if item['id'] == id]
 
     for product in products:
-        product['category_id'] = get_category_name(product['category_id'])
+        product['category'] = get_category_name(product['category_id'])
         product['price'] = float(product['price'])
 
     return HttpResponse(json.dumps(list(products), ensure_ascii=False),

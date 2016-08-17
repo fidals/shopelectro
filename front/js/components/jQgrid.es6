@@ -22,8 +22,12 @@ const jQgridComponent = (() => {
         editable: true,
       },
       {
-        label: 'Category',
         name: 'category_id',
+        hidden: true,
+      },
+      {
+        label: 'Category',
+        name: 'category',
         width: 150,
         editable: true,
         editoptions: {
@@ -187,6 +191,7 @@ const jQgridComponent = (() => {
       beforeSelectRow: beforeSelect,
       onSelectRow: editRow,
       onCellSelect: getCellData,
+      loadComplete: checkRequestBody,
     });
   }
 
@@ -226,6 +231,33 @@ const jQgridComponent = (() => {
    * @param rowId - id of jQgrid row;
    */
   const getRowData = rowId => jQgrid.$.getRowData(rowId);
+
+  /**
+   *Fetch all the jqGrid's data and try to find certain category's name
+   */
+  const getRowDataByCategoryId = id => {
+    const rows = jQgrid.$.getGridParam('data').filter(cell => {
+      return cell.category_id == id;
+    });
+
+    if (rows[0]) {
+      jQgrid.$searchField.val(rows[0].category);
+      searchInTable();
+    }
+  };
+
+  /**
+   * Get url's search part, if it exists try to find row's category_id cell
+   */
+  const checkRequestBody = () => {
+    const requestBody = document.location.search;
+    if (requestBody) {
+      const id = decodeURIComponent(requestBody).split('=')[1];
+      getRowDataByCategoryId(id);
+    }
+  };
+
+
 
   /**
    * Get cell data by row id.

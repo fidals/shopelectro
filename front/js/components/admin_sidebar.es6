@@ -72,7 +72,8 @@ const adminSidebar = (() => {
               'label': 'Table Editor',
               'icon': 'fa fa-columns',
               'action': data => {
-                window.location.assign('/admin/editor/?category_id=' + $(data.reference[0]).attr('category_id'));
+                window.location.assign('/admin/editor/?category_id=' +
+                  $(data.reference[0]).attr('category_id'));
               },
             },
             'to-tableEditor': {

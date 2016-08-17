@@ -23,9 +23,6 @@ const admin = (() => {
 
   function setUpListeners() {
     DOM.$removeIcon.click(removeImage);
-    // $(document).ready(() => {
-    //   const id = decodeURIComponent(window.location.search).split('=')[1];
-    // });
   }
 
   function autoCompleteInit() {

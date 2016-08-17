@@ -513,7 +513,7 @@ class SitePage(SeleniumTestCase):
         self.page_top = Page.objects.create(
             title='Navigation',
             slug='navi',
-            type=Page.DEFAULT_TYPE
+            type=Page.FLAT_TYPE
         )
         self.page_last = Page.objects.create(
             title='Contacts',
