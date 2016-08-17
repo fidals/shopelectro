@@ -71,7 +71,7 @@ const PATH = {
 
       admin: [
         'front/js/components/admin.es6',
-        'front/js/components/admin_sidebar.es6',
+        'front/js/components/adminSidebar.es6',
         'front/js/components/jQgrid.es6',
       ],
     },

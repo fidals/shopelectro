@@ -18,13 +18,12 @@ from shopelectro import views, sitemaps, config
 from shopelectro.admin import table_editor_view
 
 admin_urls = [
-    url(r'^remove-image/$', views.admin_remove_image),
     url(r'^autocomplete/', views.AdminAutocomplete.as_view()),
+    url(r'^edit/$', views.admin_update_entity),
+    url(r'^generate-table-data/$', views.admin_table_editor_data),
+    url(r'^get-tree-items/$', views.admin_tree_items),
     url(r'^remove-image/$', views.admin_remove_image),
     url(r'^uploads/$', views.admin_upload_images, name='admin_upload'),
-    url(r'^edit/$', views.admin_update_entity),
-    url(r'^generate-table-data/$', views.admin_generate_table_editor_data),
-    url(r'^get-tree-items/$', views.admin_get_tree_items),
 ]
 
 category_urls = [

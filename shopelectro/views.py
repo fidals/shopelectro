@@ -9,7 +9,7 @@ import json
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.apps import apps
+from django.db.models import F
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
@@ -229,19 +229,8 @@ def admin_upload_images(request):
 
 
 @require_GET
-def admin_generate_table_editor_data(request):
-    """Generate Table Editor data"""
-
-    products = Product.objects.values()
-    categories = Category.objects.values()
-
-    def get_category_name(id):
-        return [item['name'] for item in categories if item['id'] == id]
-
-    for product in products:
-        product['category'] = get_category_name(product['category_id'])
-        product['price'] = float(product['price'])
-
+def admin_table_editor_data(request):
+    products = Product.objects.annotate(category_name=F('category__name')).values()
     return HttpResponse(json.dumps(list(products), ensure_ascii=False),
                         content_type='application/json; encoding=utf-8')
 
@@ -256,48 +245,48 @@ def admin_update_entity(request):
     return HttpResponse(entity_id)
 
 @require_GET
-def admin_get_tree_items(request):
+def admin_tree_items(request):
     """
     Return JSON for jsTree's lazy load, with category's children or
-    category's products
+    category's products.
     """
-    def __create_json(response_objects):
-        """Create JsonResponse and return it"""
-        def __setup_view_name(instance):
-            """Setup view's name (ex.'admin:shopelectro_category_change')"""
-            app_name = apps.get_app_config('shopelectro').name
-            model_name = instance.__class__._meta.model_name
+    def __create_json_response(entities):
+        """Create data for jsTree and return Json response"""
+        def __setup_view_name(entity):
+            """Get view's name for certain entity (ex.'admin:shopelectro_category_change')"""
+            app_name = entity._meta.app_label
+            model_name = entity._meta.model_name
 
             return ('admin:{app_name}_{model_name}_change'
                     .format(app_name=app_name, model_name=model_name))
 
-        view_name = __setup_view_name(response_objects[0])
-        is_has_children = isinstance(response_objects[0], Category)
+        view_name = __setup_view_name(entities[0])
+        has_children = isinstance(entities[0], Category)
 
-        setup_data = \
-            [{
-                 'id': instance.id,
-                 'text': '[ {id} ] {name}'.format(id=instance.id, name=instance.name),
-                 'children': is_has_children,
-                 'a_attr':{
-                     'href_site_page': instance.get_absolute_url(),
-                     'href_admin_page': reverse(view_name, args=(instance.id,)),
-                     'category_id': instance.id if is_has_children else instance.category.id,
-                 }
-             } for instance in list(response_objects)]
+        # jsTree has restriction on the name fields
+        data_for_jstree = [{
+           'id': entity.id,
+           'text': '[ {id} ] {name}'.format(id=entity.id, name=entity.name),
+           'children': has_children, # if False, then lazy load switch off
+           'a_attr': { # it is "a" tag's attribute
+               'href-site-page': entity.get_absolute_url(),
+               'href-admin-page': reverse(view_name, args=(entity.id,)),
+               'category-id': entity.id if has_children else entity.category.id,
+           }
+        } for entity in entities.iterator()]
 
-        return JsonResponse(setup_data, safe=False)
+        return JsonResponse(data_for_jstree, safe=False)
 
-    id_ = request.GET.get('id')
+    entity_id = request.GET.get('id')
 
-    if id_ is not None:
-        category = Category.objects.get(id=id_)
+    if entity_id:
+        category = Category.objects.get(id=entity_id)
         children = category.children.all()
         products = category.products.all()
-        return __create_json(children if children.exists() else products)
+        return __create_json_response(children if children.exists() else products)
 
     root_categories = Category.objects.root_nodes().order_by('position')
-    return __create_json(root_categories)
+    return __create_json_response(root_categories)
 
 
 @require_POST

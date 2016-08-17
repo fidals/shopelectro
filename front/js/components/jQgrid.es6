@@ -27,7 +27,7 @@ const jQgridComponent = (() => {
       },
       {
         label: 'Category',
-        name: 'category',
+        name: 'category_name',
         width: 150,
         editable: true,
         editoptions: {
@@ -190,8 +190,8 @@ const jQgridComponent = (() => {
       pager: '#jqGridPager',
       beforeSelectRow: beforeSelect,
       onSelectRow: editRow,
-      onCellSelect: getCellData,
-      loadComplete: checkRequestBody,
+      onCellSelect: collectCellData,
+      loadComplete: checkUrlSearch,
     });
   }
 
@@ -210,61 +210,66 @@ const jQgridComponent = (() => {
 
   /**
    * Edit selected row.
-   * `lastSelection` is need for resetting edit mode for previous row.
+   * `lastSelectedRowId` is need for resetting edit mode for previous row.
    * @param rowId - id of jQgrid row;
    */
-  let lastSelection;
+  let lastSelectedRowId;
 
   function editRow(rowId) {
-    jQgrid.$.jqGrid('restoreRow', lastSelection);
+    jQgrid.$.jqGrid('restoreRow', lastSelectedRowId);
 
     jQgrid.$.jqGrid('editRow', rowId, {
       keys: true,
       focusField: selectedData.cellIndex,
     });
 
-    lastSelection = rowId;
+    lastSelectedRowId = rowId;
   }
 
-  /**
-   * Get row data by row id.
-   * @param rowId - id of jQgrid row;
-   */
   const getRowData = rowId => jQgrid.$.getRowData(rowId);
 
+  const getRowsDataByCategoryId = categoryId =>
+    jQgrid.$.getGridParam('data').filter(cell => cell.category_id === Number(categoryId));
+
   /**
-   *Fetch all the jqGrid's data and try to find certain category's name
+   * Get request value from request body
+   * @param key - request key
    */
-  const getRowDataByCategoryId = id => {
-    const rows = jQgrid.$.getGridParam('data').filter(cell => {
-      return cell.category_id == id;
+  const getRequestValue = (key) => {
+    const requestBodyPair = decodeURIComponent(document.location.search).slice(1).split('&');
+    const splitedPair = requestBodyPair.map(item => item.split('='));
+    const [[_, requestValue]] = splitedPair.filter(item => {
+      const [requestKey, _] = item;
+      return requestKey === key;
     });
-
-    if (rows[0]) {
-      jQgrid.$searchField.val(rows[0].category);
-      searchInTable();
-    }
+    return requestValue;
   };
 
-  /**
-   * Get url's search part, if it exists try to find row's category_id cell
-   */
-  const checkRequestBody = () => {
-    const requestBody = document.location.search;
-    if (requestBody) {
-      const id = decodeURIComponent(requestBody).split('=')[1];
-      getRowDataByCategoryId(id);
-    }
+  const insertValueToSearchField = value => {
+    $(jQgrid.$searchField).val(value);
+    searchInTable();
   };
 
+  const hasUrlRequestKey = requestKey =>
+    document.location.search.indexOf(requestKey) !== -1 ? true : false;
 
+  function checkUrlSearch() {
+    if (document.location.search) {
+      const jsTreeRequestKey = 'category_id';
+      if (hasUrlRequestKey(jsTreeRequestKey)) {
+        const categoryId = getRequestValue(jsTreeRequestKey);
+        const rowData = getRowsDataByCategoryId(categoryId)[0];
+        if (rowData) insertValueToSearchField(rowData['category_name']);
+      }
+    }
+  }
 
   /**
    * Get cell data by row id.
    * @param rowId - id of jQgrid row;
    * @param cellIndex - cell index of selected row;
    */
-  function getCellData(rowId, cellIndex) {
+  function collectCellData(rowId, cellIndex) {
     selectedData.id = rowId;
     selectedData.cellIndex = cellIndex;
     selectedData.fullData = getRowData(rowId);

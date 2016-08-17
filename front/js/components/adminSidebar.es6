@@ -1,13 +1,13 @@
 const adminSidebar = (() => {
   const DOM = {
     $sidebarToggle: $('.js-toggle-sidebar'),
-    $sidebarItem: $('.jstree-anchor'),
     $sidebarTree: $('#js-tree'),
   };
 
   const config = {
     sidebarStateKey: 'hiddenAdminSidebar',
     getTreeItemsUrl: '/admin/get-tree-items/',
+    tableEditorPageUrl: '/admin/editor/?category_id=',
   };
 
   const init = () => {
@@ -18,14 +18,14 @@ const adminSidebar = (() => {
 
   function pluginsInit() {
     jsTreeInit();
-    initializeSlimScroll();
+    slimScrollInit();
   }
 
   function setUpListeners() {
     DOM.$sidebarToggle.click(toggleSidebar);
     DOM.$sidebarTree.bind('state_ready.jstree',
       () => DOM.$sidebarTree.bind('select_node.jstree', redirectToEditePage));
-    $(window).on('resize orientationChange', initializeSlimScroll);
+    $(window).on('resize orientationChange', slimScrollReInit);
   }
 
   /**
@@ -48,7 +48,7 @@ const adminSidebar = (() => {
   }
 
   /**
-   *setup jsTree plugin
+   * Setup jsTree plugin
    */
   function jsTreeInit() {
     DOM.$sidebarTree
@@ -72,8 +72,8 @@ const adminSidebar = (() => {
               'label': 'Table Editor',
               'icon': 'fa fa-columns',
               'action': data => {
-                window.location.assign('/admin/editor/?category_id=' +
-                  $(data.reference[0]).attr('category_id'));
+                window.location.assign(config.tableEditorPageUrl +
+                  $(data.reference[0]).attr('category-id'));
               },
             },
             'to-tableEditor': {
@@ -82,7 +82,7 @@ const adminSidebar = (() => {
               'label': 'На страницу',
               'icon': 'fa fa-link',
               'action': data => {
-                window.location.assign($(data.reference[0]).attr('href_site_page'));
+                window.location.assign($(data.reference[0]).attr('href-site-page'));
               },
             },
           },
@@ -90,9 +90,9 @@ const adminSidebar = (() => {
       });
   }
 
-  function redirectToEditePage(e, data) {
+  function redirectToEditePage(_, data) {
     if (data.event.which === 1) {
-      const path = $(data.event.target).attr('href_admin_page');
+      const path = $(data.event.target).attr('href-admin-page');
       if (path !== window.location.pathname) {
         window.location.assign(path);
       }
@@ -100,16 +100,21 @@ const adminSidebar = (() => {
   }
 
   /**
-   * setup SlimScroll pligin
+   * Setup SlimScroll plugin
    */
-  function initializeSlimScroll() {
+  function slimScrollReInit() {
     DOM.$sidebarTree.slimScroll({
       destroy: true,
     });
-    const size_ = $(window).height() - (2 * $('.admin-header-wrapper').height()) -
-      $('#sidebar-links').height();
+    slimScrollInit();
+  }
+
+  function slimScrollInit() {
+    const size =
+      $(window).height() - (2 * $('.admin-header-wrapper').height()) - $('#sidebar-links').height();
+
     DOM.$sidebarTree.slimScroll({
-      height: size_ + 'px',
+      height: `${size}px`,
     });
   }
 

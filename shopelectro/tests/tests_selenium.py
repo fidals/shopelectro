@@ -30,6 +30,11 @@ def hover(browser, element):
     hover_action.perform()
 
 
+def context_click(browser, element):
+    hover_action = ActionChains(browser).context_click(element)
+    hover_action.perform()
+
+
 class SeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
 
@@ -400,7 +405,7 @@ class OrderPage(SeleniumTestCase):
         for i in range(1, 6):
             self.browser.find_element_by_xpath(
                 '//*[@id="products-wrapper"]/div[{}]/div[2]/div[5]/button'
-                .format(i)
+                    .format(i)
             ).click()
 
     def test_table_is_presented_if_there_is_some_products(self):
@@ -518,7 +523,7 @@ class SitePage(SeleniumTestCase):
         self.page_last = Page.objects.create(
             title='Contacts',
             slug='contacts',
-            type=Page.DEFAULT_TYPE,
+            type=Page.FLAT_TYPE,
             parent=self.page_top
         )
         self.browser.get(self.live_server_url + self.page_last.get_absolute_url())
@@ -670,6 +675,59 @@ class AdminPage(SeleniumTestCase):
 
         self.assertTrue(sidebar.is_displayed())
 
+    def test_tree_fetch_data(self):
+        """Test for lazy load logic"""
+        root_node_id = '24'
+        nood_id = '28'
+
+        self.browser.find_element_by_id(root_node_id).find_element_by_tag_name('i').click()
+        wait()
+        self.browser.find_element_by_id(nood_id).find_element_by_tag_name('i').click()
+        wait()
+
+        node_children = self.browser.find_element_by_id(nood_id).find_elements_by_class_name('jstree-leaf')
+
+        self.assertGreater(len(node_children), 10)
+
+    def test_tree_redirect_to_entity_edit_page(self):
+        """Test redirect to edit entity page by click at tree's item"""
+        h1 = 'Change category'
+
+        self.browser.find_element_by_id('24_anchor').click()
+        wait()
+        test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
+
+        self.assertEqual(h1, test_h1)
+
+    def test_tree_redirect_to_table_editor_page(self):
+        """Test redirect to table editor page by context click at tree's item"""
+        tree_item = self.browser.find_element_by_id('24_anchor')
+        search_value = tree_item.text
+        h1 = 'Table editor'
+
+        context_click(self.browser, tree_item)
+        wait()
+        self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[0].click()
+        wait()
+        test_search_value = self.browser.find_element_by_id('search-field').get_attribute('value')
+        test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
+
+        self.assertEqual(test_h1, h1)
+        self.assertEqual(test_search_value, search_value)
+
+    def test_tree_redirect_to_entity_site_page(self):
+        """Test redirect to entity's site page by context click at tree's item"""
+        tree_item = self.browser.find_element_by_id('317_anchor')
+        h1 = 'Product of Child #0 of #Root category #1 with num #1'
+
+        context_click(self.browser, tree_item)
+        wait()
+        self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[1].click()
+        wait()
+        test_h1 = self.browser.find_element_by_tag_name('h1').text
+
+        self.assertEqual(test_h1, h1)
+
     def test_sidebar_toggle(self):
         """Sidebar toggle button storage collapsed state."""
 
@@ -741,9 +799,9 @@ class YandexMetrika(SeleniumTestCase):
         """Set prevent default for elements so web page wouldn't be reloaded."""
         self.browser.execute_script(
             'var target = document.querySelector("' + selector + '");'
-            'target.on' + event + ' = function(event) {'
-            'event.preventDefault();'
-            'return false;};'
+                                                                 'target.on' + event + ' = function(event) {'
+                                                                                       'event.preventDefault();'
+                                                                                       'return false;};'
         )
 
     def test_download_header_price(self):
@@ -754,14 +812,14 @@ class YandexMetrika(SeleniumTestCase):
 
     def test_download_footer_price(self):
         """User clicks Download price button in footer"""
-        self.browser.find_element_by_class_name('js-download-price-footer')\
+        self.browser.find_element_by_class_name('js-download-price-footer') \
             .click()
 
         self.assertTrue('PRICE_FOOTER' in self.reached_goals)
 
     def test_backcall_open(self):
         """User clicks Back call button"""
-        self.browser.find_element_by_class_name('js-backcall-order')\
+        self.browser.find_element_by_class_name('js-backcall-order') \
             .click()
 
         self.assertTrue('BACK_CALL_OPEN' in self.reached_goals)
@@ -770,7 +828,7 @@ class YandexMetrika(SeleniumTestCase):
         """User browses to product's page"""
         self.browser.get(self.category_page)
         self.prevent_default('click', '.js-browse-product')
-        self.browser.find_element_by_class_name('js-browse-product')\
+        self.browser.find_element_by_class_name('js-browse-product') \
             .click()
 
         self.assertTrue('PROD_BROWSE' in self.reached_goals)
@@ -778,7 +836,7 @@ class YandexMetrika(SeleniumTestCase):
     def test_add_product_from_product_page(self):
         """User adds product to cart on Product's page"""
         self.browser.get(self.product_page)
-        self.browser.find_element_by_class_name('js-to-cart-on-product-page')\
+        self.browser.find_element_by_class_name('js-to-cart-on-product-page') \
             .click()
 
         self.assertTrue('PUT_IN_CART_FROM_PRODUCT' in self.reached_goals)
@@ -795,7 +853,7 @@ class YandexMetrika(SeleniumTestCase):
     def test_delete_product(self):
         """User removes product from cart"""
         self.browser.get(self.product_page)
-        self.browser.find_element_by_class_name('js-to-cart-on-product-page')\
+        self.browser.find_element_by_class_name('js-to-cart-on-product-page') \
             .click()
         wait()
         self.browser.find_element_by_class_name('js-go-to-cart').click()
