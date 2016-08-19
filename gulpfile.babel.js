@@ -62,13 +62,17 @@ const PATH = {
       ],
 
       adminVendors: [
+        'front/js/vendors/jquery-ui.min.js',
         'front/js/vendors/jquery.slimscroll.min.js',
         'front/js/vendors/jqGrid.locale-ru.js',
         'front/js/vendors/jqGrid.min.js',
+        'front/js/vendors/jstree.min.js',
       ],
 
       admin: [
         'front/js/components/admin.es6',
+        'front/js/components/adminSidebar.es6',
+        'front/js/components/jQgrid.es6',
       ],
     },
 

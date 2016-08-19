@@ -5,15 +5,18 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 import os
+import json
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.db.models import F
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 
-from pages.models import Page, get_or_create_struct_page
+from pages.models import Page
 from pages import views as pages_views
 from catalog.views import catalog, search
 from ecommerce import mailer
@@ -215,7 +218,6 @@ def admin_remove_image(request):
 @require_POST
 def admin_upload_images(request):
     """Upload Entity image"""
-
     referer_url = request.META['HTTP_REFERER']
     referer_list, entity_id_index = referer_url.split('/'), -3
     entity_type = ('products'
@@ -226,13 +228,65 @@ def admin_upload_images(request):
     return HttpResponseRedirect(referer_url)
 
 
+@require_GET
+def admin_table_editor_data(request):
+    products = Product.objects.annotate(category_name=F('category__name')).values()
+    return HttpResponse(json.dumps(list(products), ensure_ascii=False),
+                        content_type='application/json; encoding=utf-8')
+
+
 @require_POST
 def admin_update_entity(request):
     """Update Entity data from Table editor"""
-    # TODO: Logic for entity update is required
-    entity_id = request.POST['OrderID']
 
-    return HttpResponse('ok')
+    # TODO: Logic for entity update is required
+    entity_id = request.POST['id']
+
+    return HttpResponse(entity_id)
+
+@require_GET
+def admin_tree_items(request):
+    """
+    Return JSON for jsTree's lazy load, with category's children or
+    category's products.
+    """
+    def __create_json_response(entities):
+        """Create data for jsTree and return Json response"""
+        def __setup_view_name(entity):
+            """Get view's name for certain entity (ex.'admin:shopelectro_category_change')"""
+            app_name = entity._meta.app_label
+            model_name = entity._meta.model_name
+
+            return ('admin:{app_name}_{model_name}_change'
+                    .format(app_name=app_name, model_name=model_name))
+
+        view_name = __setup_view_name(entities[0])
+        has_children = isinstance(entities[0], Category)
+
+        # jsTree has restriction on the name fields
+        data_for_jstree = [{
+           'id': entity.id,
+           'text': '[ {id} ] {name}'.format(id=entity.id, name=entity.name),
+           'children': has_children, # if False, then lazy load switch off
+           'a_attr': { # it is "a" tag's attribute
+               'href-site-page': entity.get_absolute_url(),
+               'href-admin-page': reverse(view_name, args=(entity.id,)),
+               'category-id': entity.id if has_children else entity.category.id,
+           }
+        } for entity in entities.iterator()]
+
+        return JsonResponse(data_for_jstree, safe=False)
+
+    entity_id = request.GET.get('id')
+
+    if entity_id:
+        category = Category.objects.get(id=entity_id)
+        children = category.children.all()
+        products = category.products.all()
+        return __create_json_response(children if children.exists() else products)
+
+    root_categories = Category.objects.root_nodes().order_by('position')
+    return __create_json_response(root_categories)
 
 
 @require_POST
