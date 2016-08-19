@@ -26,13 +26,12 @@ def wait(seconds=1):
 
 def hover(browser, element):
     """Perform a hover over an element."""
-    hover_action = ActionChains(browser).move_to_element(element)
-    hover_action.perform()
+    ActionChains(browser).move_to_element(element).perform()
 
 
 def context_click(browser, element):
-    hover_action = ActionChains(browser).context_click(element)
-    hover_action.perform()
+    ActionChains(browser).context_click(element).perform()
+    wait()
 
 
 class SeleniumTestCase(LiveServerTestCase):
@@ -583,6 +582,8 @@ class AdminPage(SeleniumTestCase):
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
         cls.is_active_img = 'field-is_active'
         cls.autocomplete_text = 'Prod'
+        cls.tree_root_node_id = '24'
+        cls.tree_node_id = '28'
 
     def setUp(self):
         """Sets up testing url and dispatches selenium webdriver."""
@@ -677,17 +678,14 @@ class AdminPage(SeleniumTestCase):
 
     def test_tree_fetch_data(self):
         """Test for lazy load logic"""
-        root_node_id = '24'
-        node_id = '28'
-
         # open root node
-        self.browser.find_element_by_id(root_node_id).find_element_by_tag_name('i').click()
+        self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('i').click()
         wait()
         # open child node
-        self.browser.find_element_by_id(node_id).find_element_by_tag_name('i').click()
+        self.browser.find_element_by_id(self.tree_node_id).find_element_by_tag_name('i').click()
         wait()
 
-        node_children = self.browser.find_element_by_id(node_id).find_elements_by_class_name('jstree-leaf')
+        node_children = self.browser.find_element_by_id(self.tree_node_id).find_elements_by_class_name('jstree-leaf')
 
         self.assertGreater(len(node_children), 10)
 
@@ -696,20 +694,18 @@ class AdminPage(SeleniumTestCase):
         h1 = 'Change category'
 
         # click at tree's item, redirect to entity edit page
-        self.browser.find_element_by_id('24_anchor').click()
-        wait()
+        self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('a').click()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
         self.assertEqual(h1, test_h1)
 
     def test_tree_redirect_to_table_editor_page(self):
         """Test redirect to table editor page by context click at tree's item"""
-        tree_item = self.browser.find_element_by_id('24_anchor')
-        search_value = tree_item.text
+        tree_item = self.browser.find_element_by_id(self.tree_node_id).find_element_by_tag_name('a')
+        search_value = 'Child #0 of #Root category #1'
         h1 = 'Table editor'
 
         context_click(self.browser, tree_item)
-        wait()
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[0].click()
         wait()
         test_search_value = self.browser.find_element_by_id('search-field').get_attribute('value')
@@ -720,11 +716,10 @@ class AdminPage(SeleniumTestCase):
 
     def test_tree_redirect_to_entity_site_page(self):
         """Test redirect to entity's site page by context click at tree's item"""
-        tree_item = self.browser.find_element_by_id('317_anchor')
-        h1 = 'Product of Child #0 of #Root category #1 with num #1'
+        tree_item = self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('a')
+        h1 = 'Root category #1'
 
         context_click(self.browser, tree_item)
-        wait()
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[1].click()
         wait()
         test_h1 = self.browser.find_element_by_tag_name('h1').text

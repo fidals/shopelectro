@@ -247,7 +247,7 @@ class WholesaleCartTest(TestCase):
 
     def test_set_product_quantity_method_for_wholesale_large(self):
         """
-        IIf the sum of prices on large wholesale is less than
+        If the sum of prices on large wholesale is less than
         40 000 rub. then price for every product equated medium price.
         """
         setup_data = self.setup_for_set_product_quantity(

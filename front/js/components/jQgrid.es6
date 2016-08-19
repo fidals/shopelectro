@@ -191,7 +191,7 @@ const jQgridComponent = (() => {
       beforeSelectRow: beforeSelect,
       onSelectRow: editRow,
       onCellSelect: collectCellData,
-      loadComplete: checkUrlSearch,
+      loadComplete: filterTableByUrlSearchParam,
     });
   }
 
@@ -232,38 +232,34 @@ const jQgridComponent = (() => {
     jQgrid.$.getGridParam('data').filter(cell => cell.category_id === Number(categoryId));
 
   /**
-   * Get request value from request body
-   * @param key - request key
+   * Get request's value from request's body
+   * @param key - request's key
    */
-  const getRequestValue = (key) => {
-    const requestBodyPair = decodeURIComponent(document.location.search).slice(1).split('&');
-    const splitedPair = requestBodyPair.map(item => item.split('='));
-    const [[_, requestValue]] = splitedPair.filter(item => {
-      const [requestKey, _] = item;
-      return requestKey === key;
+  const getSearchValue = (key) => {
+    const searchBodyPair = decodeURIComponent(document.location.search).slice(1).split('&');
+    const splitedPair = searchBodyPair.map(item => item.split('='));
+    const [[_, searchValue]] = splitedPair.filter(item => {
+      const [searchKey, _] = item;
+      return searchKey === key;
     });
-    return requestValue;
+    return searchValue;
   };
 
-  const insertValueToSearchField = value => {
+  const insertValueToFilterField = value => {
     $(jQgrid.$searchField).val(value);
     searchInTable();
   };
 
-  const hasUrlRequestKey = requestKey =>
+  const hasUrlSearchKey = requestKey =>
     document.location.search.indexOf(requestKey) !== -1;
 
-  function checkUrlSearch() {
-    if (!document.location.search) {
-      return false;
-    }
-
-    const jsTreeRequestKey = 'category_id';
-    if (hasUrlRequestKey(jsTreeRequestKey)) {
-      const categoryId = getRequestValue(jsTreeRequestKey);
-      const rowData = getRowsDataByCategoryId(categoryId)[0];
-      if (rowData) {
-        insertValueToSearchField(rowData['category_name']);
+  function filterTableByUrlSearchParam() {
+    const jsTreeSearchKey = 'category_id';
+    if (hasUrlSearchKey(jsTreeSearchKey)) {
+      const categoryId = getSearchValue(jsTreeSearchKey);
+      const rowsData = getRowsDataByCategoryId(categoryId);
+      if (rowsData) {
+        insertValueToFilterField(rowsData[0]['category_name']);
       }
     }
   }
