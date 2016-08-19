@@ -251,15 +251,19 @@ const jQgridComponent = (() => {
   };
 
   const hasUrlRequestKey = requestKey =>
-    document.location.search.indexOf(requestKey) !== -1 ? true : false;
+    document.location.search.indexOf(requestKey) !== -1;
 
   function checkUrlSearch() {
-    if (document.location.search) {
-      const jsTreeRequestKey = 'category_id';
-      if (hasUrlRequestKey(jsTreeRequestKey)) {
-        const categoryId = getRequestValue(jsTreeRequestKey);
-        const rowData = getRowsDataByCategoryId(categoryId)[0];
-        if (rowData) insertValueToSearchField(rowData['category_name']);
+    if (!document.location.search) {
+      return false;
+    }
+
+    const jsTreeRequestKey = 'category_id';
+    if (hasUrlRequestKey(jsTreeRequestKey)) {
+      const categoryId = getRequestValue(jsTreeRequestKey);
+      const rowData = getRowsDataByCategoryId(categoryId)[0];
+      if (rowData) {
+        insertValueToSearchField(rowData['category_name']);
       }
     }
   }

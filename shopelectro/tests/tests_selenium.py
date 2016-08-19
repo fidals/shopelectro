@@ -678,14 +678,16 @@ class AdminPage(SeleniumTestCase):
     def test_tree_fetch_data(self):
         """Test for lazy load logic"""
         root_node_id = '24'
-        nood_id = '28'
+        node_id = '28'
 
+        # open root node
         self.browser.find_element_by_id(root_node_id).find_element_by_tag_name('i').click()
         wait()
-        self.browser.find_element_by_id(nood_id).find_element_by_tag_name('i').click()
+        # open child node
+        self.browser.find_element_by_id(node_id).find_element_by_tag_name('i').click()
         wait()
 
-        node_children = self.browser.find_element_by_id(nood_id).find_elements_by_class_name('jstree-leaf')
+        node_children = self.browser.find_element_by_id(node_id).find_elements_by_class_name('jstree-leaf')
 
         self.assertGreater(len(node_children), 10)
 
@@ -693,6 +695,7 @@ class AdminPage(SeleniumTestCase):
         """Test redirect to edit entity page by click at tree's item"""
         h1 = 'Change category'
 
+        # click at tree's item, redirect to entity edit page
         self.browser.find_element_by_id('24_anchor').click()
         wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
@@ -799,9 +802,9 @@ class YandexMetrika(SeleniumTestCase):
         """Set prevent default for elements so web page wouldn't be reloaded."""
         self.browser.execute_script(
             'var target = document.querySelector("' + selector + '");'
-                                                                 'target.on' + event + ' = function(event) {'
-                                                                                       'event.preventDefault();'
-                                                                                       'return false;};'
+            'target.on' + event + ' = function(event) {'
+            'event.preventDefault();'
+            'return false;};'
         )
 
     def test_download_header_price(self):
