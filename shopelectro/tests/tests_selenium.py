@@ -623,7 +623,10 @@ class AdminPage(SeleniumTestCase):
         In this case we filter products with 1000 - 2000 price range.
         """
 
-        self.browser.find_element_by_id(self.products).click()
+        # separated var for debugging
+        products_list = self.browser.find_element_by_id(self.products)
+        products_list.click()
+        wait()
         self.browser.find_element_by_xpath(self.price_filter).click()
         wait(2)
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[3]')
@@ -695,7 +698,9 @@ class AdminPage(SeleniumTestCase):
         h1 = 'Change category'
 
         # click at tree's item, redirect to entity edit page
-        self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('a').click()
+        root_node = self.browser.find_element_by_id(self.tree_root_node_id)
+        root_node.find_element_by_tag_name('a').click()
+        wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
         self.assertEqual(h1, test_h1)
