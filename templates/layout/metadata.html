@@ -17,8 +17,8 @@
 <meta property="og:url" content="{{ page.get_absolute_url }}">
 <meta property="og:article:published_time" content="{{ page.date_published }}">
 <meta property="og:name" content="{{ page.title }}">
-<meta property="og:description" content="{{ page.description }}">
-{% if page.image %}<meta property="og:image" content="{{ page.image }}">{% endif %}
+<meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ page.content|striptags }}{% endif %}">
+<meta property="og:image" content="{{ page.image }}">
 
 <meta property="og:site_name" content="ShopElectro">
 <meta property="og:street_address" content="Prospect Elizarova 38 A, office 312">
