@@ -37,11 +37,8 @@ class Product(AbstractProduct):
     """
 
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE,
-        default=None, related_name='products'
+        Category, on_delete=models.CASCADE, default=None, related_name='products',
     )
-    # TODO - remove it during admin refactor in dev-774
-    is_active = models.BooleanField(default=True)
 
     purchase_price = models.FloatField(default=0)
     wholesale_small = models.FloatField()

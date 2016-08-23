@@ -34,7 +34,7 @@ from shopelectro.forms import OrderForm
 
 # Sets CSRF-cookie to CBVs.
 set_csrf_cookie = method_decorator(ensure_csrf_cookie, name='dispatch')
-MODEL_MAP = {'product': Product, 'category': Category}
+MODEL_MAP = {'product': Product, 'category': Category, 'page': Page}
 
 
 ### Search views ###
@@ -204,15 +204,15 @@ def admin_remove_image(request):
 
 
 @require_POST
-def admin_upload_images(request):
+def admin_upload_images(request, model_name, entity_id):
     """Upload Entity image"""
     referer_url = request.META['HTTP_REFERER']
-    referer_list, entity_id_index = referer_url.split('/'), -3
-    entity_type = ('products'
-                   if 'product' in referer_list else
-                   'categories')
-    entity_id = referer_list[entity_id_index]
-    images.upload(entity_type, entity_id, request.FILES.getlist('files'))
+
+    for model_plural_name in ['categories', 'products']:
+        # slice, because the model_name is singular model's name,
+        # may be should rename the dirs, where we store our images
+        if model_name[:-1] in model_plural_name:
+            images.upload(model_plural_name, entity_id, request.FILES.getlist('files'))
     return HttpResponseRedirect(referer_url)
 
 
@@ -249,8 +249,7 @@ def admin_update_product(request):
         'is_popular': request_data['is_popular']
     }
 
-    page_is_active = bool(request_data['page_is_active'])
-
+    page_is_active = bool(int(request_data['page_is_active']))
     product = Product.objects.filter(pk=product_id)
     product.update(**new_product_data)
 
@@ -270,6 +269,7 @@ def admin_delete_product(request):
     return HttpResponse('Продукт {} был успешно удалён'.format(product_id))
 
 
+
 @require_GET
 def admin_tree_items(request):
     """
@@ -279,26 +279,23 @@ def admin_tree_items(request):
     def __create_json_response(entities):
         """Create data for jsTree and return Json response"""
         def __setup_view_name(entity):
-            """Get view's name for certain entity (ex.'admin:shopelectro_category_change')"""
-            app_name = entity._meta.app_label
-            model_name = entity._meta.model_name
+            """Get view's name for certain entity (ex.'custom_admin:pages_page_change')"""
+            return ('custom_admin:{db_table}_change'
+                    .format(db_table=entity._meta.db_table))
 
-            return ('admin:{app_name}_{model_name}_change'
-                    .format(app_name=app_name, model_name=model_name))
-
-        view_name = __setup_view_name(entities[0])
+        view_name = __setup_view_name(entities[0].page)
         has_children = isinstance(entities[0], Category)
 
         # jsTree has restriction on the name fields
         data_for_jstree = [{
-            'id': entity.id,
-            'text': '[ {id} ] {name}'.format(id=entity.id, name=entity.name),
-            'children': has_children,  # if False, then lazy load switch off
-            'a_attr': {  # it is 'a' tag attribute
-                'href-site-page': entity.get_absolute_url(),
-                'href-admin-page': reverse(view_name, args=(entity.id,)),
-                'search-term': entity.name,
-            }
+           'id': entity.id,
+           'text': '[ {id} ] {name}'.format(id=entity.id, name=entity.name),
+           'children': has_children, # if False, then lazy load switch off
+           'a_attr': { # it is "a" tag's attribute
+               'href-site-page': entity.get_absolute_url(),
+               'href-admin-page': reverse(view_name, args=(entity.page_id,)),
+               'search-term': entity.name,
+           }
         } for entity in entities.iterator()]
 
         return JsonResponse(data_for_jstree, safe=False)

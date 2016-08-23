@@ -4,15 +4,15 @@ from django.conf import settings
 from django import template
 from django.apps import apps
 
-from ..images import get_images_without_small
+from shopelectro.images import get_images_without_small
 
 register = template.Library()
 
 
 @register.inclusion_tag('admin/includes/images_list.html')
-def entity_images(entity):
+def entity_images(page_entity):
     """:return: Entity images without small variant"""
-
+    entity = page_entity.model
     model_type = type(entity).__name__
     app_name = settings.MODEL_TYPES.get(model_type)
 

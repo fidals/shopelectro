@@ -20,10 +20,15 @@
   {% block breadcrumbs %}
     <div class="breadcrumbs">
       <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-      &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
-      &rsaquo; {% if has_change_permission %}
-      <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}
-      {{ opts.verbose_name_plural|capfirst }}{% endif %}
+      {% if crumb_name and crumb_url %}
+          &rsaquo; {% if has_change_permission %}
+          <a href="{% url crumb_url %}">{{ crumb_name }}</a>{% else %}
+          {{ name }}{% endif %}
+      {% else %}
+        &rsaquo; {% if has_change_permission %}
+        <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}
+        {{ opts.verbose_name_plural|capfirst }}{% endif %}
+      {% endif %}
       &rsaquo;
       {% if add %}{% trans 'Add' %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:'18' }}{% endif %}
     </div>
@@ -47,7 +52,7 @@
       {% endif %}{% endif %}
 
       {% if original|upload_form %}
-        {% include 'admin/includes/upload_form.html' %}
+        {% include 'admin/includes/upload_form.html' with type=model_name id=entity_id %}
       {% endif %}
     {% endblock %}
 
@@ -67,23 +72,23 @@
           {{ adminform.form.non_field_errors }}
         {% endif %}
 
-        {% block field_sets %}
+        {% block inline_field_sets %}
           {% if original|upload_form %}
             {% entity_images original %}
           {% endif %}
 
+          {% for inline_admin_formset in inline_admin_formsets %}
+            {% include inline_admin_formset.opts.template %}
+          {% endfor %}
+        {% endblock %}
+
+        {% block field_sets %}
           {% for fieldset in adminform %}
             {% include 'admin/includes/fieldset.html' %}
           {% endfor %}
         {% endblock %}
 
         {% block after_field_sets %}{% endblock %}
-
-        {% block inline_field_sets %}
-          {% for inline_admin_formset in inline_admin_formsets %}
-            {% include inline_admin_formset.opts.template %}
-          {% endfor %}
-        {% endblock %}
 
         {% block after_related_objects %}{% endblock %}
 

@@ -9,11 +9,13 @@ All Selenium-tests should live in tests_selenium.
 from xml.etree import ElementTree as ET
 
 from django.core.management import call_command
-from django.test import TestCase
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 
+from shopelectro.admin import PageAdmin
+from pages.models import Page
 
 class SitemapPage(TestCase):
     """
@@ -46,7 +48,7 @@ class SitemapPage(TestCase):
         """Sitemap page should to print correct urls for models."""
         slice_start_index = len('http://' + settings.SITE_DOMAIN_NAME)
 
-        path = '{0}url[2]/{0}loc'.format(self.NAMESPACE)
+        path = '{0}url[1]/{0}loc'.format(self.NAMESPACE)
         model_url_text = self.root.find(path).text[slice_start_index:]
 
         response = self.client.get(model_url_text)
@@ -59,23 +61,218 @@ class AdminPage(TestCase):
 
     fixtures = ['dump.json']
 
+    @classmethod
+    def setUpClass(cls):
+        super(AdminPage, cls).setUpClass()
+        cls.username = 'admin'
+        cls.email = 'admin@admin.com'
+        cls.password = 'asdfjkl'
+
+        cls.list_display = PageAdmin.list_display_options
+        cls.categories_fieldset = ['Name', 'Parent', 'Position', 'ID',]
+        cls.pages_fieldset = [
+            'Position', 'Content', 'Title', 'Keywords', 'Description', 'Is active', 'Seo text', 'h1'
+        ]
+        cls.products_fieldset = [
+            'Name', 'Category', 'Price', 'ID', 'Purchase price', 'Wholesale large',
+            'Wholesale medium', 'Wholesale small', 'In stock', 'Is popular',
+        ]
+
     def setUp(self):
-        self.username = 'admin'
-        self.email = 'admin@admin.com'
-        self.password = 'asdfjkl'
         self.user = User.objects.create_superuser(self.username, self.email, self.password)
         self.client.login(username=self.username, password=self.password)
 
     def tearDown(self):
         self.user.delete()
 
-    def test_model_fieldsets(self):
-        """Models should has fields printed in 3 fieldset groups."""
-
+    def test_index_status_code(self):
         response = self.client.get(
-            reverse('admin:shopelectro_product_change', args=(462,))
+            reverse('custom_admin:index'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_index_app_list(self):
+        """Admin index-page must have all needed models"""
+        response = self.client.get(
+            reverse('custom_admin:index'))
+
+        self.assertContains(response, 'Pages')
+        self.assertContains(response, 'Categories')
+        self.assertContains(response, 'Products')
+
+
+    def test_pages_changelist_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:pages_page_changelist'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_pages_changelist_display_list(self):
+        """
+        Pages model's changelist-page must have all needed columns, which was define
+        in Admin.py
+        """
+        response = self.client.get(
+            reverse('custom_admin:pages_page_changelist'))
+
+        self.assertContains(response, 'Id')
+        self.assertContains(response, 'Title')
+        self.assertContains(response, 'Parent')
+        self.assertContains(response, 'Is active')
+
+    def test_pages_add_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:pages_page_add'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_pages_add_fieldset(self):
+        """Pages model's add-page must have all needed fields, which was define in Admin.py"""
+        response = self.client.get(
+            reverse('custom_admin:pages_page_add'))
+
+        self.assertNotContains(response, 'Products')
+        self.assertNotContains(response, 'Categories')
+
+        for field in self.pages_fieldset:
+            self.assertContains(response, field)
+
+    def test_pages_change_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:pages_page_change', args=(Page.objects.filter(
+                type=Page.FLAT_TYPE).first().id, )))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_pages_change_fieldset(self):
+        """Pages model's change-page must have all needed fields, which was define in Admin.py"""
+        response = self.client.get(
+            reverse('custom_admin:pages_page_change', args=(Page.objects.filter(
+                type=Page.FLAT_TYPE).first().id, )))
+
+        self.assertNotContains(response, 'Products')
+        self.assertNotContains(response, 'Categories')
+
+        for field in self.pages_fieldset:
+            self.assertContains(response, field)
+
+    def test_categories_changelist_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:category_changelist'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_categories_changelist_display_list(self):
+        """
+        Categories model's changelist-page must have all needed columns, which was define
+        in Admin.py
+        """
+        response = self.client.get(
+            reverse('custom_admin:category_changelist'))
+
+        self.assertContains(response, 'Id')
+        self.assertContains(response, 'Title')
+        self.assertContains(response, 'Parent')
+        self.assertContains(response, 'Is active')
+
+    def test_categories_add_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:category_add'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_categories_add_fieldset(self):
+        """Categories model's add-page must have all needed fields, which was define in Admin.py"""
+        response = self.client.get(
+            reverse('custom_admin:category_add'))
+
+        self.assertNotContains(response, 'Products')
+
+        for field in self.categories_fieldset:
+            self.assertContains(response, field)
+
+        for field in self.pages_fieldset:
+            self.assertContains(response, field)
+
+    def test_categories_change_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:pages_page_change', args=(Page.objects.filter(
+                type='shopelectro_category').first().id, )))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_categories_change_fieldset(self):
+        """Categories model's change-page must have all needed fields, which was define in Admin.py"""
+        response = self.client.get(
+            reverse('custom_admin:pages_page_change', args=(Page.objects.filter(
+                type='shopelectro_category').first().id, )))
+
+        self.assertNotContains(response, 'Products')
+
+        for field in self.categories_fieldset:
+            self.assertContains(response, field)
+
+        for field in self.pages_fieldset:
+            self.assertContains(response, field)
+
+    def test_products_changelist_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:product_changelist'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_products_changelist_display_list(self):
+        """
+        Products model's changelist-page must have all needed columns, which was define
+        in Admin.py
+        """
+        response = self.client.get(
+            reverse('custom_admin:product_changelist'))
+
+        self.assertContains(response, 'Id')
+        self.assertContains(response, 'Title')
+        self.assertContains(response, 'Category')
+        self.assertContains(response, 'Price')
+        self.assertContains(response, 'Link')
+        self.assertContains(response, 'Is active')
+
+    def test_products_add_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:product_add')
         )
 
-        self.assertContains(response, 'Основные характеристики')
-        self.assertContains(response, 'Дополнительные характеристики')
-        self.assertContains(response, 'SEO')
+        self.assertEqual(response.status_code, 200)
+
+    def test_products_add_fieldset(self):
+        """Products model's add-page must have all needed fields, which was define in Admin.py"""
+        response = self.client.get(
+            reverse('custom_admin:product_add'))
+
+        self.assertNotContains(response, 'Categories')
+
+        for field in self.products_fieldset:
+            self.assertContains(response, field)
+
+        for field in self.pages_fieldset:
+            self.assertContains(response, field)
+
+    def test_product_change_status_code(self):
+        response = self.client.get(
+            reverse('custom_admin:pages_page_change', args=(Page.objects.filter(
+                type='shopelectro_product').first().id, )))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_products_change_fieldset(self):
+        """Products model's change-page must have all needed fields, which was define in Admin.py"""
+        response = self.client.get(
+            reverse('custom_admin:pages_page_change', args=(Page.objects.filter(
+                type='shopelectro_product').first().id, )))
+
+        self.assertNotContains(response, 'Categories')
+
+        for field in self.products_fieldset:
+            self.assertContains(response, field)
+
+        for field in self.pages_fieldset:
+            self.assertContains(response, field)

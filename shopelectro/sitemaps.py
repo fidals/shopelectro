@@ -31,13 +31,13 @@ class IndexSitemap(Sitemap):
 class CategorySitemap(AbstractSitemap):
 
     def items(self):
-        return Category.objects.filter(is_active=True)
+        return Category.objects.filter(page__is_active=True)
 
 
 class ProductSitemap(AbstractSitemap):
 
     def items(self):
-        return Product.objects.filter(is_active=True)
+        return Product.objects.filter(page__is_active=True)
 
 
 class PagesSitemap(AbstractSitemap):
