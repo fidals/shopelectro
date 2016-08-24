@@ -301,7 +301,7 @@ def one_click_buy(request):
 
     cart = Cart(request.session)
     product = get_object_or_404(Product, id=request.POST['product'])
-    cart.add(product, request.POST['quantity'])
+    cart.add(product, int(request.POST['quantity']))
     order = Order(phone=request.POST['phone'])
     order.set_positions(cart)
     save_order_to_session(request.session, order)
