@@ -7,6 +7,7 @@
 
 FROM ubuntu:16.04
 
+# Installing Linux packages and global python packages (like gunicorn and circus).
 RUN export DEBIAN_FRONTEND=noninteractive \
     && sed -i 's,http://archive.ubuntu.com/ubuntu/,mirror://mirrors.ubuntu.com/mirrors.txt,' /etc/apt/sources.list \
     # for nodejs
@@ -40,15 +41,19 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y ${BUILD_DEPS} \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+
+# Installing application dependencies from requirements.txt
 COPY requirements.txt /opt/shopelectro/app/
 RUN pip3 install --no-cache-dir -r /opt/shopelectro/app/requirements.txt
 
+# Copying source code and nginx/gunicorn configs
 COPY etc/ /etc/
 COPY . /opt/shopelectro/app/
 
 # for windows compatibility
 RUN chmod -R +x /opt/shopelectro/
 
+# Running nginx, perform Django management commands.
 WORKDIR /opt/shopelectro/app
 ENV STATIC_ROOT=/opt/shopelectro/static
 ENV MEDIA_ROOT=/opt/shopelectro/app/media

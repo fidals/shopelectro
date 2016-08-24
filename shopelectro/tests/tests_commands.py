@@ -19,8 +19,6 @@ from shopelectro.management.commands import catalog
 
 class ImportTest(TestCase):
 
-    PRICE_FILE_MIN_SIZE = 10**4  # ~10kb
-
     @staticmethod
     def get_price_file_path(filename):
         return os.path.join(settings.ASSETS_DIR, filename)
@@ -85,12 +83,14 @@ class ImportTest(TestCase):
 
     def test_prices_exists(self):
         """Catalog command should generate various price-list files."""
+        price_file_min_size = 10 ** 4  # ~10kb
+
         price_names = ['pricelist.xlsx', 'yandex.yml', 'priceru.xml']
         for name in price_names:
             file_name = self.get_price_file_path(name)
             self.assertIn(name, os.listdir(settings.ASSETS_DIR))
             size = os.stat(file_name).st_size
-            self.assertGreaterEqual(size, self.PRICE_FILE_MIN_SIZE)
+            self.assertGreaterEqual(size, price_file_min_size)
 
     def test_categories_in_price(self):
         """There should be at least 60 categories in price. (except Others)"""

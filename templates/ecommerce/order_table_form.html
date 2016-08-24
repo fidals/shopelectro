@@ -22,8 +22,8 @@
       <th></th>
     </tr>
     {% for id, position in cart %}
-      <tr id="{{ position.id }}">
-        <td>{{ position.id }}</td>
+      <tr id="{{ id }}">
+        <td>{{ id }}</td>
         <td class="photo text-center">
           {% if 'logo' in position.image %} {# position has image #}
             <img src="{% static 'images/camera-icon.png' %}">
@@ -49,11 +49,11 @@
             {% endif %}
           </div>
           <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" type="number" name="prod-count"
-                 productId="{{ position.id }}">
+                 productId="{{ id }}">
         </td>
-        <td class="price js-product-price" productId="{{ position.id }}">{{ position.price|humanize_price }} руб</td>
+        <td class="price js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб</td>
         <td class="product-delete">
-          <img class="btn-cart js-remove" productId="{{ position.id }}" src="{% static 'images/btn-close-icon.png' %}"
+          <img class="btn-cart js-remove" productId="{{ id }}" src="{% static 'images/btn-close-icon.png' %}"
                alt="Убрать из корзины" title="Убрать из заказа">
         </td>
       </tr>

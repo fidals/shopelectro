@@ -96,7 +96,7 @@ def delete_and_create(model_generator_mapping: list) -> result_message:
         for model_class, generator in model_generator_mapping:
             purge_table(model_class)
             save_instances(generator)
-    return 'Categories and Products saved to DB.'
+    return 'Categories and Products were saved to DB.'
 
 
 class Command(BaseCommand):
@@ -137,7 +137,7 @@ class Command(BaseCommand):
                            (Product, self.parse_products())])
         self.remove_xml()
         self.generate_prices()
-        return 'Import completed! {0:.1f} seconds spent.'.format(time.time() - start_time)
+        return 'Import completed! {0:.1f} seconds elapsed.'.format(time.time() - start_time)
 
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
@@ -202,11 +202,11 @@ class Command(BaseCommand):
             assertions_data['category'] = Category.objects.get(id=category_id())
             assert assertions_data['price']
         except Category.DoesNotExist:
-            print('Category {} does not exist. Product {} will not saved'
+            print('Category {} does not exist. Product {} will not be saved'
                   .format(category_id(), assertions_data['id']))
             return
         except AssertionError:
-            print('Product with id={} have not price. It\'ll be not saved'
+            print('Product with id={} have not price. It\'ll not be saved'
                   .format(assertions_data['id']))
             return
 
@@ -233,7 +233,7 @@ class Command(BaseCommand):
         for xml_file in self.XML_FILES:
             with FTP(**self.FTP_CONNECTION) as ftp, open(xml_file, 'wb') as save_xml:
                 download_file()
-        return 'XML files downloaded.'
+        return 'XML files were downloaded.'
 
     @process('Remove files')
     def remove_xml(self) -> result_message:
@@ -250,4 +250,4 @@ class Command(BaseCommand):
         for command in commands:
             call_command(command)
 
-        return 'Price lists created.'
+        return 'Price lists were created.'
