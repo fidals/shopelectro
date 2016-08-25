@@ -21,13 +21,11 @@
     <ul class="basket-list list-unstyled" id="basket-list">
       {% for id, position in cart %}
         <li class="basket-item">
-          <a class="basket-stuff-link" href="{{ position.get_absolute_url }}">
-            <img class="basket-stuff-img img-responsive" src="">
+          <a class="basket-stuff-link" href="{{ position.url }}">
+            <img class="basket-stuff-img img-centered img-responsive" src="{{ position.image }}">
           </a>
           <div class="basket-stuff-about">
-            <a class="basket-stuff-title" href="{{ position.get_absolute_url }}">
-              {{ position.name }}
-            </a>
+            <a class="basket-stuff-title" href="{{ position.url }}">{{ position.name }}</a>
           </div>
           <p class="basket-stock">
             {% if position.in_stock %}
@@ -41,7 +39,7 @@
             <span class="basket-count js-basket-count">{{ position.quantity }} шт.</span> =
             <span class="basket-sum js-basket-sum">{{ position.total|humanize_price }} руб.</span>
           </div>
-          <div class="basket-remove js-cart-remove" id="{{ id }}" title="Удалить товар"></div>
+          <div class="basket-remove js-cart-remove" data-id="{{ id }}" title="Удалить товар"></div>
         </li>
       {% endfor %}
     </ul>

@@ -2,9 +2,12 @@
   "extends": "airbnb-base",
   "globals": {
     "$": true,
-    "Cookies": true,
+    "admin": true,
     "configs": true,
+    "Cookies": true,
+    "jQgridSettings": true,
     "mediator": true,
+    "popover": true,
     "server": true,
     "validator": true,
     "google": true,
@@ -15,6 +18,10 @@
     "no-use-before-define": ["error", {
       "functions": false,
       "classes": false
+    }],
+    "no-unused-vars": ["error", {
+      "varsIgnorePattern": "^_",
+      "argsIgnorePattern": "^_"
     }]
   }
 }

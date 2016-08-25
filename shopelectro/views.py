@@ -30,15 +30,13 @@ from shopelectro.models import Product, Category, Order
 from shopelectro.cart import WholesaleCart
 from shopelectro.forms import OrderForm
 
-### Helpers ###
-
+# HELPERS
 # Sets CSRF-cookie to CBVs.
 set_csrf_cookie = method_decorator(ensure_csrf_cookie, name='dispatch')
 MODEL_MAP = {'product': Product, 'category': Category, 'page': Page}
 
 
-### Search views ###
-
+# SEARCH VIEWS
 class AdminAutocomplete(search.AdminAutocomplete):
     """Override model_map for autocomplete."""
     model_map = MODEL_MAP
@@ -56,8 +54,7 @@ class Autocomplete(search.Autocomplete):
     search_url = 'search'
 
 
-### Catalog views ###
-
+# CATALOG VIEWS
 class CategoryTree(catalog.CategoryTree):
     """Override model attribute to SE-specific Category."""
     model = Category
@@ -117,7 +114,7 @@ class ProductPage(catalog.ProductPage):
         return context
 
 
-### Ecommerce views ###
+# ECOMMERCE VIEWS
 class OrderPage(ec_views.OrderPage):
     order_form = OrderForm
 
@@ -145,7 +142,7 @@ class SuccessOrder(ec_views.SuccessOrder):
     order = Order
 
 
-# Shopelectro-specific views #
+# SHOPELECTRO-SPECIFIC VIEWS
 @set_csrf_cookie
 class IndexPage(pages_views.IndexPage):
 
@@ -165,7 +162,7 @@ class IndexPage(pages_views.IndexPage):
 
 def load_more(request, category_slug, offset=0, sorting=0):
     """
-    Loads more products of a given category.
+    Load more products of a given category.
 
     :param sorting: preferred sorting index from CATEGORY_SORTING tuple
     :param request: HttpRequest object
@@ -197,6 +194,7 @@ def set_view_type(request):
 
 def admin_remove_image(request):
     """Remove Entity image by url"""
+
     image_dir_path = os.path.join(settings.MEDIA_ROOT, request.POST['url'])
     os.remove(image_dir_path)
 
@@ -206,6 +204,7 @@ def admin_remove_image(request):
 @require_POST
 def admin_upload_images(request, model_name, entity_id):
     """Upload Entity image"""
+
     referer_url = request.META['HTTP_REFERER']
 
     for model_plural_name in ['categories', 'products']:
@@ -220,7 +219,8 @@ def admin_upload_images(request, model_name, entity_id):
 def admin_table_editor_data(request):
     products = Product.objects.annotate(
         category_name=F('category__name'),
-        page_is_active=F('page__is_active')
+        is_active=F('page__is_active'),
+        title=F('page___title'),
     ).values()
 
     return HttpResponse(json.dumps(list(products), ensure_ascii=False),
@@ -230,6 +230,7 @@ def admin_table_editor_data(request):
 @require_POST
 def admin_create_product(request):
     # TODO: Logic for Product create is required
+    # http://youtrack.stkmail.ru/issue/dev-787
 
     return HttpResponse('ok')
 
@@ -239,22 +240,61 @@ def admin_update_product(request):
     """Update Product data from Table editor"""
 
     request_data = {key: value[0] for key, value in dict(request.POST).items()}
-    product_id = request_data['id']
-    category_name = request_data['category_name']
+    new_product_data = {}
+    new_page_data = {}
 
-    new_product_data = {
-        'name': request_data['name'],
-        'category_id': Category.objects.filter(name=category_name).first().id,
-        'price': request_data['price'],
-        'is_popular': request_data['is_popular']
+    # TODO: Refactoring is required for prevent copy/paste.
+    update_strategy = {
+        'name': (
+            lambda name: request_data['name'],
+            new_product_data,
+        ),
+        'title': (
+            lambda title: request_data['title'],
+            new_page_data,
+        ),
+        'category_id': (
+            lambda name: Category.objects.filter(name=name).first().id,
+            new_product_data,
+        ),
+        'price': (
+            lambda price: request_data['price'],
+            new_product_data,
+        ),
+        'purchase_price': (
+            lambda purchase_price: request_data['purchase_price'],
+            new_product_data,
+        ),
+        'is_active': (
+            lambda is_active: bool(int(is_active)),
+            new_page_data,
+        ),
+        'is_popular': (
+            lambda is_popular: bool(int(is_popular)),
+            new_product_data,
+        ),
+        'in_stock': (
+            lambda in_stock: request_data['in_stock'],
+            new_product_data,
+        ),
     }
 
-    page_is_active = bool(int(request_data['page_is_active']))
-    product = Product.objects.filter(pk=product_id)
-    product.update(**new_product_data)
+    def update_new_data(key, value, destination):
+        return destination.update({key: value(request_data[key])})
 
+    for key, value in request_data.items():
+        if key in update_strategy:
+            update_new_data(key, *update_strategy[key])
+
+    product_id = request_data['id']
+    product = Product.objects.filter(pk=product_id)
     product_page = Page.objects.filter(pk=product[0].page_id)
-    product_page.update(is_active=page_is_active)
+
+    if new_product_data:
+        product.update(**new_product_data)
+
+    if new_page_data:
+        product_page.update(**new_page_data)
 
     return HttpResponse('Продукт {} был успешно обновлён'.format(product_id))
 
@@ -267,7 +307,6 @@ def admin_delete_product(request):
     Product.objects.get(pk=product_id).delete()
 
     return HttpResponse('Продукт {} был успешно удалён'.format(product_id))
-
 
 
 @require_GET

@@ -31,6 +31,7 @@ const PATH = {
         'front/js/vendors/jquery.mask.min.js',
         'front/js/vendors/jquery.bootstrap-touchspin.min.js',
         'front/js/vendors/auto-complete.min.js',
+        'front/js/vendors/babel.polyfill.min.js',
       ],
 
       main: [
@@ -48,6 +49,7 @@ const PATH = {
         'front/js/components/product.es6',
         'front/js/components/order.es6',
         'front/js/components/accordion.es6',
+        'front/js/components/staticPages.es6',
       ],
 
       adminVendors: [
@@ -56,11 +58,14 @@ const PATH = {
         'front/js/vendors/jqGrid.locale-ru.js',
         'front/js/vendors/jqGrid.min.js',
         'front/js/vendors/jstree.min.js',
+        'front/js/vendors/jquery.webui-popover.min.js',
       ],
 
       admin: [
         'front/js/components/admin.es6',
         'front/js/components/adminSidebar.es6',
+        'front/js/components/adminPopover.es6',
+        'front/js/components/jQgridSettings.es6',
         'front/js/components/jQgrid.es6',
       ],
     },
@@ -88,7 +93,7 @@ const PATH = {
 // ================================================================
 // BUILD
 // ================================================================
-gulp.task('build', (callback) => {
+gulp.task('build', callback => {
   ENV.development = false;
   ENV.production = true;
 

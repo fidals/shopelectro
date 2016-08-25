@@ -45,7 +45,7 @@ const configs = (() => {
   /**
   * Set all unsafe ajax requests with csrftoken.
   */
-  const setupXHR = () => {
+  function setupXHR() {
     const csrfUnsafeMethod = method => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 
     $.ajaxSetup({
@@ -55,9 +55,9 @@ const configs = (() => {
         }
       },
     });
-  };
+  }
 
-  const pluginsInit = () => {
+  function pluginsInit() {
     $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
     DOM.$touchspin.TouchSpin(plugins.touchspin);
 
@@ -68,11 +68,15 @@ const configs = (() => {
       .on('keyup', (event) => {
         localStorage.setItem(labels.phone, $(event.target).val());
       });
-  };
+  }
 
   const scrollbarReinit = () => $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
 
   init();
 
-  return { plugins, setupXHR, labels, scrollbarReinit };
+  return {
+    plugins,
+    labels,
+    scrollbarReinit,
+  };
 })();

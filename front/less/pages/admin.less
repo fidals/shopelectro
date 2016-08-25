@@ -2,10 +2,15 @@
 // VARIABLES
 // ================================================================
 @c-body-bg: #ecf0f5;
+@c-draggable-bg: #fbf9e;
+@c-draggable-border: #fcefa1;
+@c-input-border: #ddd;
 @c-sidebar-bg: #222d32;
 @c-sidebar-border: #444;
 @c-sidebar-link: #eee;
-@c-turquoise-green: #0c7678;
+@c-table-secondary-bg: #f8f8f8;
+@c-turquoise-green: #0d8a8c;
+@c-remove-icon: #d24a43;
 
 @header-height: 60px;
 @sidebar-width: 450px;
@@ -181,7 +186,8 @@ div.breadcrumbs {
       width: 90%;
     }
 
-    &-hovered, &-clicked {
+    &-hovered,
+    &-clicked {
       background: @c-turquoise-green;
       box-shadow: none;
     }
@@ -418,17 +424,21 @@ div.autocomplete-suggestion {
     margin: 10px 0 25px;
   }
 
-  &.table-editor,
   &[class*="app-"] {
     h1 {
       margin-top: 35px;
+    }
+  }
+
+  &.table-editor {
+    h1 {
+      margin: 35px 0 15px;
     }
   }
 }
 
 // Messagelist
 ul.messagelist {
-  //margin: 35px 0 -40px 450px;
   margin: 95px 0 -105px 450px;
 
   .collapsed & {
@@ -441,34 +451,133 @@ ul.messagelist {
   }
 }
 
+// jQgrid filter section
+.admin.table-editor {
+  .btn-switch-filter {
+    float: left;
+    height: 35px;
+    margin: 20px 25px 0 0;
+    min-width: 208px;
+  }
+
+  .btn-save-filter {
+    margin: 20px 0 10px;
+  }
+}
+
+.filter {
+  &-section {
+    margin: 0 0 25px;
+  }
+
+  &-wrapper {
+    display: none;
+    overflow: hidden;
+  }
+
+  &-fields {
+    background: @c-white;
+    border: 1px solid @c-input-border;
+    height: 153px;
+    overflow-y: auto;
+
+    &-item {
+      list-style: none;
+      padding: 0;
+      position: relative;
+    }
+
+    &-label {
+      cursor: pointer;
+      display: block;
+      font-size: @f-size-base - 2;
+      font-weight: 400;
+      line-height: 1.4;
+      margin: 0;
+      padding: 5px 8px 6px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: fade(@c-black, 5%);
+      }
+    }
+
+    &-checkbox {
+      height: 15px;
+      position: absolute;
+      right: 8px;
+      top: 4px;
+      width: 15px
+    }
+  }
+}
+
+.filters-remove {
+  cursor: pointer;
+  font-size: @f-size-base - 2;
+  text-align: center;
+  text-decoration: underline;
+  width: 164px;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.sortable {
+  &-item {
+    background: @c-white;
+    font-size: @f-size-base - 2;
+    list-style: none;
+    margin: 0 0 2px;
+    min-height: 29px;
+    padding: 2px 5px;
+    border: 1px solid @c-input-border;
+    font-weight: normal;
+    cursor: pointer;
+    line-height: 1.7;
+  }
+}
+
+.ui-state-highlight {
+  background: @c-draggable-bg;
+  border-color: @c-draggable-border;
+}
+
+.live-filter {
+  &-wrapper {
+    margin: -2px 0 0;
+  }
+}
+
 // Table editor
-.table-editor {
+.admin.table-editor {
   .btn {
     height: @input-height;
-    padding-top: 5px;
+    padding-top: 4px;
   }
 }
 
 .admin .jqgrid {
   &-search-field {
+    background: @c-white;
+    border-color: @c-input-border;
     width: 546px;
-  }
-
-  &-secondary {
-    background: fade(@c-black, 8%);
-  }
-
-  &-actions {
-    margin-bottom: 25px;
   }
 
   &-remove-icon {
     cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: @c-remove-icon;
+    }
   }
 
   &.table {
     > tbody > tr > td {
       padding: 8px 8px 6px;
+      transition: all 0.3s ease;
     }
 
     .jqgfirstrow > td {
@@ -500,8 +609,13 @@ ul.messagelist {
   }
 }
 
-.ui-jqgrid .ui-jqgrid-btable tbody tr.jqgrow td {
+.ui-jqgrid-btable .jqgrow td {
+  background: @c-white;
   white-space: inherit;
+}
+
+.admin tr.jqgrid-secondary td {
+  background: @c-table-secondary-bg;
 }
 
 // Confirm modal
@@ -518,7 +632,7 @@ ul.messagelist {
   z-index: 2000;
 }
 
-.modal-box {
+.admin .modal-box {
   color: @c-white;
   opacity: 0;
   transition: all 0.5s ease;
@@ -526,17 +640,13 @@ ul.messagelist {
 
   &-title {
     font-size: @f-size-base + 24;
+    font-weight: 300;
     line-height: 140%;
   }
 
   &-buttons {
     padding: 15px 0 0;
     text-align: center;
-  }
-
-  .modal-show & {
-    transform: translateY(0);
-    opacity: 1;
   }
 
   .btn {
@@ -548,6 +658,13 @@ ul.messagelist {
     padding: 8px;
     text-transform: uppercase;
     transition: all 0.5s ease;
+  }
+}
+
+.admin .modal-show {
+  .modal-box {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 

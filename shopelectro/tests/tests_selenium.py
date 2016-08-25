@@ -386,8 +386,7 @@ class OrderPage(SeleniumTestCase):
             'price': 5,
             'remove': 6,
         }
-        product_row = \
-            '//*[@id="js-order-list"]/tbody/tr[{pos}]/td[{col}]'
+        product_row = '//*[@id="js-order-list"]/tbody/tr[{pos}]/td[{col}]'
 
         return product_row.format(pos=pos, col=COLS[col])
 
@@ -877,6 +876,7 @@ class AdminPage(SeleniumTestCase):
             self.browser.get(self.admin_page)
             wait()
 
+
 class TableEditor(SeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""
 
@@ -957,6 +957,7 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_name(self):
         """We could change Product name from TE."""
+
         self.get_cell(1).click()
         self.update_input_value(0, self.new_product_name)
         updated_name = self.get_cell(1).text
@@ -965,21 +966,26 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_price(self):
         """We could change Product price from TE."""
-        new_price = self.get_current_price(4) + 100
-        self.get_cell(4).click()
-        self.update_input_value(2, new_price)
-        updated_price = self.get_current_price(4)
+
+        price_index = 3
+
+        new_price = self.get_current_price(price_index) + 100
+        self.get_cell().click()
+        self.update_input_value(price_index - 1, new_price)
+        updated_price = self.get_current_price(price_index)
 
         self.assertEqual(updated_price, new_price)
 
     def test_edit_product_activity(self):
         """We could change Product is_active state from TE."""
-        old_active_state, new_active_state = self.perform_checkbox_toggle('page_is_active')
+
+        old_active_state, new_active_state = self.perform_checkbox_toggle('is_active')
 
         self.assertNotEqual(new_active_state, old_active_state)
 
     def test_edit_product_popularity(self):
         """We could change Product price is_popular state from TE."""
+
         old_popular_state, new_popular_state = self.perform_checkbox_toggle('is_popular')
 
         self.assertNotEqual(new_popular_state, old_popular_state)
@@ -998,6 +1004,7 @@ class TableEditor(SeleniumTestCase):
 
     def test_sort_table_by_id(self):
         """We could sort products in TE by id."""
+
         first_product_id_before = self.get_cell().text
         self.browser.find_element_by_class_name('ui-jqgrid-sortable').click()
         first_product_id_after = self.get_cell().text

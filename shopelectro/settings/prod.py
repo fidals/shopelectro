@@ -1,6 +1,5 @@
 from .base import *
 
-
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
@@ -21,6 +20,5 @@ DEFAULT_FROM_EMAIL = 'info@shopelectro.ru'
 DEFAULT_TO_EMAIL = 'info@shopelectro.ru'
 SHOP_EMAIL = 'info@shopelectro.ru'
 
-
-#http->https change
-# os.environ['HTTPS'] = 'on'
+# http->https change
+os.environ['HTTPS'] = 'on'

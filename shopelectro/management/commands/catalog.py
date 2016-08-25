@@ -232,7 +232,7 @@ class Command(BaseCommand):
                   .format(category_id(), assertions_data['id']))
             return
         except AssertionError:
-            print('Product with id={} have not price. It\'ll not be saved'
+            print('Product with id={} have no price. It\'ll not be saved'
                   .format(assertions_data['id']))
             return
 

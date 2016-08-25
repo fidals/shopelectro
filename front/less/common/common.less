@@ -63,7 +63,7 @@ h3 {
 }
 
 .scroll-wrapper {
-  height: 200px;
+  height: 250px;
 
   &.empty {
     height: 0;
@@ -145,6 +145,7 @@ h3 {
   max-height: 100%;
   left: 0;
   margin: auto;
+  padding: 5px;
   position: absolute;
   right: 0;
   text-align: center;
@@ -1234,7 +1235,7 @@ h3 {
     left: 0;
     margin: 0 5px;
     opacity: 0;
-    padding: 15px 8px 10px 12px;
+    padding: 15px 10px 10px;
     position: absolute;
     top: 40px;
     transform: translateY(50px);
@@ -1274,10 +1275,6 @@ h3 {
 
   &-list {
     color: @c-black-lighter-x;
-    margin: 0 0 15px;
-    max-height: 214px;
-    position: relative;
-    top: 6px;
 
     &:focus {
       outline: none;
@@ -1358,8 +1355,8 @@ h3 {
     border-radius: 3px;
     background: @c-basket-item;
     font-size: @f-size-base - 2;
-    margin: 0 13px 15px 0;
-    padding: 12px 15px 8px 8px;
+    margin: 0 7px 10px 0;
+    padding: 10px 20px 10px 10px;
     position: relative;
   }
 
@@ -1367,20 +1364,26 @@ h3 {
     border-radius: 4px;
     background: @c-white;
     border: 1px solid @c-tooltip-img-border;
-    height: 43px;
+    height: 50px;
     margin: 0 10px 10px 0;
     float: left;
     overflow: hidden;
-    width: 44px;
+    padding: 5px;
+    position: relative;
+    width: 50px;
   }
 
   &-stuff-about {
     height: 50px;
     line-height: 130%;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     overflow: hidden;
     position: relative;
     width: 170px;
+  }
+
+  &-stock {
+    margin-bottom: 10px;
   }
 
   &-stuff-title {
@@ -1394,10 +1397,6 @@ h3 {
     &:hover {
       color: @c-tooltip-hovered-link;
     }
-  }
-
-  &-stuff-price {
-    padding: 0 0 0 2px;
   }
 
   &-sum {
@@ -1423,9 +1422,7 @@ h3 {
   &-is-empty,
   &-calculations {
     border-top: 1px solid @c-tooltip-img-border;
-    margin-bottom: 5px;
-    margin-right: 22px;
-    padding: 7px 0 7px 22px;
+    margin: 0 15px 10px 0;
   }
 
   &-price-sum {
