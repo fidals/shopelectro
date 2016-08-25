@@ -16,8 +16,8 @@ from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 
-from pages.models import Page
 from pages import views as pages_views
+from pages.models import Page
 from catalog.views import catalog, search
 from ecommerce import mailer
 from ecommerce.cart import Cart
@@ -230,19 +230,57 @@ def admin_upload_images(request):
 
 @require_GET
 def admin_table_editor_data(request):
-    products = Product.objects.annotate(category_name=F('category__name')).values()
+    products = Product.objects.annotate(
+        category_name=F('category__name'),
+        page_is_active=F('page__is_active')
+    ).values()
+
     return HttpResponse(json.dumps(list(products), ensure_ascii=False),
                         content_type='application/json; encoding=utf-8')
 
 
 @require_POST
-def admin_update_entity(request):
-    """Update Entity data from Table editor"""
+def admin_create_product(request):
+    # TODO: Logic for Product create is required
 
-    # TODO: Logic for entity update is required
-    entity_id = request.POST['id']
+    return HttpResponse('ok')
 
-    return HttpResponse(entity_id)
+
+@require_POST
+def admin_update_product(request):
+    """Update Product data from Table editor"""
+
+    request_data = {key: value[0] for key, value in dict(request.POST).items()}
+    product_id = request_data['id']
+    category_name = request_data['category_name']
+
+    new_product_data = {
+        'name': request_data['name'],
+        'category_id': Category.objects.filter(name=category_name).first().id,
+        'price': request_data['price'],
+        'is_popular': request_data['is_popular']
+    }
+
+    page_is_active = bool(request_data['page_is_active'])
+
+    product = Product.objects.filter(pk=product_id)
+    product.update(**new_product_data)
+
+    product_page = Page.objects.filter(pk=product[0].page_id)
+    product_page.update(is_active=page_is_active)
+
+    return HttpResponse('Продукт {} был успешно обновлён'.format(product_id))
+
+
+@require_POST
+def admin_delete_product(request):
+    """Remove Product from DB by id"""
+    product_id = request.POST['id']
+
+    Product.objects.get(pk=product_id).delete()
+
+    return HttpResponse('Продукт {} был успешно удалён'.format(product_id))
+
 
 @require_GET
 def admin_tree_items(request):
@@ -265,14 +303,14 @@ def admin_tree_items(request):
 
         # jsTree has restriction on the name fields
         data_for_jstree = [{
-           'id': entity.id,
-           'text': '[ {id} ] {name}'.format(id=entity.id, name=entity.name),
-           'children': has_children, # if False, then lazy load switch off
-           'a_attr': { # it is "a" tag's attribute
-               'href-site-page': entity.get_absolute_url(),
-               'href-admin-page': reverse(view_name, args=(entity.id,)),
-               'category-id': entity.id if has_children else entity.category.id,
-           }
+            'id': entity.id,
+            'text': '[ {id} ] {name}'.format(id=entity.id, name=entity.name),
+            'children': has_children,  # if False, then lazy load switch off
+            'a_attr': {  # it is 'a' tag attribute
+                'href-site-page': entity.get_absolute_url(),
+                'href-admin-page': reverse(view_name, args=(entity.id,)),
+                'search-term': entity.name,
+            }
         } for entity in entities.iterator()]
 
         return JsonResponse(data_for_jstree, safe=False)

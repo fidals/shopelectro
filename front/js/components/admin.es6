@@ -1,4 +1,4 @@
-const admin = (() => {
+(() => {
   const DOM = {
     $productPage: $('.model-product'),
     $removeIcon: $('.js-remove-image'),
@@ -41,7 +41,7 @@ const admin = (() => {
   }
 
   /**
-   * Return current page type.
+   * Return current entity page type.
    */
   function getCurrentPageType() {
     return (DOM.$productPage.size() > 0) ? 'product' : 'category';

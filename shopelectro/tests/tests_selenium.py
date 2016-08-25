@@ -49,7 +49,7 @@ class SeleniumTestCase(LiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Closes selenium's session."""
+        """Close selenium session."""
         cls.browser.quit()
         super(SeleniumTestCase, cls).tearDownClass()
 
@@ -58,7 +58,7 @@ class Header(SeleniumTestCase):
     """Selenium-based tests for header."""
 
     def setUp(self):
-        """Sets up testing urls and dispatches selenium webdriver."""
+        """Set up testing urls and dispatch selenium webdriver."""
         self.browser.get(self.live_server_url)
 
     @property
@@ -97,7 +97,7 @@ class Header(SeleniumTestCase):
         self.assertTrue('Корзина пуста' in cart_in_header.text)
 
     def test_cart_hover(self):
-        """When hover, cart dropdown should be visible."""
+        """Cart dropdown should be visible on hover."""
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         hover(self.browser, cart_parent)
         cart = self.browser.find_element_by_class_name('basket-wrapper')
@@ -121,7 +121,7 @@ class CategoryPage(SeleniumTestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Sets up testing urls."""
+        """Set up testing urls."""
         super(CategoryPage, cls).setUpClass()
         server = cls.live_server_url
         testing_url = lambda slug: server + reverse('category', args=(slug,))
@@ -141,7 +141,7 @@ class CategoryPage(SeleniumTestCase):
         :return:
         """
 
-        # In 'root category' there should be three crumbs
+        # There should be three crumbs in 'root category'.
         self.browser.get(self.root_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
         self.assertEqual(len(crumbs), 3)
@@ -152,7 +152,7 @@ class CategoryPage(SeleniumTestCase):
         self.assertEqual(len(crumbs), 5)
 
     def test_30_products_by_default(self):
-        """By default any CategoryPage should contain 30 products."""
+        """Any CategoryPage should contain 30 products by default."""
 
         self.browser.get(self.root_category)
         loaded_products = self.browser.find_element_by_class_name(
@@ -186,7 +186,7 @@ class CategoryPage(SeleniumTestCase):
 
     def test_default_view_is_tile(self):
         """
-        By default, category page should has tile view
+        By default, category page should has tile view.
 
         It means, after rendering a page,
         tile view selector should has 'active' class
@@ -264,7 +264,7 @@ class ProductPage(SeleniumTestCase):
     PRODUCT_ID = 280
 
     def setUp(self):
-        """Sets up testing url and dispatches selenium webdriver."""
+        """Set up testing url and dispatch selenium webdriver."""
 
         server = self.live_server_url
 
@@ -367,7 +367,7 @@ class OrderPage(SeleniumTestCase):
 
     @staticmethod
     def get_cell(pos, col):
-        # table columns mapping:  http://prntscr.com/bsv5hp
+        # table columns mapping: http://prntscr.com/bsv5hp
         COLS = {
             'id': 1,
             'name': 3,
@@ -379,7 +379,6 @@ class OrderPage(SeleniumTestCase):
             '//*[@id="js-order-list"]/tbody/tr[{pos}]/td[{col}]'
 
         return product_row.format(pos=pos, col=COLS[col])
-
 
     @classmethod
     def setUpClass(cls):
@@ -404,7 +403,7 @@ class OrderPage(SeleniumTestCase):
         for i in range(1, 6):
             self.browser.find_element_by_xpath(
                 '//*[@id="products-wrapper"]/div[{}]/div[2]/div[5]/button'
-                    .format(i)
+                .format(i)
             ).click()
 
     def test_table_is_presented_if_there_is_some_products(self):
@@ -587,7 +586,7 @@ class AdminPage(SeleniumTestCase):
         cls.tree_node_id = '28'
 
     def setUp(self):
-        """Sets up testing url and dispatches selenium webdriver."""
+        """Set up testing url and dispatch selenium webdriver."""
 
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
@@ -681,7 +680,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue(sidebar.is_displayed())
 
     def test_tree_fetch_data(self):
-        """Test for lazy load logic"""
+        """Lazy load logic for jstree."""
         # open root node
         self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('i').click()
         wait()
@@ -689,12 +688,13 @@ class AdminPage(SeleniumTestCase):
         self.browser.find_element_by_id(self.tree_node_id).find_element_by_tag_name('i').click()
         wait()
 
-        node_children = self.browser.find_element_by_id(self.tree_node_id).find_elements_by_class_name('jstree-leaf')
+        node_children = (self.browser.find_element_by_id(self.tree_node_id)
+                         .find_elements_by_class_name('jstree-leaf'))
 
         self.assertGreater(len(node_children), 10)
 
     def test_tree_redirect_to_entity_edit_page(self):
-        """Test redirect to edit entity page by click at tree's item"""
+        """Test redirect to edit entity page by click at jstree's item"""
         h1 = 'Change category'
 
         # click at tree's item, redirect to entity edit page
@@ -707,22 +707,30 @@ class AdminPage(SeleniumTestCase):
 
     def test_tree_redirect_to_table_editor_page(self):
         """Test redirect to table editor page by context click at tree's item"""
-        tree_item = self.browser.find_element_by_id(self.tree_node_id).find_element_by_tag_name('a')
-        search_value = 'Child #0 of #Root category #1'
-        h1 = 'Table editor'
 
+        # open root node
+        self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('i').click()
+        wait()
+
+        # open child node
+        self.browser.find_element_by_id(self.tree_node_id).find_element_by_tag_name('i').click()
+        wait()
+
+        tree_item = self.browser.find_element_by_id('317').find_element_by_tag_name('a')
         context_click(self.browser, tree_item)
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[0].click()
         wait()
-        test_search_value = self.browser.find_element_by_id('search-field').get_attribute('value')
-        test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
-        self.assertEqual(test_h1, h1)
-        self.assertEqual(test_search_value, search_value)
+        test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
+        self.assertEqual(test_h1, 'Table editor')
+
+        test_search_value = self.browser.find_element_by_id('search-field').get_attribute('value')
+        self.assertTrue(len(test_search_value) > 0)
 
     def test_tree_redirect_to_entity_site_page(self):
         """Test redirect to entity's site page by context click at tree's item"""
-        tree_item = self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('a')
+        tree_item = (self.browser.find_element_by_id(self.tree_root_node_id)
+                     .find_element_by_tag_name('a'))
         h1 = 'Root category #1'
 
         context_click(self.browser, tree_item)
@@ -756,6 +764,162 @@ class AdminPage(SeleniumTestCase):
         wait()
 
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
+
+
+class TableEditor(SeleniumTestCase):
+    """Selenium-based tests for Table Editor [TE]."""
+
+    fixtures = ['dump.json', 'admin.json']
+    new_product_name = 'Product'
+
+    @classmethod
+    def setUpClass(cls):
+        super(TableEditor, cls).setUpClass()
+        cls.admin_page = cls.live_server_url + reverse('admin:index')
+        cls.login = 'admin'
+        cls.password = 'asdfjkl;'
+        cls.autocomplete_text = 'Prod'
+
+    def setUp(self):
+        """Set up testing url and dispatch selenium webdriver."""
+
+        self.browser.get(self.admin_page)
+        login_field = self.browser.find_element_by_id('id_username')
+        login_field.clear()
+        login_field.send_keys(self.login)
+        password_field = self.browser.find_element_by_id('id_password')
+        password_field.clear()
+        password_field.send_keys(self.password)
+        login_form = self.browser.find_element_by_id('login-form')
+        login_form.submit()
+        wait()
+        self.browser.find_element_by_id('admin-editor-link').click()
+        wait()
+
+    def refresh_table_editor_page(self):
+        self.browser.find_element_by_id('admin-editor-link').click()
+        wait()
+
+    def update_input_value(self, index, new_data):
+        """Clear input, pass new data and emulate Return keypress."""
+
+        editable_input = self.browser.find_elements_by_class_name('inline-edit-cell')[index]
+        editable_input.clear()
+        editable_input.send_keys(new_data)
+        editable_input.send_keys(Keys.ENTER)
+
+        self.refresh_table_editor_page()
+
+    def get_cell(self, index=0):
+        """Return WebElement for subsequent manipulations by index."""
+
+        table = self.browser.find_element_by_class_name('jqgrow')
+        return table.find_elements_by_tag_name('td')[index]
+
+    def get_current_price(self, index):
+        """Return sliced integer price of first product by cell index."""
+
+        raw_string = self.get_cell(index).text
+
+        return int(raw_string[2:-3])
+
+    def perform_checkbox_toggle(self, checkbox_name):
+        """Change checkbox state by checkbox_name."""
+
+        self.get_cell(1).click()
+        checkbox = self.browser.find_element_by_name(checkbox_name)
+        old_active_state = checkbox.is_selected()
+        checkbox.click()
+        checkbox.send_keys(Keys.ENTER)
+        self.refresh_table_editor_page()
+
+        self.get_cell(1).click()
+        new_active_state = self.browser.find_element_by_name(checkbox_name).is_selected()
+
+        return old_active_state, new_active_state
+
+    def test_products_loaded(self):
+        """TE should have all products."""
+
+        rows = self.browser.find_elements_by_class_name('jqgrow')
+
+        self.assertTrue(len(rows) > 0)
+
+    def test_edit_product_name(self):
+        """We could change Product name from TE."""
+
+        self.get_cell(1).click()
+        self.update_input_value(0, self.new_product_name)
+        updated_name = self.get_cell(1).text
+
+        self.assertEqual(updated_name, self.new_product_name)
+
+    def test_edit_product_price(self):
+        """We could change Product price from TE."""
+
+        new_price = self.get_current_price(4) + 100
+        self.get_cell(4).click()
+        self.update_input_value(2, new_price)
+        updated_price = self.get_current_price(4)
+
+        self.assertEqual(updated_price, new_price)
+
+    def test_edit_product_activity(self):
+        """We could change Product is_active state from TE."""
+
+        old_active_state, new_active_state = self.perform_checkbox_toggle('page_is_active')
+
+        self.assertNotEqual(new_active_state, old_active_state)
+
+    def test_edit_product_popularity(self):
+        """We could change Product price is_popular state from TE."""
+
+        old_popular_state, new_popular_state = self.perform_checkbox_toggle('is_popular')
+
+        self.assertNotEqual(new_popular_state, old_popular_state)
+
+    def test_remove_product(self):
+        """We could remove Product from TE."""
+
+        old_first_row_id = self.get_cell().text
+        self.browser.find_element_by_class_name('js-confirm-delete-modal').click()
+        wait()
+        self.browser.find_element_by_class_name('js-modal-delete').click()
+        wait()
+        new_first_row_id = self.get_cell().text
+
+        self.assertNotEqual(old_first_row_id, new_first_row_id)
+
+    def test_sort_table_by_id(self):
+        """We could sort products in TE by id."""
+
+        first_product_id_before = self.get_cell().text
+        self.browser.find_element_by_class_name('ui-jqgrid-sortable').click()
+        first_product_id_after = self.get_cell().text
+
+        self.assertNotEqual(first_product_id_before, first_product_id_after)
+
+    def test_sort_table_by_price(self):
+        """We could sort products in TE by price."""
+
+        first_product_price_before = self.get_cell(1).text
+        name_header = self.browser.find_elements_by_class_name('ui-jqgrid-sortable')[1]
+        name_header.click()
+        name_header.click()
+        first_product_price_after = self.get_cell(1).text
+
+        self.assertNotEqual(first_product_price_before, first_product_price_after)
+
+    def test_filter_table(self):
+        """We could make live search in TE."""
+
+        rows_before = len(self.browser.find_elements_by_class_name('jqgrow'))
+        search_field = self.browser.find_element_by_id('search-field')
+        search_field.send_keys('384')
+        wait(2)
+        rows_after = len(self.browser.find_elements_by_class_name('jqgrow'))
+
+        self.assertNotEqual(rows_before, rows_after)
 
 
 class YandexKassa(SeleniumTestCase):

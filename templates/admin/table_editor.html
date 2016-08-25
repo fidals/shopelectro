@@ -9,12 +9,9 @@
 
   <div class="form-inline jqgrid-actions">
     <div class="form-group">
-      <label for="search-field">Filter:</label>
+      <label for="search-field">Фильтр:</label>
       <input type="text" class="jqgrid-search-field form-control" id="search-field"
-             placeholder="Type something...">
-
-      <button class="btn btn-primary" id="edit-all-mode" type="button">Редактировать все поля</button>
-      <button class="btn btn-primary" id="save-rows" type="button">Сохранить все поля</button>
+             placeholder="Введите название товара, ID, категорию или цену...">
     </div>
   </div>
 
@@ -25,9 +22,9 @@
 {% block footer %}
   <div class="modal-wrapper js-modal-wrapper" id="confirm-modal">
     <div class="modal-box">
-      <h3 class="modal-box-title text-center">Вы действительно хотите удалить <span id="entity-to-remove"></span>?</h3>
+      <h3 class="modal-box-title text-center">Вы действительно хотите удалить <span id="product-to-remove"></span>?</h3>
       <div class="modal-box-buttons">
-        <a href="#" class="modal-delete btn btn-danger js-modal-delete">Удалить</a>
+        <button class="modal-delete btn btn-danger js-modal-delete">Удалить</button>
         <button class="btn btn-primary js-modal-delete-cancel">Отменить</button>
       </div>
     </div>

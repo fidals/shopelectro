@@ -48,7 +48,11 @@ class ModelsTests(TestCase):
             'products/{}/main.jpg'.format(self.product.id))
 
     def test_product_images(self):
-        """Get Product images."""
+        """
+        Get Product images.
+
+        main.jpg for product with id=1 is required
+        """
 
         images_list = images.get_images_without_small(self.product)
         self.assertIn(self.main_image, images_list)
