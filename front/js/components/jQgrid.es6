@@ -260,9 +260,9 @@
   const getSearchValue = key => {
     const searchQuery = decodeURIComponent(document.location.search).slice(1).split('&');
     const splitedPairs = searchQuery.map(item => item.split('='));
-    const arrayWithSearchTerm = splitedPairs.filter(item => item.includes(key))[0];
+    const [[_, searchTerm]] = splitedPairs.filter(item => item.includes(key));
 
-    return arrayWithSearchTerm[1];
+    return searchTerm;
   };
 
   const insertFilterValue = value => {

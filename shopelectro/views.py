@@ -248,32 +248,26 @@ def admin_create_product(request):
 
 @require_POST
 def admin_update_product(request):
-    """
-    Update Product data from Table editor
+    """Update Product data from Table editor"""
 
-    Type of all requested data's key & values is String.
-    All fields in request comes as ['123'] that's why we using [0]
-    to convert ['123'] => '123'
-    """
-
-    request_data = dict(request.POST)
-    product_id = request_data['id'][0]
-    category_name = request_data['category_name'][0]
+    request_data = {key: value[0] for key, value in dict(request.POST).items()}
+    product_id = request_data['id']
+    category_name = request_data['category_name']
 
     new_product_data = {
-        'name': request_data['name'][0],
-        'category_id': Category.objects.filter(name=category_name)[0].id,
-        'price': request_data['price'][0],
-        'is_popular': request_data['is_popular'][0]
+        'name': request_data['name'],
+        'category_id': Category.objects.filter(name=category_name).first().id,
+        'price': request_data['price'],
+        'is_popular': request_data['is_popular']
     }
 
-    page_is_active = int(request_data['page_is_active'][0])
+    page_is_active = bool(request_data['page_is_active'])
 
     product = Product.objects.filter(pk=product_id)
     product.update(**new_product_data)
 
-    product_page = Page.objects.filter(pk=product[0].page.id)
-    product_page.update(is_active=bool(page_is_active))
+    product_page = Page.objects.filter(pk=product[0].page_id)
+    product_page.update(is_active=page_is_active)
 
     return HttpResponse('Продукт {} был успешно обновлён'.format(product_id))
 
