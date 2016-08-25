@@ -187,10 +187,10 @@ HREFS = {
 }
 
 SHOP = {
-    'id': '39965',
+    'id': '69886',
     'scid': '27590',
-    'success_url': 'https://www.shopelectro.ru/shop/pay-success/',
-    'fail_url': 'https://www.shopelectro.ru/',
+    'success_url': settings.BASE_URL + '/shop/pay-success/',
+    'fail_url': settings.BASE_URL + '/',
     'cps_phone': '+78124163200',
     'cps_email': 'info@shopelectro.ru',
     'local_delivery_cost': 300,

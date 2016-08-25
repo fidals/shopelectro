@@ -4,6 +4,8 @@ yml_price command.
 Generate two price files: priceru.xml and yandex.yml.
 """
 
+import os
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
@@ -18,8 +20,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Parse target-argument and writes catalog to file."""
-        targets = [('YM', 'yandex.yml'),
-                   ('priceru', 'priceru.xml')]
+        base_dir = settings.ASSETS_DIR
+        targets = [
+            ('YM', os.path.join(base_dir, 'yandex.yml')),
+            ('priceru', os.path.join(base_dir, 'priceru.xml')),
+            ('GM', os.path.join(base_dir, 'gm.yml')),
+        ]
 
         for utm, file_to_write in targets:
             self.write_yml(file_to_write, self.get_context_for_yml(utm))
@@ -40,7 +46,7 @@ class Command(BaseCommand):
             url = reverse('product', args=(product.id,))
             utm_mark = '&'.join(['{}={}'.format(k, v)
                                  for k, v in product_utm().items()])
-            product.utm_url = ''.join([settings.BASE_URL, url, utm_mark])
+            product.utm_url = ''.join([settings.BASE_URL, url, '?' + utm_mark])
             return product
 
         others = (Category.objects.get(name='Прочее')

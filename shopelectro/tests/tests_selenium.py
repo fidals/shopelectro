@@ -384,8 +384,8 @@ class OrderPage(SeleniumTestCase):
     @classmethod
     def setUpClass(cls):
         super(OrderPage, cls).setUpClass()
-        cls.category = reverse('category', args=(
-            'child-1-of-root-category-1',))
+        cls.category = reverse(
+            'category', args=('child-1-of-root-category-1',))
         cls.cart_dropdown = 'basket-parent'
         cls.first_product_id = '405'
         cls.remove_product = cls.get_cell(pos=4, col='remove') + '/img'
@@ -483,9 +483,10 @@ class OrderPage(SeleniumTestCase):
         wait()
         self.fill_and_submit_form()
         wait()
-        self.assertEqual(self.browser.current_url,
-                         self.live_server_url +
-                         reverse('ecommerce:order_success'))
+        self.assertEqual(
+            self.browser.current_url,
+            self.live_server_url + reverse('ecommerce:order_success')
+        )
 
     def fill_and_submit_form(self, yandex=False):
         self.browser.find_element_by_id('id_name').send_keys('Name')
@@ -622,7 +623,10 @@ class AdminPage(SeleniumTestCase):
         In this case we filter products with 1000 - 2000 price range.
         """
 
-        self.browser.find_element_by_id(self.products).click()
+        # separated var for debugging
+        products_list = self.browser.find_element_by_id(self.products)
+        products_list.click()
+        wait()
         self.browser.find_element_by_xpath(self.price_filter).click()
         wait(2)
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[3]')
@@ -694,7 +698,9 @@ class AdminPage(SeleniumTestCase):
         h1 = 'Change category'
 
         # click at tree's item, redirect to entity edit page
-        self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('a').click()
+        root_node = self.browser.find_element_by_id(self.tree_root_node_id)
+        root_node.find_element_by_tag_name('a').click()
+        wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
         self.assertEqual(h1, test_h1)

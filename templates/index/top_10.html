@@ -1,18 +1,23 @@
 {% load staticfiles %}
-<div class="stuff-top">
+<div  itemscope itemtype="http://schema.org/Product" class="stuff-top">
   <p class="stuff-top-title text-center">ТОП 10 ТОВАРОВ</p>
   {% for product in top_products %}
     <div class="stuff-top-item">
-      <a class="stuff-top-img js-browse-product" href="{% url 'product' product.id %}">
-        <img src="/media/products/2847/small.jpg" class="img-responsive img-centered"
+      <a itemprop="url" class="stuff-top-img js-browse-product" href="{% url 'product' product.id %}">
+        <img itemprop="image" src="/media/products/2847/small.jpg" class="img-responsive img-centered"
              alt="{{ product.name }}">
       </a>
       <div class="stuff-top-description">
         <div class="stuff-top-wrap">
-          <a class="stuff-top-name js-browse-product" href="{% url 'product' product.id %}">{{ product.name }}</a>
+          <a class="stuff-top-name js-browse-product" href="{% url 'product' product.id %}">
+            <span itemprop="name">{{ product.name }}</span>
+          </a>
         </div>
         <div class="stuff-top-category">{{ product.get_root_category }}</div>
-        <div class="stuff-top-price-new">{{ product.price }} руб.</div>
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="stuff-top-price-new">
+          <meta itemprop="priceCurrency" content="RUB" />
+          <span itemprop="price">{{ product.price }}</span> руб
+        </div>
       </div>
     </div>
   {% endfor %}

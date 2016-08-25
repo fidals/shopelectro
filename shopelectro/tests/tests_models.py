@@ -25,7 +25,7 @@ class ModelsTests(TestCase):
             wholesale_small=10,
             wholesale_medium=10,
             wholesale_large=10,
-            category=self.category,
+            category=self.category
         )
 
         self.non_existing_product, _ = Product.objects.get_or_create(
@@ -34,7 +34,7 @@ class ModelsTests(TestCase):
             wholesale_small=10,
             wholesale_medium=10,
             wholesale_large=10,
-            category=self.category,
+            category=self.category
         )
 
         self.trademark, _ = Property.objects.get_or_create(

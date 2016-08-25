@@ -21,44 +21,42 @@
       <th>Цена</th>
       <th></th>
     </tr>
-    {% for position in cart %}
-      {% with product=position.product %}
-        <tr id="{{ product.id }}">
-          <td>{{ product.id }}</td>
-          <td class="photo text-center">
-            {% if product.main_image == 'logo.svg' %}
-              <img src="{% static 'images/camera-icon.png' %}">
+    {% for id, position in cart %}
+      <tr id="{{ id }}">
+        <td>{{ id }}</td>
+        <td class="photo text-center">
+          {% if 'logo' in position.image %} {# position has image #}
+            <img src="{% static 'images/camera-icon.png' %}">
+          {% else %}
+            {# TODO: Images module needs refactoring. We should have #}
+            {# ability to use product.main_image in template #}
+            {# Added to GDoc #}
+            <a class="fancybox" rel="product-cart-gallery" href="{% static position.image %}"
+               title="{{ position.name }}">
+              <img src="{% static 'images/camera-icon-clr.png' %}">
+            </a>
+          {% endif %}
+        </td>
+        <td>
+          <a class="js-product-link" href="{{ position.url }}">{{ position.name }}</a>
+        </td>
+        <td class="count">
+          <div class="stock">
+            {% if position.in_stock > 0 %}
+              <i class="fa fa-circle in-stock" title="В наличии"></i>
             {% else %}
-              {# TODO: Images module needs refactoring. We should have #}
-              {# ability to use product.main_image in template #}
-              {# Added to GDoc #}
-              <a class="fancybox" rel="product-cart-gallery" href="{% static product.main_image %}"
-                 title="{{ product.name }}">
-                <img src="{% static 'images/camera-icon-clr.png' %}">
-              </a>
+              <i class="fa fa-circle out-stock" title="Под заказ"></i>
             {% endif %}
-          </td>
-          <td>
-            <a class="js-product-link" href="{% url 'product' product.id %}">{{ product.name }}</a>
-          </td>
-          <td class="count">
-            <div class="stock">
-              {% if product.in_stock > 0 %}
-                <i class="fa fa-circle in-stock" title="В наличии"></i>
-              {% else %}
-                <i class="fa fa-circle out-stock" title="Под заказ"></i>
-              {% endif %}
-            </div>
-            <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" type="number" name="prod-count"
-                   productId="{{ product.id }}">
-          </td>
-          <td class="price js-product-price" productId="{{ product.id }}">{{ position.price|humanize_price }} руб</td>
-          <td class="product-delete">
-            <img class="btn-cart js-remove" productId="{{ product.id }}" src="{% static 'images/btn-close-icon.png' %}"
-                 alt="Убрать из корзины" title="Убрать из заказа">
-          </td>
-        </tr>
-      {% endwith %}
+          </div>
+          <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" type="number" name="prod-count"
+                 productId="{{ id }}">
+        </td>
+        <td class="price js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб</td>
+        <td class="product-delete">
+          <img class="btn-cart js-remove" productId="{{ id }}" src="{% static 'images/btn-close-icon.png' %}"
+               alt="Убрать из корзины" title="Убрать из заказа">
+        </td>
+      </tr>
     {% endfor %}
     <tr>
       <td class="order-total" colspan="3">

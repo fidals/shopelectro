@@ -26,7 +26,7 @@
         <offer id="{{ product.id }}" available="{{ product.in_stock|yesno:'true,false' }}">
           <url>{{ product.utm_url }}</url>
           <price>{{ product.price }}</price>
-          {% if utm != 'priceru' %}<purchase_price>{{ product.price }}</purchase_price>{% endif %}
+          {% if utm != 'priceru' %}<purchase_price>{{ product.purchase_price }}</purchase_price>{% endif %}
           <currencyId>RUR</currencyId>
           {% get_model_images product %}
           <categoryId>{{ product.category.id }}</categoryId>
@@ -36,7 +36,7 @@
           {% if product.price > shop.delivery_threshold %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
           {% if product.trademark %}<vendor>{{ product.trademark }}</vendor>{% endif %}
-          {% if product.content %}<description>{{ product.content }}</description>{% endif %}
+          {% if product.page.content %}<description>{{ product.page.content }}</description>{% endif %}
           <sales_notes>При заказе от {{ shop.delivery_threshold }} руб. доставка по СПб бесплатно</sales_notes>
         </offer>
       {% endfor %}

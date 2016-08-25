@@ -1,0 +1,49 @@
+version: "2"
+
+services:
+  se_prod:
+    extends:
+      file: common-services.yml
+      service: webapp
+    restart: always
+    container_name: se_prod
+    environment:
+      DJANGO_SETTINGS_MODULE: shopelectro.settings.prod
+      DATABASE_URL: postgres://postgres:$DB_PASS@se_db_prod/se_prod
+      DEBUG: "False"
+      HTTPS: 'off'  # TODO - enable https
+    ports:
+      - "8010:80"
+    depends_on:  # can't be inherited
+      - se_db_prod
+
+  se_db_prod:
+    extends:
+      file: common-services.yml
+      service: db
+    container_name: se_db_prod
+    restart: always
+    environment:
+      POSTGRES_DB: "se_prod"
+
+  se_dev:
+    extends:
+      file: common-services.yml
+      service: webapp
+    container_name: se_dev
+    environment:
+      DJANGO_SETTINGS_MODULE: shopelectro.settings.base
+      DATABASE_URL: postgres://postgres:$DB_PASS@se_db_dev/se_dev
+      DEBUG: "True"
+    ports:
+      - "8011:80"
+    depends_on:  # can't be inherited
+      - se_db_dev
+
+  se_db_dev:
+    extends:
+      file: common-services.yml
+      service: db
+    container_name: se_db_dev
+    environment:
+      POSTGRES_DB: "se_dev"

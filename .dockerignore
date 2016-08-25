@@ -1,0 +1,5 @@
+/node_modules/
+/front/build/
+/static/
+!/static/assets/  # TODO - move assets to another folder
+*.sqlite*

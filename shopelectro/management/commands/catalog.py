@@ -75,12 +75,12 @@ def process(procedure_name: str) -> callable:
             """Print result before function call and after it."""
             print('{}...'.format(procedure_name))
             result = procedure(*args, **kwargs)
-            print(result or 'Завершено: {}'.format(procedure_name))
+            print(result or 'Completed: {}'.format(procedure_name))
         return wrapper
     return inner
 
 
-@process('Загрузка информации в базу')
+@process('Load info to DB')
 def delete_and_create(model_generator_mapping: list) -> result_message:
     """Perform db transaction of removing current rows and creating new ones."""
     def purge_table(model):
@@ -96,7 +96,7 @@ def delete_and_create(model_generator_mapping: list) -> result_message:
         for model_class, generator in model_generator_mapping:
             purge_table(model_class)
             save_instances(generator)
-    return 'Товары и Категории успешно сохранены.'
+    return 'Categories and Products were saved to DB.'
 
 
 class Command(BaseCommand):
@@ -128,7 +128,7 @@ class Command(BaseCommand):
         """Return a list of products nodes presented in xml."""
         return ElementTree.parse(self.XML_FILES[1]).getroot()
 
-    @process('Импорт каталога')
+    @process('Import catalog')
     def handle(self, *args: tuple, **options: dict) -> str:
         """Run 'import' command."""
         start_time = time.time()
@@ -137,7 +137,7 @@ class Command(BaseCommand):
                            (Product, self.parse_products())])
         self.remove_xml()
         self.generate_prices()
-        return 'Импорт завершен! Затрачено {0:.1f} секунд'.format(time.time() - start_time)
+        return 'Import completed! {0:.1f} seconds elapsed.'.format(time.time() - start_time)
 
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
@@ -202,13 +202,11 @@ class Command(BaseCommand):
             assertions_data['category'] = Category.objects.get(id=category_id())
             assert assertions_data['price']
         except Category.DoesNotExist:
-            print('Внимание! Категории {} не существует, '
-                  'поэтому товар {} не будет сохранен.'
+            print('Category {} does not exist. Product {} will not be saved'
                   .format(category_id(), assertions_data['id']))
             return
         except AssertionError:
-            print('Внимание! Не указана цена товара, '
-                  'поэтому этот товар {} не будет сохранен.'
+            print('Product with id={} have not price. It\'ll not be saved'
                   .format(assertions_data['id']))
             return
 
@@ -219,11 +217,12 @@ class Command(BaseCommand):
             'wholesale_small': float(node[2][1].attrib['price_cost']),
             'wholesale_medium': float(node[2][2].attrib['price_cost']),
             'wholesale_large': float(node[2][3].attrib['price_cost']),
+            'purchase_price': float(node[2][4].attrib['price_cost']),
         }
 
         return product_data
 
-    @process('Загрузка файлов')
+    @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
         def download_file():
@@ -234,16 +233,16 @@ class Command(BaseCommand):
         for xml_file in self.XML_FILES:
             with FTP(**self.FTP_CONNECTION) as ftp, open(xml_file, 'wb') as save_xml:
                 download_file()
-        return 'XML файлы загружены.'
+        return 'XML files were downloaded.'
 
-    @process('Удаление файлов')
+    @process('Remove files')
     def remove_xml(self) -> result_message:
         """Remove downloaded xml files."""
         for xml in self.XML_FILES:
             os.remove(xml)
 
     @staticmethod
-    @process('Создание прайсов')
+    @process('Create price lists')
     def generate_prices() -> result_message:
         """Generate Excel, YM and Price.ru price files."""
         commands = ['excel', 'price']
@@ -251,4 +250,4 @@ class Command(BaseCommand):
         for command in commands:
             call_command(command)
 
-        return 'Прайс-листы созданы.'
+        return 'Price lists were created.'

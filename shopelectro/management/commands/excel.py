@@ -29,7 +29,8 @@ class Command(BaseCommand):
         self.fill_header(sheet)
         self.write_catalog(sheet)
         self.hide_formulas(sheet)
-        file.save(self.NAME)
+        base_dir = settings.ASSETS_DIR
+        file.save(os.path.join(base_dir, self.NAME))
 
     def load_file_and_sheet(self):
         """

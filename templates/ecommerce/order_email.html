@@ -48,17 +48,15 @@
           <td colspan="6" style="border-top:1px solid #E4E4E4; height:5px;"></td>
         </tr>
         {% for position in order.items %}
-          {% with product=position.product %}
-            <tr>
-              <td align="left" style="padding:5px 10px;">{{ product.id }}</td>
-              <td align="left" style="padding:5px 10px;">
-                <a href="{% full_url 'product' product.id  %}">{{ product.name }}</a>
-              </td>
-              <td align="right" style="padding:5px 10px;">{{ position.quantity }} шт.</td>
-              <td align="right" style="padding:5px 10px;">{{ position.price|humanize_price }} руб.</td>
-              <td align="right" style="padding:5px 10px;">{{ position.cost }} руб.</td>
-            </tr>
-          {% endwith %}
+          <tr>
+            <td align="left" style="padding:5px 10px;">{{ position.product_id }}</td>
+            <td align="left" style="padding:5px 10px;">
+              <a href="{% full_url 'product' position.product_id  %}">{{ position.name }}</a>
+            </td>
+            <td align="right" style="padding:5px 10px;">{{ position.quantity }} шт.</td>
+            <td align="right" style="padding:5px 10px;">{{ position.price|humanize_price }} руб.</td>
+            <td align="right" style="padding:5px 10px;">{{ position.cost }} руб.</td>
+          </tr>
         {% endfor %}
         <tr>
           <td colspan="6" style="border-bottom:1px solid #E4E4E4;height:5px;"></td>

@@ -44,6 +44,7 @@ class Product(AbstractProduct):
     # TODO - remove it during admin refactor in dev-774
     is_active = models.BooleanField(default=True)
 
+    purchase_price = models.FloatField(default=0)
     wholesale_small = models.FloatField()
     wholesale_medium = models.FloatField()
     wholesale_large = models.FloatField()

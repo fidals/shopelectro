@@ -25,7 +25,6 @@ class Command(BaseCommand):
         links = self.get_data_from_json()
         categories = self.fetch_categories(links)
         conn, cur = self.connect_to_the_db()
-        self.change_domain_name_in_the_db(cur)
         self.insert_data_to_django_redirect(cur, links, categories)
         self.disconnect_from_the_db(conn)
 
@@ -56,14 +55,6 @@ class Command(BaseCommand):
         """Commit pending transaction to the database and disconnection."""
         conn.commit()
         conn.close()
-
-    def change_domain_name_in_the_db(self, cur):
-        """Change default domain name to the actual."""
-        DOMAIN_NAME = settings.SITE_DOMAIN_NAME
-        UPDATE_QUERY = 'UPDATE django_site SET domain=(%s), name=(%s);'
-
-        print('Domain name changed on {}.'.format(DOMAIN_NAME))
-        cur.execute(UPDATE_QUERY, (DOMAIN_NAME, DOMAIN_NAME))
 
     def insert_data_to_django_redirect(self, cur, links, categories):
         """Insert new records in a django_redirect."""

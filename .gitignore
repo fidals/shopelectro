@@ -8,11 +8,8 @@ src/
 *.sqlite*
 *.htaccess
 node_modules
-shopelectro/migrations/
 shopelectro/settings/local.py
 static/**/*
-media/**/*
-!media/products/280/*
 pricelist.xlsx
 priceru.xml
 yandex.yml

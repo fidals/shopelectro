@@ -1,8 +1,7 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html profile="http://gmpg.org/xfn/11"
-      prefix="ya: http://webmaster.yandex.ru/vocabularies/ og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" lang="ru">
-<head profile="http://gmpg.org/xfn/11">
+<html prefix="ya: http://webmaster.yandex.ru/vocabularies/ og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" lang="ru">
+<head>
   {% if page %}
     {% include 'layout/metadata.html' with page=page only %}
   {% endif %}
@@ -24,7 +23,7 @@
   {% include 'layout/footer.html' %}
 {% endblock %}
 
-<div class="btn-scroll-to-top" id="btn-scroll-to-top">Наверх</div>
+<div class="btn-scroll-to-top" id="btn-scroll-to-top"><i class="fa fa-arrow-up f-4x"></i></div>
 
 {% include 'layout/back_call_modal.html' %}
 

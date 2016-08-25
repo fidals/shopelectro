@@ -6,8 +6,19 @@ Deploy tasks for SE version 1:
 - Move pages content from Symfony with hands
 - Run gulp build
 - Check all phones on site
+- Check Ya.Kassa configs (config.SHOP)
 
 
 After deploy:
 - Remove texts command
 - Remove redirects command
+
+
+Standard deploy instructions:
+
+docker login -u duker
+docker pull fidals/se
+cd ~/shopelectro/docker/
+docker-compose -f docker-compose.yml -f production.yml up -d
+docker exec -it se python3 /opt/shopelectro/manage.py migrate
+docker exec -it se python3 /opt/shopelectro/manage.py catalog
