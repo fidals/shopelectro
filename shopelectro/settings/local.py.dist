@@ -1,0 +1,26 @@
+# Copy this file in the same dir and rename to "local.py"
+
+from .base import *
+
+DEBUG = True
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'shopelectro',
+        'USER': 'postgres',
+        'PASSWORD': '11',
+        'HOST': '',
+        'PORT': '',
+    },
+}
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'mediaprime10@yandex.ru'
+EMAIL_HOST_PASSWORD = 'planka67rezka'
+DEFAULT_FROM_EMAIL = 'mediaprime10@yandex.ru'
+DEFAULT_TO_EMAIL = 'mediaprime10@yandex.ru'
+SHOP_EMAIL = 'mediaprime10@yandex.ru'

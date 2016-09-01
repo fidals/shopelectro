@@ -32,7 +32,7 @@ services:
       service: webapp
     container_name: se_dev
     environment:
-      DJANGO_SETTINGS_MODULE: shopelectro.settings.base
+      DJANGO_SETTINGS_MODULE: shopelectro.settings.dev
       DATABASE_URL: postgres://postgres:$DB_PASS@se_db_dev/se_dev
       DEBUG: "True"
     ports:

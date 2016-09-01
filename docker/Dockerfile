@@ -60,5 +60,5 @@ ENV MEDIA_ROOT=/opt/shopelectro/app/media
 RUN nginx -t \
     && npm install -g gulp && npm install && gulp build \
     && python3 -c 'import compileall, os; compileall.compile_dir(os.curdir, force=1)' > /dev/null \
-    && python3 ./manage.py collectstatic --settings=shopelectro.settings.base --no-input -v0
+    && python3 ./manage.py collectstatic --settings=shopelectro.settings.prod --no-input -v0
 CMD ["circusd", "/etc/circus/web.ini"]

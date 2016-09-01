@@ -8,4 +8,8 @@ server {
         root /opt/shopelectro/app/;
         access_log off;
     }
+    location /media/ {
+        root /opt/shopelectro/app/;
+        access_log off;
+    }
 }

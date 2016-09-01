@@ -8,6 +8,6 @@ psycopg2
 openpyxl
 unidecode
 dj-database-url==0.4.1
--e git+https://github.com/fidals/refarm-catalog.git#egg=refarm-catalog
--e git+https://github.com/fidals/refarm-site.git#egg=refarm-site
+-e git+https://github.com/fidals/refarm-catalog.git@780_release#egg=refarm-catalog
+-e git+https://github.com/fidals/refarm-site.git@780_release#egg=refarm-site
 -e git+https://github.com/fidals/refarm-ecommerce.git#egg=refarm-ecommerce

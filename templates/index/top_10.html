@@ -4,7 +4,7 @@
   {% for product in top_products %}
     <div class="stuff-top-item">
       <a itemprop="url" class="stuff-top-img js-browse-product" href="{% url 'product' product.id %}">
-        <img itemprop="image" src="/media/products/2847/small.jpg" class="img-responsive img-centered"
+        <img itemprop="image" src="/media/products/{{ product.id }}/small.jpg" class="img-responsive img-centered"
              alt="{{ product.name }}">
       </a>
       <div class="stuff-top-description">

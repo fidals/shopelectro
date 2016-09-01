@@ -124,7 +124,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-ASSETS_DIR = os.path.join(BASE_DIR, 'static/assets')
+ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'front/build'),
@@ -139,7 +139,7 @@ DATABASE_URL = 'postgres://postgres:11@db/shopelectro'
 DATABASES = {
     'default': dj_database_url.config(
         env='DATABASE_URL',
-        default='postgres://localhost/shopelectro'
+        default=DATABASE_URL
     )
 }
 
@@ -232,5 +232,3 @@ PAGES = {
         'date_published': SITE_CREATED,
     },
 }
-
-from .local import *
