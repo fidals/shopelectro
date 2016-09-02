@@ -162,6 +162,8 @@ SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 # For sitemaps and sites framework
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
+# Uncomment for http->https change
+os.environ['HTTPS'] = 'on'
 
 # Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'

@@ -55,10 +55,10 @@
     (function(i, s, o, g, r, a, m) {
       i['GoogleAnalyticsObject'] = r;
       i[r] = i[r] || function() {
-          (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
+            (i[r].q = i[r].q || []).push(arguments)
+          }, i[r].l = 1 * new Date();
       a = s.createElement(o),
-        m = s.getElementsByTagName(o)[0];
+          m = s.getElementsByTagName(o)[0];
       a.async = 1;
       a.src = g;
       m.parentNode.insertBefore(a, m)
@@ -67,4 +67,43 @@
     ga('create', 'UA-42239144-1', 'auto');
     ga('send', 'pageview');
   </script>
+
+  <script>
+    (function() {
+      if (typeof carrotquest === 'undefined') {
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = '//cdn.carrotquest.io/api.min.js';
+        var x = document.getElementsByTagName('head')[0];
+        x.appendChild(s);
+
+        carrotquest = {};
+        window.carrotquestasync = [];
+        carrotquest.settings = {};
+        m = ['connect', 'track', 'identify', 'auth'];
+
+        function Build(name, args) {
+          return function() {
+            window.carrotquestasync.push(name, arguments);
+          }
+        }
+
+        for (var i = 0; i < m.length; i++) carrotquest[m[i]] = Build(m[i]);
+      }
+    })();
+    carrotquest.connect('3504-586a045918d29ff2f2c4d0ea46a');
+  </script>
+
+  <script src="https://my.callbaska.ru/callback.js" async charset="utf-8"></script>
+
+  <script id="huckster">
+    (function(w,d,s,c) {
+      var h=document.getElementById('huckster'),r=d.createElement('script');w.Huckster={};
+      w.Huckster.config=c||{};
+      w.Huckster.config.server=s;
+      r.setAttribute('src', '//'+Huckster.config.server+'/app/huckster.min.js');
+      h.parentNode.insertBefore(r,h.nextSibling); })(window,document,'files.hucksterbot.com', {companyId:245});
+  </script>
+
 {% endif %}

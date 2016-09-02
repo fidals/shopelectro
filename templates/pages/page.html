@@ -1,19 +1,11 @@
 {% extends 'layout/base.html' %}
 {% load staticfiles %}
 {% load pages_extras %}
-{% block title %}{{ page.title }}{% endblock %}
-{% block keywords %}{{ page.keywords }}{% endblock %}
-{% block description %}{{ page.description }}{% endblock %}
-
-{% block published_date %}{{ page.date_published|date:'d-m-Y' }}{% endblock %}
-{% block unique_url %}{{ request.build_absolute_uri }}{{ page.get_absolute_url }}{% endblock %}
-{% block canonical %}{{ request.build_absolute_uri }}{{ page.get_absolute_url }}{% endblock %}
 
 {% block stylesheets %}
   {{ block.super }}
   <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
 {% endblock %}
-
 
 {% block content %}
   <div class="container article-content">

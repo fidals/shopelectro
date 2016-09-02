@@ -3,6 +3,8 @@
 {% roots as root_categories %}
 <div class="header">
   <div class="wrapper-container">
+    <div class="top-header-plate text-muted text-center">Бесплатная доставка по России от 3000 рублей</div>
+
     <div class="top-header">
       <div class="container">
 
@@ -22,13 +24,14 @@
             <span class="header-sub-text">Санкт-Петербург</span>
             <span title="м. Автово"><img src="{% static 'images/metro_red.png' %}" alt="м. Автово">
               <a class="subway-contact-link" rel="nofollow"
-                 href="#yunona"> Ярмарка «Юнона», пав. 660, 662</a></span>
+                 href="{% url 'pages:flat_page' 'contacts' %}"> Ярмарка «Юнона», пав. 660, 662</a></span>
             <span class="header-sub-text">пн-вс 10:00-18:00</span>
           </div>
           <div class="header-sub">
             <span title="м. Елизаровская"><img src="{% static 'images/metro_green.png' %}" alt="м.
             Елизаровская">
-              <a class="subway-contact-link" rel="nofollow" href="#elizarova"> пр-т Елизарова 38А, офис 312</a></span>
+              <a class="subway-contact-link" rel="nofollow" href="{% url 'pages:flat_page' 'contacts' %}">
+                пр-т Елизарова 38А, офис 312</a></span>
             <span class="header-sub-text">пн-чт 10:00-18:00, пт 10:00-17:00</span>
           </div>
         </div>
@@ -76,7 +79,11 @@
                                  placeholder="Поиск по названию, артикулу, производителю">
                         </div>
                         <div class="col-xs-5">
-                          <div class="example">например, <span class="search-example-text" id="search-example-text">Батарейка MINAMOTO 3R12, 4.5 В</span>
+                          <div class="example">
+                            например,
+                            <span class="search-example-text" id="search-example-text">
+                              Батарейка MINAMOTO 3R12, 4.5 В
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -118,8 +125,8 @@
                       <a class="popular-product-link" href="{{ product.get_absolute_url }}">
                       <div class="label">Популярный товар</div>
                       <div class="popular-product-image-wrapper">
-                        <img class="img-centered img-responsive" src={{ product.image }}
-                                alt={{ product.name }}>
+                        <img class="img-centered img-responsive" src="{{ product.image }}"
+                             alt="{{ product.name }}">
                       </div>
                       <div class="text">
                         <div class="price">{{ product.price }} руб.</div>
@@ -134,7 +141,7 @@
           {% endfor %}
 
           <li class="nav-category-item">
-            <a class="nav-category-link" href="#" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
+            <a class="nav-category-link" href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
           </li>
         </ul>
       </div>
