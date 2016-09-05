@@ -20,5 +20,7 @@ DATABASES = {
     )
 }
 
+SITE_DOMAIN_NAME = 'stage.shopelectro.ru'
+
 #http->https change
 # os.environ['HTTPS'] = 'on'
