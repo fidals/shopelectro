@@ -44,7 +44,7 @@
       </div>
 
       {% if page.seo_text %}
-        {% autoescape %}
+        {% autoescape on %}
         <div class="category-text" id="category-text">{{ page.seo_text }}</div>
         {% endautoescape %}
       {% endif %}
