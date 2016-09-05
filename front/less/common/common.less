@@ -73,44 +73,33 @@ h3 {
 
 .btn-scroll-to-top {
   .font-anti;
-  background: @c-btn-remove-active;
-  border: 2px solid @c-btn-remove-active;
-  border-radius: 20px;
-  bottom: 20px;
-  color: @c-white;
+  background: @c-white;
+  box-shadow: 0 0 0 2px @c-white;
+  border-radius: 50%;
+  bottom: 130px;
+  color: @c-btn-remove-active;
   cursor: pointer;
-  font-family: @proxima-cond-bold;
-  font-size: @f-size-base + 4;
-  font-weight: 400;
-  margin: 0 5px 110px 0;
-  outline: none;
+  height: 42px;
+  font-size: @f-size-base + 34;
   opacity: 0;
-  padding: 8px 0 0 2px;
   position: fixed;
-  right: 0;
-  text-align: center;
-  text-decoration: none;
+  right: 5px;
   transition: all 0.3s ease;
   z-index: 10;
-  width: 40px;
-  height: 40px;
+  width: 43px;
 
   &:hover,
   &:focus {
-    background: @c-tooltip-hovered;
-    border: 2px solid @c-tooltip-hovered;
-    color: @c-white;
-  }
-
-  &:active {
-    box-shadow: none;
-    background: @c-white;
-    border: 2px solid @c-btn-remove-active;
-    color: @c-btn-remove-active;
+    color: @c-tooltip-hovered;
   }
 
   &.active {
     opacity: 1;
+  }
+
+  .fa {
+    position: relative;
+    top: -4px;
   }
 }
 
@@ -184,7 +173,7 @@ h3 {
     }
 
     &-text {
-      color: @c-btn-red-focused;
+      color: @c-logo-text;
       font-family: @proxima-cond-bold;
       font-size: @font-size-base - 1;
       padding: 4px 0 0 2px;
@@ -205,7 +194,7 @@ h3 {
 
   &-sub-wrapper-right {
     float: right;
-    width: 309px;
+    width: 331px;
   }
 
   &-sub {
@@ -226,7 +215,7 @@ h3 {
   &-price-wrapper {
     display: block;
     float: left;
-    margin: 25px 30px 0 0;
+    margin: 25px 15px 0 0;
     text-align: center;
     width: 142px;
   }
@@ -290,6 +279,11 @@ h3 {
 
 .top-header {
   padding: 17px 0 15px;
+
+  &-plate {
+    border-bottom: 1px solid @c-white;
+    padding: 10px 0;
+  }
 
   .download {
     background: @c-btn-price-bg;
@@ -696,7 +690,7 @@ h3 {
     display: inline-block;
     text-decoration: none;
     right: 0;
-    top: 11px;
+    top: 1px;
   }
 
   i {
@@ -2043,6 +2037,14 @@ div.info-text {
     &-img {
       max-width: 185px;
     }
+
+    &-text {
+      color: @c-logo-text;
+      font-family: @proxima-cond-bold;
+      font-size: @font-size-base - 1;
+      padding: 4px 0 0 2px;
+      letter-spacing: 0.015em;
+    }
   }
 
   .mail,
@@ -2071,6 +2073,11 @@ div.info-text {
       border-bottom: 1px solid transparent;
       color: @c-middle-footer-link;
     }
+  }
+
+  &-copyright {
+    font-size: @f-size-base - 2;
+    padding: 20px 0 0;
   }
 }
 

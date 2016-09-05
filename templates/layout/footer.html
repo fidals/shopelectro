@@ -13,17 +13,23 @@
         <div class="col-xs-4">
           <div class="top-footer-persent">
             <span class="symbol">%</span>
-            <div class="top-footer-persent-text"><a class="sub-footer-link" id="wholesale-link" href="#">Выгодные
-              условия для оптовых покупателей</a></div>
+            <div class="top-footer-persent-text">
+              <a class="sub-footer-link" id="wholesale-link" href="{% url 'pages:flat_page' 'wholesale' %}">
+                Выгодные условия для оптовых покупателей</a>
+            </div>
           </div>
         </div>
         <div class="col-xs-4">
           <div class="delivery-text">
-            <a class="sub-footer-link" href="#samovivoz"><span>Самовывоз со склада</span></a>
-            <a class="sub-footer-link"
-               href="#kuryer"><span>Доставка курьером по СПБ и ЛО</span></a>
-            <a class="sub-footer-link"
-               href="#russia"><span>Доставка по всей России</span></a>
+            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'delivery' %}">
+              <span>Самовывоз со склада</span>
+            </a>
+            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'delivery' %}">
+              <span>Доставка курьером по СПБ и ЛО</span>
+            </a>
+            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'delivery' %}">
+              <span>Доставка по всей России</span>
+            </a>
           </div>
         </div>
       </div>
@@ -33,7 +39,7 @@
   <div class="middle-footer">
     <div class="container">
       <div class="row middle-footer-row">
-        <div class="col-xs-3 middle-footer-col">
+        <div class="col-xs-4 middle-footer-col">
           <div class="middle-footer-title">
             <a class="middle-footer-title-link" href="/catalog/">Каталог товаров</a>
           </div>
@@ -45,26 +51,30 @@
             {% endfor %}
           </ul>
         </div>
-        <div class="col-xs-3 middle-footer-col">
+
+        <div class="col-xs-4 middle-footer-col">
           <div class="middle-footer-title">Услуги</div>
           <ul class="list-unstyled">
             {% for item in footer_links.services %}
               <li class="footer-list-item">
                 <a class="footer-list-link" href="{{ item.get_absolute_url }}">{{ item.name }}</a>
               </li>
-              <li class="footer-list-item">
-                <a class="footer-list-link" href="/delivery#russia">
-                  Доставка по всей России
-                </a>
-              </li>
             {% endfor %}
+            <li class="footer-list-item">
+              <a class="footer-list-link" href="/delivery#russia">
+                Доставка по всей России
+              </a>
+            </li>
             <li class="footer-list-item">
               <a class="footer-list-link" href="{{ HREF.istok_plus }}" target="_blank">Купить оптом</a>
             </li>
           </ul>
         </div>
-        <div class="col-xs-3 middle-footer-col">
-          <div class="middle-footer-title">О компании</div>
+
+        <div class="col-xs-4 middle-footer-col">
+          <div class="middle-footer-title">
+            <a class="middle-footer-title-link" href="{% url 'pages:flat_page' 'index' %}">О компании</a>
+          </div>
           <ul class="list-unstyled">
             {% for item in footer_links.about %}
               <li class="footer-list-item">
@@ -87,23 +97,25 @@
                 height="90" alt="Читайте отзывы покупателей и оценивайте качество магазина на Яндекс.Маркете">
           </a>
         </div>
+
         <div class="col-xs-3">
           <div class="footer-contacts">
             <span>Санкт-Петербург</span>
             <div class="footer-contact">
               <span title="м. Автово"><img src="{% static 'images/metro_red.png' %}" alt="м. Автово">
-                <a class="subway-contact-link" href="#yunona"> Ярмарка «Юнона», пав. 660, 662</a></span>
+                <a class="subway-contact-link" href="{% url 'pages:flat_page' 'contacts' %}"> Ярмарка «Юнона», пав. 660, 662</a></span>
               <span>пн-вс 10:00-18:00</span>
             </div>
             <div class="footer-contact">
               <span title="м. Елизаровская"><img src="{% static 'images/metro_green.png' %}" alt="м.
               Елизаровская">
                 <a class="subway-contact-link"
-                   href="#elizarova"> пр-т Елизарова 38А, офис 312</a></span>
+                   href="{% url 'pages:flat_page' 'contacts' %}"> пр-т Елизарова 38А, офис 312</a></span>
               <span>пн-чт 10:00-18:00, пт 10:00-17:00</span>
             </div>
           </div>
         </div>
+
         <div class="col-xs-3">
           <div class="footer-phone">
             <div class="footer-number">
@@ -116,13 +128,23 @@
             </div>
           </div>
         </div>
+
         <div class="col-xs-3">
-          <div class="footer-logo-wrp">
+          <div class="footer-logo-wrapper text-right">
             <a class="footer-logo" href="/">
               <img class="footer-logo-img" alt="Логотип" src="{% static 'images/logo.svg' %}">
             </a>
+            <p class="footer-logo-text">продажа элементов питания</p>
           </div>
         </div>
+      </div>
+
+      <div class="footer-copyright text-center">
+        <p>Все права защищены. 2000-2016 ООО «Исток-Плюс» (Москва, Санкт-Петербург)</p>
+        <p>Делаем сложные магазины.
+          <a href="https://fidals.com/blog/se-project.html?utm_source=SE_site&utm_medium=backlink&utm_campaign=backlink_traffic"
+             target="_blank">Fidals.com</a>
+        </p>
       </div>
     </div>
   </div>

@@ -145,9 +145,7 @@ class SuccessOrder(ec_views.SuccessOrder):
     order = Order
 
 
-### Shopelectro-specific views ###
-
-
+# Shopelectro-specific views #
 @set_csrf_cookie
 class IndexPage(pages_views.IndexPage):
 

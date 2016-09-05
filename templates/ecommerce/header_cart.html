@@ -4,14 +4,14 @@
   <div class="js-header-cart header-cart">
     <span class="basket-products-count js-cart-size">{{ cart.total_quantity }}</span>
     {% if cart.total_price == 0 %}
-      <span class="js-cart-is-empty" id="cart-is-empty">Корзина пуста</span>
+      <span class="cart-is-empty js-cart-is-empty" id="cart-is-empty">Корзина пуста</span>
     {% else %}
-      <span class="js-cart-is-empty hidden" id="cart-is-empty">Корзина пуста</span>
+      <span class="cart-is-empty js-cart-is-empty hidden" id="cart-is-empty">Корзина пуста</span>
       <a class="price-in-cart js-go-to-cart" href="{% url 'ecommerce:order_page' %}">
         {{ cart.total_price|humanize_price }} руб.
       </a>
     {% endif %}
-    <a href="#" class="opener"><i class="fa fa-chevron-down"></i></a>
+    <span class="opener"><i class="fa fa-chevron-down"></i></span>
   </div>
 </div>
 

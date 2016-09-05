@@ -17,7 +17,6 @@ class Category(AbstractCategory):
     superclass.
     """
     product_relation = 'products'
-    spam_text = models.TextField(null=True, blank=True)
 
     @property
     def image(self):
