@@ -156,10 +156,7 @@ class IndexPage(pages_views.IndexPage):
         top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
 
         context.update({
-            'meta': config.page_metadata('main'),
             'category_tile': config.MAIN_PAGE_TILE,
-            'footer_links': config.FOOTER_LINKS,
-            'href': config.HREFS,
             'top_products': top_products,
         })
 
@@ -196,13 +193,6 @@ def set_view_type(request):
 
     request.session['view_type'] = request.POST['view_type']
     return HttpResponse('ok')  # Return 200 OK
-
-
-def pages_post(request, type_=''):
-    return render(request, 'pages/posts.html', {
-        'posts': Page.objects.filter(type=type_),
-        'page': config.page_metadata(type_),
-    })
 
 
 def admin_remove_image(request):

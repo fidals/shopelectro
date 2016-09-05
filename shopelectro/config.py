@@ -46,21 +46,6 @@ pages = {
 }
 
 
-def page_metadata(page):
-    """
-    Returns page metadata (e.g., name, title, h1 and so on) for a given page string.
-
-    If such page doesn't have metadata, it throws ValueError.
-    :param page: string page identifier
-    :return: dict with metadata
-    """
-    try:
-        return pages[page]
-    except KeyError:
-        raise ValueError('site data have not such page: ' + page +
-                         '. Check your config.py')
-
-
 def category_sorting(sorting_index=None):
     """
     Sorting options for Category page.
@@ -171,19 +156,14 @@ FOOTER_LINKS = {
     'services': [
         {'name': 'Ремонт аккумуляторов', 'slug': 'remont-akkumulyatorov'},
         {'name': 'Пайка на заказ', 'slug': 'soldering'},
-        {'name': 'По России', 'slug': 'delivery#russia'},
+        {'name': 'Доставка по всей России', 'slug': 'delivery'},
     ],
     'about': [
         {'name': 'Реквизиты', 'slug': 'rekvisity'},
         {'name': 'Нормативные документы', 'slug': 'norm-docs'},
         {'name': 'Оптовым покупателям', 'slug': 'wholesale'},
         {'name': 'Гарантии и возврат', 'slug': 'return-goods-instr'},
-        {'name': 'Карта сайта', 'slug': 'sitemap'},
     ],
-}
-
-HREFS = {
-    'istok_plus': 'http://istok-plus.ru',
 }
 
 SHOP = {

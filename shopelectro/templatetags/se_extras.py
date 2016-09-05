@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 from django.contrib.humanize.templatetags.humanize import intcomma
 
-from shopelectro import images
+from shopelectro import images, config
 from shopelectro.models import Category
 
 register = template.Library()
@@ -18,6 +18,11 @@ register = template.Library()
 @register.assignment_tag
 def roots():
     return Category.objects.root_nodes().order_by('position')
+
+
+@register.assignment_tag
+def footer_links():
+    return config.FOOTER_LINKS
 
 
 @register.simple_tag
