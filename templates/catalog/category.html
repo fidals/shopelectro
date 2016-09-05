@@ -20,10 +20,6 @@
     </div>
 
     <div class="col-xs-9 category-right view-mode-{{ view_type }}" id="category-right">
-      {% if category.spam_text %}
-        <div class="category-text" id="category-text">{{ page.seo_text }}</div>
-      {% endif %}
-
       {% include "catalog/category_navigation.html" %}
 
       <p class="products-showed">
@@ -46,6 +42,10 @@
           <span class="js-total-products">{{ total_products }}</span>
         </p>
       </div>
+
+      {% if page.seo_text %}
+        <div class="category-text" id="category-text">{{ page.seo_text }}</div>
+      {% endif %}
     </div>
   </div>
 {% endblock %}
