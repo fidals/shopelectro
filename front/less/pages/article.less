@@ -75,16 +75,6 @@
       text-decoration: none;
     }
 
-    // Закомментированная иконка-стрелка для дропдауна:
-    // &:after {
-    //     background: @sp-main;
-    //     .sprite(@03);
-    //     content: "";
-    //     position: absolute;
-    //     right: 11px;
-    //     top: 0;
-    // }
-
     &.active {
       &:after {
         .sprite(@04);
@@ -232,4 +222,46 @@ body {
 table, td.contacts {
   padding: 5px;
   margin-bottom: 30px;
+}
+
+.payments {
+  margin-top: 30px;
+
+  &-caption:before {
+    content: '';
+    display: block;
+    float: left;
+    height: 32px;
+    margin-right: 15px;
+    width: 32px;
+  }
+
+  &-spb:before {
+    background: url('@{img-path}/anchor.png') no-repeat;
+    background-size: cover;
+  }
+
+  &-russia:before {
+    background: url('@{img-path}/cathedral-of-saint-basil.png') no-repeat;
+    background-size: cover;
+  }
+
+  &-online-buy:before {
+    background: url('@{img-path}/commerce-payments.png') no-repeat;
+  }
+
+  &-beznal:before {
+    background: url('@{img-path}/nal-payments.png') no-repeat;
+  }
+
+  &-list {
+    color: @c-payments-list;
+    font-size: @font-size-base + 2;
+    padding-bottom: 10px;
+
+    li {
+      list-style-type: square;
+      padding: 5px;
+    }
+  }
 }
