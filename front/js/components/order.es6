@@ -1,4 +1,4 @@
-const order = (() => {
+(() => {
   const DOM = {
     $fancybox: $('.fancybox'),
     $formErrorText: $('.js-form-error-text'),
@@ -85,7 +85,7 @@ const order = (() => {
    * Reinit touchspin plugin cause of dynamic DOM.
    */
   const touchSpinReinit = () => {
-    $(DOM.productCount).TouchSpin(configs.PLUGINS.touchspin);
+    $(DOM.productCount).TouchSpin(configs.plugins.touchspin);
   };
 
   /**
@@ -93,7 +93,7 @@ const order = (() => {
    * Runs on page load, and on every cart's update.
    */
   const fillSavedInputs = () => {
-    const getFieldByName = (name) => $(`#id_${name}`);
+    const getFieldByName = name => $(`#id_${name}`);
 
     for (const fieldName in DOM.orderForm) {
       if ({}.hasOwnProperty.call(DOM.orderForm, fieldName)) {
