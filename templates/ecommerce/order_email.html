@@ -55,7 +55,7 @@
             </td>
             <td align="right" style="padding:5px 10px;">{{ position.quantity }} шт.</td>
             <td align="right" style="padding:5px 10px;">{{ position.price|humanize_price }} руб.</td>
-            <td align="right" style="padding:5px 10px;">{{ position.cost }} руб.</td>
+            <td align="right" style="padding:5px 10px;">{{ position.total_price|humanize_price }} руб.</td>
           </tr>
         {% endfor %}
         <tr>
@@ -82,7 +82,7 @@
       {% if order.email %}
         <li style="margin: 0.385em 0;">Email: <b style="font-weight:bold;">{{ order.email }}</b></li>
       {% endif %}
-      <li style="margin: 0.385em 0;">Город: <b style="font-weight:bold;">{{ order.city }}</b></li>
+      <li style="margin: 0.385em 0;">Город: <b style="font-weight:bold;">{{ order.city|default:'Санкт-Петербург' }}</b></li>
     </ul>
     <p style="margin:0; font-family: arial, sans-serif;">{% time_to_call %}</p>
     <table>

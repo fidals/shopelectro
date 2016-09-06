@@ -143,6 +143,15 @@ DATABASES = {
     )
 }
 
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'mediaprime10@yandex.ru'
+EMAIL_HOST_PASSWORD = 'planka67rezka'
+DEFAULT_FROM_EMAIL = 'mediaprime10@yandex.ru'
+DEFAULT_TO_EMAIL = 'mediaprime10@yandex.ru'
+SHOP_EMAIL = 'mediaprime10@yandex.ru'
+
 PRODUCTS_TO_LOAD = 30
 
 SITE_CREATED = datetime(2013, 1, 1)
