@@ -30,7 +30,7 @@
       <br>
       Ваш заказ {{ order.paid|yesno:'оплачен,,' }} на сумму {{ order.total_price|humanize_price }} руб.
     </p>
-    <p>Номер заказа: <b>{{ order.id }}</b></p>
+    <p>Номер заказа: <b>{{ order.order_number }}</b></p>
     <table width="100%" cellspacing="0" cellpadding="3px" border="0"
            style="font-size:100%; margin-bottom: 1.15em; margin-left: -10px; margin-top: 0.385em;">
       <tbody>
