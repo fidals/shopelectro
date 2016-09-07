@@ -163,6 +163,9 @@ SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
+# Used for order's email in ecommerce app
+FAKE_ORDER_NUMBER = 4500
+
 # Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
@@ -184,9 +187,6 @@ EMAIL_SUBJECTS = {
     'one_click': 'Заказ в один клик №{}',
     'ya_feedback_request': 'Оцените нас на Яндекс.Маркете',
 }
-
-# Fill it in local.py
-SHOP_EMAIL = ''
 
 # Used in admin image uploads
 MODEL_TYPES = {
