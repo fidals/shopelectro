@@ -171,6 +171,7 @@ PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
 
 # Used to define choices attr in definition of Order.payment_option field
+# TODO uncomment in dev-796, first needed test yandex_kassa
 PAYMENT_OPTIONS = (('cash', 'Наличные'),
                    ('cashless', 'Безналичные и денежные переводы'),)
                    # ('AC', 'Банковская карта'),
