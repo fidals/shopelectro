@@ -163,18 +163,22 @@ SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
+# Used for order's email in ecommerce app
+FAKE_ORDER_NUMBER = 4500
+
 # Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
 
 # Used to define choices attr in definition of Order.payment_option field
+# TODO uncomment in dev-796, first needed test yandex_kassa
 PAYMENT_OPTIONS = (('cash', 'Наличные'),
-                   ('cashless', 'Безналичные и денежные переводы'),
-                   ('AC', 'Банковская карта'),
-                   ('PC', 'Яндекс.Деньги'),
-                   ('GP', 'Связной (терминал)'),
-                   ('AB', 'Альфа-Клик'),
-                   ('MC', 'Мобильный телефон'))
+                   ('cashless', 'Безналичные и денежные переводы'),)
+                   # ('AC', 'Банковская карта'),
+                   # ('PC', 'Яндекс.Деньги'),
+                   # ('GP', 'Связной (терминал)'),
+                   # ('AB', 'Альфа-Клик'),
+                   # ('MC', 'Мобильный телефон'))
 
 # Subjects for different types of emails sent from SE.
 EMAIL_SUBJECTS = {
@@ -184,9 +188,6 @@ EMAIL_SUBJECTS = {
     'one_click': 'Заказ в один клик №{}',
     'ya_feedback_request': 'Оцените нас на Яндекс.Маркете',
 }
-
-# Fill it in local.py
-SHOP_EMAIL = ''
 
 # Used in admin image uploads
 MODEL_TYPES = {
