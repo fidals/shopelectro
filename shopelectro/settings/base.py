@@ -143,15 +143,6 @@ DATABASES = {
     )
 }
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'mediaprime10@yandex.ru'
-EMAIL_HOST_PASSWORD = 'planka67rezka'
-DEFAULT_FROM_EMAIL = 'mediaprime10@yandex.ru'
-DEFAULT_TO_EMAIL = 'mediaprime10@yandex.ru'
-SHOP_EMAIL = 'mediaprime10@yandex.ru'
-
 PRODUCTS_TO_LOAD = 30
 
 SITE_CREATED = datetime(2013, 1, 1)
@@ -178,12 +169,12 @@ CART_ID = 'cart'
 
 # Used to define choices attr in definition of Order.payment_option field
 PAYMENT_OPTIONS = (('cash', 'Наличные'),
-                   ('cashless', 'Безналичные и денежные переводы'),
-                   ('AC', 'Банковская карта'),
-                   ('PC', 'Яндекс.Деньги'),
-                   ('GP', 'Связной (терминал)'),
-                   ('AB', 'Альфа-Клик'),
-                   ('MC', 'Мобильный телефон'))
+                   ('cashless', 'Безналичные и денежные переводы'),)
+                   # ('AC', 'Банковская карта'),
+                   # ('PC', 'Яндекс.Деньги'),
+                   # ('GP', 'Связной (терминал)'),
+                   # ('AB', 'Альфа-Клик'),
+                   # ('MC', 'Мобильный телефон'))
 
 # Subjects for different types of emails sent from SE.
 EMAIL_SUBJECTS = {
