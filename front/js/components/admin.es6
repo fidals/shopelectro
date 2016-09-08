@@ -1,6 +1,5 @@
 (() => {
   const DOM = {
-    $pageType: document.location.pathname.split('/').slice(-2, -1)[0],
     $removeIcon: $('.js-remove-image'),
     $imageItem: $('.js-list-item'),
     searchFieldId: '#searchbar',
@@ -10,6 +9,7 @@
     autocompleteURL: '/admin/autocomplete/',
     removeUrl: '/admin/remove-image/',
     minChars: 3,
+    currentPageType: document.location.pathname.split('/').slice(-2, -1)[0],
     pagesType: ['product', 'category'],
   };
 
@@ -28,9 +28,7 @@
 
   function autoCompleteInit() {
     const currentType = getCurrentPageType();
-    if (!currentType) {
-      return;
-    }
+    if (!currentType) return;
 
     return new autoComplete({
       selector: DOM.searchFieldId,
@@ -50,7 +48,7 @@
    * Return current entity page type.
    */
   function getCurrentPageType() {
-    const [currentPageType] = config.pagesType.filter((type) => type === DOM.$pageType);
+    const [currentPageType] = config.pagesType.filter((type) => type === config.currentPageType);
     return currentPageType;
   }
 

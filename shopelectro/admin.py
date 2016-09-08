@@ -83,13 +83,13 @@ class PriceRange(admin.SimpleListFilter):
 
 
 class CustomAdminSite(AdminSite):
-    """Override AdminSite method """
+    """Override AdminSite class"""
     site_header = 'Shopelectro administration'
 
     def extend_app_list_model(self, to_model: Model, add_models: INJECTION_MODELS, app_list):
         """
         Extend app list's models field.
-        The App list looks like this [{..., models:[{...}, {...}]: app's models, ...}: app, {...}].
+        The App list looks like this [{..., models:[{app's models}, ... ], ...}, {...}].
         """
         assert len(app_list), 'You should register model to admin site'
 
@@ -161,19 +161,21 @@ class AbstractModelAdmin(admin.ModelAdmin):
 
     We have two custom urls(add, changelist) for every models,
     they look like `model_name_add`, (ex. `product_changelist`)
+
+    Example of use case you can find in PageAdmin.
     """
 
     # Custom settings
-    model = None # List [self.model]
-    injection_models = None # List[Model, Model,...]
+    model = None # List [self.model] ex. Page
+    injection_models = None # List[Model, Model,...] ex. Category
     extra_queries = {} # Dict[Model, query]
-    list_filter_options = {} # Example of options in PageAdmin class
+    list_filter_options = {}
     search_fields_options = {}
     list_display_options = {}
     list_display_links_options = {}
     inlines_fieldset_options = {}
 
-    # ModelAdmin setting
+    # ModelAdmin settings
     list_per_page = 50
     save_on_top = True
 
@@ -183,18 +185,19 @@ class AbstractModelAdmin(admin.ModelAdmin):
 
     @property
     def change_view_options(self):
-        """The change_view contain custom crumb options"""
-        return self.init_view_options('crumb', 'changelist')
+        """The change_view contain custom breadcrumbs options"""
+        return self.init_view_options('breadcrumbs', 'changelist')
 
     @property
     def changelist_view_options(self):
-        """The changelist_view contain custom crumb and add entity button options"""
-        return self.init_view_options('add', 'add'), self.init_view_options('crumb', 'changelist')
+        """The changelist_view contain custom breadcrumbs and add entity button options"""
+        return self.init_view_options('add', 'add'), self.init_view_options('breadcrumbs',
+                                                                            'changelist')
 
     @property
     def add_view_options(self):
-        """The changelist_view contain custom crumb options"""
-        return self.init_view_options('crumb', 'changelist')
+        """The changelist_view contain custom breadcrumbs options"""
+        return self.init_view_options('breadcrumbs', 'changelist')
 
     @property
     def extra_queries_options(self):
@@ -203,7 +206,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
 
     @property
     def query_strategy(self)-> Dict[str, Dict[str, str] or Q]:
-        """Dict look like { model_name: filter's kwargs}"""
+        """Dict looks like { model_name: filter's kwargs}"""
         return {
             **{self.get_model_name_from_model(model): {'type': model._meta.db_table}
                for model in self.injection_models},
@@ -243,7 +246,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
                 model = injection_model
                 readonly_fields = ['id']
                 fieldsets = self.inlines_fieldset_options.get(
-                    self.get_model_name_from_model(injection_model), None)
+                    self.get_model_name_from_model(injection_model), [])
             return Inline
 
         return tuple(__init_inline(model) for model in self.injection_models)
@@ -253,7 +256,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
         Initialization view options
         :return {
             Model name:
-                {option's name (ex. crumb): option's url (ex. custom_admin:product_add)}
+                {option's name (ex. breadcrumbs): option's url (ex. custom_admin:product_add)}
         }
         """
         get_url_name = lambda model: self.get_injection_urls(model)[url_name].name
@@ -264,7 +267,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
                 '{}_name'.format(option_name): capfirst(model._meta.verbose_name),
                 '{}_url'.format(option_name): '{}:{}'.format(admin_name, get_url_name(model))
             } for model in self.injection_models
-            }
+        }
 
     def patch_by_options(self, request_path,
                          options: Dict[str, Dict[str, str]]) -> Dict[str, str]:
@@ -274,16 +277,16 @@ class AbstractModelAdmin(admin.ModelAdmin):
 
     # Override admin methods
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        """Add extra context for crumbs"""
+        """Add extra context for breadcrumbs"""
         extra_context = extra_context or {}
         current_model = self.model.objects.get(id=object_id) # (ex. shopelectro_product)
 
-        # The crumb options contain a injection model's name only
+        # The breadcrumbs options contain a injection model's name only
         for model_name in self.change_view_options:
             if model_name in current_model.type:
-                crumb = self.change_view_options[model_name]
+                breadcrumbs = self.change_view_options[model_name]
                 extra_context.update(
-                    {**crumb,
+                    {**breadcrumbs,
                      'model_name': current_model.model._meta.model_name, # context for upload image
                      'entity_id': current_model.model.id,
                      'show_save': False})
@@ -292,24 +295,24 @@ class AbstractModelAdmin(admin.ModelAdmin):
                                                            extra_context)
 
     def changelist_view(self, request, extra_context=None):
-        """Add extra context for crumbs"""
+        """Add extra context for breadcrumbs"""
         extra_context = extra_context or {}
 
-        add, crumb = [self.patch_by_options(request.path, option)
+        add, breadcrumbs = [self.patch_by_options(request.path, option)
                       for option in self.changelist_view_options]
 
-        if crumb and add:
-            extra_context.update(**crumb, **add)
+        if breadcrumbs and add:
+            extra_context.update(**breadcrumbs, **add)
 
         return super(AbstractModelAdmin, self).changelist_view(request, extra_context)
 
     def add_view(self, request, form_url='', extra_context=None):
         extra_context = extra_context or {}
 
-        crumb = self.patch_by_options(request.path, self.add_view_options)
+        breadcrumbs = self.patch_by_options(request.path, self.add_view_options)
 
-        if crumb:
-            extra_context.update(**crumb)
+        if breadcrumbs:
+            extra_context.update(**breadcrumbs)
 
         return super(AbstractModelAdmin, self).add_view(request, form_url, extra_context)
 

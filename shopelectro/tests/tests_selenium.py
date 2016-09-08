@@ -138,7 +138,7 @@ class CategoryPage(SeleniumTestCase):
             prod_count__lt=settings.PRODUCTS_TO_LOAD).first()
 
         self.root_category = self.testing_url(root_category.slug)
-        self.childre_category= self.testing_url(children_category.slug)
+        self.children_category= self.testing_url(children_category.slug)
         self.deep_children_category = self.testing_url(
             category_with_product_less_then_LOAD_LIMIT.slug)
 
@@ -160,7 +160,7 @@ class CategoryPage(SeleniumTestCase):
         self.assertEqual(len(crumbs), 3)
 
         # In 'deep category' there should be more crumbs
-        self.browser.get(self.childre_category)
+        self.browser.get(self.children_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
         self.assertEqual(len(crumbs), 4)
 
@@ -207,7 +207,7 @@ class CategoryPage(SeleniumTestCase):
         and category wrapper 'view-mode-tile' class.
         """
 
-        self.browser.get(self.childre_category)
+        self.browser.get(self.children_category)
         tile_view_selector = self.browser.find_element_by_class_name(
             'js-icon-mode-tile')
         products_view = self.browser.find_element_by_id('category-right')
@@ -220,7 +220,7 @@ class CategoryPage(SeleniumTestCase):
         to list view without reloading a page.
         """
 
-        self.browser.get(self.childre_category)
+        self.browser.get(self.children_category)
         list_view_selector = self.browser.find_element_by_class_name(
             'js-icon-mode-list')
         products_view = self.browser.find_element_by_id('category-right')
@@ -239,7 +239,7 @@ class CategoryPage(SeleniumTestCase):
     def test_default_sorting_is_by_cheapest(self):
         """By default, sorting should be by cheapest goods."""
 
-        self.browser.get(self.childre_category)
+        self.browser.get(self.children_category)
         cheapest_sort_option = self.browser.find_element_by_xpath(
             '//*[@id="category-right"]/'
             'div[1]/div/div/div[2]/label/div/select/option[1]')
@@ -248,7 +248,7 @@ class CategoryPage(SeleniumTestCase):
     def test_change_sorting(self):
         """We can change sorting option"""
 
-        self.browser.get(self.childre_category)
+        self.browser.get(self.children_category)
         expensive_sort_option = self.browser.find_element_by_xpath(
             '//*[@id="category-right"]/'
             'div[1]/div/div/div[2]/label/div/select/option[3]'
@@ -263,7 +263,7 @@ class CategoryPage(SeleniumTestCase):
     def test_add_to_cart(self):
         """We can add item to cart from it's category page."""
 
-        self.browser.get(self.childre_category)
+        self.browser.get(self.children_category)
         self.browser.find_elements_by_class_name(
             'js-product-to-cart')[0].click()
         wait()
@@ -293,7 +293,7 @@ class ProductPage(SeleniumTestCase):
         :return:
         """
 
-        # There should be 5 items in breadcrumbs for this case
+        # There should be 6 items in breadcrumbs for this case
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
         self.assertEqual(len(crumbs), 6)
 
@@ -626,18 +626,6 @@ class AdminPage(SeleniumTestCase):
         admin_title = self.browser.find_element_by_id('site-name')
         self.assertIn(self.title_text, admin_title.text)
 
-    def test_admin_index(self):
-        """At admin index page, must be app list with 3 items"""
-        app_list = self.browser.find_element_by_xpath(self.table_with_app_list).text
-
-        product = self.browser.find_element_by_xpath(self.products).text
-        page = self.browser.find_element_by_xpath(self.page).text
-        category = self.browser.find_element_by_xpath(self.category).text
-
-        self.assertIn(product, app_list)
-        self.assertIn(page, app_list)
-        self.assertIn(category, app_list)
-
     def test_product_price_filter(self):
         """
         Price filter is able to filter products by set range.
@@ -676,7 +664,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
-        """Search field could autocomplete."""
+        """Search field should autocomplete."""
 
         self.browser.find_element_by_xpath(self.products).click()
         wait()
@@ -723,7 +711,7 @@ class AdminPage(SeleniumTestCase):
                     change_state(id=id)
 
         if self.browser.find_elements_by_class_name('collapsed'):
-            # Needed close sidebar
+            # Need to close sidebar
             change_state(class_name='js-toggle-sidebar')
 
         open_node(
@@ -804,7 +792,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
 
     def test_add_button_at_index_page(self):
-        """App's add-button from index page should redirects us at add-page with needed url"""
+        """App's add-button from index page should redirects us to add-page with needed url"""
         for model_name in self.models_name:
             self.browser.find_element_by_class_name(
                 'model-{}'.format(model_name)).find_element_by_class_name('addlink').click()
@@ -822,7 +810,7 @@ class AdminPage(SeleniumTestCase):
 
     def test_changelist_button_at_index_page(self):
         """
-        App's changelist-button from index page should redirects us at changelist-page with
+        App's changelist-button from index page should redirects us to changelist-page with
         needed url
         """
         for model_name in self.models_name:
@@ -840,7 +828,7 @@ class AdminPage(SeleniumTestCase):
             wait()
 
     def test_add_button_at_changelist_page(self):
-        """App's add-button from changelist page should redirects us at add-page with needed url"""
+        """App's add-button from changelist page should redirects us to add-page with needed url"""
         urls_name = [
             'custom_admin:pages_page_changelist', 'custom_admin:product_changelist',
             'custom_admin:category_changelist',
@@ -863,7 +851,7 @@ class AdminPage(SeleniumTestCase):
             wait()
 
     def test_breadcrumbs_at_change_page(self):
-        """Breadcrumbs from change page should redirects us at needed changelist page"""
+        """Breadcrumbs from change page should redirects us to needed changelist page"""
         entities_id = [
             Page.objects.filter(type=Page.FLAT_TYPE).first().id,
             Page.objects.filter(type='shopelectro_product').first().id,

@@ -6,8 +6,8 @@
     <div class="breadcrumbs">
       <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
       &rsaquo;
-      {% if crumb_name %}
-        {{ crumb_name }}
+      {% if breadcrumbs_name %}
+        {{ breadcrumbs_name }}
       {% else %}
         {{ cl.opts.verbose_name_plural|capfirst }}
       {% endif %}

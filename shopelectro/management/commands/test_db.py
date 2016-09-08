@@ -44,14 +44,12 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_root(count):
-        """Create 2 root categories."""
         get_name = 'Category #{}'.format
         return [Category.objects.create(name=get_name(i)) for i in range(count)]
 
 
     @staticmethod
     def create_children(count, parents):
-        """Create 2 root categories."""
         name = 'Category #{} of #{}'
 
         def __create_categories(name, parent):
@@ -67,8 +65,8 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_products(deep_children):
-        """Create a products for every non-root category."""
-        def __create_category(categories, product_count):
+        """Create products for every non-root category."""
+        def __create_product(categories, product_count):
             for category in categories:
                 for i in range(1, product_count + 1):
                     Product.objects.create(
@@ -81,9 +79,9 @@ class Command(BaseCommand):
                     )
         # Create 25 products for
         # tests_selenium.CategoryPage.test_load_more_hidden_in_fully_loaded_categories
-        __create_category(deep_children[4:], 25)
+        __create_product(deep_children[4:], 25)
         # Create 50 products for tests_selenium.CategoryPage.test_load_more_products
-        __create_category(deep_children[:4], 50)
+        __create_product(deep_children[:4], 50)
 
     @staticmethod
     def create_page():
@@ -95,7 +93,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def clear_tables():
-        """Remove everything from Category and Product tables."""
+        """Remove everything from Category, Product and Page tables."""
         Category.objects.all().delete()
         Product.objects.all().delete()
         Page.objects.all().delete()

@@ -20,9 +20,9 @@
   {% block breadcrumbs %}
     <div class="breadcrumbs">
       <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-      {% if crumb_name and crumb_url %}
+      {% if breadcrumbs_name and breadcrumbs_url %}
           &rsaquo; {% if has_change_permission %}
-          <a href="{% url crumb_url %}">{{ crumb_name }}</a>{% else %}
+          <a href="{% url breadcrumbs_url %}">{{ breadcrumbs_name }}</a>{% else %}
           {{ name }}{% endif %}
       {% else %}
         &rsaquo; {% if has_change_permission %}
@@ -52,7 +52,7 @@
       {% endif %}{% endif %}
 
       {% if original|upload_form %}
-        {% include 'admin/includes/upload_form.html' with type=model_name id=entity_id %}
+        {% include 'admin/includes/upload_form.html' %}
       {% endif %}
     {% endblock %}
 

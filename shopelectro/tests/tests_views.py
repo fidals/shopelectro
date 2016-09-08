@@ -68,15 +68,19 @@ class AdminPage(TestCase):
         cls.email = 'admin@admin.com'
         cls.password = 'asdfjkl'
 
-        cls.list_display = PageAdmin.list_display_options
-        cls.categories_fieldset = ['Name', 'Parent', 'Position', 'ID',]
-        cls.pages_fieldset = [
-            'Position', 'Content', 'Title', 'Keywords', 'Description', 'Is active', 'Seo text', 'h1'
-        ]
-        cls.products_fieldset = [
-            'Name', 'Category', 'Price', 'ID', 'Purchase price', 'Wholesale large',
-            'Wholesale medium', 'Wholesale small', 'In stock', 'Is popular',
-        ]
+        cls.list_display = {
+            'page': ['Id', 'Title', 'Parent', 'Is active', ],
+            'proudct': ['Id', 'Title', 'Category', 'Price', 'Link', 'Is active', ],
+            'category': ['Id', 'Title', 'Parent', 'Is active', ],
+        }
+
+        cls.fieldsets = {
+            'page': ['Position', 'Content', 'Title', 'Keywords', 'Description', 'Is active',
+                     'Seo text', 'h1'],
+            'proudct': ['Name', 'Category', 'Price', 'ID', 'Purchase price', 'Wholesale large',
+                        'Wholesale medium', 'Wholesale small', 'In stock', 'Is popular', ],
+            'category': ['Name', 'Parent', 'Position', 'ID',],
+        }
 
     def setUp(self):
         self.user = User.objects.create_superuser(self.username, self.email, self.password)
@@ -100,7 +104,6 @@ class AdminPage(TestCase):
         self.assertContains(response, 'Categories')
         self.assertContains(response, 'Products')
 
-
     def test_pages_changelist_status_code(self):
         response = self.client.get(
             reverse('custom_admin:pages_page_changelist'))
@@ -115,10 +118,8 @@ class AdminPage(TestCase):
         response = self.client.get(
             reverse('custom_admin:pages_page_changelist'))
 
-        self.assertContains(response, 'Id')
-        self.assertContains(response, 'Title')
-        self.assertContains(response, 'Parent')
-        self.assertContains(response, 'Is active')
+        for field in self.list_display['page']:
+            self.assertContains(response, field)
 
     def test_pages_add_status_code(self):
         response = self.client.get(
@@ -134,7 +135,7 @@ class AdminPage(TestCase):
         self.assertNotContains(response, 'Products')
         self.assertNotContains(response, 'Categories')
 
-        for field in self.pages_fieldset:
+        for field in self.fieldsets['page']:
             self.assertContains(response, field)
 
     def test_pages_change_status_code(self):
@@ -153,7 +154,7 @@ class AdminPage(TestCase):
         self.assertNotContains(response, 'Products')
         self.assertNotContains(response, 'Categories')
 
-        for field in self.pages_fieldset:
+        for field in self.fieldsets['page']:
             self.assertContains(response, field)
 
     def test_categories_changelist_status_code(self):
@@ -170,10 +171,8 @@ class AdminPage(TestCase):
         response = self.client.get(
             reverse('custom_admin:category_changelist'))
 
-        self.assertContains(response, 'Id')
-        self.assertContains(response, 'Title')
-        self.assertContains(response, 'Parent')
-        self.assertContains(response, 'Is active')
+        for field in self.list_display['category']:
+            self.assertContains(response, field)
 
     def test_categories_add_status_code(self):
         response = self.client.get(
@@ -188,10 +187,10 @@ class AdminPage(TestCase):
 
         self.assertNotContains(response, 'Products')
 
-        for field in self.categories_fieldset:
+        for field in self.fieldsets['category']:
             self.assertContains(response, field)
 
-        for field in self.pages_fieldset:
+        for field in self.fieldsets['page']:
             self.assertContains(response, field)
 
     def test_categories_change_status_code(self):
@@ -209,10 +208,10 @@ class AdminPage(TestCase):
 
         self.assertNotContains(response, 'Products')
 
-        for field in self.categories_fieldset:
+        for field in self.fieldsets['category']:
             self.assertContains(response, field)
 
-        for field in self.pages_fieldset:
+        for field in self.fieldsets['page']:
             self.assertContains(response, field)
 
     def test_products_changelist_status_code(self):
@@ -229,12 +228,8 @@ class AdminPage(TestCase):
         response = self.client.get(
             reverse('custom_admin:product_changelist'))
 
-        self.assertContains(response, 'Id')
-        self.assertContains(response, 'Title')
-        self.assertContains(response, 'Category')
-        self.assertContains(response, 'Price')
-        self.assertContains(response, 'Link')
-        self.assertContains(response, 'Is active')
+        for field in self.list_display['proudct']:
+            self.assertContains(response, field)
 
     def test_products_add_status_code(self):
         response = self.client.get(
@@ -250,10 +245,10 @@ class AdminPage(TestCase):
 
         self.assertNotContains(response, 'Categories')
 
-        for field in self.products_fieldset:
+        for field in self.fieldsets['proudct']:
             self.assertContains(response, field)
 
-        for field in self.pages_fieldset:
+        for field in self.fieldsets['page']:
             self.assertContains(response, field)
 
     def test_product_change_status_code(self):
@@ -271,8 +266,8 @@ class AdminPage(TestCase):
 
         self.assertNotContains(response, 'Categories')
 
-        for field in self.products_fieldset:
+        for field in self.fieldsets['proudct']:
             self.assertContains(response, field)
 
-        for field in self.pages_fieldset:
+        for field in self.fieldsets['page']:
             self.assertContains(response, field)
