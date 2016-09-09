@@ -22,5 +22,5 @@ SHOP_EMAIL = 'info@shopelectro.ru'
 
 SITE_DOMAIN_NAME = 'stage.shopelectro.ru'
 
-#http->https change
-# os.environ['HTTPS'] = 'on'
+# http->https change
+os.environ['HTTPS'] = 'on'

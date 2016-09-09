@@ -1,7 +1,7 @@
 /**
- * Yandex module with Metrika.
+ * Yandex Metrika module.
  */
-const yandex = (() => {
+(() => {
   const DOM = {
     $copyPhoneTag: $('.js-copy-phone'),
     $copyEmailTag: $('.js-copy-mail'),
@@ -25,11 +25,18 @@ const yandex = (() => {
     setUpListeners();
   };
 
-  const setUpListeners = () => {
-    mediator.subscribe('onOneClickBuy', () => reachGoal('ONE_CLICK_BUY_SEND'));
+  function setUpListeners() {
+    mediator.subscribe('onOneClickBuy', () => {
+      reachGoal('CMN_BUY_SEND');
+      reachGoal('FAST_BUY_SEND');
+    });
+    mediator.subscribe('onOrderSend', () => {
+      reachGoal('CMN_BUY_SEND');
+      reachGoal('FULL_BUY_SEND');
+    });
     mediator.subscribe('onProductRemove', () => reachGoal('DELETE_PRODUCT'));
-    mediator.subscribe('onOrderSend', () => reachGoal('FULL_BUY_SEND'));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
+
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));
     DOM.$removeFromCart.click(() => reachGoal('DELETE_PRODUCT'));
     DOM.$goToCartLink.click(() => reachGoal('CART_OPEN'));
@@ -38,24 +45,34 @@ const yandex = (() => {
     DOM.$downloadPrice.click(() => reachGoal('PRICE_HEADER'));
     DOM.$downloadPriceInFooter.click(() => reachGoal('PRICE_FOOTER'));
     DOM.$btnToCartProductPage
-      .click(() => reachGoal('PUT_IN_CART_FROM_PRODUCT'))
-      .click(() => reachGoal('CMN_PUT_IN_CART'));
+      .click(() => {
+        reachGoal('PUT_IN_CART_FROM_PRODUCT');
+        reachGoal('CMN_PUT_IN_CART');
+      });
     DOM.$btnToCartCategoryPage
-      .click(() => reachGoal('PUT_IN_CART_FROM_CATEGORY'))
-      .click(() => reachGoal('CMN_PUT_IN_CART'));
+      .click(() => {
+        reachGoal('PUT_IN_CART_FROM_CATEGORY');
+        reachGoal('CMN_PUT_IN_CART');
+      });
     DOM.$copyPhoneTag.mouseup(reachCopyPhone);
     DOM.$copyEmailTag.mouseup(reachCopyEmail);
-  };
+  }
 
-  const reachGoal = (goal) => {
+  function reachGoal(goal) {
     yaCounter.reachGoal(goal);
-  };
+  }
+
+  /**
+   * Returns copied text by user.
+   * http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
+   */
+  const getSelectionText = () => window.getSelection().toString();
 
   /**
    * We store this users event for current user.
    * So it fires once per user.
    */
-  const reachCopyPhone = () => {
+  function reachCopyPhone() {
     const wasPhoneCopied = localStorage.getItem('phoneIsCopied');
     const isFullPhoneNumberCopied = validator.isPhoneValid(getSelectionText());
 
@@ -63,28 +80,22 @@ const yandex = (() => {
       localStorage.setItem('phoneIsCopied', 'true');
       reachGoal('COPY_PHONE');
     }
-  };
+  }
 
   /**
    * We store this users event for current user.
    * So it fires once per user.
    */
-  const reachCopyEmail = () => {
+  const isFullMailCopied = () => getSelectionText().indexOf(config.fullEmail) === 0;
+
+  function reachCopyEmail() {
     const wasEmailCopied = localStorage.getItem('mailIsCopied');
 
     if (isFullMailCopied && !wasEmailCopied) {
       localStorage.setItem('mailIsCopied', 'true');
       reachGoal('COPY_MAIL');
     }
-  };
-
-  const isFullMailCopied = () => getSelectionText().indexOf(config.fullEmail) === 0;
-
-  /**
-   * Returns copied text by user.
-   * http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
-   */
-  const getSelectionText = () => window.getSelection().toString();
+  }
 
   init();
 })();

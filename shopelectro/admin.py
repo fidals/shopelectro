@@ -390,21 +390,21 @@ class PageAdmin(AbstractModelAdmin):
 
     # Search
     search_fields_options = {
-        'page': ['title', '_parent__title'],
-        'product': ['title', '_parent__title', 'shopelectro_product__price'],
-        'category': ['title', '_parent__title']
+        'page': ['h1', '_parent__h1'],
+        'product': ['h1', '_parent__h1', 'shopelectro_product__price'],
+        'category': ['h1', '_parent__h1']
     }
 
     # List display
     list_display_options = {
-        'page': ['id', 'title', 'custom_parent', 'is_active'],
-        'product': ['id', 'title', 'custom_category', 'price', 'links', 'is_active'],
-        'category': ['id', 'title', 'custom_category_parent', 'is_active']
+        'page': ['id', 'h1', 'custom_parent', 'is_active'],
+        'product': ['id', 'h1', 'custom_category', 'price', 'links', 'is_active'],
+        'category': ['id', 'h1', 'custom_category_parent', 'is_active']
     }
     list_display_links_options = {
-        'page': ['title'],
-        'product': ['title'],
-        'category': ['title'],
+        'page': ['h1'],
+        'product': ['h1'],
+        'category': ['h1'],
     }
 
     # Custom fields
@@ -437,7 +437,7 @@ class PageAdmin(AbstractModelAdmin):
         )
 
     custom_parent.short_description = 'Parent'
-    custom_parent.admin_order_field = '_parent__title'
+    custom_parent.admin_order_field = '_parent__h1'
 
     def custom_category(self, model):
         if not model.model.category:
@@ -453,7 +453,7 @@ class PageAdmin(AbstractModelAdmin):
         )
 
     custom_category.short_description = 'Category'
-    custom_category.admin_order_field = '_parent__title'
+    custom_category.admin_order_field = '_parent__h1'
 
     def custom_category_parent(self, model):
         if not model.model.parent:
@@ -469,7 +469,7 @@ class PageAdmin(AbstractModelAdmin):
         )
 
     custom_category_parent.short_description = 'Parent'
-    custom_category_parent.admin_order_field = '_parent__title'
+    custom_category_parent.admin_order_field = '_parent__h1'
 
     # Fieldsets
     fieldsets = (
@@ -483,8 +483,8 @@ class PageAdmin(AbstractModelAdmin):
         ('Параметры страницы', {
             'classes': ('secondary-chars',),
             'fields': (
-                ('title', 'id',),
-                ('keywords', '_h1'),
+                ('h1', '_title'),
+                ('keywords', 'id'),
                 'is_active',
                 'description',
                 'seo_text'
@@ -497,10 +497,9 @@ class PageAdmin(AbstractModelAdmin):
             ((None, {
                 'classes': ('primary-chars'),
                 'fields': (
-                    ('name', 'id',),
-                    'category',
-                    'price',
-                    ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large',),
+                    ('name', 'category'),
+                    ('price', 'id'),
+                    ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large'),
                     ('in_stock', 'is_popular')
                 )
             }),),

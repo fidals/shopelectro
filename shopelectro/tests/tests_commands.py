@@ -119,3 +119,23 @@ class ImportTest(TestCase):
         products_in_price = self.get_price_xml_node().getroot().find('shop').find('offers')
         for product in products_in_price:
             self.assertFalse(product.attrib['id'] in products_others.values())
+
+    def test_create_meta_tags_for_category(self):
+        """Every category's page should have a filled title field"""
+        category_page = Category.objects.first().page
+
+        test_title = catalog.CATEGORY_TITLE.format(h1=category_page.h1)
+
+        self.assertEqual(test_title, category_page.title)
+
+    def test_create_meta_tags_for_product(self):
+        """Every product's page should have a filled title and description field"""
+        product = Product.objects.first()
+        product_page = product.page
+
+        test_title = catalog.PRODUCT_TITLE.format(h1=product_page.h1)
+        test_description = catalog.PRODUCT_DESCRIPTION.format(
+            h1=product_page.h1, category_name=product.category.name)
+
+        self.assertEqual(test_title, product_page.title)
+        self.assertEqual(test_description, product_page.description)

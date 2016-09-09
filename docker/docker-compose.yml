@@ -11,7 +11,7 @@ services:
       DJANGO_SETTINGS_MODULE: shopelectro.settings.prod
       DATABASE_URL: postgres://postgres:$DB_PASS@se_db_prod/se_prod
       DEBUG: "False"
-      HTTPS: 'off'  # TODO - enable https
+      HTTPS: 'on'
     ports:
       - "8010:80"
     depends_on:  # can't be inherited
