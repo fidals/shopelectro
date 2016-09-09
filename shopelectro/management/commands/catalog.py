@@ -66,6 +66,12 @@ CATEGORY_POSITIONS = {
     5: 5
 }
 
+CATEGORY_TITLE = '{h1} купить в интернет магазине shopelectro.ru в Санкт-Петербурге'
+PRODUCT_TITLE = '{h1} - цены, характеристики, отзывы, описание, фотографии. Купить по выгодной ' \
+                'цене в интернет-магазине shopelectro.ru Санкт-Петербург'
+PRODUCT_DESCRIPTION = '{h1} - Элементы питания, зарядные устройства, ремонт. Купить ' \
+                      '{category_name} в Санкт Петербурге.'
+
 
 def process(procedure_name: str) -> callable:
     """Print information before starting procedure and after it's been finished."""
@@ -105,18 +111,12 @@ def delete_and_create(model_generator_mapping: list) -> result_message:
 def create_meta_tags(instance):
     meta_tags_for_model = {
         Category: lambda h1: {
-            '_title': '{h1} купить в интернет магазине shopelectro.ru в '
-                     'Санкт-Петербурге'.format(h1=h1)
-        }
-        ,
+            '_title': CATEGORY_TITLE.format(h1=h1)
+        },
         Product: lambda h1, category_name: {
-            '_title': ' {h1} - цены, характеристики, отзывы, описание, фотографии. Купить по '
-                     'выгодной цене в интернет-магазине shopelectro.ru '
-                     'Санкт-Петербург'.format(h1=h1),
-            'description': '{h1} - Элементы питания, зарядные устройства, ремонт. Купить '
-                           '{category_name} в '
-                           'Санкт Петербурге.'.format(h1=h1, category_name=category_name),
-        }
+            '_title': PRODUCT_TITLE.format(h1=h1),
+            'description': PRODUCT_DESCRIPTION.format(h1=h1, category_name=category_name),
+        },
     }
 
     page = Page.objects.filter(id=instance.page.id)
