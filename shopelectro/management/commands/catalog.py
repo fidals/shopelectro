@@ -12,6 +12,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from shopelectro.models import Product, Category
+from pages.models import Page
 
 
 result_message = str  # Type alias for returning result information
@@ -85,18 +86,47 @@ def delete_and_create(model_generator_mapping: list) -> result_message:
     """Perform db transaction of removing current rows and creating new ones."""
     def purge_table(model):
         """Removes every row from Model's table."""
+        Page.objects.filter(type=model._meta.db_table).delete()
         model.objects.all().delete()
 
     def save_instances(collection):
         """Save instances from generator into db."""
         for instance in collection:
             instance.save()
+            create_meta_tags(instance)
 
     with transaction.atomic():
         for model_class, generator in model_generator_mapping:
             purge_table(model_class)
             save_instances(generator)
     return 'Categories and Products were saved to DB.'
+
+
+def create_meta_tags(instance):
+    meta_tags_for_model = {
+        Category: lambda h1: {
+            '_title': '{h1} купить в интернет магазине shopelectro.ru в '
+                     'Санкт-Петербурге'.format(h1=h1)
+        }
+        ,
+        Product: lambda h1, category_name: {
+            '_title': ' {h1} - цены, характеристики, отзывы, описание, фотографии. Купить по '
+                     'выгодной цене в интернет-магазине shopelectro.ru '
+                     'Санкт-Петербург'.format(h1=h1),
+            'description': '{h1} - Элементы питания, зарядные устройства, ремонт. Купить '
+                           '{category_name} в '
+                           'Санкт Петербурге.'.format(h1=h1, category_name=category_name),
+        }
+    }
+
+    page = Page.objects.filter(id=instance.page.id)
+    h1 = page[0].h1
+
+    if isinstance(instance, Category):
+        page.update(**meta_tags_for_model[Category](h1))
+    else:
+        category_name = instance.category.name
+        page.update(**meta_tags_for_model[Product](h1, category_name))
 
 
 class Command(BaseCommand):

@@ -6,6 +6,7 @@
     yandexSubmit: '#btn-send-ya',
     seSubmit: '#btn-send-se',
     yandexForm: '#yandex-form',
+    fullForm: '#order-form-full',
     productCount: '.js-prod-count',
     remove: '.js-remove',
     paymentOptions: 'input[name=payment_option]',
@@ -42,14 +43,15 @@
     selectSubmitBtn();
   };
 
-  const pluginsInit = () => {
+  function pluginsInit() {
     cityAutocomplete();
-  };
+  }
 
-  const setUpListeners = () => {
-    $(DOM.yandexForm).submit(() => mediator.publish('onOrderSend'));
+  function setUpListeners() {
     mediator.subscribe('onCartUpdate', renderTable, fillSavedInputs,
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete);
+    $(DOM.yandexForm).submit(() => mediator.publish('onOrderSend'));
+    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
 
     /**
      * Bind events to parent's elements, because we can't bind event to dynamically added element.
@@ -60,7 +62,7 @@
     DOM.$order.on('click', DOM.paymentOptions, () => selectSubmitBtn(getElAttr(event, 'value')));
     DOM.$order.on('change', DOM.productCount, event => changeProductCount(event));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
-  };
+  }
 
   /**
    * Return element's attribute value by value name.
@@ -70,29 +72,29 @@
   /**
    * Init google cities autocomplete.
    */
-  const cityAutocomplete = () => {
+  function cityAutocomplete() {
     const cityField = document.getElementById('id_city');
     if (!cityField) return;
 
-    const cityAutocomplete = new google.maps.places.Autocomplete(cityField, config.autocomplete);
+    const autocompleteItem = new google.maps.places.Autocomplete(cityField, config.autocomplete);
 
-    google.maps.event.addListener(cityAutocomplete, 'place_changed', () => {
+    google.maps.event.addListener(autocompleteItem, 'place_changed', () => {
       storeInput($(DOM.orderForm.city));
     });
-  };
+  }
 
   /**
    * Reinit touchspin plugin cause of dynamic DOM.
    */
-  const touchSpinReinit = () => {
+  function touchSpinReinit() {
     $(DOM.productCount).TouchSpin(configs.plugins.touchspin);
-  };
+  }
 
   /**
    * Fill inputs, which have saved to localstorage value.
    * Runs on page load, and on every cart's update.
    */
-  const fillSavedInputs = () => {
+  function fillSavedInputs() {
     const getFieldByName = name => $(`#id_${name}`);
 
     for (const fieldName in DOM.orderForm) {
@@ -105,12 +107,12 @@
         }
       }
     }
-  };
+  }
 
   /**
    * Select saved payment if there is one.
    */
-  const restoreSelectedPayment = () => {
+  function restoreSelectedPayment() {
     const savedPayment = localStorage.getItem(config.paymentKey);
 
     if (savedPayment) {
@@ -122,7 +124,7 @@
     } else {
       $(DOM.defaultPaymentOptions).attr('checked', true);
     }
-  };
+  }
 
   /**
    * Event handler for changing product's count in Cart.
@@ -146,7 +148,7 @@
   /**
    * Select appropriate submit button, based on selected payment option.
    */
-  const selectSubmitBtn = () => {
+  function selectSubmitBtn() {
     const $yandexSubmit = $(DOM.yandexSubmit);
     const $seSubmit = $(DOM.seSubmit);
     const optionName = getSelectedPaymentName();
@@ -164,7 +166,7 @@
 
     isYandexPayment ? selectYandex() : selectSE();
     if (optionName) localStorage.setItem(config.paymentKey, optionName);
-  };
+  }
 
   /**
    * Return hash with customer's info from form.

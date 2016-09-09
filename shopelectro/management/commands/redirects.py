@@ -25,6 +25,7 @@ class Command(BaseCommand):
         links = self.get_data_from_json()
         categories = self.fetch_categories(links)
         conn, cur = self.connect_to_the_db()
+        self.clear_django_redirect(cur)
         self.insert_data_to_django_redirect(cur, links, categories)
         self.disconnect_from_the_db(conn)
 
@@ -55,6 +56,10 @@ class Command(BaseCommand):
         """Commit pending transaction to the database and disconnection."""
         conn.commit()
         conn.close()
+
+    def clear_django_redirect(self, cur):
+        DELETE_REDIRECTS = 'DELETE FROM django_redirect;'
+        cur.execute(DELETE_REDIRECTS)
 
     def insert_data_to_django_redirect(self, cur, links, categories):
         """Insert new records in a django_redirect."""

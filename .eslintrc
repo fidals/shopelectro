@@ -7,7 +7,9 @@
     "mediator": true,
     "server": true,
     "validator": true,
-    "google": true
+    "google": true,
+    "window": true,
+    "yaCounter": true
   },
   "rules": {
     "no-use-before-define": ["error", {
