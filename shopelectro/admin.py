@@ -483,8 +483,8 @@ class PageAdmin(AbstractModelAdmin):
         ('Параметры страницы', {
             'classes': ('secondary-chars',),
             'fields': (
-                ('h1', '_title', ),
-                ('keywords', 'id', ),
+                ('h1', '_title'),
+                ('keywords', 'id'),
                 'is_active',
                 'description',
                 'seo_text'
@@ -497,9 +497,9 @@ class PageAdmin(AbstractModelAdmin):
             ((None, {
                 'classes': ('primary-chars'),
                 'fields': (
-                    ('name', 'category', ),
+                    ('name', 'category'),
                     ('price', 'id'),
-                    ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large', ),
+                    ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large'),
                     ('in_stock', 'is_popular')
                 )
             }),),
