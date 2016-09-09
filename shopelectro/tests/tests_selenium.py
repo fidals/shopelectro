@@ -511,6 +511,7 @@ class OrderPage(SeleniumTestCase):
         We should see error text message when trying to
         submit form without phone number.
         """
+        # TODO does not work, until dev-796 (there needed test yandex_kassa)
         self.browser.find_element_by_id('id_payment_option_2').click()
         self.browser.find_element_by_id('id_name').send_keys('Name')
         self.browser.find_element_by_id('id_phone').clear()

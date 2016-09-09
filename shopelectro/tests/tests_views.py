@@ -46,11 +46,10 @@ class SitemapPage(TestCase):
 
     def test_models_urls(self):
         """Sitemap page should to print correct urls for models."""
-        slice_start_index = len('http://' + settings.SITE_DOMAIN_NAME)
+        slice_start_index = len('https://' + settings.SITE_DOMAIN_NAME)
 
-        path = '{0}url[1]/{0}loc'.format(self.NAMESPACE)
+        path = '{0}url[2]/{0}loc'.format(self.NAMESPACE)
         model_url_text = self.root.find(path).text[slice_start_index:]
-
         response = self.client.get(model_url_text)
 
         self.assertEqual(response.status_code, 200)

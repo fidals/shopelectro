@@ -92,7 +92,6 @@ def delete_and_create(model_generator_mapping: list) -> result_message:
     """Perform db transaction of removing current rows and creating new ones."""
     def purge_table(model):
         """Removes every row from Model's table."""
-        Page.objects.filter(type=model._meta.db_table).delete()
         model.objects.all().delete()
 
     def save_instances(collection):
@@ -109,24 +108,21 @@ def delete_and_create(model_generator_mapping: list) -> result_message:
 
 
 def create_meta_tags(instance):
-    meta_tags_for_model = {
-        Category: lambda h1: {
-            '_title': CATEGORY_TITLE.format(h1=h1)
-        },
-        Product: lambda h1, category_name: {
-            '_title': PRODUCT_TITLE.format(h1=h1),
-            'description': PRODUCT_DESCRIPTION.format(h1=h1, category_name=category_name),
-        },
-    }
-
-    page = Page.objects.filter(id=instance.page.id)
-    h1 = page[0].h1
+    """Create meta tags for every product and category"""
+    page = Page.objects.get(id=instance.page.id)
+    h1 = page.h1
 
     if isinstance(instance, Category):
-        page.update(**meta_tags_for_model[Category](h1))
+        if not page._title:
+            page._title = CATEGORY_TITLE.format(h1=h1)
     else:
         category_name = instance.category.name
-        page.update(**meta_tags_for_model[Product](h1, category_name))
+        if not page._title:
+            page._title = PRODUCT_TITLE.format(h1=h1)
+        if not page.description:
+            page.description = PRODUCT_DESCRIPTION.format(h1=h1, category_name=category_name)
+
+    page.save()
 
 
 class Command(BaseCommand):
