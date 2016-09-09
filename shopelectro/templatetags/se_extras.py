@@ -84,10 +84,10 @@ def time_to_call():
 @register.filter
 def upload_form(model):
     """Check if template with current Model should have upload form"""
-
-    models_with_upload_form, model_type = (['Category', 'Product'],
-                                           type(model).__name__)
-    return model_type in models_with_upload_form
+    if model:
+        models_with_upload_form, model_type = (['Category', 'Product'],
+                                               type(model.model).__name__)
+        return model_type in models_with_upload_form
 
 
 @register.inclusion_tag('prices/picture_tag.html')

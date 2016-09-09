@@ -11,12 +11,14 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Chrome  # We use this instead of standard selenium
 
+from django.db.models import Count
 from django.conf import settings
 from django.test import LiveServerTestCase
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 
 from pages.models import Page
+from shopelectro.models import Category, Product
 
 
 def wait(seconds=1):
@@ -105,7 +107,8 @@ class Header(SeleniumTestCase):
 
     def test_cart_flush(self):
         """We can flush cart from header's cart dropdown"""
-        self.browser.get(self.live_server_url + reverse('product', args=(250,)))
+        product_id = Product.objects.first().id
+        self.browser.get(self.live_server_url + reverse('product', args=(product_id,)))
         self.browser.find_element_by_class_name('btn-to-basket').click()
         wait()
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
@@ -123,11 +126,21 @@ class CategoryPage(SeleniumTestCase):
     def setUpClass(cls):
         """Set up testing urls."""
         super(CategoryPage, cls).setUpClass()
-        server = cls.live_server_url
-        testing_url = lambda slug: server + reverse('category', args=(slug,))
-        cls.direct_child = testing_url('child-1-of-root-category-1')
-        cls.deep_category = testing_url('child-2-of-child-2-of-root-category-1')
-        cls.root_category = testing_url('root-category-1')
+
+    def setUp(self):
+        server = self.live_server_url
+        self.testing_url = lambda slug: server + reverse('category', args=(slug,))
+
+        root_category = Category.objects.filter(parent=None).first()
+        children_category = Category.objects.filter(parent=root_category).first()
+        category_with_product_less_then_LOAD_LIMIT = Category.objects.annotate(
+            prod_count=Count('products')).exclude(prod_count=0).filter(
+            prod_count__lt=settings.PRODUCTS_TO_LOAD).first()
+
+        self.root_category = self.testing_url(root_category.slug)
+        self.children_category= self.testing_url(children_category.slug)
+        self.deep_children_category = self.testing_url(
+            category_with_product_less_then_LOAD_LIMIT.slug)
 
     @property
     def load_more_button(self):
@@ -147,9 +160,9 @@ class CategoryPage(SeleniumTestCase):
         self.assertEqual(len(crumbs), 3)
 
         # In 'deep category' there should be more crumbs
-        self.browser.get(self.deep_category)
+        self.browser.get(self.children_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
-        self.assertEqual(len(crumbs), 5)
+        self.assertEqual(len(crumbs), 4)
 
     def test_30_products_by_default(self):
         """Any CategoryPage should contain 30 products by default."""
@@ -181,7 +194,8 @@ class CategoryPage(SeleniumTestCase):
         we shouldn't see load more button.
         """
 
-        self.browser.get(self.deep_category)
+        self.browser.get(self.deep_children_category)
+        wait()
         self.assertTrue('hidden' in self.load_more_button.get_attribute('class'))
 
     def test_default_view_is_tile(self):
@@ -193,7 +207,7 @@ class CategoryPage(SeleniumTestCase):
         and category wrapper 'view-mode-tile' class.
         """
 
-        self.browser.get(self.direct_child)
+        self.browser.get(self.children_category)
         tile_view_selector = self.browser.find_element_by_class_name(
             'js-icon-mode-tile')
         products_view = self.browser.find_element_by_id('category-right')
@@ -206,7 +220,7 @@ class CategoryPage(SeleniumTestCase):
         to list view without reloading a page.
         """
 
-        self.browser.get(self.direct_child)
+        self.browser.get(self.children_category)
         list_view_selector = self.browser.find_element_by_class_name(
             'js-icon-mode-list')
         products_view = self.browser.find_element_by_id('category-right')
@@ -225,7 +239,7 @@ class CategoryPage(SeleniumTestCase):
     def test_default_sorting_is_by_cheapest(self):
         """By default, sorting should be by cheapest goods."""
 
-        self.browser.get(self.direct_child)
+        self.browser.get(self.children_category)
         cheapest_sort_option = self.browser.find_element_by_xpath(
             '//*[@id="category-right"]/'
             'div[1]/div/div/div[2]/label/div/select/option[1]')
@@ -234,7 +248,7 @@ class CategoryPage(SeleniumTestCase):
     def test_change_sorting(self):
         """We can change sorting option"""
 
-        self.browser.get(self.direct_child)
+        self.browser.get(self.children_category)
         expensive_sort_option = self.browser.find_element_by_xpath(
             '//*[@id="category-right"]/'
             'div[1]/div/div/div[2]/label/div/select/option[3]'
@@ -249,7 +263,7 @@ class CategoryPage(SeleniumTestCase):
     def test_add_to_cart(self):
         """We can add item to cart from it's category page."""
 
-        self.browser.get(self.direct_child)
+        self.browser.get(self.children_category)
         self.browser.find_elements_by_class_name(
             'js-product-to-cart')[0].click()
         wait()
@@ -261,17 +275,14 @@ class CategoryPage(SeleniumTestCase):
 class ProductPage(SeleniumTestCase):
     """Selenium-based tests for product page UI."""
 
-    PRODUCT_ID = 280
-
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
-
+        product = Product.objects.first()
         server = self.live_server_url
-
         self.test_product_page = server + reverse(
-            'product', args=(self.PRODUCT_ID,))
+            'product', args=(product.id,))
         self.success_order = server + reverse('ecommerce:order_success')
-        self.product_name = 'Product of Child #1 of #Root category #0 with num #7'
+        self.product_name = product.name
         self.browser.get(self.test_product_page)
         self.one_click = self.browser.find_element_by_id('btn-one-click-order')
 
@@ -282,9 +293,9 @@ class ProductPage(SeleniumTestCase):
         :return:
         """
 
-        # There should be 5 items in breadcrumbs for this case
+        # There should be 6 items in breadcrumbs for this case
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
-        self.assertEqual(len(crumbs), 5)
+        self.assertEqual(len(crumbs), 6)
 
     def test_ui_elements(self):
         """
@@ -383,8 +394,6 @@ class OrderPage(SeleniumTestCase):
     @classmethod
     def setUpClass(cls):
         super(OrderPage, cls).setUpClass()
-        cls.category = reverse(
-            'category', args=('child-1-of-root-category-1',))
         cls.cart_dropdown = 'basket-parent'
         cls.first_product_id = '405'
         cls.remove_product = cls.get_cell(pos=4, col='remove') + '/img'
@@ -393,6 +402,7 @@ class OrderPage(SeleniumTestCase):
             cls.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
 
     def setUp(self):
+        self.category = reverse('category', args=(Category.objects.first().slug,))
         self.__buy_products()
         wait()
         self.browser.get(self.live_server_url +
@@ -403,7 +413,7 @@ class OrderPage(SeleniumTestCase):
         for i in range(1, 6):
             self.browser.find_element_by_xpath(
                 '//*[@id="products-wrapper"]/div[{}]/div[2]/div[5]/button'
-                .format(i)
+                    .format(i)
             ).click()
 
     def test_table_is_presented_if_there_is_some_products(self):
@@ -501,13 +511,14 @@ class OrderPage(SeleniumTestCase):
         We should see error text message when trying to
         submit form without phone number.
         """
-
         self.browser.find_element_by_id('id_payment_option_2').click()
         self.browser.find_element_by_id('id_name').send_keys('Name')
         self.browser.find_element_by_id('id_phone').clear()
         self.browser.find_element_by_id('btn-send-ya').click()
+
         error_text = self.browser.find_element_by_class_name(
             'js-form-error-text')
+
         self.assertTrue('телефон', error_text.is_displayed())
 
 
@@ -576,17 +587,27 @@ class AdminPage(SeleniumTestCase):
         cls.login = 'admin'
         cls.password = 'asdfjkl;'
         cls.title_text = 'Shopelectro administration'
-        cls.products = 'admin-products-link'
-        cls.price_filter = '//*[@id="changelist-filter"]/ul[1]/li[3]'
-        cls.active_products = '//*[@id="changelist-filter"]/ul[2]/li[2]/a'
-        cls.inactive_products = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
+        cls.table_with_app_list = '//*[@id="content-main"]/div/table'
+        cls.products = '//*[@id="content-main"]/div/table/tbody/tr[3]/th/a'
+        cls.category = '//*[@id="content-main"]/div/table/tbody/tr[2]/th/a'
+        cls.page = '//*[@id="content-main"]/div/table/tbody/tr[1]/th/a'
+        cls.price_filter = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
+        cls.active_products = '//*[@id="changelist-filter"]/ul[1]/li[2]/a'
+        cls.inactive_products = '//*[@id="changelist-filter"]/ul[1]/li[3]/a'
         cls.is_active_img = 'field-is_active'
         cls.autocomplete_text = 'Prod'
-        cls.tree_root_node_id = '24'
-        cls.tree_node_id = '28'
+        cls.models_name = ['page', 'product', 'category']
+
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
+        self.root_category_id = str(Category.objects.filter(parent=None).first().id)
+        self.children_category_id = str(Category.objects.filter(
+            parent_id=self.root_category_id).first().id)
+        self.deep_childre_category_id = str(Category.objects.filter(
+            parent_id=self.children_category_id).first().id)
+        self.tree_product_id = str(Product.objects.filter(
+            category_id=self.deep_childre_category_id).first().id)
 
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
@@ -605,30 +626,18 @@ class AdminPage(SeleniumTestCase):
         admin_title = self.browser.find_element_by_id('site-name')
         self.assertIn(self.title_text, admin_title.text)
 
-    def test_admin_product(self):
-        """
-        Admin products page has icon links for Edit.
-        And it should has Search field.
-        """
-
-        self.browser.find_element_by_id(self.products).click()
-        edit_link = self.browser.find_element_by_class_name('field-links')
-
-        self.assertTrue(edit_link)
-
     def test_product_price_filter(self):
         """
         Price filter is able to filter products by set range.
         In this case we filter products with 1000 - 2000 price range.
         """
-
         # separated var for debugging
-        products_list = self.browser.find_element_by_id(self.products)
+        products_list = self.browser.find_element_by_xpath(self.products)
         products_list.click()
         wait()
         self.browser.find_element_by_xpath(self.price_filter).click()
-        wait(2)
-        product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[3]')
+        wait()
+        product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[4]')
         product_price = float(product.text)
 
         self.assertTrue(product_price >= 1000)
@@ -636,7 +645,7 @@ class AdminPage(SeleniumTestCase):
     def test_is_active_filter(self):
         """Activity filter returns only active or non active items."""
 
-        self.browser.find_element_by_id(self.products).click()
+        self.browser.find_element_by_xpath(self.products).click()
         wait()
 
         self.browser.find_element_by_xpath(self.active_products).click()
@@ -655,9 +664,9 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
-        """Search field could autocomplete."""
+        """Search field should autocomplete."""
 
-        self.browser.find_element_by_id(self.products).click()
+        self.browser.find_element_by_xpath(self.products).click()
         wait()
 
         self.browser.find_element_by_id('searchbar').send_keys(self.autocomplete_text)
@@ -673,32 +682,55 @@ class AdminPage(SeleniumTestCase):
     def test_sidebar_not_on_dashboard(self):
         """Sidebar should be not only on dashboard page."""
 
-        self.browser.find_element_by_id(self.products).click()
+        self.browser.find_element_by_xpath(self.products).click()
         wait()
         sidebar = self.browser.find_element_by_class_name('sidebar')
 
         self.assertTrue(sidebar.is_displayed())
 
+    def open_js_tree_nodes(self):
+        def get_change_state_button(id):
+            return self.browser.find_element_by_id(id).find_element_by_tag_name('i')
+
+        def change_state(id=None, class_name=None):
+            if id:
+                get_change_state_button(id).click()
+                wait()
+            else:
+                self.browser.find_element_by_class_name(class_name).click()
+                wait()
+
+        def is_node_open(id):
+            return self.browser.find_element_by_id(
+                id).find_elements_by_class_name('jstree-children')
+
+        def open_node(*args):
+            for id in args:
+                if not is_node_open(id):
+                    # open node
+                    change_state(id=id)
+
+        if self.browser.find_elements_by_class_name('collapsed'):
+            # Need to close sidebar
+            change_state(class_name='js-toggle-sidebar')
+
+        open_node(
+            self.root_category_id, self.children_category_id, self.deep_childre_category_id)
+
     def test_tree_fetch_data(self):
         """Lazy load logic for jstree."""
-        # open root node
-        self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('i').click()
-        wait()
-        # open child node
-        self.browser.find_element_by_id(self.tree_node_id).find_element_by_tag_name('i').click()
-        wait()
-
-        node_children = (self.browser.find_element_by_id(self.tree_node_id)
+        self.open_js_tree_nodes()
+        node_children = (self.browser.find_element_by_id(self.deep_childre_category_id)
                          .find_elements_by_class_name('jstree-leaf'))
-
         self.assertGreater(len(node_children), 10)
 
     def test_tree_redirect_to_entity_edit_page(self):
         """Test redirect to edit entity page by click at jstree's item"""
-        h1 = 'Change category'
+        self.open_js_tree_nodes()
+        h1 = 'Change page'
 
         # click at tree's item, redirect to entity edit page
-        root_node = self.browser.find_element_by_id(self.tree_root_node_id)
+        root_node = self.browser.find_element_by_id(self.root_category_id)
         root_node.find_element_by_tag_name('a').click()
         wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
@@ -707,16 +739,9 @@ class AdminPage(SeleniumTestCase):
 
     def test_tree_redirect_to_table_editor_page(self):
         """Test redirect to table editor page by context click at tree's item"""
-
-        # open root node
-        self.browser.find_element_by_id(self.tree_root_node_id).find_element_by_tag_name('i').click()
-        wait()
-
-        # open child node
-        self.browser.find_element_by_id(self.tree_node_id).find_element_by_tag_name('i').click()
-        wait()
-
-        tree_item = self.browser.find_element_by_id('317').find_element_by_tag_name('a')
+        self.open_js_tree_nodes()
+        tree_item = self.browser.find_element_by_id(
+            self.tree_product_id).find_element_by_tag_name('a')
         context_click(self.browser, tree_item)
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[0].click()
         wait()
@@ -728,17 +753,19 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue(len(test_search_value) > 0)
 
     def test_tree_redirect_to_entity_site_page(self):
-        """Test redirect to entity's site page by context click at tree's item"""
-        tree_item = (self.browser.find_element_by_id(self.tree_root_node_id)
+        """Test redirect to entity's site page by right bottom click at tree's item"""
+        self.open_js_tree_nodes()
+        tree_item = (self.browser.find_element_by_id(self.root_category_id)
                      .find_element_by_tag_name('a'))
-        h1 = 'Root category #1'
+        category_h1 = Category.objects.get(id=self.root_category_id).page.h1
 
+        # open context menu and click at redirect to site's page
         context_click(self.browser, tree_item)
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[1].click()
         wait()
         test_h1 = self.browser.find_element_by_tag_name('h1').text
 
-        self.assertEqual(test_h1, h1)
+        self.assertEqual(test_h1, category_h1)
 
     def test_sidebar_toggle(self):
         """Sidebar toggle button storage collapsed state."""
@@ -757,7 +784,6 @@ class AdminPage(SeleniumTestCase):
 
     def test_yandex_feedback_request(self):
         """Send mail with request for leaving feedback on Ya.Market."""
-
         self.browser.find_element_by_class_name('js-toggle-sidebar').click()
         email_field = self.browser.find_element_by_id('user-email')
         email_field.send_keys(settings.EMAIL_HOST_USER + Keys.RETURN)
@@ -765,6 +791,90 @@ class AdminPage(SeleniumTestCase):
 
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
 
+    def test_add_button_at_index_page(self):
+        """App's add-button from index page should redirects us to add-page with needed url"""
+        for model_name in self.models_name:
+            self.browser.find_element_by_class_name(
+                'model-{}'.format(model_name)).find_element_by_class_name('addlink').click()
+            wait()
+
+            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
+
+            self.assertEqual(
+                self.browser.current_url,
+                self.live_server_url + '/admin/pages/page/add/{}'.format(
+                    edite_model_name(model_name)))
+
+            self.browser.get(self.admin_page)
+            wait()
+
+    def test_changelist_button_at_index_page(self):
+        """
+        App's changelist-button from index page should redirects us to changelist-page with
+        needed url
+        """
+        for model_name in self.models_name:
+            self.browser.find_element_by_class_name(
+                'model-{}'.format(model_name)).find_element_by_class_name('changelink').click()
+            wait()
+
+            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
+
+            self.assertEqual(
+                self.browser.current_url,
+                self.live_server_url + '/admin/pages/page/{}'.format(edite_model_name(model_name)))
+
+            self.browser.get(self.admin_page)
+            wait()
+
+    def test_add_button_at_changelist_page(self):
+        """App's add-button from changelist page should redirects us to add-page with needed url"""
+        urls_name = [
+            'custom_admin:pages_page_changelist', 'custom_admin:product_changelist',
+            'custom_admin:category_changelist',
+        ]
+
+        for url_name, model_name in zip(urls_name, self.models_name):
+            self.browser.get(self.live_server_url + reverse(url_name))
+            wait()
+
+            self.browser.find_element_by_class_name('addlink').click()
+
+            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
+
+            self.assertEqual(
+                self.browser.current_url,
+                self.live_server_url + '/admin/pages/page/add/{}'.format(
+                    edite_model_name(model_name)))
+
+            self.browser.get(self.admin_page)
+            wait()
+
+    def test_breadcrumbs_at_change_page(self):
+        """Breadcrumbs from change page should redirects us to needed changelist page"""
+        entities_id = [
+            Page.objects.filter(type=Page.FLAT_TYPE).first().id,
+            Page.objects.filter(type='shopelectro_product').first().id,
+            Page.objects.filter(type='shopelectro_category').first().id
+        ]
+        url_name = 'custom_admin:pages_page_change'
+
+        for id, model_name in zip(entities_id, self.models_name):
+            self.browser.get(self.live_server_url + reverse(url_name, args=[id, ]))
+            wait()
+
+            self.browser.find_element_by_class_name('breadcrumbs').find_elements_by_tag_name(
+                'a')[1].click()
+
+            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
+
+            self.assertEqual(
+                self.browser.current_url,
+                self.live_server_url + '/admin/pages/page/{}'.format(
+                    edite_model_name(model_name)))
+
+            self.browser.get(self.admin_page)
+            wait()
 
 class TableEditor(SeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""
@@ -807,7 +917,6 @@ class TableEditor(SeleniumTestCase):
         editable_input.clear()
         editable_input.send_keys(new_data)
         editable_input.send_keys(Keys.ENTER)
-
         self.refresh_table_editor_page()
 
     def get_cell(self, index=0):
@@ -821,7 +930,7 @@ class TableEditor(SeleniumTestCase):
 
         raw_string = self.get_cell(index).text
 
-        return int(raw_string[2:-3])
+        return int(''.join(raw_string.split(' '))[1:-3])
 
     def perform_checkbox_toggle(self, checkbox_name):
         """Change checkbox state by checkbox_name."""
@@ -847,7 +956,6 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_name(self):
         """We could change Product name from TE."""
-
         self.get_cell(1).click()
         self.update_input_value(0, self.new_product_name)
         updated_name = self.get_cell(1).text
@@ -856,7 +964,6 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_price(self):
         """We could change Product price from TE."""
-
         new_price = self.get_current_price(4) + 100
         self.get_cell(4).click()
         self.update_input_value(2, new_price)
@@ -866,14 +973,12 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_activity(self):
         """We could change Product is_active state from TE."""
-
         old_active_state, new_active_state = self.perform_checkbox_toggle('page_is_active')
 
         self.assertNotEqual(new_active_state, old_active_state)
 
     def test_edit_product_popularity(self):
         """We could change Product price is_popular state from TE."""
-
         old_popular_state, new_popular_state = self.perform_checkbox_toggle('is_popular')
 
         self.assertNotEqual(new_popular_state, old_popular_state)
@@ -892,7 +997,6 @@ class TableEditor(SeleniumTestCase):
 
     def test_sort_table_by_id(self):
         """We could sort products in TE by id."""
-
         first_product_id_before = self.get_cell().text
         self.browser.find_element_by_class_name('ui-jqgrid-sortable').click()
         first_product_id_after = self.get_cell().text
@@ -942,20 +1046,16 @@ class YandexKassa(SeleniumTestCase):
 class YandexMetrika(SeleniumTestCase):
     """Selenium-based tests for YandexMetrika"""
 
-    @classmethod
-    def setUpClass(cls):
-        super(YandexMetrika, cls).setUpClass()
-
-        server = cls.live_server_url
-        cls.product_page = server + reverse('product', args=('274',))
-        cls.category_page = server + reverse(
-            'category', args=('child-1-of-root-category-1',))
-
     def setUp(self):
         """
         We should use self.browser.get(...) in this case, because we
         faced a problems with it in setUpClass.
         """
+        server = self.live_server_url
+        product_id = Product.objects.first().id
+        self.product_page = server + reverse('product', args=(product_id,))
+        self.category_page = server + reverse(
+            'category', args=(Category.objects.first().slug,))
         self.browser.get(self.live_server_url)
 
     @property
@@ -980,15 +1080,13 @@ class YandexMetrika(SeleniumTestCase):
 
     def test_download_footer_price(self):
         """User clicks Download price button in footer"""
-        self.browser.find_element_by_class_name('js-download-price-footer') \
-            .click()
+        self.browser.find_element_by_class_name('js-download-price-footer').click()
 
         self.assertTrue('PRICE_FOOTER' in self.reached_goals)
 
     def test_backcall_open(self):
         """User clicks Back call button"""
-        self.browser.find_element_by_class_name('js-backcall-order') \
-            .click()
+        self.browser.find_element_by_class_name('js-backcall-order').click()
 
         self.assertTrue('BACK_CALL_OPEN' in self.reached_goals)
 
@@ -996,16 +1094,14 @@ class YandexMetrika(SeleniumTestCase):
         """User browses to product's page"""
         self.browser.get(self.category_page)
         self.prevent_default('click', '.js-browse-product')
-        self.browser.find_element_by_class_name('js-browse-product') \
-            .click()
+        self.browser.find_element_by_class_name('js-browse-product').click()
 
         self.assertTrue('PROD_BROWSE' in self.reached_goals)
 
     def test_add_product_from_product_page(self):
         """User adds product to cart on Product's page"""
         self.browser.get(self.product_page)
-        self.browser.find_element_by_class_name('js-to-cart-on-product-page') \
-            .click()
+        self.browser.find_element_by_id('btn-to-basket').click()
 
         self.assertTrue('PUT_IN_CART_FROM_PRODUCT' in self.reached_goals)
         self.assertTrue('CMN_PUT_IN_CART' in self.reached_goals)
@@ -1021,8 +1117,7 @@ class YandexMetrika(SeleniumTestCase):
     def test_delete_product(self):
         """User removes product from cart"""
         self.browser.get(self.product_page)
-        self.browser.find_element_by_class_name('js-to-cart-on-product-page') \
-            .click()
+        self.browser.find_element_by_id('btn-to-basket').click()
         wait()
         self.browser.find_element_by_class_name('js-go-to-cart').click()
         self.browser.find_element_by_class_name('js-remove').click()
@@ -1116,9 +1211,10 @@ class Search(SeleniumTestCase):
         search_form.submit()
         wait()
         self.assertTrue(self.browser.find_element_by_link_text(
-            'Child #0 of #Root category #0'))
+            'Category #0 of #Category #0 of #Category #0'))
+
         self.assertTrue(self.browser.find_element_by_link_text(
-            'Child #1 of #Root category #0'))
+            'Category #0'))
         self.clear_input()
 
     def test_search_results_empty(self):

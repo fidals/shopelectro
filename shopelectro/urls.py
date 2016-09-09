@@ -6,7 +6,6 @@ distinct lists and then include them all at once.
 """
 
 from collections import OrderedDict
-from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.conf import settings
 from django.conf.urls import url, include
@@ -14,8 +13,9 @@ from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
 
 from pages.views import robots
+from shopelectro.admin import custom_admin_site
 from shopelectro import views, sitemaps, config
-from shopelectro.admin import table_editor_view
+
 
 admin_urls = [
     url(r'^autocomplete/', views.AdminAutocomplete.as_view()),
@@ -25,7 +25,8 @@ admin_urls = [
     url(r'^product-update/$', views.admin_update_product),
     url(r'^product-delete/$', views.admin_delete_product),
     url(r'^remove-image/$', views.admin_remove_image),
-    url(r'^uploads/$', views.admin_upload_images, name='admin_upload'),
+    url(r'^uploads/(?P<model_name>[\w-]+)/(?P<entity_id>[0-9]+)$', views.admin_upload_images,
+        name='admin_upload'),
 ]
 
 category_urls = [
@@ -76,9 +77,8 @@ ecommerce_urls = [
 
 urlpatterns = [
     url(r'^$', views.IndexPage.as_view(), name='index'),
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', custom_admin_site.urls),
     url(r'^admin/', include(admin_urls)),
-    url(r'^admin/', include(table_editor_view.urls)),
     url(r'^catalog/', include(category_urls)),
     url(r'^catalog/products/(?P<product_id>[0-9]+)/$',
         views.ProductPage.as_view(), name='product'),

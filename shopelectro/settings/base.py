@@ -34,7 +34,8 @@ ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')]
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#django.contrib.admin.autodiscover
+    'django.contrib.admin.apps.SimpleAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.messages',
