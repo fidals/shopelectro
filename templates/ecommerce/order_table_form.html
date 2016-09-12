@@ -22,7 +22,7 @@
       <th></th>
     </tr>
     {% for id, position in cart %}
-      <tr id="{{ id }}">
+      <tr data-table-id="{{ id }}">
         <td>{{ id }}</td>
         <td class="photo text-center">
           {% if 'logo' in position.image %} {# position has image #}

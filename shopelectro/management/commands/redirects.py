@@ -3,6 +3,7 @@
 import os
 import json
 import psycopg2
+from itertools import chain
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -19,6 +20,7 @@ class Command(BaseCommand):
     """
     JSON = 'redirect_links.json'
     CATALOG_ROOT = '/catalog/categories/'
+    LEGACY_CATALOG_ROOT = '/catalog/'
     DB_CONFIG = settings.DATABASES['default']
 
     def handle(self, *args, **kwargs):
@@ -64,17 +66,24 @@ class Command(BaseCommand):
     def insert_data_to_django_redirect(self, cur, links, categories):
         """Insert new records in a django_redirect."""
         SITE_ID = settings.SITE_ID
-        INSERT_REDIRECTS = 'INSERT INTO django_redirect VALUES (%s, %s, %s, %s);'
+        INSERT_REDIRECTS = 'INSERT INTO django_redirect (site_id, old_path, new_path) ' \
+                           'VALUES (%s, %s, %s);'
 
-        from_old_path = lambda category: (self.CATALOG_ROOT +
-                                          links[str(category.id)] +
-                                          '/')
-        to_new_path = lambda category: self.CATALOG_ROOT + category.slug + '/'
+        def get_legacy_old_path(category):
+            return self.LEGACY_CATALOG_ROOT + links[str(category.id)] + '/'
 
-        insertions_data = [(category.id,
-                            SITE_ID,
-                            from_old_path(category),
-                            to_new_path(category)) for category in categories]
+        def get_old_path(category):
+            return self.CATALOG_ROOT + links[str(category.id)] + '/'
+
+        def get_new_path(category):
+            return self.CATALOG_ROOT + category.slug + '/'
+
+        insertions_data = list(chain(*[
+            (
+                (SITE_ID, get_old_path(category), get_new_path(category)),
+                (SITE_ID, get_legacy_old_path(category), get_new_path(category))
+            ) for category in categories])
+        )
 
         print('Insert {} rows to django_redirect.'.format(len(insertions_data)))
         cur.executemany(INSERT_REDIRECTS, insertions_data)

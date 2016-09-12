@@ -1,7 +1,7 @@
 /**
  * Category Page module defines logic, operations and DOM for CategoryPage.
  */
-const category = (() => {
+(() => {
   const DOM = {
     $loadedProducts: $('.js-products-showed-count'),
     $productsList: $('#products-wrapper'),
@@ -21,7 +21,7 @@ const category = (() => {
 
   const config = {
     productsToFetch: 30,
-    totalProductsCount: parseInt($('.js-total-products').first().text()),
+    totalProductsCount: parseInt($('.js-total-products').first().text(), 10),
   };
 
   const init = () => {
@@ -32,7 +32,7 @@ const category = (() => {
   /**
    * Subscribing on events using mediator.
    */
-  const setUpListeners = () => {
+  function setUpListeners() {
     mediator.subscribe('onViewTypeChange', updateViewType, server.sendViewType);
     mediator.subscribe('onProductsLoad', updateLoadedCount, updateProductsList, updateButtonState);
     DOM.tileView.$.click(() => mediator.publish('onViewTypeChange', DOM.tileView.mode));
@@ -41,23 +41,24 @@ const category = (() => {
     DOM.$loadMore.click(loadProducts);
     DOM.$sorting.change(changeSort);
     DOM.$addToCart.click(buyProduct);
-  };
+  }
 
   /**
    * Change sorting option and re-renders the whole screen.
    */
-  const changeSort = () => {
+  function changeSort() {
     location.href = sortingOption().attr('data-path');
-  };
+  }
 
   /**
    * Update Products List DOM via appending html-list of loaded products
    * to wrapper.
    *
-   * @param {Event} event
    * @param {string} products - HTML string of fetched product's list
    */
-  const updateProductsList = (event, products) => DOM.$productsList.append(products);
+  function updateProductsList(_, products) {
+    DOM.$productsList.append(products);
+  }
 
   /**
    * Update loaded products counter by a simple logic:
@@ -65,27 +66,28 @@ const category = (() => {
    *    so we should set loaded count a value of total products
    * 2) otherwise, we simply add PRODUCTS_TO_FETCH to counter.
    */
-  const updateLoadedCount = () => DOM.$loadedProducts.text(
-    loadedProductsCount() + Math.min(productsLeft(), config.productsToFetch)
-  );
+  function updateLoadedCount() {
+    DOM.$loadedProducts.text(
+      loadedProductsCount() + Math.min(productsLeft(), config.productsToFetch)
+    );
+  }
 
   /**
    * Add 'hidden' class to button if there are no more products to load.
    */
-  const updateButtonState = () => {
+  function updateButtonState() {
     if (productsLeft() === 0) {
       DOM.$loadMore.addClass('hidden');
     }
-  };
+  }
 
   /**
    * Update view of a product's list.
    *
    * Removes old classes and adds new one depends on what view type was selected.
-   * @param {Event} event
    * @param {string} viewType: list|tile
    */
-  const updateViewType = (event, viewType) => {
+  function updateViewType(_, viewType) {
     DOM.$viewType
       .removeClass('view-mode-tile view-mode-list')
       .addClass(`view-mode-${viewType}`);
@@ -97,7 +99,7 @@ const category = (() => {
       DOM.tileView.$.addClass('active');
       DOM.listView.$.removeClass('active');
     }
-  };
+  }
 
   /**
    * Return selected sorting option.
@@ -111,20 +113,20 @@ const category = (() => {
    *
    * @returns {Number} - number of products left to fetch
    */
-  const productsLeft = () => parseInt(config.totalProductsCount - loadedProductsCount());
+  const productsLeft = () => parseInt(config.totalProductsCount - loadedProductsCount(), 10);
 
   /**
    * Get number of already loaded products
    *
    * @returns {int} - number of products which are loaded and presented in DOM
    */
-  const loadedProductsCount = () => parseInt(DOM.$loadedProducts.first().text());
+  const loadedProductsCount = () => parseInt(DOM.$loadedProducts.first().text(), 10);
 
   /**
    * Load products from back-end using promise-like fetch object fetchProducts.
    * After products successfully loaded - publishes 'onProductLoad' event.
    */
-  const loadProducts = () => {
+  function loadProducts() {
     const categoryUrl = DOM.$loadMore.attr('data-url');
     const offset = loadedProductsCount();
     const sorting = sortingOption().val();
@@ -132,16 +134,16 @@ const category = (() => {
 
     server.fetchProducts(url)
       .then(products => mediator.publish('onProductsLoad', products));
-  };
+  }
 
-  const buyProduct = (event) => {
+  function buyProduct(event) {
     const buyInfo = () => {
       const product = $(event.target);
       const count = product.closest('.js-order').find('.js-product-count').val();
 
       return {
-        count: parseInt(count),
-        id: parseInt(product.attr('productId')),
+        count: parseInt(count, 10),
+        id: parseInt(product.attr('productId'), 10),
       };
     };
 
@@ -149,7 +151,7 @@ const category = (() => {
 
     server.addToCart(id, count)
       .then(data => mediator.publish('onCartUpdate', data));
-  };
+  }
 
   init();
 })();

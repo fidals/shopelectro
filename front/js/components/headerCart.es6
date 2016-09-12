@@ -1,4 +1,4 @@
-const headerCart = (() => {
+(() => {
   const DOM = {
     $cart: $('.js-cart-header'),
     resetCart: '.js-reset-cart',
@@ -9,38 +9,43 @@ const headerCart = (() => {
     setUpListeners();
   };
 
-  const setUpListeners = () => {
+  function setUpListeners() {
     mediator.subscribe('onCartUpdate', render);
 
     // Since product's list in cart dropdown is dynamic, we bind events on static parent
     DOM.$cart.on('click', DOM.resetCart, clear);
-    DOM.$cart.on('click', DOM.removeFromCart, event => remove(event.target.getAttribute('id')));
-  };
+    DOM.$cart.on('click', DOM.removeFromCart, remove);
+  }
 
   /**
    * Remove product with the given id from cart.
-   * @param productId
    */
-  const remove = productId => server.removeFromCart(productId)
-    .then(data => {
-      mediator.publish('onCartUpdate', data);
-      mediator.publish('onProductRemove');
-    });
+  function remove() {
+    const productId = $(event.target).attr('data-id');
+
+    server.removeFromCart(productId)
+      .then(data => {
+        mediator.publish('onCartUpdate', data);
+        mediator.publish('onProductRemove');
+      });
+  }
 
   /**
    * Remove everything from cart.
    */
-  const clear = () => server.flushCart()
-    .then(data => mediator.publish('onCartUpdate', data));
+  function clear() {
+    server.flushCart()
+      .then(data => mediator.publish('onCartUpdate', data));
+  }
 
   /**
    * Render new cart's html.
    * @param data
    */
-  const render = (_, data) => {
+  function render(_, data) {
     DOM.$cart.html(data.header);
     configs.scrollbarReinit();
-  };
+  }
 
   init();
 })();

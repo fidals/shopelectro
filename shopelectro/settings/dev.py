@@ -1,6 +1,5 @@
 from .base import *
 
-
 DEBUG = True
 
 DATABASE_URL = 'postgres://postgres:11@db/se_dev'
@@ -21,6 +20,3 @@ DEFAULT_TO_EMAIL = 'info@shopelectro.ru'
 SHOP_EMAIL = 'info@shopelectro.ru'
 
 SITE_DOMAIN_NAME = 'stage.shopelectro.ru'
-
-# http->https change
-os.environ['HTTPS'] = 'on'

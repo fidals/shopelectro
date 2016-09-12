@@ -19,7 +19,7 @@ from shopelectro import views, sitemaps, config
 
 admin_urls = [
     url(r'^autocomplete/', views.AdminAutocomplete.as_view()),
-    url(r'^generate-table-data/$', views.admin_table_editor_data),
+    url(r'^get-table-editor-data/$', views.admin_table_editor_data),
     url(r'^get-tree-items/$', views.admin_tree_items),
     url(r'^product-create/$', views.admin_create_product),
     url(r'^product-update/$', views.admin_update_product),
@@ -88,7 +88,6 @@ urlpatterns = [
     url(r'^shop/', include(ecommerce_urls)),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
-    url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
     url(r'^shop/', include('ecommerce.urls')),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps

@@ -14,8 +14,8 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from shopelectro.admin import PageAdmin
 from pages.models import Page
+
 
 class SitemapPage(TestCase):
     """
@@ -46,11 +46,10 @@ class SitemapPage(TestCase):
 
     def test_models_urls(self):
         """Sitemap page should to print correct urls for models."""
-        slice_start_index = len('http://' + settings.SITE_DOMAIN_NAME)
+        slice_start_index = len('https://' + settings.SITE_DOMAIN_NAME)
 
-        path = '{0}url[1]/{0}loc'.format(self.NAMESPACE)
+        path = '{0}url[2]/{0}loc'.format(self.NAMESPACE)
         model_url_text = self.root.find(path).text[slice_start_index:]
-
         response = self.client.get(model_url_text)
 
         self.assertEqual(response.status_code, 200)
@@ -70,16 +69,16 @@ class AdminPage(TestCase):
 
         cls.list_display = {
             'page': ['Id', 'H1', 'Parent', 'Is active', ],
-            'proudct': ['Id', 'H1', 'Category', 'Price', 'Link', 'Is active', ],
+            'product': ['Id', 'H1', 'Category', 'Price', 'Link', 'Is active', ],
             'category': ['Id', 'H1', 'Parent', 'Is active', ],
         }
 
         cls.fieldsets = {
             'page': ['Position', 'Content', 'title', 'Keywords', 'Description', 'Is active',
                      'Seo text', 'h1'],
-            'proudct': ['Name', 'Category', 'Price', 'ID', 'Purchase price', 'Wholesale large',
+            'product': ['Name', 'Category', 'Price', 'ID', 'Purchase price', 'Wholesale large',
                         'Wholesale medium', 'Wholesale small', 'In stock', 'Is popular', ],
-            'category': ['Name', 'Parent', 'Position', 'ID',],
+            'category': ['Name', 'Parent', 'Position', 'ID', ],
         }
 
     def setUp(self):
@@ -201,7 +200,9 @@ class AdminPage(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_categories_change_fieldset(self):
-        """Categories model's change-page must have all needed fields, which was define in Admin.py"""
+        """
+        Categories model's change-page must have all needed fields, which was define in Admin.py
+        """
         response = self.client.get(
             reverse('custom_admin:pages_page_change', args=(Page.objects.filter(
                 type='shopelectro_category').first().id, )))
@@ -228,7 +229,7 @@ class AdminPage(TestCase):
         response = self.client.get(
             reverse('custom_admin:product_changelist'))
 
-        for field in self.list_display['proudct']:
+        for field in self.list_display['product']:
             self.assertContains(response, field)
 
     def test_products_add_status_code(self):
@@ -245,7 +246,7 @@ class AdminPage(TestCase):
 
         self.assertNotContains(response, 'Categories')
 
-        for field in self.fieldsets['proudct']:
+        for field in self.fieldsets['product']:
             self.assertContains(response, field)
 
         for field in self.fieldsets['page']:
@@ -266,7 +267,7 @@ class AdminPage(TestCase):
 
         self.assertNotContains(response, 'Categories')
 
-        for field in self.fieldsets['proudct']:
+        for field in self.fieldsets['product']:
             self.assertContains(response, field)
 
         for field in self.fieldsets['page']:

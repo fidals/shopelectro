@@ -3,6 +3,7 @@ __pycache__/
 *$py.class
 .idea/
 assets/
+!assets/docs/
 front/build/
 env/
 src/

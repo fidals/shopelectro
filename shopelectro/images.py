@@ -23,11 +23,11 @@ def upload(model_type, model_id, files):
         Create file (physically) in a given directory.
 
         Accepts:
-                file - InMemoryFileObject
-                dir - path to directory where the file will be saved
-                name - non-default name for a file.
-                       If not specified, file will be saved with uploaded name.
-                size - tuple of sizes. File will be resized if its sizes > given size.
+            file - InMemoryFileObject
+            dir - path to directory where the file will be saved
+            name - non-default name for a file.
+                   If not specified, file will be saved with uploaded name.
+            size - tuple of sizes. File will be resized if its sizes > given size.
         """
         uploaded_name, ext = name_and_extension(file)
         name = name or uploaded_name

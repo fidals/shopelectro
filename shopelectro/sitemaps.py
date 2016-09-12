@@ -1,16 +1,19 @@
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from pages.models import Page
-from .models import Product, Category
+from shopelectro.models import Product, Category
 
 
 class AbstractSitemap(Sitemap):
+    protocol = 'https'
     changefreq = 'weekly'
     priority = 0.9
 
 
 class IndexSitemap(Sitemap):
+    protocol = 'https'
     changefreq = 'monthly'
     priority = 1
 

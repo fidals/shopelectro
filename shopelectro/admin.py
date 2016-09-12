@@ -3,7 +3,6 @@ Django admin module.
 For injection your models in Page app, you should define INJECTION_MODELS
 """
 
-
 from collections import namedtuple
 from itertools import chain
 from typing import Dict, Tuple
@@ -23,8 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from shopelectro.models import Category, Product
 from pages.models import Page
 
-
-INJECTION_MODELS = (Category, Product) # Global variables
+INJECTION_MODELS = (Category, Product)  # Global variables
 
 
 def after_action_message(updated_rows):
@@ -56,7 +54,7 @@ class PriceRange(admin.SimpleListFilter):
                 _('{} 000 - {} 000 руб.'.format(i - 1, i))
             )
             for i in range(2, 11)
-        ]
+            ]
 
         price_segment_list.insert(0, price_segment('0', _('0 руб.')))
         price_segment_list.append(price_segment('10', _('10 000+ руб.')))
@@ -85,6 +83,50 @@ class PriceRange(admin.SimpleListFilter):
 class CustomAdminSite(AdminSite):
     """Override AdminSite class"""
     site_header = 'Shopelectro administration'
+
+    # Fields for TableEditor filters:
+    FILTER_FIELDS = (
+        {
+            'id': 'filter-name',
+            'name': 'Название',
+            'checked': True,
+        },
+        {
+            'id': 'filter-title',
+            'name': 'Заголовок',
+            'checked': False,
+        },
+        {
+            'id': 'filter-category_name',
+            'name': 'Категория',
+            'checked': True,
+        },
+        {
+            'id': 'filter-price',
+            'name': 'Цена',
+            'checked': True,
+        },
+        {
+            'id': 'filter-purchase_price',
+            'name': 'Закупочная цена',
+            'checked': False,
+        },
+        {
+            'id': 'filter-is_active',
+            'name': 'Активность',
+            'checked': True,
+        },
+        {
+            'id': 'filter-is_popular',
+            'name': 'Топ',
+            'checked': True,
+        },
+        {
+            'id': 'filter-in_stock',
+            'name': 'Наличие',
+            'checked': False,
+        },
+    )
 
     def extend_app_list_model(self, to_model: Model, add_models: INJECTION_MODELS, app_list):
         """
@@ -116,7 +158,6 @@ class CustomAdminSite(AdminSite):
 
         return app_list
 
-
     def index(self, request, extra_context=None):
         extra_context = extra_context or {}
         app_list = self.extend_app_list_model(
@@ -125,6 +166,10 @@ class CustomAdminSite(AdminSite):
         return super(CustomAdminSite, self).index(request, extra_context)
 
     def get_urls(self):
+        """
+        Render custom view for Table editor
+        @link http://goo.gl/LUYheF
+        """
         original_urls = super(CustomAdminSite, self).get_urls()
 
         custom_urls = [
@@ -138,7 +183,8 @@ class CustomAdminSite(AdminSite):
             # Include common variables for rendering the admin template.
             **self.each_context(request),
             # Anything else you want in the context...
-            'title': 'Table editor'
+            'title': 'Table editor',
+            'filter_fields': self.FILTER_FIELDS,
         }
 
         return TemplateResponse(request, 'admin/table_editor.html', context)
@@ -166,9 +212,9 @@ class AbstractModelAdmin(admin.ModelAdmin):
     """
 
     # Custom settings
-    model = None # List [self.model] ex. Page
-    injection_models = None # List[Model, Model,...] ex. Category
-    extra_queries = {} # Dict[Model, query]
+    model = None  # List [self.model] ex. Page
+    injection_models = None  # List[Model, Model,...] ex. Category
+    extra_queries = {}  # Dict[Model, query]
     list_filter_options = {}
     search_fields_options = {}
     list_display_options = {}
@@ -205,7 +251,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
                 for model, query in self.extra_queries.items()}
 
     @property
-    def query_strategy(self)-> Dict[str, Dict[str, str] or Q]:
+    def query_strategy(self) -> Dict[str, Dict[str, str] or Q]:
         """Dict looks like { model_name: filter's kwargs}"""
         return {
             **{self.get_model_name_from_model(model): {'type': model._meta.db_table}
@@ -225,7 +271,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
 
     def get_model_name_from_model(self, model: Model) -> str:
         """Shortcut for model._meta.model_name"""
-        return model._meta.model_name # (model name could be 'product', 'page' etc.)
+        return model._meta.model_name  # (model name could be 'product', 'page' etc.)
 
     def get_injection_urls(self, injection_model: Model, extra_url=None) -> Dict[str, type(url)]:
         """Get new urls for injection models"""
@@ -241,12 +287,14 @@ class AbstractModelAdmin(admin.ModelAdmin):
 
     def init_inlines_options(self) -> Tuple[admin.StackedInline]:
         """Lazy initialization for inlines' class"""
+
         def __init_inline(injection_model):
             class Inline(admin.StackedInline):
                 model = injection_model
                 readonly_fields = ['id']
                 fieldsets = self.inlines_fieldset_options.get(
                     self.get_model_name_from_model(injection_model), [])
+
             return Inline
 
         return tuple(__init_inline(model) for model in self.injection_models)
@@ -267,7 +315,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
                 '{}_name'.format(option_name): capfirst(model._meta.verbose_name),
                 '{}_url'.format(option_name): '{}:{}'.format(admin_name, get_url_name(model))
             } for model in self.injection_models
-        }
+            }
 
     def patch_by_options(self, request_path,
                          options: Dict[str, Dict[str, str]]) -> Dict[str, str]:
@@ -279,7 +327,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         """Add extra context for breadcrumbs"""
         extra_context = extra_context or {}
-        current_model = self.model.objects.get(id=object_id) # (ex. shopelectro_product)
+        current_model = self.model.objects.get(id=object_id)  # (ex. shopelectro_product)
 
         # The breadcrumbs options contain a injection model's name only
         for model_name in self.change_view_options:
@@ -287,7 +335,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
                 breadcrumbs = self.change_view_options[model_name]
                 extra_context.update(
                     {**breadcrumbs,
-                     'model_name': current_model.model._meta.model_name, # context for upload image
+                     'model_name': current_model.model._meta.model_name,  # context for upload image
                      'entity_id': current_model.model.id,
                      'show_save': False})
 
@@ -299,7 +347,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
 
         add, breadcrumbs = [self.patch_by_options(request.path, option)
-                      for option in self.changelist_view_options]
+                            for option in self.changelist_view_options]
 
         if breadcrumbs and add:
             extra_context.update(**breadcrumbs, **add)
@@ -340,7 +388,7 @@ class AbstractModelAdmin(admin.ModelAdmin):
         """Inject the logic definition of inlines"""
         current_model = self.get_model_name_from_request_path(request.path)
         if not obj and not current_model:
-            self.inlines = [] # Page with create Pages' entity
+            self.inlines = []  # Page with create Pages' entity
         elif obj:
             # obj is Pages entity with field type (ex. shopelectro_product)
             page_type = obj.type
@@ -376,7 +424,6 @@ class AbstractModelAdmin(admin.ModelAdmin):
 
 
 class PageAdmin(AbstractModelAdmin):
-
     model = Page
     injection_models = INJECTION_MODELS
     extra_queries = {model: Q(type='custom') | Q(type='page')}
@@ -474,7 +521,7 @@ class PageAdmin(AbstractModelAdmin):
     # Fieldsets
     fieldsets = (
         ('Дополнительные характеристики', {
-            'classes': ('seo-chars'),
+            'classes': 'seo-chars',
             'fields': (
                 'position',
                 'content',
@@ -495,7 +542,7 @@ class PageAdmin(AbstractModelAdmin):
     inlines_fieldset_options = {
         'product':
             ((None, {
-                'classes': ('primary-chars'),
+                'classes': 'primary-chars',
                 'fields': (
                     ('name', 'category'),
                     ('price', 'id'),
@@ -505,7 +552,7 @@ class PageAdmin(AbstractModelAdmin):
             }),),
         'category':
             ((None, {
-                'classes': ('primary-chars'),
+                'classes': 'primary-chars',
                 'fields': (
                     ('name', 'id',),
                     'parent',

@@ -1,5 +1,6 @@
-const accordion = (() => {
+(() => {
   const itemKey = 'activeItem';
+
   const DOM = {
     $accordion: $('.js-accordion'),
     panels: $('.js-accordion-content'),
@@ -10,8 +11,12 @@ const accordion = (() => {
   const init = () => {
     collapseAccordion();
     switchItem(DOM.savedItem);
-    DOM.titles.click(event => switchItem($(event.target)));
+    setUpListeners();
   };
+
+  function setUpListeners() {
+    DOM.titles.click(event => switchItem($(event.target)));
+  }
 
   /**
    * Case accordion item:
@@ -19,7 +24,7 @@ const accordion = (() => {
    *  -- inactive - slide up it, make active
    * @param $clickedItem - accordion item as jQuery object
    */
-  const switchItem = $clickedItem => {
+  function switchItem($clickedItem) {
     if (!($clickedItem && accordionOnPage())) return;
 
     saveItem($clickedItem);
@@ -29,7 +34,7 @@ const accordion = (() => {
     } else {
       openItem($clickedItem);
     }
-  };
+  }
 
   const accordionOnPage = () => DOM.$accordion.size();
 
@@ -48,6 +53,7 @@ const accordion = (() => {
       .next()
       .stop()
       .slideUp(200);
+
     removeItem();
   };
 
