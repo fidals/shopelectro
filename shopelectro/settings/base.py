@@ -165,7 +165,7 @@ SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
 # Used for order's email in ecommerce app
-FAKE_ORDER_NUMBER = 4500
+FAKE_ORDER_NUMBER = 6000
 
 # Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'
