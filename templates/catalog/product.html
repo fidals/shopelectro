@@ -33,13 +33,13 @@
           {% for image in images %}
             <div class="product-image-small box-product">
               <img class="img-responsive js-image-switch" src="{{ MEDIA_URL }}{{ image }}"
-                   data-index="{{ forloop.counter0 }}">
+                   data-index="{{ forloop.counter0 }}" alt="{{ product.name }}">
             </div>
           {% endfor %}
 
           {% for hidden_image in images %}
             <a class="fancybox hidden" href="{{ MEDIA_URL }}{{ hidden_image }}" rel="product-cart-gallery">
-              <img src="{{ MEDIA_URL }}{{ hidden_image }}">
+              <img src="{{ MEDIA_URL }}{{ hidden_image }}" alt="{{ product.name }}">
             </a>
           {% endfor %}
         </div>

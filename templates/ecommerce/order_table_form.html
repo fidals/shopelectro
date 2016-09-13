@@ -26,14 +26,14 @@
         <td>{{ id }}</td>
         <td class="photo text-center">
           {% if 'logo' in position.image %} {# position has image #}
-            <img src="{% static 'images/camera-icon.png' %}">
+            <img src="{% static 'images/camera-icon.png' %}" alt="{{ position.name }}">
           {% else %}
             {# TODO: Images module needs refactoring. We should have #}
             {# ability to use product.main_image in template #}
             {# Added to GDoc #}
             <a class="fancybox" rel="product-cart-gallery" href="{% static position.image %}"
                title="{{ position.name }}">
-              <img src="{% static 'images/camera-icon-clr.png' %}">
+              <img src="{% static 'images/camera-icon-clr.png' %}" alt="{{ position.name }}">
             </a>
           {% endif %}
         </td>
