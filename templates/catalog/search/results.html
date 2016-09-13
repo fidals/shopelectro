@@ -1,5 +1,4 @@
 {% extends 'layout/base.html' %}
-
 {% block title %}Результаты поиска{% endblock %}
 
 {% block content %}
@@ -15,7 +14,7 @@
 
     {% for product in products %}
       <div class="par-header">
-        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+        <a href="{{ product.get_absolute_url }}"><div>Арт. {{ product.id }}</div>{{ product.name }}</a>
         <p class="search-type-res"> Продукт </p>
       </div>
     {% endfor %}

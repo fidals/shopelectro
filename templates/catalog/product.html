@@ -2,14 +2,6 @@
 {% load pages_extras %}
 {% load staticfiles %}
 {% load se_extras %}
-{% block title %}{{ product.title }}{% endblock %}
-{% block keywords %}{{ product.keywords }}{% endblock %}
-{% block og_title %}{{ product.title }}{% endblock %}
-{% block description %}{{ product.description }}{% endblock %}
-{% block og_description %}{{ product.description }}{% endblock %}
-{% block unique_url %}{% url 'product' product.id %}{% endblock %}
-{% block unique_img %}{% static main_image %}{% endblock %}
-{% block canonical %}{% url 'product' product.id %}{% endblock %}
 
 {% block stylesheets %}
   {{ block.super }}
