@@ -1,6 +1,7 @@
 (() => {
   const DOM = {
     $cart: $('.js-cart-header'),
+    cartWrapper: '.js-cart-wrapper',
     resetCart: '.js-reset-cart',
     removeFromCart: '.js-cart-remove',
   };
@@ -38,6 +39,14 @@
       .then(data => mediator.publish('onCartUpdate', data));
   }
 
+  function showCart() {
+    const $cartWrapper = $(DOM.cartWrapper);
+    $cartWrapper.addClass('active');
+    setTimeout(() => {
+      $cartWrapper.removeClass('active');
+    }, 3000);
+  }
+
   /**
    * Render new cart's html.
    * @param data
@@ -45,6 +54,7 @@
   function render(_, data) {
     DOM.$cart.html(data.header);
     configs.scrollbarReinit();
+    showCart();
   }
 
   init();
