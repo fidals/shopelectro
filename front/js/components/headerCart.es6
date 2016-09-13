@@ -11,7 +11,7 @@
   };
 
   function setUpListeners() {
-    mediator.subscribe('onCartUpdate', render);
+    mediator.subscribe('onCartUpdate', render, configs.scrollbarReinit, showCart);
 
     // Since product's list in cart dropdown is dynamic, we bind events on static parent
     DOM.$cart.on('click', DOM.resetCart, clear);
@@ -53,8 +53,6 @@
    */
   function render(_, data) {
     DOM.$cart.html(data.header);
-    configs.scrollbarReinit();
-    showCart();
   }
 
   init();

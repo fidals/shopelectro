@@ -108,3 +108,17 @@ def full_url(path='index', *args):
 @register.filter
 def humanize_price(price):
     return intcomma(floatformat(price, 0))
+
+
+@register.simple_tag
+def get_img_alt(entity):
+    logo_name = settings.IMAGES['thumbnail']
+    alt = 'Фотография {}'
+
+    def get_alt(entity_img, entity_name):
+        return '' if logo_name in entity_img else alt.format(entity_name)
+
+    if isinstance(entity, dict):
+        return get_alt(entity.get('image'), entity.get('name'))
+    else:
+        return get_alt(entity.image, entity.name)

@@ -7,7 +7,8 @@
     <meta itemprop="name" content="{{ product.name }}">
     <div class="img-wrp">
       <a class="js-browse-product" target="_blank" href="{% url "product" product.id %}">
-        <img class="img-centered img-responsive" src="{{ product.image }}" itemprop="image" alt="{{ product.name }}">
+        <img class="img-centered img-responsive" src="{{ product.image }}" itemprop="image"
+             alt="{% get_img_alt product %}">
       </a>
     </div>
     <div class="text" itemprop="offers" itemscope itemtype="http://schema.org/Offer">

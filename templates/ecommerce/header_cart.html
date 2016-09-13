@@ -23,7 +23,7 @@
         <li class="basket-item">
           <a class="basket-stuff-link" href="{{ position.url }}">
             <img class="basket-stuff-img img-centered img-responsive" src="{{ position.image }}"
-            alt="{{ position.name }}">
+            alt="{% get_img_alt position %}">
           </a>
           <div class="basket-stuff-about">
             <a class="basket-stuff-title" href="{{ position.url }}">{{ position.name }}</a>
