@@ -113,10 +113,11 @@ def humanize_price(price):
 @register.simple_tag
 def get_img_alt(entity):
     logo_name = settings.IMAGES['thumbnail']
-    alt = 'Фотография {}'
+    product_alt = 'Фотография {}'
+    logo_alt = 'Логотип компании Shopelectro'
 
     def get_alt(entity_img, entity_name):
-        return '' if logo_name in entity_img else alt.format(entity_name)
+        return product_alt.format(entity_name) if logo_name not in entity_img else logo_alt
 
     if isinstance(entity, dict): # Position is dict obj
         return get_alt(entity.get('image'), entity.get('name'))
