@@ -88,10 +88,11 @@ def yandex_aviso(request):
 @csrf_exempt
 def ya_feedback_request(request):
     """Send email to user with Я.Маркет feedback request"""
-    mailer.ya_feedback()
+    user_email = request.POST['email']
+    mailer.ya_feedback(user_email)
 
     return render(request, 'ecommerce/yandex_feedback_success.html',
-                  {'email': request.POST['email']})
+                  {'email': user_email})
 
 
 def ya_feedback_with_redirect(request):

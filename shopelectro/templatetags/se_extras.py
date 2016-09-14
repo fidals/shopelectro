@@ -118,7 +118,7 @@ def get_img_alt(entity):
     def get_alt(entity_img, entity_name):
         return '' if logo_name in entity_img else alt.format(entity_name)
 
-    if isinstance(entity, dict):
+    if isinstance(entity, dict): # Position is dict obj
         return get_alt(entity.get('image'), entity.get('name'))
     else:
         return get_alt(entity.image, entity.name)
