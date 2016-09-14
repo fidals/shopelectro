@@ -273,16 +273,15 @@ class CategoryPage(SeleniumTestCase):
 
     def test_add_to_cart_after_load_more(self):
         """
-        After click at button load more we can add loaded item to cart
-        from it's category page.
+        We are able to add loaded product to Cart after Load more button click on
+        Category page.
         """
         self.browser.get(self.root_category)
-        self.browser.refresh()
         self.load_more_button.click()  # Let's load another 30 products.
         wait()
 
         self.browser.find_elements_by_class_name(
-            'js-product-to-cart')[31].click()
+            'js-product-to-cart')[settings.PRODUCTS_TO_LOAD + 1].click()
         wait()
         cart_is_empty = self.browser.find_element_by_class_name(
             'js-cart-is-empty')
