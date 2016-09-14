@@ -15,14 +15,15 @@
   </div>
 </div>
 
-<div class="basket-wrapper">
+<div class="basket-wrapper js-cart-wrapper">
   <p>В корзине <span class="js-basket-amount-count">{{ cart|length }}</span> позиций</p>
   <div class="scroll-wrapper {% if cart.total_price == 0 %}empty{% endif %}" id="scroll-wrapper">
     <ul class="basket-list list-unstyled" id="basket-list">
       {% for id, position in cart %}
         <li class="basket-item">
           <a class="basket-stuff-link" href="{{ position.url }}">
-            <img class="basket-stuff-img img-centered img-responsive" src="{{ position.image }}">
+            <img class="basket-stuff-img img-centered img-responsive" src="{{ position.image }}"
+            alt="{% get_img_alt position %}">
           </a>
           <div class="basket-stuff-about">
             <a class="basket-stuff-title" href="{{ position.url }}">{{ position.name }}</a>

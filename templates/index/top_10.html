@@ -1,10 +1,13 @@
 {% load staticfiles %}
+{% load se_extras %}
+
 <div  itemscope itemtype="http://schema.org/Product" class="stuff-top">
   <p class="stuff-top-title text-center">ТОП 10 ТОВАРОВ</p>
   {% for product in top_products %}
     <div class="stuff-top-item">
       <a itemprop="url" class="stuff-top-img js-browse-product" href="{% url 'product' product.id %}">
-        <img itemprop="image" src="{{ product.image }}" class="img-responsive img-centered" alt="{{ product.name }}">
+        <img itemprop="image" src="{{ product.image }}" class="img-responsive img-centered"
+             alt="{% get_img_alt product %}">
       </a>
 
       <div class="stuff-top-description">

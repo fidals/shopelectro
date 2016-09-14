@@ -2,14 +2,6 @@
 {% load pages_extras %}
 {% load staticfiles %}
 {% load se_extras %}
-{% block title %}{{ product.title }}{% endblock %}
-{% block keywords %}{{ product.keywords }}{% endblock %}
-{% block og_title %}{{ product.title }}{% endblock %}
-{% block description %}{{ product.description }}{% endblock %}
-{% block og_description %}{{ product.description }}{% endblock %}
-{% block unique_url %}{% url 'product' product.id %}{% endblock %}
-{% block unique_img %}{% static main_image %}{% endblock %}
-{% block canonical %}{% url 'product' product.id %}{% endblock %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -35,19 +27,19 @@
           <div class="product-image-big box-product">
             <img itemprop="image" class="img-centered img-responsive" id="product-image-big"
                  src="{{ product.image }}" data-index="0"
-                 alt="{{ product.name }}">
+                 alt="{% get_img_alt product %}">
           </div>
 
           {% for image in images %}
             <div class="product-image-small box-product">
               <img class="img-responsive js-image-switch" src="{{ MEDIA_URL }}{{ image }}"
-                   data-index="{{ forloop.counter0 }}">
+                   data-index="{{ forloop.counter0 }}" alt="{% get_img_alt product %}">
             </div>
           {% endfor %}
 
           {% for hidden_image in images %}
             <a class="fancybox hidden" href="{{ MEDIA_URL }}{{ hidden_image }}" rel="product-cart-gallery">
-              <img src="{{ MEDIA_URL }}{{ hidden_image }}">
+              <img src="{{ MEDIA_URL }}{{ hidden_image }}" alt="{% get_img_alt product %}">
             </a>
           {% endfor %}
         </div>

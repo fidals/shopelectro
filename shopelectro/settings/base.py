@@ -165,7 +165,7 @@ SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
 # Used for order's email in ecommerce app
-FAKE_ORDER_NUMBER = 4500
+FAKE_ORDER_NUMBER = 6000
 
 # Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'
@@ -231,6 +231,11 @@ PAGES = {
     'search': {
         'slug': 'search',
         'title': 'Результаты поиска',
+        'date_published': SITE_CREATED,
+    },
+    'order': {
+        'slug': 'order',
+        'title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
         'date_published': SITE_CREATED,
     },
 }
