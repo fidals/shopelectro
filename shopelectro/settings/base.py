@@ -233,4 +233,9 @@ PAGES = {
         'title': 'Результаты поиска',
         'date_published': SITE_CREATED,
     },
+    'order': {
+        'slug': 'order',
+        'title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
+        'date_published': SITE_CREATED,
+    },
 }
