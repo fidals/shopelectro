@@ -1,6 +1,7 @@
 (() => {
   const DOM = {
     $cart: $('.js-cart-header'),
+    orderTable: '#js-order-list',
     cartWrapper: '.js-cart-wrapper',
     resetCart: '.js-reset-cart',
     removeFromCart: '.js-cart-remove',
@@ -39,12 +40,17 @@
       .then(data => mediator.publish('onCartUpdate', data));
   }
 
+  /**
+   * Perform header cart dropdown animation for every page, except order page.
+   */
   function showCart() {
+    if ($(DOM.orderTable).size() > 0) return;
+
     const $cartWrapper = $(DOM.cartWrapper);
     $cartWrapper.addClass('active');
     setTimeout(() => {
       $cartWrapper.removeClass('active');
-    }, 3000);
+    }, 2000);
   }
 
   /**
