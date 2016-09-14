@@ -271,6 +271,22 @@ class CategoryPage(SeleniumTestCase):
             'js-cart-is-empty')
         self.assertFalse(cart_is_empty.is_displayed())
 
+    def test_add_to_cart_after_load_more(self):
+        """
+        We are able to add loaded product to Cart after Load more button click on
+        Category page.
+        """
+        self.browser.get(self.root_category)
+        self.load_more_button.click()  # Let's load another 30 products.
+        wait()
+
+        self.browser.find_elements_by_class_name(
+            'js-product-to-cart')[settings.PRODUCTS_TO_LOAD + 1].click()
+        wait()
+        cart_is_empty = self.browser.find_element_by_class_name(
+            'js-cart-is-empty')
+        self.assertFalse(cart_is_empty.is_displayed())
+
 
 class ProductPage(SeleniumTestCase):
     """Selenium-based tests for product page UI."""
@@ -439,7 +455,6 @@ class OrderPage(SeleniumTestCase):
         After removing every product from cart
         we should see that it is empty.
         """
-
         removes = self.browser.find_elements_by_class_name('js-remove')
         while removes:
             remove = removes[0]

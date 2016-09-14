@@ -7,7 +7,7 @@
     $productsList: $('#products-wrapper'),
     $viewType: $('#category-right'),
     $loadMore: $('#btn-load-products'),
-    $addToCart: $('.js-product-to-cart'),
+    addToCart: '.js-product-to-cart',
     tileView: {
       $: $('.js-icon-mode-tile'),
       mode: 'tile',
@@ -40,7 +40,7 @@
 
     DOM.$loadMore.click(loadProducts);
     DOM.$sorting.change(changeSort);
-    DOM.$addToCart.click(buyProduct);
+    $(document).on('click', DOM.addToCart, buyProduct);
   }
 
   /**
