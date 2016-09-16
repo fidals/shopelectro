@@ -294,7 +294,7 @@ class ProductPage(SeleniumTestCase):
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
-        product = Product.objects.first()
+        product = Product.objects.get(id=1)
         server = self.live_server_url
         self.test_product_page = server + reverse(
             'product', args=(product.id,))
