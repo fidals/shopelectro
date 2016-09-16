@@ -25,6 +25,8 @@ class Command(BaseCommand):
         # 'test' DB.
         assert settings.DATABASES['default']['NAME'] == 'test'
 
+        self._product_id = 0
+
         self.clear_tables()
         roots = self.create_root(2)
         children = self.create_children(2, roots)
@@ -47,6 +49,10 @@ class Command(BaseCommand):
         get_name = 'Category #{}'.format
         return [Category.objects.create(name=get_name(i)) for i in range(count)]
 
+    @property
+    def product_id(self):
+        self._product_id = self._product_id + 1
+        return self._product_id
 
     @staticmethod
     def create_children(count, parents):
@@ -63,13 +69,13 @@ class Command(BaseCommand):
             for parent in parents
         ])
 
-    @staticmethod
-    def create_products(deep_children):
+    def create_products(self, deep_children):
         """Create products for every non-root category."""
         def __create_product(categories, product_count):
             for category in categories:
                 for i in range(1, product_count + 1):
                     Product.objects.create(
+                        id=self.product_id,
                         name='Product #{} of {}'.format(i, category),
                         price=i * 100,
                         category=category,

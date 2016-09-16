@@ -63,6 +63,13 @@ class Command(BaseCommand):
 
     def write_category_with_products(self, sheet, category):
         """Write category line and beside that - all of products in this category."""
+        def get_row(sheet, row_number):
+            return sheet.row_dimensions[int(row_number)]
+
+        def collapse_row(row):
+            row.hidden = True
+            row.outlineLevel = 1
+
         def write_product():
             """Write product line."""
             product_start = 'A' + self.CURRENT_ROW
@@ -77,6 +84,8 @@ class Command(BaseCommand):
                                                    .format(price, self.CURRENT_ROW))
             sheet['G' + self.CURRENT_ROW].fill = self.BUY_FILL
 
+            collapse_row(get_row(sheet, self.CURRENT_ROW))
+
         def write_category_line():
             """Merge category line into one cell and write to it."""
             category_start = 'A' + self.CURRENT_ROW
@@ -87,7 +96,8 @@ class Command(BaseCommand):
             sheet[category_start].fill = self.CATEGORY_FILL
 
         write_category_line()
+        self.CURRENT_ROW = str(int(self.CURRENT_ROW) + 1)
         products = Product.objects.filter(category=category)
         for product in products:
-            self.CURRENT_ROW = str(int(self.CURRENT_ROW) + 1)
             write_product()
+            self.CURRENT_ROW = str(int(self.CURRENT_ROW) + 1)
