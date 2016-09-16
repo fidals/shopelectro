@@ -277,6 +277,7 @@ class CategoryPage(SeleniumTestCase):
         Category page.
         """
         self.browser.get(self.root_category)
+        self.browser.refresh()
         self.load_more_button.click()  # Let's load another 30 products.
         wait()
 

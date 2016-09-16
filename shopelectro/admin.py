@@ -445,8 +445,8 @@ class PageAdmin(AbstractModelAdmin):
     # List display
     list_display_options = {
         'page': ['id', 'h1', 'custom_parent', 'is_active'],
-        'product': ['injection_model_id', 'h1', 'custom_category', 'price', 'links', 'is_active'],
-        'category': ['injection_model_id', 'h1', 'custom_category_parent', 'is_active']
+        'product': ['product_id', 'h1', 'custom_category', 'price', 'links', 'is_active'],
+        'category': ['category_id', 'h1', 'custom_category_parent', 'is_active']
     }
     list_display_links_options = {
         'page': ['h1'],
@@ -458,8 +458,17 @@ class PageAdmin(AbstractModelAdmin):
     def price(self, model):
         return model.model.price
 
-    def injection_model_id(self, model):
+    def product_id(self, model):
         return model.model.id
+
+    def category_id(self, model):
+        return model.model.id
+
+    product_id.short_description = 'Id'
+    product_id.admin_order_field = 'shopelectro_product__id'
+
+    category_id.short_description = 'Id'
+    category_id.admin_order_field = 'shopelectro_category__id'
 
     price.short_description = 'Price'
     price.admin_order_field = 'shopelectro_product__price'

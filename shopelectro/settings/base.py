@@ -164,8 +164,6 @@ SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
-# Used for order's email in ecommerce app
-FAKE_ORDER_NUMBER = 6000
 
 # Used to retrieve instances in ecommerce.Cart
 PRODUCT_MODEL = 'shopelectro.Product'
@@ -181,12 +179,15 @@ PAYMENT_OPTIONS = (('cash', 'Наличные'),
                    # ('AB', 'Альфа-Клик'),
                    # ('MC', 'Мобильный телефон'))
 
+# Used for order's email in ecommerce app
+FAKE_ORDER_NUMBER = 6000
+
 # Subjects for different types of emails sent from SE.
 EMAIL_SUBJECTS = {
     'call': 'Обратный звонок',
-    'order': 'Заказ №{0.id}',
-    'yandex_order': 'Заказ №{0.id} | Яндекс.Касса',
-    'one_click': 'Заказ в один клик №{}',
+    'order': 'Заказ №{0.fake_order_number}',
+    'yandex_order': 'Заказ №{0.fake_order_number} | Яндекс.Касса',
+    'one_click': 'Заказ в один клик №{0.fake_order_number}',
     'ya_feedback_request': 'Оцените нас на Яндекс.Маркете',
 }
 
