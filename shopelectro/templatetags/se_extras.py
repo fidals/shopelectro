@@ -12,6 +12,7 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from shopelectro import images, config
 from shopelectro.models import Category
 
+
 register = template.Library()
 
 
@@ -85,8 +86,9 @@ def time_to_call():
 def upload_form(model):
     """Check if template with current Model should have upload form"""
     if model:
+        model = model.model if type(model).__name__ == 'Page' else model
         models_with_upload_form, model_type = (['Category', 'Product'],
-                                               type(model.model).__name__)
+                                               type(model).__name__)
         return model_type in models_with_upload_form
 
 

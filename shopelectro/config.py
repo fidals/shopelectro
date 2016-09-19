@@ -168,8 +168,8 @@ FOOTER_LINKS = {
 
 SHOP = {
     'id': '69886',
-    'scid': '27590',
-    'success_url': settings.BASE_URL + '/shop/pay-success/',
+    'scid': '540098',
+    'success_url': settings.BASE_URL + '/shop/success-order/',
     'fail_url': settings.BASE_URL + '/',
     'cps_phone': '+78124163200',
     'cps_email': 'info@shopelectro.ru',

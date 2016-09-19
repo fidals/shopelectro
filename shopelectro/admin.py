@@ -7,8 +7,7 @@ from collections import namedtuple
 from itertools import chain
 from typing import Dict, Tuple
 
-from django.contrib.admin import AdminSite
-from django.contrib import admin
+from django.contrib import admin, redirects
 from django.core.urlresolvers import reverse
 from django.conf.urls import url
 from django.db.models import Model
@@ -21,6 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from shopelectro.models import Category, Product
 from pages.models import Page
+
 
 INJECTION_MODELS = (Category, Product)  # Global variables
 
@@ -80,7 +80,7 @@ class PriceRange(admin.SimpleListFilter):
         return queryset.filter(shopelectro_product__price__in=range(*range_for_query))
 
 
-class CustomAdminSite(AdminSite):
+class CustomAdminSite(admin.AdminSite):
     """Override AdminSite class"""
     site_header = 'Shopelectro administration'
 
@@ -533,7 +533,7 @@ class PageAdmin(AbstractModelAdmin):
     # Fieldsets
     fieldsets = (
         ('Дополнительные характеристики', {
-            'classes': 'seo-chars',
+            'classes': ('seo-chars',),
             'fields': (
                 'position',
                 'content',
@@ -554,7 +554,7 @@ class PageAdmin(AbstractModelAdmin):
     inlines_fieldset_options = {
         'product':
             ((None, {
-                'classes': 'primary-chars',
+                'classes': ('primary-chars', ),
                 'fields': (
                     ('name', 'category'),
                     ('price', 'id'),
@@ -564,7 +564,7 @@ class PageAdmin(AbstractModelAdmin):
             }),),
         'category':
             ((None, {
-                'classes': 'primary-chars',
+                'classes': ('primary-chars', ),
                 'fields': (
                     ('name', 'id',),
                     'parent',
@@ -598,3 +598,4 @@ class PageAdmin(AbstractModelAdmin):
 
 
 custom_admin_site.register(Page, PageAdmin)
+custom_admin_site.register(redirects.models.Redirect)

@@ -14,7 +14,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from shopelectro.models import Product, Category
+from shopelectro.models import Product, Category, Order
 from pages.models import Page
 
 
@@ -27,12 +27,15 @@ class Command(BaseCommand):
 
         self._product_id = 0
 
-        self.clear_tables()
+        self.purge_tables()
+
         roots = self.create_root(2)
         children = self.create_children(2, roots)
         deep_children = self.create_children(2, children)
+
         self.create_products(list(deep_children))
         self.create_page()
+        self.create_order()
         self.save_dump()
 
     @staticmethod
@@ -42,6 +45,8 @@ class Command(BaseCommand):
                      'shopelectro.Category',
                      'shopelectro.Product',
                      'pages.Page',
+                     'ecommerce.Order',
+                     'shopelectro.Order',
                      output='shopelectro/fixtures/dump.json')
 
     @staticmethod
@@ -98,8 +103,16 @@ class Command(BaseCommand):
         )
 
     @staticmethod
-    def clear_tables():
-        """Remove everything from Category, Product and Page tables."""
+    def create_order():
+        Order.objects.create(
+            pk=7,
+            name='Test Name',
+            phone='88005553535',
+        )
+
+    @staticmethod
+    def purge_tables():
         Category.objects.all().delete()
         Product.objects.all().delete()
         Page.objects.all().delete()
+        Order.objects.all().delete()

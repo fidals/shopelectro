@@ -9,7 +9,10 @@ services:
       dockerfile: docker/Dockerfile
     image: fidals/se
     environment:
-      ALLOWED_HOSTS: "*"
+      - ALLOWED_HOSTS=*
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
     volumes:  # TODO - divide volumes on dev/ and prod/
       - /opt/media/shopelectro:/opt/shopelectro/app/media
 

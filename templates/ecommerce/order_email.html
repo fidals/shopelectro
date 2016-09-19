@@ -75,8 +75,8 @@
     </table>
 
     <ul style="margin: 0.77em 0 1.15em;">
-      {% if order.payment_option %}
-        <li style="margin: 0.385em 0;">Тип платежа: <b style="font-weight:bold;">{{ order.payment_name }}</b></li>
+      {% if order.payment_type %}
+        <li style="margin: 0.385em 0;">Тип платежа: <b style="font-weight:bold;">{{ order.payment_type_name }}</b></li>
       {% endif %}
       <li style="margin: 0.385em 0;">Телефон: <b style="font-weight:bold;">{{ order.phone }}</b></li>
       {% if order.email %}

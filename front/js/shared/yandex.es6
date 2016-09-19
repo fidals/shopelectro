@@ -74,7 +74,7 @@
    */
   function reachCopyPhone() {
     const wasPhoneCopied = localStorage.getItem('phoneIsCopied');
-    const isFullPhoneNumberCopied = validator.isPhoneValid(getSelectionText());
+    const isFullPhoneNumberCopied = helpers.isPhoneValid(getSelectionText());
 
     if (isFullPhoneNumberCopied && !wasPhoneCopied) {
       localStorage.setItem('phoneIsCopied', 'true');

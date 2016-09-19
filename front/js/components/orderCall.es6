@@ -27,7 +27,7 @@
     const time = DOM.$timeToCall.val();
     const url = location.href;
 
-    if (!validator.isPhoneValid(phone)) {
+    if (!helpers.isPhoneValid(phone)) {
       DOM.$phone
         .addClass('shake animated')
         .closest('.form-group').addClass('has-error');

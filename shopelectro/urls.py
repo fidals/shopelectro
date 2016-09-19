@@ -19,7 +19,8 @@ from shopelectro.views import admin, catalog, ecommerce, search, helpers, servic
 
 
 admin_urls = [
-    url(r'^autocomplete/', search.AdminAutocomplete.as_view()),
+    url(r'^', custom_admin_site.urls),
+    url(r'^autocomplete/$', search.AdminAutocomplete.as_view()),
     url(r'^get-table-editor-data/$', admin.admin_table_editor_data),
     url(r'^get-tree-items/$', admin.admin_tree_items),
     url(r'^product-create/$', admin.admin_create_product),
@@ -30,7 +31,7 @@ admin_urls = [
         name='admin_upload'),
 ]
 
-category_urls = [
+catalog_urls = [
     url(r'^$', catalog.CategoryTree.as_view(), name='category_tree'),
     url(r'^categories/(?P<slug>[\w-]+)/$',
         catalog.CategoryPage.as_view(), name='category'),
@@ -39,6 +40,8 @@ category_urls = [
     url(r'categories/(?P<category_slug>[\w-]+)/load-more/'
         r'(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/$',
         catalog.load_more, name='load_more'),
+    url(r'^products/(?P<product_id>[0-9]+)/$',
+        catalog.ProductPage.as_view(), name='product'),
 ]
 
 # Orders sitemaps instances
@@ -73,27 +76,23 @@ ecommerce_urls = [
     url(r'^order/$', ecommerce.OrderPage.as_view(), name='order_page'),
     url(r'^order-call/$', ecommerce.order_call),
     url(r'^one-click-buy/$', ecommerce.one_click_buy),
-    url(r'^yandex-order/$', ecommerce.yandex_order),
+    url(r'^yandex-order/$', ecommerce.YandexOrder.as_view()),
+    url(r'', include('ecommerce.urls')),
 ]
 
 urlpatterns = [
     url(r'^$', catalog.IndexPage.as_view(), name='index'),
-    url(r'^admin/', custom_admin_site.urls),
     url(r'^admin/', include(admin_urls)),
-    url(r'^catalog/', include(category_urls)),
-    url(r'^catalog/products/(?P<product_id>[0-9]+)/$',
-        catalog.ProductPage.as_view(), name='product'),
+    url(r'^catalog/', include(catalog_urls)),
     url(r'^pages/', include('pages.urls')),
     url(r'^robots\.txt$', robots),
     url(r'^set-view-type/$', helpers.set_view_type, name='set_view_type'),
     url(r'^shop/', include(ecommerce_urls)),
-    url(r'^shop/', include('ecommerce.urls')),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
     url(r'^sitemap\.xml$', cached_view(sitemap), {
         'sitemaps': sitemaps
     }, name='sitemap'),
-    url(r'^test-ya-kassa/$', service.test_yandex, name='test_yandex'),
 ]
 
 if settings.DEBUG:

@@ -56,7 +56,7 @@ const product = (() => {
    */
   const changeOneClickButtonState = () => {
     if (DOM.$oneClick.size() > 0) {
-      DOM.$oneClick.attr('disabled', !validator.isPhoneValid(DOM.$phone.val()));
+      DOM.$oneClick.attr('disabled', !helpers.isPhoneValid(DOM.$phone.val()));
     }
   };
 
