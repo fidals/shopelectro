@@ -7,9 +7,11 @@ server {
     location /static/ {
         root /opt/shopelectro/app/;
         access_log off;
+        expires 14d;
     }
     location /media/ {
         root /opt/shopelectro/app/;
         access_log off;
+        expires 14d;
     }
 }
