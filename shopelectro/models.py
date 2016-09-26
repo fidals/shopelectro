@@ -84,6 +84,12 @@ def _default_payment():
 
 class Order(ecOrder):
     """Extended Order model."""
-    payment_option = models.CharField(max_length=255,
+    payment_type = models.CharField(max_length=255,
                                       choices=settings.PAYMENT_OPTIONS,
                                       default=_default_payment())
+
+    @property
+    def payment_type_name(self):
+        """Return name for an order's payment option."""
+        return next(name for option, name in settings.PAYMENT_OPTIONS
+                if self.payment_type == option)

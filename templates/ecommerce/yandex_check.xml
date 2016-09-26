@@ -1,4 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<checkOrderResponse performedDatetime="{% now "c" %}"
-                    code="0" invoiceId="{{ invoice }}"
+<checkOrderResponse performedDatetime="{% now 'c' %}" code="0" invoiceId="{{ invoice }}"
                     shopId="{{ shop.id }}"/>

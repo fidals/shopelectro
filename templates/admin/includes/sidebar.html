@@ -6,7 +6,7 @@
     <li class="sidebar-links-item sidebar-search-field">
       <form action="{% url 'ya_feedback_request' %}" method="POST" class="form-inline">
         <div class="form-group">
-          <input type="email" class="form-control" id="user-email" name="email" placeholder="email клиента для отзыва">
+          <input type="email" class="form-control" id="user-email" name="email" placeholder="email клиента для отзыва" required>
         </div>
         <button type="submit" class="btn btn-primary">Отправить</button>
       </form>

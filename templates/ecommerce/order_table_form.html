@@ -131,7 +131,6 @@
             <tr>
               <td class="form-order form-submit-wrapper">
                 <input id="btn-send-se" class="buy-btn btn-send" type="submit" value="Продолжить">
-                <input id="btn-send-ya" class="buy-btn btn-send hidden" type="submit" value="Продолжить">
               </td>
             </tr>
           </table>
@@ -139,21 +138,7 @@
       </tr>
     </table>
   </form>
-  <div class="hidden">
-    <form action="{% url 'test_yandex' %}" id="yandex-form" method="POST">
-      {% csrf_token %}
-      <input type="text" name="shopId" value="{{ shop.id }}">
-      <input type="text" name="scid" value="{{ shop.scid }}">
-      <input type="text" name="shopSuccessURL" value="{{ shop.success_url }}">
-      <input type="text" name="shopFailURL" value="{{ shop.fail_url }}">
-      <input type="text" name="cps_phone" value="{{ shop.cps_phone }}">
-      <input type="text" name="cps_email" value="{{ shop.cps_email }}">
-      <input type="text" name="sum" value="{{ cart.total_price }}">
-      <input type="text" name="customerNumber" value="">
-      <input type="text" name="orderNumber" value="">
-      <input type="text" name="paymentType" value="">
-      <input type="submit" name="sendYandex" value="">
-    </form>
+  <div class="hidden" id="yandex-form-wrapper">
   </div>
 {% else %}
   <h1>Корзина пуста</h1>
@@ -161,4 +146,3 @@
     <a href="{% url 'category_tree' %}">Перейти к каталогу</a>
   </span>
 {% endif %}
-

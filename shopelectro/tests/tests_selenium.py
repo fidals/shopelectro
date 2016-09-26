@@ -501,12 +501,11 @@ class OrderPage(SeleniumTestCase):
     def test_confirm_order(self):
         """After filling the form we should be able to confirm an order."""
 
-        self.browser.find_element_by_id('id_payment_option_0').click()
+        self.browser.find_element_by_id('id_payment_type_0').click()
         add_one_more = self.browser.find_element_by_xpath(self.add_product)
         add_one_more.click()  # perform some operations on cart
         wait()
         self.fill_and_submit_form()
-        wait()
         self.assertEqual(
             self.browser.current_url,
             self.live_server_url + reverse('ecommerce:order_success')
@@ -518,24 +517,9 @@ class OrderPage(SeleniumTestCase):
         self.browser.find_element_by_id('id_phone').send_keys('22222222222')
         self.browser.find_element_by_id('id_email').send_keys('test@test.test')
         wait()
-        submit = 'btn-send-ya' if yandex else 'btn-send-se'
+        submit = 'btn-send-se'
         self.browser.find_element_by_id(submit).click()
-
-    def test_yandex_order_without_phone(self):
-        """
-        We should see error text message when trying to
-        submit form without phone number.
-        """
-        # TODO does not work, until dev-796 (there needed test yandex_kassa)
-        self.browser.find_element_by_id('id_payment_option_2').click()
-        self.browser.find_element_by_id('id_name').send_keys('Name')
-        self.browser.find_element_by_id('id_phone').clear()
-        self.browser.find_element_by_id('btn-send-ya').click()
-
-        error_text = self.browser.find_element_by_class_name(
-            'js-form-error-text')
-
-        self.assertTrue('телефон', error_text.is_displayed())
+        wait()
 
 
 class SitePage(SeleniumTestCase):

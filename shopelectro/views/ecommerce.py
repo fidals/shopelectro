@@ -5,19 +5,18 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 from django.conf import settings
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
-from ecommerce import mailer
+from ecommerce import mailer, views as ec_views
 from ecommerce.cart import Cart
 from ecommerce.models import Order
-from ecommerce import views as ec_views
-from ecommerce.views import get_keys_from_post, save_order_to_session
 
 from shopelectro.models import Product, Order
 from shopelectro.cart import WholesaleCart
 from shopelectro.forms import OrderForm
+from shopelectro.config import SHOP
 
 
 # ECOMMERCE VIEWS
@@ -63,7 +62,7 @@ def one_click_buy(request):
     cart.add(product, int(request.POST['quantity']))
     order = Order(phone=request.POST['phone'])
     order.set_positions(cart)
-    save_order_to_session(request.session, order)
+    ec_views.save_order_to_session(request.session, order)
     mailer.send_order(subject=settings.EMAIL_SUBJECTS['order'],
                       order=order,
                       to_customer=False)
@@ -73,7 +72,7 @@ def one_click_buy(request):
 @require_POST
 def order_call(request):
     """Send email about ordered call."""
-    phone, time, url = get_keys_from_post(request, 'phone', 'time', 'url')
+    phone, time, url = ec_views.get_keys_from_post(request, 'phone', 'time', 'url')
     mailer.order_call(subject=settings.EMAIL_SUBJECTS['call'],
                       phone=phone,
                       time=time,
@@ -81,14 +80,33 @@ def order_call(request):
     return HttpResponse('ok')
 
 
-def yandex_order(request):
-    """
-    Handle yandex order: order with yandex-provided payment system.
+class YandexOrder(OrderPage):
+    def post(self, request):
+        request.POST = request.POST.dict()
 
-    Save cart from user session as an Order, return order_id.
-    """
-    cart = Cart(request.session)
-    name, phone, email = get_keys_from_post(request, 'name', 'phone', 'email')
-    order = Order(name=name, phone=phone, email=email)
-    order.set_positions(cart)
-    return HttpResponse(order.id)
+        cart = self.cart(request.session)
+        form = self.order_form(request.POST)
+
+        if not form.is_valid():
+            return render(request, self.template, {'cart': cart, 'form': form})
+
+        order = form.save()
+        order.set_positions(cart)
+        ec_views.save_order_to_session(request.session, order)
+
+        # Took form fields from Yandex docs https://goo.gl/afKfsz
+        response_data = {
+            'yandex_kassa_link': settings.YANDEX_KASSA_LINK, # Required
+            'shopId': SHOP['id'], # Required
+            'scid': SHOP['scid'], # Required
+            'shopSuccessURL': SHOP['success_url'],
+            'shopFailURL': SHOP['fail_url'],
+            'customerNumber': order.id, # Required
+            'sum': order.total_price, # Required
+            'orderNumber': order.fake_order_number,
+            'cps_phone': order.phone,
+            'cps_email': order.email,
+            'paymentType': request.POST.get('payment_type'),
+        }
+
+        return JsonResponse(response_data)

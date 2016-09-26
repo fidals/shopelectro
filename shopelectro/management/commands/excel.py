@@ -3,6 +3,8 @@
 import os
 import datetime
 import openpyxl
+from openpyxl.styles import Font
+from openpyxl.styles.colors import BLUE
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -15,22 +17,45 @@ class Command(BaseCommand):
     TEMPLATE = 'templates/ecommerce/template.xlsx'
     NAME = 'pricelist.xlsx'
     SHEET_TITLE = 'Прайс-лист Shopelectro'
-    CATEGORY_FILL = openpyxl.styles.PatternFill(start_color='99D699',
-                                                end_color='99D699',
-                                                fill_type='solid')
-    BUY_FILL = openpyxl.styles.PatternFill(start_color='FFCC66',
-                                           end_color='FFCC66',
-                                           fill_type='solid')
+    CATEGORY_FILL = openpyxl.styles.PatternFill(
+        start_color='99D699',
+        end_color='99D699',
+        fill_type='solid'
+    )
+    BUY_FILL = openpyxl.styles.PatternFill(
+        start_color='FFCC66',
+        end_color='FFCC66',
+        fill_type='solid'
+    )
     CURRENT_ROW = '9'  # Start of catalog section in file.
+
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+        self.file, self.sheet = self.load_file_and_sheet()
 
     def handle(self, *args, **options):
         """Open template's file and start proceeding it."""
-        file, sheet = self.load_file_and_sheet()
-        self.fill_header(sheet)
-        self.write_catalog(sheet)
-        self.hide_formulas(sheet)
+        sheet = self.sheet
+        self.set_collapse_controls()
+        self.fill_header()
+        self.write_catalog()
+        self.hide_formulas()
         base_dir = settings.ASSETS_DIR
-        file.save(os.path.join(base_dir, self.NAME))
+        self.file.save(os.path.join(base_dir, self.NAME))
+
+    def set_collapse_controls(self):
+        """
+        Collapse controls looks like this: http://prntscr.com/clf9xh
+        Doc link: https://goo.gl/nR5pLO
+        """
+        self.sheet.sheet_properties.outlinePr.summaryBelow = False
+
+    def increase_row(self):
+        self.CURRENT_ROW = str(int(self.CURRENT_ROW) + 1)
+        return self.CURRENT_ROW
+
+    def get_row(self, row_number):
+        return self.sheet.row_dimensions[int(row_number)]
 
     def load_file_and_sheet(self):
         """
@@ -43,51 +68,61 @@ class Command(BaseCommand):
             settings.BASE_DIR, self.TEMPLATE))
         return file, file.get_sheet_by_name('Прайслист')
 
-    def fill_header(self, sheet):
+    def fill_header(self):
         """Fill header of a sheet with date and title."""
         date_cell = 'C5'
-        sheet.title = self.SHEET_TITLE
-        sheet[date_cell] = datetime.date.strftime(
+        self.sheet.title = self.SHEET_TITLE
+        self.sheet[date_cell] = datetime.date.strftime(
             datetime.date.today(), '%d.%m.%Y')
 
-    @staticmethod
-    def hide_formulas(sheet):
+    def hide_formulas(self):
         """Hide formulas for calculating totals."""
-        sheet.column_dimensions.group('H', 'K', hidden=True)
+        self.sheet.column_dimensions.group('H', 'K', hidden=True, outline_level=0)
 
-    def write_catalog(self, sheet):
+    def write_catalog(self):
         """Writes categories and products to sheet."""
-        categories = Category.objects.all().order_by('name')
+        categories = Category.objects.all().order_by('name').filter(children=None)
         for category in categories:
-            self.write_category_with_products(sheet, category)
+            self.write_category_with_products(category)
 
-    def write_category_with_products(self, sheet, category):
+    def write_category_with_products(self, category):
         """Write category line and beside that - all of products in this category."""
-        def get_row(sheet, row_number):
-            return sheet.row_dimensions[int(row_number)]
-
-        def collapse_row(row):
+        def hide_row(row):
             row.hidden = True
             row.outlineLevel = 1
 
-        def write_product():
-            """Write product line."""
-            product_start = 'A' + self.CURRENT_ROW
-            sheet[product_start] = product.name
-            prices = [product.price,
-                      product.wholesale_small,
-                      product.wholesale_medium,
-                      product.wholesale_large]
-            for price, total in zip('CDEF', 'HIJK'):
-                sheet[price + self.CURRENT_ROW] = prices.pop(0)
-                sheet[total + self.CURRENT_ROW] = ('={0}{1}*G{1}'
-                                                   .format(price, self.CURRENT_ROW))
-            sheet['G' + self.CURRENT_ROW].fill = self.BUY_FILL
+        def collapse_row(row):
+            row.collapsed = True
 
-            collapse_row(get_row(sheet, self.CURRENT_ROW))
+        def write_product_rows():
+            """Write products lines."""
+            sheet = self.sheet
+            products = Product.objects.filter(category=category)
+            for product in products:
+                product_start = 'A' + self.CURRENT_ROW
+                sheet[product_start] = product.name
+                sheet[product_start].font = Font(color=BLUE)
+                sheet[product_start].hyperlink = settings.BASE_URL + product.get_absolute_url()
+                prices = [
+                    product.price,
+                    product.wholesale_small,
+                    product.wholesale_medium,
+                    product.wholesale_large,
+                ]
+                for price, total in zip('CDEF', 'HIJK'):
+                    sheet[price + self.CURRENT_ROW] = prices.pop(0)
+                    sheet[total + self.CURRENT_ROW] = ('={0}{1}*G{1}'
+                                                       .format(price, self.CURRENT_ROW))
+                sheet['G' + self.CURRENT_ROW].fill = self.BUY_FILL
 
-        def write_category_line():
+                hide_row(self.get_row(self.CURRENT_ROW))
+                self.increase_row()
+
+        def write_category_row():
             """Merge category line into one cell and write to it."""
+            sheet = self.sheet
+            collapse_row(self.get_row(self.CURRENT_ROW))
+
             category_start = 'A' + self.CURRENT_ROW
             category_line = '{}:{}'.format(
                 category_start, 'G' + self.CURRENT_ROW)
@@ -95,9 +130,7 @@ class Command(BaseCommand):
             sheet[category_start] = category.name
             sheet[category_start].fill = self.CATEGORY_FILL
 
-        write_category_line()
-        self.CURRENT_ROW = str(int(self.CURRENT_ROW) + 1)
-        products = Product.objects.filter(category=category)
-        for product in products:
-            write_product()
-            self.CURRENT_ROW = str(int(self.CURRENT_ROW) + 1)
+            self.increase_row()
+
+        write_category_row()
+        write_product_rows()

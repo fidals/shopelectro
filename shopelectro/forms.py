@@ -1,5 +1,6 @@
 from django import forms
-from .models import Order
+
+from shopelectro.models import Order
 
 
 class OrderForm(forms.ModelForm):
@@ -9,7 +10,7 @@ class OrderForm(forms.ModelForm):
     """
     class Meta:
         model = Order
-        fields = ['name', 'email', 'phone', 'city', 'payment_option']
+        fields = ['name', 'email', 'phone', 'city', 'payment_type']
         widgets = {
-            'payment_option': forms.RadioSelect()
+            'payment_type': forms.RadioSelect()
         }

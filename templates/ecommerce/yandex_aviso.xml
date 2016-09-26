@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<paymentAvisoResponse performedDatetime="{% now "c" %}"
-                      code="0" invoiceId="{{ invoice }}"
+<paymentAvisoResponse performedDatetime="{% now 'c' %}" code="{% if invoice %}0{% else %}1{% endif %}"
+                      {% if invoice %}invoiceId="{{ invoice }}" message="incorrect MD5"{% endif %}
                       shopId="{{ shop.id }}"/>

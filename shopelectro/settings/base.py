@@ -23,7 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'gl9syc68r%rmb*1&yzz(4%cotfpb$dy&wkb_y5_d0*be0pfulq'
+# It is fake-url. Correct url will be created on `docker-compose up` stage from `docker/.env`
+SECRET_KEY = os.environ.get('SECRET_KEY', 'so_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -135,8 +136,8 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DATABASE_URL = 'postgres://postgres:11@db/shopelectro'
-
+# It is fake-url. Correct url will be created on `docker-compose up` stage from `docker/.env`
+DATABASE_URL = 'postgres://user:pass@db_name/table'
 DATABASES = {
     'default': dj_database_url.config(
         env='DATABASE_URL',
@@ -169,15 +170,19 @@ SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
 
-# Used to define choices attr in definition of Order.payment_option field
-# TODO uncomment in dev-796, first needed test yandex_kassa
-PAYMENT_OPTIONS = (('cash', 'Наличные'),
-                   ('cashless', 'Безналичные и денежные переводы'),)
-                   # ('AC', 'Банковская карта'),
-                   # ('PC', 'Яндекс.Деньги'),
-                   # ('GP', 'Связной (терминал)'),
-                   # ('AB', 'Альфа-Клик'),
-                   # ('MC', 'Мобильный телефон'))
+# Used to define choices attr in definition of Order.payment_type field
+PAYMENT_OPTIONS = (
+    ('cash', 'Наличные'),
+    ('cashless', 'Безналичные и денежные переводы'),
+    ('AC', 'Банковская карта'),
+    ('PC', 'Яндекс.Деньги'),
+    ('GP', 'Связной (терминал)'),
+    ('AB', 'Альфа-Клик'),
+    ('MC', 'Мобильный телефон')
+)
+
+# It is fake-pass. Correct pass will be created on `docker-compose up` stage from `docker/.env`
+YANDEX_SHOP_PASS = os.environ.get('YANDEX_SHOP_PASS', 'so_secret_pass')
 
 # Used for order's email in ecommerce app
 FAKE_ORDER_NUMBER = 6000
@@ -190,6 +195,17 @@ EMAIL_SUBJECTS = {
     'one_click': 'Заказ в один клик №{0.fake_order_number}',
     'ya_feedback_request': 'Оцените нас на Яндекс.Маркете',
 }
+
+# Email configs
+# It is fake-pass. Correct pass will be created on `docker-compose up` stage from `docker/.env`
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'so_secret_pass')
+EMAIL_HOST_USER = 'info@shopelectro.ru'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'info@shopelectro.ru'
+DEFAULT_TO_EMAIL = 'info@shopelectro.ru'
+SHOP_EMAIL = 'info@shopelectro.ru'
 
 # Used in admin image uploads
 MODEL_TYPES = {

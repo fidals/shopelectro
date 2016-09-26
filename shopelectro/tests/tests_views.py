@@ -7,6 +7,7 @@ They all should be using Django's TestClient.
 All Selenium-tests should live in tests_selenium.
 """
 from xml.etree import ElementTree as ET
+from functools import partial
 
 from django.core.management import call_command
 from django.conf import settings
@@ -15,6 +16,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from pages.models import Page
+from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 
 class SitemapPage(TestCase):
@@ -272,3 +274,61 @@ class AdminPage(TestCase):
 
         for field in self.fieldsets['page']:
             self.assertContains(response, field)
+
+
+class YandexKassa(TestCase):
+    """
+    Tests for yandex check order and yandex aviso
+    Yandex docs https://goo.gl/bOf3kw
+    """
+
+    fixtures = ['dump.json']
+
+    def create_aviso_request_data(self):
+        data_for_md5 = {param: str(number) for number, param in enumerate(YANDEX_REQUEST_PARAM)}
+        data_for_md5.update({'shopPassword': settings.YANDEX_SHOP_PASS})
+        md5 = generate_md5_for_ya_kassa(data_for_md5)
+        request_data = {
+            'md5': md5,
+            'orderSumAmount': '12312',
+            'shopSumAmount': '123123',
+            **data_for_md5,
+        }
+        return request_data
+
+    def setUp(self):
+        self.yandex_aviso_request_data = {
+            'path': reverse('yandex_aviso'),
+            'data': self.create_aviso_request_data()
+        }
+        self.yandex_check_request_data = {
+            'path': reverse('yandex_check'),
+            'data': {'invoiceId': 123}
+        }
+
+        self.yandex_aviso_request = partial(self.client.post, **self.yandex_aviso_request_data)
+        self.yandex_check_request = partial(self.client.post, **self.yandex_check_request_data)
+
+
+    def test_yandex_check_body(self):
+        """Respose should contain attr code="0" - it's mean, that all right"""
+        response = self.yandex_check_request()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'code="0"')
+
+    def test_yandex_aviso_body(self):
+        """
+        Response should contain attr code="0" - it's mean, that all right, if code="1" - it's mean,
+        yandex's request body contain incorrect data.
+        """
+        response = self.yandex_aviso_request()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'code="0"')
+
+        self.yandex_aviso_request_data['data']['md5'] = 'incorrect data'
+        response = self.yandex_aviso_request()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'code="1"')

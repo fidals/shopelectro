@@ -3,24 +3,19 @@
     $fancybox: $('.fancybox'),
     $formErrorText: $('.js-form-error-text'),
     $order: $('.js-order-contain'),
-    yandexSubmit: '#btn-send-ya',
-    seSubmit: '#btn-send-se',
+    $yandexFormWrapper: $('#yandex-form-wrapper'),
     yandexForm: '#yandex-form',
+    submit: '#btn-send-se',
     fullForm: '#order-form-full',
     productCount: '.js-prod-count',
     remove: '.js-remove',
-    paymentOptions: 'input[name=payment_option]',
-    defaultPaymentOptions: 'input[for=id_payment_option_0]',
+    paymentOptions: 'input[name=payment_type]',
+    defaultPaymentOptions: 'input[for=id_payment_type_0]',
     orderForm: {
       name: '#id_name',
       phone: '#id_phone',
       email: '#id_email',
       city: '#id_city',
-    },
-    yandexOrderInfo: {
-      customer: 'input[name=customerNumber]',
-      order: 'input[name=orderNumber]',
-      payment: 'input[name=paymentType]',
     },
   };
 
@@ -40,7 +35,6 @@
     setUpListeners();
     fillSavedInputs();
     restoreSelectedPayment();
-    selectSubmitBtn();
   };
 
   function pluginsInit() {
@@ -50,16 +44,13 @@
   function setUpListeners() {
     mediator.subscribe('onCartUpdate', renderTable, fillSavedInputs,
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete);
-    $(DOM.yandexForm).submit(() => mediator.publish('onOrderSend'));
     $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
 
     /**
      * Bind events to parent's elements, because we can't bind event to dynamically added element.
      */
-    DOM.$order.on('click', DOM.yandexSubmit, submitYandexOrder);
-    DOM.$order.on('click', DOM.seSubmit, submitSiteOrder);
+    DOM.$order.on('click', DOM.submit, submitOrder);
     DOM.$order.on('click', DOM.remove, () => removeProduct(getElAttr(event, 'productId')));
-    DOM.$order.on('click', DOM.paymentOptions, () => selectSubmitBtn(getElAttr(event, 'value')));
     DOM.$order.on('change', DOM.productCount, event => changeProductCount(event));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
   }
@@ -127,6 +118,16 @@
   }
 
   /**
+   * Remove product from cart's table
+   */
+  const removeProduct = productId => {
+    server.removeFromCart(productId)
+      .then(data => {
+        mediator.publish('onCartUpdate', data);
+    });
+  };
+
+  /**
    * Event handler for changing product's count in Cart.
    * We wait at least 100ms every time the user pressed the button.
    */
@@ -146,83 +147,65 @@
   const getSelectedPaymentName = () => $(`${DOM.paymentOptions}:checked`).val();
 
   /**
-   * Select appropriate submit button, based on selected payment option.
-   */
-  function selectSubmitBtn() {
-    const $yandexSubmit = $(DOM.yandexSubmit);
-    const $seSubmit = $(DOM.seSubmit);
-    const optionName = getSelectedPaymentName();
-    const isYandexPayment = config.sePayments.indexOf(optionName) === -1;
-
-    const selectSE = () => {
-      $yandexSubmit.addClass('hidden');
-      $seSubmit.removeClass('hidden');
-    };
-
-    const selectYandex = () => {
-      $seSubmit.addClass('hidden');
-      $yandexSubmit.removeClass('hidden');
-    };
-
-    isYandexPayment ? selectYandex() : selectSE();
-    if (optionName) localStorage.setItem(config.paymentKey, optionName);
-  }
-
-  /**
    * Return hash with customer's info from form.
    */
-  const getCustomerInfo = () => {
-    const customerInfo = {};
+  const getOrderInfo = () => {
+    const orderInfo = {
+      payment_type: getSelectedPaymentName(),
+    };
 
     $.each(DOM.orderForm, (name, field) => {
-      customerInfo[name] = $(field).val();
+      orderInfo[name] = $(field).val();
     });
 
-    return customerInfo;
+    return orderInfo;
   };
 
   function isValid(customerInfo) {
-    return validator.isPhoneValid(customerInfo.phone) && validator.isEmailValid(customerInfo.email);
+    return helpers.isPhoneValid(customerInfo.phone) && helpers.isEmailValid(customerInfo.email);
   }
 
+  const isYandex = () => !config.sePayments.includes(getSelectedPaymentName());
+
+  const renderYandexForm = formData => {
+    const formHtml = `<form action="${formData['yandex_kassa_link']}" method="POST" id="yandex-form">
+      <input type="text" name="shopId" value="${formData['shopId']}">
+      <input type="text" name="scid" value="${formData['scid']}">
+      <input type="text" name="shopSuccessURL" value="${formData['shopSuccessURL']}">
+      <input type="text" name="shopFailURL" value="${formData['shopFailURL']}">
+      <input type="text" name="cps_phone" value="${formData['cps_phone']}">
+      <input type="text" name="cps_email" value="${formData['cps_email']}">
+      <input type="text" name="sum" value="${formData['sum']}">
+      <input type="text" name="customerNumber" value="${formData['customerNumber']}">
+      <input type="text" name="orderNumber" value="${formData['orderNumber']}">
+      <input type="text" name="paymentType" value="${formData['paymentType']}">
+      <input type="submit">
+    </form>`;
+
+    DOM.$yandexFormWrapper.html(formHtml);
+  };
   /**
-   * Submit Yandex order if user's phone is provided.
-   * It consists of several steps:
-   *
-   * 1. Get customerNumber (which is a phone without any non-numeric chars)
-   * 2. Hit backend and save Order to DB. This step returns id of an order.
-   * 3. Fill Yandex-form
-   * 4. Submit Yandex-form.
+   * Before submit: 
+   * 1. Validate user's email and phone
+   * 2. Define payment type, if it is Yandex order make request and wait response with form
+   * 3. Submit this form.
    */
-  const submitYandexOrder = event => {
-    event.preventDefault();
+  const submitOrder = event => {
+    const orderInfo = getOrderInfo();
 
-    const getCustomerNumber = phone => phone.replace(/\D/g, '');
-    const customerInfo = getCustomerInfo();
-    const fillYandexForm = orderId => {
-      $(DOM.yandexOrderInfo.order).val(orderId);
-      $(DOM.yandexOrderInfo.customer).val(getCustomerNumber(customerInfo.phone));
-      $(DOM.yandexOrderInfo.payment).val(getSelectedPaymentName());
-    };
-
-    if (!isValid(customerInfo)) {
+    if (!isValid(orderInfo)) {
       DOM.$formErrorText.removeClass('hidden').addClass('shake animated');
       return;
     }
 
-    server.sendYandexOrder(customerInfo)
-      .then(id => {
-        fillYandexForm(id);
-        $(DOM.yandexForm).submit();
-      });
-  };
-
-  const submitSiteOrder = event => {
-    const customerInfo = getCustomerInfo();
-
-    if (!isValid(customerInfo)) {
+    if (isYandex()) {
       event.preventDefault();
-      DOM.$formErrorText.removeClass('hidden').addClass('shake animated');
+
+      server.sendYandexOrder(orderInfo)
+        .then(formData => {
+          renderYandexForm(formData);
+          $(DOM.yandexForm).submit();
+        });
     }
   };
 
@@ -233,14 +216,6 @@
     localStorage.setItem(target.attr('name'), target.val());
   };
 
-  /**
-   * Remove product from cart's table and dispatches 'onCartUpdate' event.
-   */
-  const removeProduct = productId => {
-    server.removeFromCart(productId).then(data => {
-      mediator.publish('onCartUpdate', data);
-    });
-  };
 
   /**
    * Render table and form.
