@@ -20,7 +20,7 @@
     </div>
 
     <div class="col-xs-9 category-right view-mode-{{ view_type }}" id="category-right">
-      {% include "catalog/category_navigation.html" %}
+      {% include 'catalog/category_navigation.html' %}
 
       <p class="products-showed">
         Показано товаров <span class="font-bold js-products-showed-count">{{ products|length }}</span> из <span
@@ -29,7 +29,7 @@
 
       <div class="product-card-wrapper clearfix" id="products-wrapper" data-sorting-index=""
            data-category-id="{{ category.id }}">
-        {% include "catalog/category_products.html" %}
+        {% include 'catalog/category_products.html' %}
       </div>
 
       <div class="text-center">

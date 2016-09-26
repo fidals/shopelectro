@@ -18,17 +18,23 @@ from shopelectro.models import Product, Category
 class Command(BaseCommand):
     """Generate yml file for a given vendor (YM or price.ru)."""
 
-    def handle(self, *args, **options):
-        """Parse target-argument and writes catalog to file."""
-        base_dir = settings.ASSETS_DIR
-        targets = [
-            ('YM', os.path.join(base_dir, 'yandex.yml')),
-            ('priceru', os.path.join(base_dir, 'priceru.xml')),
-            ('GM', os.path.join(base_dir, 'gm.yml')),
-        ]
+    # Online market services, that works with our prices.
+    # Dict keys - url targets for every service
+    TARGETS = {
+        'YM': 'yandex.yml',
+        'priceru': 'priceru.xml',
+        'GM': 'gm.yml',
+    }
+    # price files will be stored at this dir
+    BASE_DIR = settings.ASSETS_DIR
 
-        for utm, file_to_write in targets:
-            self.write_yml(file_to_write, self.get_context_for_yml(utm))
+    def create_prices(self):
+        for utm, file_name in self.TARGETS.items():
+            result_file = os.path.join(self.BASE_DIR, file_name)
+            self.write_yml(result_file, self.get_context_for_yml(utm))
+
+    def handle(self, *args, **options):
+        self.create_prices()
 
     @staticmethod
     def get_context_for_yml(utm):
@@ -36,31 +42,39 @@ class Command(BaseCommand):
 
         def put_utm(product):
             """Put UTM attribute to product."""
-            def product_utm():
-                return {
-                    'utm_source': utm,
-                    'utm_medium': 'cpc',
-                    'utm_content': product.get_root_category().slug,
-                    'utm_term': str(product.id)
-                }
+            utm_marks = {
+                'utm_source': utm,
+                'utm_medium': 'cpc',
+                'utm_content': product.get_root_category().slug,
+                'utm_term': str(product.id)
+            }
             url = reverse('product', args=(product.id,))
-            utm_mark = '&'.join(['{}={}'.format(k, v)
-                                 for k, v in product_utm().items()])
+            utm_mark = '&'.join(
+                ['{}={}'.format(k, v) for k, v in utm_marks.items()]
+            )
             product.utm_url = ''.join([settings.BASE_URL, url, '?' + utm_mark])
             return product
 
-        others = (Category.objects.get(name='Прочее')
-                  .get_descendants(include_self=True))
-        categories_except_others = Category.objects.exclude(pk__in=others)
-        products_except_others = (put_utm(product)
-                                  for product in
-                                  Product.objects.filter(
-                                      category__in=categories_except_others)
-                                  .filter(price__gt=0))
+        def filter_categories():
+            others = (
+                Category.objects.get(name='Прочее').get_descendants(include_self=True)
+            )
+            return Category.objects.exclude(pk__in=others)
+
+        def prepare_products(categories):
+            products_except_others = Product.objects.filter(
+                category__in=categories).filter(price__gt=0)
+            result_products = (
+                put_utm(product) for product in products_except_others
+            )
+            return result_products
+
+        filtered_categories = filter_categories()
+
         return {
             'base_url': settings.BASE_URL,
-            'categories': categories_except_others,
-            'products': products_except_others,
+            'categories': filtered_categories,
+            'products': prepare_products(filtered_categories),
             'shop': config.SHOP,
             'utm': utm,
         }

@@ -280,17 +280,13 @@ class Command(BaseCommand):
     def generate_prices() -> result_message:
         """Generate Excel, YM and Price.ru price files."""
         commands = [
-            'excel',
-            'price',
+            ('excel', ),
+            ('price', ),
             # to actualize generated files rendering
             ('collectstatic', '--noinput')
         ]
 
         for command in commands:
-            with_params = isinstance(command, tuple)
-            if with_params:
-                call_command(*command)
-            else:
-                call_command(command)
+            call_command(*command)
 
         return 'Price lists were created.'

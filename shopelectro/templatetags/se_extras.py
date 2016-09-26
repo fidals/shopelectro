@@ -5,11 +5,12 @@ import random
 
 from django import template
 from django.conf import settings
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
-from django.contrib.humanize.templatetags.humanize import intcomma
 
-from shopelectro import images, config
+from images.models import ImageMixin
+from shopelectro import config
 from shopelectro.models import Category
 
 
@@ -92,16 +93,6 @@ def upload_form(model):
         return model_type in models_with_upload_form
 
 
-@register.inclusion_tag('prices/picture_tag.html')
-def get_model_images(model):
-    """Return Model images without small variant"""
-
-    return {
-        'dir_path': settings.BASE_URL + settings.MEDIA_URL,
-        'images': images.get_images_without_small(model, url='products')
-    }
-
-
 @register.simple_tag
 def full_url(path='index', *args):
     return settings.BASE_URL + reverse(path, args=args)
@@ -112,16 +103,18 @@ def humanize_price(price):
     return intcomma(floatformat(price, 0))
 
 
+# Not good code, but duker at 06/10/2016 don't know how to fix it.
+# It makes Image model very complex.
 @register.simple_tag
-def get_img_alt(entity):
-    logo_name = settings.IMAGES['thumbnail']
+def get_img_alt(entity: ImageMixin):
     product_alt = 'Фотография {}'
     logo_alt = 'Логотип компании Shopelectro'
 
-    def get_alt(entity_img, entity_name):
-        return product_alt.format(entity_name) if logo_name not in entity_img else logo_alt
+    if not hasattr(entity, 'images') or not entity.images.all():
+        return logo_alt
 
-    if isinstance(entity, dict): # Position is dict obj
-        return get_alt(entity.get('image'), entity.get('name'))
-    else:
-        return get_alt(entity.image, entity.name)
+    # try one of this attributes to get pages name
+    name_attrs = ['h1', 'title', 'name']
+    entity_name = next(
+        filter(None, (getattr(entity, attr, None) for attr in name_attrs)))
+    return product_alt.format(entity_name)

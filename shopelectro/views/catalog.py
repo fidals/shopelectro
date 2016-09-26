@@ -5,11 +5,12 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 from django.shortcuts import render, get_object_or_404
+from django.conf import settings
 
 from pages import views as pages_views
 from catalog.views import catalog
 
-from shopelectro import config, images
+from shopelectro import config
 from shopelectro.models import Product, Category
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -67,8 +68,6 @@ class ProductPage(catalog.ProductPage):
         context = super(ProductPage, self).get_context_data(**kwargs)
         product = self.get_object()
 
-        context['main_image'] = images.get_image(product)
-        context['images'] = images.get_images_without_small(product)
         context['page'] = product.page
 
         return context
@@ -82,7 +81,7 @@ class IndexPage(pages_views.IndexPage):
         """Extended method. Add product's images to context."""
         context = super(IndexPage, self).get_context_data(**kwargs)
 
-        top_products = Product.objects.filter(id__in=config.TOP_PRODUCTS)
+        top_products = Product.objects.filter(id__in=settings.TOP_PRODUCTS)
 
         context.update({
             'category_tile': config.MAIN_PAGE_TILE,

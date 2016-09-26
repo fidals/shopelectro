@@ -1,0 +1,17 @@
+{% load images %}
+{% load thumbnail %}
+{% load se_extras %}
+
+{% if product.page.main_image %}
+  {% thumbnail product.page.main_image "160x160" as image %}
+    <img src="{{ image.url }}" class="img-centered img-responsive"
+         alt="{% get_img_alt product.page %}" itemprop="image">
+  {% endthumbnail %}
+{% else %}
+  {% placeholder_image_url as image_url %}
+    <img src="{{ image_url }}" data-index="0"
+        class="img-centered img-responsive" id="product-image-big"
+        alt="{% get_img_alt product.page %}" itemprop="image"
+        {# Hack reason: in win8 Chrome click on svg does not trigger parent link #}
+        onclick="window.location.href='{{ product.url }}'">
+{% endif %}

@@ -95,8 +95,6 @@ def cached_time() -> int:
 
     return one_day_in_seconds * days_to_cache
 
-TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
-
 # Tile on main page
 MAIN_PAGE_TILE = {
     'accumulators': [

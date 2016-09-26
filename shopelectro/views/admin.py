@@ -7,15 +7,16 @@ All logic should live in respective applications.
 import os
 import json
 
-from django.conf import settings
+from django.core.files.images import ImageFile
 from django.core.urlresolvers import reverse
 from django.db.models import F
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_GET
+from django.utils.text import slugify
 
 from pages.models import Page
-from shopelectro import images
 from shopelectro.models import Product, Category
+from images.models import Image
 
 
 @require_POST
@@ -143,26 +144,32 @@ def admin_tree_items(request):
 
 
 def admin_remove_image(request):
-    """Remove Entity image by url"""
-
-    image_dir_path = os.path.join(settings.MEDIA_ROOT, request.POST['url'])
-    os.remove(image_dir_path)
-
+    image_id = request.POST['id']
+    image = Image.objects.get(id=image_id)
+    image.delete()
     return HttpResponse('ok')
 
 
 @require_POST
 def admin_upload_images(request, model_name, entity_id):
-    """Upload Entity image"""
 
-    referer_url = request.META['HTTP_REFERER']
+    def create_image():
+        file_name = os.path.basename(file.name)
+        short_file_name, _ = os.path.splitext(file_name)
+        Image.objects.create(
+            model=product.page,
+            slug=slugify(short_file_name),
+            image=ImageFile(file),
+        )
 
-    for model_plural_name in ['categories', 'products']:
-        # slice, because the model_name is singular model's name,
-        # may be should rename the dirs, where we store our images
-        if model_name[:-1] in model_plural_name:
-            images.upload(model_plural_name, entity_id, request.FILES.getlist('files'))
-    return HttpResponseRedirect(referer_url)
+    referrer_url = request.META['HTTP_REFERER']
+
+    if model_name == 'product':
+        files = request.FILES.getlist('files')
+        product = Product.objects.get(id=entity_id)
+        for file in files:
+            create_image()
+    return HttpResponseRedirect(referrer_url)
 
 
 @require_GET

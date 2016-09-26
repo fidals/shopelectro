@@ -2,19 +2,15 @@
 
 import os
 
-from django.conf import settings
 from django.test import TestCase
 
 from shopelectro.models import Product, Category, Property
-from .. import images
 
 
 class ModelsTests(TestCase):
     """Test suite for models."""
 
     def setUp(self):
-        """Define testing data."""
-
         self.category, _ = Category.objects.get_or_create(
             name='Test category'
         )
@@ -22,15 +18,6 @@ class ModelsTests(TestCase):
         self.product, _ = Product.objects.get_or_create(
             id=1,
             name='Common product',
-            wholesale_small=10,
-            wholesale_medium=10,
-            wholesale_large=10,
-            category=self.category
-        )
-
-        self.non_existing_product, _ = Product.objects.get_or_create(
-            id=9999,
-            name='Non existing product',
             wholesale_small=10,
             wholesale_medium=10,
             wholesale_large=10,
@@ -46,27 +33,6 @@ class ModelsTests(TestCase):
 
         self.main_image = os.path.normpath(
             'products/{}/main.jpg'.format(self.product.id))
-
-    def test_product_images(self):
-        """
-        Get Product images.
-
-        main.jpg for product with id=1 is required
-        """
-
-        images_list = images.get_images_without_small(self.product)
-        self.assertIn(self.main_image, images_list)
-
-    def test_thumbnail_image(self):
-        """Get Product image thumbnail."""
-
-        images_list = images.get_image(self.non_existing_product)
-        self.assertTrue(settings.IMAGES['thumbnail'] in images_list)
-
-    def test_main_image(self):
-        """Main image property should return image."""
-
-        self.assertTrue(images.get_image(self.product), self.main_image)
 
     def test_get_trademark(self):
         """

@@ -1,6 +1,5 @@
 {% extends 'admin/base_site.html' %}
 {% load se_extras %}
-{% load se_admin_extras %}
 {% load i18n admin_urls admin_static admin_modify %}
 
 {% block extrahead %}
@@ -74,7 +73,7 @@
 
         {% block inline_field_sets %}
           {% if original|upload_form %}
-            {% entity_images original %}
+            {% include 'admin/includes/images_list.html' with entity=original only %}
           {% endif %}
 
           {% for inline_admin_formset in inline_admin_formsets %}

@@ -4,7 +4,6 @@ from django.conf import settings
 
 from catalog.models import AbstractProduct, AbstractCategory
 from pages.models import Page
-from .images import get_image
 from ecommerce.models import Order as ecOrder
 
 
@@ -56,10 +55,6 @@ class Product(AbstractProduct):
             return self.property_set.get(name='Товарный знак').value
         except Property.DoesNotExist:
             return
-
-    @property
-    def image(self):
-        return get_image(self)
 
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
