@@ -150,7 +150,7 @@ const jQgridSettings = (() => {
           type: 'GET',
           url: '/admin/autocomplete/',
           data: {
-            q: request.term,
+            term: request.term,
             pageType: 'category',
           },
           success(responseData) {
