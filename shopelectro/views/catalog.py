@@ -18,7 +18,11 @@ from shopelectro.views.helpers import set_csrf_cookie
 # CATALOG VIEWS
 class CategoryTree(catalog.CategoryTree):
     """Override model attribute to SE-specific Category."""
-    model = Category
+    def get_context_data(self, **kwargs):
+        """Add in the context correct entities."""
+        context = super(CategoryTree, self).get_context_data(**kwargs)
+        context.update({'nodes': Category.objects.all()})
+        return context
 
 
 @set_csrf_cookie
@@ -77,7 +81,7 @@ class ProductPage(catalog.ProductPage):
 
 # SHOPELECTRO-SPECIFIC VIEWS
 @set_csrf_cookie
-class IndexPage(pages_views.IndexPage):
+class IndexPage(pages_views.CustomPageView):
 
     def get_context_data(self, **kwargs):
         """Extended method. Add product's images to context."""

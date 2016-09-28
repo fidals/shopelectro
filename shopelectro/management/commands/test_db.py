@@ -19,10 +19,11 @@ from django.core.files.images import ImageFile
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+import shopelectro.tests
 from images.models import Image
 from pages.models import Page
 from shopelectro.models import Product, Category, Order
-import shopelectro.tests
+from pages.models import FlatPage, CustomPage
 
 
 class Command(BaseCommand):
@@ -43,6 +44,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.prepare_db()
+        self.create_custom_pages()
 
         roots = self.create_root(2)
         children = self.create_children(2, roots)
@@ -92,14 +94,14 @@ class Command(BaseCommand):
     def create_children(count, parents):
         name = 'Category #{} of #{}'
 
-        def __create_categories(name, parent):
+        def create_categories(name, parent):
             return Category.objects.create(name=name, parent=parent)
 
-        def __get_name(number, parent=None):
+        def get_name(number, parent=None):
             return name.format(number, parent)
 
         return chain(*[
-            [__create_categories(__get_name(i, parent), parent) for i in range(count)]
+            [create_categories(get_name(i, parent), parent) for i in range(count)]
             for parent in parents
         ])
 
@@ -141,10 +143,15 @@ class Command(BaseCommand):
     @staticmethod
     def create_page():
         """Create only one page with type=FLAT_PAGE"""
-        Page.objects.create(
+        FlatPage.objects.create(
             slug='flat',
-            type=Page.FLAT_TYPE,
         )
+
+    @staticmethod
+    def create_custom_pages():
+        """Create required custom pages for reversing, breadcrumbs and etc"""
+        for fields in settings.PAGES:
+            CustomPage.objects.get_or_create(**fields)
 
     @staticmethod
     def create_order():
@@ -156,10 +163,4 @@ class Command(BaseCommand):
 
     @staticmethod
     def purge_tables():
-        # Models sorted by dependencies chain
-        Order.objects.all().delete()
-        Product.objects.all().delete()
-        Category.objects.all().delete()
-        Page.objects.all().delete()
-        Image.objects.all().delete()
-        ContentType.objects.all().delete()
+        call_command('flush', '--noinput')

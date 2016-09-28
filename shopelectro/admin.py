@@ -1,28 +1,85 @@
-"""
-Django admin module.
-For injection your models in Page app, you should define INJECTION_MODELS
-"""
-
 from collections import namedtuple
-from itertools import chain
-from typing import Dict, Tuple
 
-from django.contrib import admin, redirects
-from django.core.urlresolvers import reverse
+from django.contrib import admin
 from django.conf.urls import url
-from django.db.models import Model
-from django.db.models.expressions import Q
-from django.template.loader import render_to_string
+from django.core.urlresolvers import reverse
 from django.template.response import TemplateResponse
-from django.utils.html import format_html
-from django.utils.text import capfirst
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
 
-from shopelectro.models import Category, Product
-from pages.models import Page
+from shopelectro.models import Category, Product, CategoryPage, ProductPage
+from pages.models import CustomPage, FlatPage
 
 
-INJECTION_MODELS = (Category, Product)  # Global variables
+class CustomAdminSite(admin.AdminSite):
+    site_header = 'Shopelectro administration'
+
+    # Fields for TableEditor filters:
+    FILTER_FIELDS = (
+        {
+            'id': 'filter-name',
+            'name': 'Название',
+            'checked': True,
+        },
+        {
+            'id': 'filter-title',
+            'name': 'Заголовок',
+            'checked': False,
+        },
+        {
+            'id': 'filter-category_name',
+            'name': 'Категория',
+            'checked': True,
+        },
+        {
+            'id': 'filter-price',
+            'name': 'Цена',
+            'checked': True,
+        },
+        {
+            'id': 'filter-purchase_price',
+            'name': 'Закупочная цена',
+            'checked': False,
+        },
+        {
+            'id': 'filter-is_active',
+            'name': 'Активность',
+            'checked': True,
+        },
+        {
+            'id': 'filter-is_popular',
+            'name': 'Топ',
+            'checked': True,
+        },
+        {
+            'id': 'filter-in_stock',
+            'name': 'Наличие',
+            'checked': False,
+        },
+    )
+
+    def get_urls(self):
+        original_urls = super(CustomAdminSite, self).get_urls()
+
+        custom_urls = [
+            url(r'^editor/$', self.admin_view(self.table_editor_view), name='editor')
+        ]
+        return custom_urls + original_urls
+
+    def table_editor_view(self, request):
+        context = {
+            # Include common variables for rendering the admin template.
+            **self.each_context(request),
+            # Anything else you want in the context...
+            'title': 'Table editor',
+            'filter_fields': self.FILTER_FIELDS,
+        }
+
+        return TemplateResponse(request, 'admin/table_editor.html', context)
+
+
+custom_admin_site = CustomAdminSite(name='custom_admin')
 
 
 def after_action_message(updated_rows):
@@ -80,503 +137,84 @@ class PriceRange(admin.SimpleListFilter):
         return queryset.filter(shopelectro_product__price__in=range(*range_for_query))
 
 
-class CustomAdminSite(admin.AdminSite):
-    """Override AdminSite class"""
-    site_header = 'Shopelectro administration'
+# Inline classes
+class ProductInline(admin.StackedInline):
+    model = Product
+    can_delete = False
+    fieldsets = ((None, {
+        'classes': ('primary-chars', ),
+        'fields': (
+            ('name', 'id'),
+            ('category', 'correct_category_id'),
+            ('price', 'in_stock', 'is_popular'),
+            ( 'purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large'),
+        )
+    }),)
 
-    # Fields for TableEditor filters:
-    FILTER_FIELDS = (
-        {
-            'id': 'filter-name',
-            'name': 'Название',
-            'checked': True,
-        },
-        {
-            'id': 'filter-title',
-            'name': 'Заголовок',
-            'checked': False,
-        },
-        {
-            'id': 'filter-category_name',
-            'name': 'Категория',
-            'checked': True,
-        },
-        {
-            'id': 'filter-price',
-            'name': 'Цена',
-            'checked': True,
-        },
-        {
-            'id': 'filter-purchase_price',
-            'name': 'Закупочная цена',
-            'checked': False,
-        },
-        {
-            'id': 'filter-is_active',
-            'name': 'Активность',
-            'checked': True,
-        },
-        {
-            'id': 'filter-is_popular',
-            'name': 'Топ',
-            'checked': True,
-        },
-        {
-            'id': 'filter-in_stock',
-            'name': 'Наличие',
-            'checked': False,
-        },
-    )
+    def correct_category_id(self, obj):
+        """Needed for correct short_description attr"""
+        return obj.category_id
+    correct_category_id.short_description = 'Category ID'
 
-    def extend_app_list_model(self, to_model: Model, add_models: INJECTION_MODELS, app_list):
-        """
-        Extend app list's models field.
-        The App list looks like this [{..., models:[{app's models}, ... ], ...}, {...}].
-        """
-        assert len(app_list), 'You should register model to admin site'
-
-        def find_certain_app(app):
-            for model in app['models']:
-                if model['object_name'] == to_model._meta.object_name:
-                    return True
-
-        app = list(filter(find_certain_app, app_list))
-
-        assert app, 'You should register model to admin site'
-
-        app_model = app[0]['models'][0]
-        custom_app_model = [{
-                                'name': capfirst(model._meta.verbose_name_plural),
-                                'object_name': model._meta.object_name,
-                                'perms': app_model['perms'],
-                                'admin_url': app_model['admin_url'] + model._meta.model_name,
-                                'add_url': app_model['add_url'] + model._meta.model_name,
-                            } for model in add_models]
-
-        for model in custom_app_model:
-            app[0]['models'].append(model)
-
-        return app_list
-
-    def index(self, request, extra_context=None):
-        extra_context = extra_context or {}
-        app_list = self.extend_app_list_model(
-            Page, INJECTION_MODELS, self.get_app_list(request))
-        extra_context['app_list'] = app_list
-        return super(CustomAdminSite, self).index(request, extra_context)
-
-    def get_urls(self):
-        """
-        Render custom view for Table editor
-        @link http://goo.gl/LUYheF
-        """
-        original_urls = super(CustomAdminSite, self).get_urls()
-
-        custom_urls = [
-            url(r'^editor/$', self.admin_view(self.table_editor_view), name='editor')
-        ]
-
-        return custom_urls + original_urls
-
-    def table_editor_view(self, request):
-        context = {
-            # Include common variables for rendering the admin template.
-            **self.each_context(request),
-            # Anything else you want in the context...
-            'title': 'Table editor',
-            'filter_fields': self.FILTER_FIELDS,
-        }
-
-        return TemplateResponse(request, 'admin/table_editor.html', context)
+    readonly_fields = ['id', 'correct_category_id']
 
 
-custom_admin_site = CustomAdminSite(name='custom_admin')
+class CategoryInline(admin.StackedInline):
+    model = Category
+    can_delete = False
+    fieldsets = ((None, {
+        'classes': ('primary-chars', ),
+        'fields': (
+            # 'slug',TODO
+            ('name', 'id'),
+            ('parent', 'correct_parent_id'),
+        )
+    }),)
+
+    def correct_parent_id(self, obj):
+        """Needed for correct short_description attr"""
+        return obj.parent_id
+    correct_parent_id.short_description = 'Parent ID'
+
+    readonly_fields = ['id', 'correct_parent_id']
 
 
-class AbstractModelAdmin(admin.ModelAdmin):
-    """
-    Model admin with injection models related by any db-relations
-
-    All options should look like Dict[Model name: Any-options]
-    ex.:
-        list_filter_options = {
-            'page': ['is_active'],
-            'product': ['is_active', PriceRange],
-            'category': ['is_active'],
-        }
-
-    We have two custom urls(add, changelist) for every models,
-    they look like `model_name_add`, (ex. `product_changelist`)
-
-    Example of use case you can find in PageAdmin.
-    """
-
-    # Custom settings
-    model = None  # List [self.model] ex. Page
-    injection_models = None  # List[Model, Model,...] ex. Category
-    extra_queries = {}  # Dict[Model, query]
-    list_filter_options = {}
-    search_fields_options = {}
-    list_display_options = {}
-    list_display_links_options = {}
-    inlines_fieldset_options = {}
-
-    # ModelAdmin settings
-    list_per_page = 50
+# Model admin classes
+class PageAdmin(admin.ModelAdmin):
     save_on_top = True
 
-    @property
-    def inlines_options(self):
-        return self.init_inlines_options()
+    list_filter = ['is_active']
+    list_display = ['id', 'h1', 'custom_parent', 'is_active']
+    list_display_links = ['h1']
 
-    @property
-    def change_view_options(self):
-        """The change_view contain custom breadcrumbs options"""
-        return self.init_view_options('breadcrumbs', 'changelist')
+    search_fields = ['id', 'h1', 'parent__h1']
 
-    @property
-    def changelist_view_options(self):
-        """The changelist_view contain custom breadcrumbs and add entity button options"""
-        return self.init_view_options('add', 'add'), self.init_view_options('breadcrumbs',
-                                                                            'changelist')
+    readonly_fields = ['id']
 
-    @property
-    def add_view_options(self):
-        """The changelist_view contain custom breadcrumbs options"""
-        return self.init_view_options('breadcrumbs', 'changelist')
+    actions = ['make_items_active', 'make_items_non_active']
 
-    @property
-    def extra_queries_options(self):
-        return {self.get_model_name_from_model(model): query
-                for model, query in self.extra_queries.items()}
-
-    @property
-    def query_strategy(self) -> Dict[str, Dict[str, str] or Q]:
-        """Dict looks like { model_name: filter's kwargs}"""
-        return {
-            **{self.get_model_name_from_model(model): {'type': model._meta.db_table}
-               for model in self.injection_models},
-            **self.extra_queries_options,
-        }
-
-    # Helpers
-    def get_model_name_from_request_path(self, path: str) -> str:
-        """Get last path's item, it must be model_name, else return None"""
-        url_part = path.rstrip('/').split('/')[-1]
-        models_names = ([self.get_model_name_from_model(model) for model in self.injection_models]
-                        + [self.get_model_name_from_model(self.model)])
-
-        if url_part in models_names:
-            return url_part
-
-    def get_model_name_from_model(self, model: Model) -> str:
-        """Shortcut for model._meta.model_name"""
-        return model._meta.model_name  # (model name could be 'product', 'page' etc.)
-
-    def get_injection_urls(self, injection_model: Model, extra_url=None) -> Dict[str, type(url)]:
-        """Get new urls for injection models"""
-        extra_url = extra_url or {}
-        model_name = self.get_model_name_from_model(injection_model)
-        return {
-            'changelist': url(r'^{}/$'.format(model_name), self.changelist_view,
-                              name='{}_changelist'.format(model_name)),
-            'add': url(r'^add/{}/$'.format(model_name), self.add_view,
-                       name='{}_add'.format(model_name)),
-            **extra_url
-        }
-
-    def init_inlines_options(self) -> Tuple[admin.StackedInline]:
-        """Lazy initialization for inlines' class"""
-
-        def __init_inline(injection_model):
-            class Inline(admin.StackedInline):
-                model = injection_model
-                readonly_fields = ['id']
-                fieldsets = self.inlines_fieldset_options.get(
-                    self.get_model_name_from_model(injection_model), [])
-
-            return Inline
-
-        return tuple(__init_inline(model) for model in self.injection_models)
-
-    def init_view_options(self, option_name, url_name) -> Dict[str, Dict[str, str]]:
-        """
-        Initialization view options
-        :return {
-            Model name:
-                {option's name (ex. breadcrumbs): option's url (ex. custom_admin:product_add)}
-        }
-        """
-        get_url_name = lambda model: self.get_injection_urls(model)[url_name].name
-        admin_name = self.admin_site.name
-
-        return {
-            self.get_model_name_from_model(model): {
-                '{}_name'.format(option_name): capfirst(model._meta.verbose_name),
-                '{}_url'.format(option_name): '{}:{}'.format(admin_name, get_url_name(model))
-            } for model in self.injection_models
-            }
-
-    def patch_by_options(self, request_path,
-                         options: Dict[str, Dict[str, str]]) -> Dict[str, str]:
-        current_model = self.get_model_name_from_request_path(request_path)
-        if current_model in options:
-            return options[current_model]
-
-    # Override admin methods
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        """Add extra context for breadcrumbs"""
-        extra_context = extra_context or {}
-        current_model = self.model.objects.get(id=object_id)  # (ex. shopelectro_product)
-
-        # The breadcrumbs options contain a injection model's name only
-        for model_name in self.change_view_options:
-            if model_name in current_model.type:
-                breadcrumbs = self.change_view_options[model_name]
-                extra_context.update(
-                    {**breadcrumbs,
-                     'model_name': current_model.model._meta.model_name,  # context for upload image
-                     'entity_id': current_model.model.id,
-                     'show_save': False})
-
-        return super(AbstractModelAdmin, self).change_view(request, object_id, form_url,
-                                                           extra_context)
-
-    def changelist_view(self, request, extra_context=None):
-        """Add extra context for breadcrumbs"""
-        extra_context = extra_context or {}
-
-        add, breadcrumbs = [self.patch_by_options(request.path, option)
-                            for option in self.changelist_view_options]
-
-        if breadcrumbs and add:
-            extra_context.update(**breadcrumbs, **add)
-
-        return super(AbstractModelAdmin, self).changelist_view(request, extra_context)
-
-    def add_view(self, request, form_url='', extra_context=None):
-        extra_context = extra_context or {}
-
-        breadcrumbs = self.patch_by_options(request.path, self.add_view_options)
-
-        if breadcrumbs:
-            extra_context.update(**breadcrumbs)
-
-        return super(AbstractModelAdmin, self).add_view(request, form_url, extra_context)
-
-    def get_urls(self):
-        """Inject custom urls for INJECTION_MODELS"""
-        admin_urls = super(AbstractModelAdmin, self).get_urls()
-        custom_urls = list(chain(*[self.get_injection_urls(model).values()
-                                   for model in self.injection_models]))
-        return custom_urls + admin_urls
-
-    def get_queryset(self, request):
-        """Inject the logic definition of queryset"""
-        queryset = super(AbstractModelAdmin, self).get_queryset(request)
-        current_model = self.get_model_name_from_request_path(request.path)
-        strategy = self.query_strategy
-
-        if current_model in strategy:
-            query = strategy[current_model]
-            queryset = (queryset.filter(**query) if isinstance(query, dict)
-                        else queryset.filter(query))
-
-        return queryset
-
-    def get_inline_instances(self, request, obj=None):
-        """Inject the logic definition of inlines"""
-        current_model = self.get_model_name_from_request_path(request.path)
-        if not obj and not current_model:
-            self.inlines = []  # Page with create Pages' entity
-        elif obj:
-            # obj is Pages entity with field type (ex. shopelectro_product)
-            page_type = obj.type
-            # Page with change Product or Category entity
-            self.inlines = [inline for inline in self.inlines_options
-                            if self.get_model_name_from_model(inline.model) in page_type]
-        else:
-            # Page with create Product or Category entity
-            self.inlines = [inline for inline in self.inlines_options
-                            if self.get_model_name_from_model(inline.model) == current_model]
-
-        return super(AbstractModelAdmin, self).get_inline_instances(request, obj)
-
-    def get_list_display(self, request):
-        """Inject the logic definition of list_display"""
-        self.list_display = self.patch_by_options(request.path, self.list_display_options)
-        return super(AbstractModelAdmin, self).get_list_display(request)
-
-    def get_list_display_links(self, request, list_display):
-        """Inject the logic definition of list_display_links"""
-        self.list_display_links = self.patch_by_options(request.path, self.list_display_links_options)
-        return super(AbstractModelAdmin, self).get_list_display_links(request, list_display)
-
-    def get_search_fields(self, request):
-        """Inject the logic definition of search_fields"""
-        self.search_fields = self.patch_by_options(request.path, self.search_fields_options)
-        return super(AbstractModelAdmin, self).get_search_fields(request)
-
-    def get_list_filter(self, request):
-        """Inject the logic definition of list_filter"""
-        self.list_filter = self.patch_by_options(request.path, self.list_filter_options)
-        return super(AbstractModelAdmin, self).get_list_filter(request)
-
-
-class PageAdmin(AbstractModelAdmin):
-    model = Page
-    injection_models = INJECTION_MODELS
-    extra_queries = {model: Q(type='custom') | Q(type='page')}
-
-    # Filters
-    list_filter_options = {
-        'page': ['is_active'],
-        'product': ['is_active', PriceRange],
-        'category': ['is_active'],
-    }
-
-    # Search
-    search_fields_options = {
-        'page': ['h1', '_parent__h1'],
-        'product': ['h1', '_parent__h1', 'shopelectro_product__price'],
-        'category': ['h1', '_parent__h1']
-    }
-
-    # List display
-    list_display_options = {
-        'page': ['id', 'h1', 'custom_parent', 'is_active'],
-        'product': ['product_id', 'h1', 'custom_category', 'price', 'links', 'is_active'],
-        'category': ['category_id', 'h1', 'custom_category_parent', 'is_active']
-    }
-    list_display_links_options = {
-        'page': ['h1'],
-        'product': ['h1'],
-        'category': ['h1'],
-    }
-
-    # Custom fields
-    def price(self, model):
-        return model.model.price
-
-    def product_id(self, model):
-        return model.model.id
-
-    def category_id(self, model):
-        return model.model.id
-
-    product_id.short_description = 'Id'
-    product_id.admin_order_field = 'shopelectro_product__id'
-
-    category_id.short_description = 'Id'
-    category_id.admin_order_field = 'shopelectro_category__id'
-
-    price.short_description = 'Price'
-    price.admin_order_field = 'shopelectro_product__price'
-
-    def links(self, model):
-        context = {
-            'site_url': model.get_absolute_url(),
-        }
-
-        return render_to_string('admin/includes/items_list_row.html', context)
-
-    links.short_description = 'Link'
-
-    def custom_parent(self, model):
-        if not model.parent:
-            return
-
-        parent = model.parent
-        url = reverse('custom_admin:pages_page_change', args=(parent.id,))
-
-        return format_html(
-            '<a href="{url}">{parent}</a>',
-            parent=parent,
-            url=url
-        )
-
-    custom_parent.short_description = 'Parent'
-    custom_parent.admin_order_field = '_parent__h1'
-
-    def custom_category(self, model):
-        if not model.model.category:
-            return
-
-        category = model.model.category
-        url = reverse('custom_admin:pages_page_change', args=(category.id,))
-
-        return format_html(
-            '<a href="{url}">{category}</a>',
-            category=category.name,
-            url=url
-        )
-
-    custom_category.short_description = 'Category'
-    custom_category.admin_order_field = '_parent__h1'
-
-    def custom_category_parent(self, model):
-        if not model.model.parent:
-            return
-
-        category = model.model.parent
-        url = reverse('custom_admin:pages_page_change', args=(category.id,))
-
-        return format_html(
-            '<a href="{url}">{category}</a>',
-            category=category.name,
-            url=url
-        )
-
-    custom_category_parent.short_description = 'Parent'
-    custom_category_parent.admin_order_field = '_parent__h1'
-
-    # Fieldsets
     fieldsets = (
         ('Дополнительные характеристики', {
             'classes': ('seo-chars',),
             'fields': (
+                ('id', 'is_active'),
+                'date_published',
+               # 'slug', TODO
+                '_menu_title',
+                'seo_text',
                 'position',
-                'content',
             )
         }),
         ('Параметры страницы', {
             'classes': ('secondary-chars',),
             'fields': (
                 ('h1', '_title'),
-                ('keywords', 'id'),
-                'is_active',
+                'keywords',
                 'description',
-                'seo_text'
+                'content'
             )
         })
     )
-
-    inlines_fieldset_options = {
-        'product':
-            ((None, {
-                'classes': ('primary-chars', ),
-                'fields': (
-                    ('name', 'category'),
-                    ('price', 'id'),
-                    ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large'),
-                    ('in_stock', 'is_popular')
-                )
-            }),),
-        'category':
-            ((None, {
-                'classes': ('primary-chars', ),
-                'fields': (
-                    ('name', 'id',),
-                    'parent',
-                    'position'
-                )
-            }),),
-    }
-
-    readonly_fields = ['id']
-
-    # Actions
-    actions = ['make_items_active', 'make_items_non_active']
 
     def make_items_active(self, request, queryset):
         updated_rows = queryset.update(is_active=1)
@@ -597,5 +235,198 @@ class PageAdmin(AbstractModelAdmin):
     make_items_non_active.short_description = 'Деактивировать страницы'
 
 
-custom_admin_site.register(Page, PageAdmin)
-custom_admin_site.register(redirects.models.Redirect)
+class CustomPageAdmin(PageAdmin):
+    # Fieldsets
+    fieldsets = (
+        ('Дополнительные характеристики', {
+            'classes': ('seo-chars',),
+            'fields': (
+                'is_active',
+                'date_published',
+                '_menu_title',
+                'seo_text',
+                'position',
+                ('parent', 'correct_parent_id')
+            )
+        }),
+        ('Параметры страницы', {
+            'classes': ('secondary-chars',),
+            'fields': (
+                ('h1', '_title'),
+                ('keywords', 'id'),
+                'description',
+                'content'
+            )
+        })
+    )
+
+    def correct_parent_id(self, obj):
+        """Needed for correct short_description attr"""
+        return obj.parent_id
+    correct_parent_id.short_description = 'Parent ID'
+
+    readonly_fields = ['id', 'correct_parent_id']
+
+    def custom_parent(self, obj):
+        if not obj.parent:
+            return
+
+        parent = obj.parent
+        url = reverse('custom_admin:pages_custompage_change', args=(parent.id,))
+
+        return format_html(
+            '<a href="{url}">{parent}</a>',
+            parent=parent,
+            url=url
+        )
+
+    custom_parent.short_description = 'Parent'
+    custom_parent.admin_order_field = 'parent__h1'
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """If someone deletes custom pages, then we will have problems."""
+        return False
+
+
+class FlatPageAdmin(PageAdmin):
+    # Fieldsets
+    fieldsets = (
+        ('Дополнительные характеристики', {
+            'classes': ('seo-chars',),
+            'fields': (
+                ('id', 'is_active'),
+                'date_published',
+               # 'slug', TODO
+                '_menu_title',
+                'seo_text',
+                'position',
+                ('parent', 'correct_parent_id')
+            )
+        }),
+        ('Параметры страницы', {
+            'classes': ('secondary-chars',),
+            'fields': (
+                ('h1', '_title'),
+                'keywords',
+                'description',
+                'content'
+            )
+        })
+    )
+
+    def correct_parent_id(self, obj):
+        """Needed for correct short_description attr"""
+        return obj.parent_id
+    correct_parent_id.short_description = 'Parent ID'
+
+    readonly_fields = ['id', 'correct_parent_id']
+
+    def custom_parent(self, obj):
+        if not obj.parent:
+            return
+
+        parent = obj.parent
+        url = reverse('custom_admin:pages_flatpage_change', args=(parent.id,))
+
+        return format_html(
+            '<a href="{url}">{parent}</a>',
+            parent=parent,
+            url=url
+        )
+
+    custom_parent.short_description = 'Parent'
+    custom_parent.admin_order_field = 'parent__h1'
+
+
+class ProductPageAdmin(PageAdmin):
+    inlines = [
+        ProductInline,
+    ]
+
+    list_filter = ['is_active', PriceRange]
+
+    list_display = ['product_id', 'h1', 'custom_parent', 'price', 'links', 'is_active']
+
+    search_fields = ['shopelectro_product__id', 'h1', 'parent__h1']
+
+    def product_id(self, obj):
+        return obj.model.id
+
+    product_id.short_description = 'Id'
+    product_id.admin_order_field = 'shopelectro_product__id'
+
+
+    def price(self, obj):
+        return obj.model.price
+
+    price.short_description = 'Price'
+    price.admin_order_field = 'shopelectro_product__price'
+
+    def custom_parent(self, obj):
+        if not obj.parent:
+            return
+
+        parent = obj.parent
+        url = reverse('custom_admin:shopelectro_categorypage_change', args=(parent.id,))
+
+        return format_html(
+            '<a href="{url}">{parent}</a>',
+            parent=parent,
+            url=url
+        )
+
+    custom_parent.short_description = 'Category'
+    custom_parent.admin_order_field = 'parent__h1'
+
+    def links(self, model):
+        context = {
+            'site_url': model.get_absolute_url(),
+        }
+
+        return render_to_string('admin/includes/items_list_row.html', context)
+
+    links.short_description = 'Link'
+
+
+class CategoryPageAdmin(PageAdmin):
+
+    inlines = [
+        CategoryInline,
+    ]
+
+    search_fields = ['shopelectro_category__id', 'h1', 'parent__h1']
+
+    list_display = ['category_model_id', 'h1', 'custom_parent', 'is_active']
+
+    # Custom fields
+    def category_model_id(self, obj):
+        return obj.model.id
+
+    category_model_id.short_description = 'Id'
+    category_model_id.admin_order_field = 'shopelectro_category__id'
+
+    def custom_parent(self, obj):
+        if not obj.parent_id:
+            return
+        try:
+            url = reverse('custom_admin:shopelectro_categorypage_change', args=(obj.parent_id,))
+        except:
+            url = reverse('custom_admin:pages_custompage_change', args=(obj.parent_id,))
+
+        return format_html(
+            '<a href="{url}">{parent_id}</a>',
+            parent_id=obj.parent,
+            url=url
+        )
+
+    custom_parent.short_description = 'Parent'
+    custom_parent.admin_order_field = 'parent__h1'
+
+
+custom_admin_site.register(CustomPage, CustomPageAdmin)
+custom_admin_site.register(ProductPage, ProductPageAdmin)
+custom_admin_site.register(CategoryPage, CategoryPageAdmin)
+custom_admin_site.register(FlatPage, FlatPageAdmin)

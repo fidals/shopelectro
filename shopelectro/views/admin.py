@@ -107,15 +107,17 @@ def admin_tree_items(request):
     Return JSON for jsTree's lazy load, with category's children or
     category's products.
     """
-    def __create_json_response(entities):
+    def create_json_response(entities):
         """Create data for jsTree and return Json response"""
-        def __setup_view_name(entity):
+        def setup_view_name(entity):
             """Get view's name for certain entity (ex.'custom_admin:pages_page_change')"""
-            return ('custom_admin:{db_table}_change'
-                    .format(db_table=entity._meta.db_table))
+            return ('custom_admin:shopelectro_{model_name}page_change'
+                    .format(model_name=entity._meta.model_name))
+        if not entities.first():
+            return JsonResponse({'text': 'У категории нет товаров.'})
 
-        view_name = __setup_view_name(entities[0].page)
-        has_children = isinstance(entities[0], Category)
+        view_name = setup_view_name(entities.first())
+        has_children = isinstance(entities.first(), Category)
 
         # jsTree has restriction on the name fields
         data_for_jstree = [{
@@ -137,10 +139,10 @@ def admin_tree_items(request):
         category = Category.objects.get(id=entity_id)
         children = category.children.all()
         products = category.products.all()
-        return __create_json_response(children if children.exists() else products)
+        return create_json_response(children if children.exists() else products)
 
-    root_categories = Category.objects.root_nodes().order_by('position')
-    return __create_json_response(root_categories)
+    root_categories = Category.objects.root_nodes().order_by('page__position')
+    return create_json_response(root_categories)
 
 
 def admin_remove_image(request):

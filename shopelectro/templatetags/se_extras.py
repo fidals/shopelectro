@@ -19,7 +19,7 @@ register = template.Library()
 
 @register.assignment_tag
 def roots():
-    return Category.objects.root_nodes().order_by('position')
+    return Category.objects.root_nodes().order_by('page__position')
 
 
 @register.assignment_tag
@@ -94,8 +94,8 @@ def upload_form(model):
 
 
 @register.simple_tag
-def full_url(path='index', *args):
-    return settings.BASE_URL + reverse(path, args=args)
+def full_url(url_name=settings.CUSTOM_PAGES_URL_NAME, *args):
+    return settings.BASE_URL + reverse(url_name, args=args)
 
 
 @register.filter
@@ -118,3 +118,8 @@ def get_img_alt(entity: ImageMixin):
     entity_name = next(
         filter(None, (getattr(entity, attr, None) for attr in name_attrs)))
     return product_alt.format(entity_name)
+
+
+@register.simple_tag
+def custom_url(*args):
+    return reverse(settings.CUSTOM_PAGES_URL_NAME, args=(*args, ) or ('', ))

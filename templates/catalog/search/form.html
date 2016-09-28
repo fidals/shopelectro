@@ -1,5 +1,5 @@
 <div class="search-result">
-  <form class="search-result-form" method="GET" action="{% url 'search' %}">
+  <form class="search-result-form" method="GET" action="{{ page.url }}">
     <input class="search-result-input" type="text" name="term"
          placeholder="Например: Acer" value="{{ query }}">
     <button class="form-btn btn fa fa-search" type="submit"></button>

@@ -1,6 +1,7 @@
 {% load se_extras %}
 {% load staticfiles %}
 {% roots as root_categories %}
+
 <div class="header">
   <div class="wrapper-container">
     <div class="top-header-plate text-muted text-center">Бесплатная доставка по России от 3000 рублей</div>
@@ -69,7 +70,7 @@
         <div class="middle-header-inner">
           <div class="row">
             <div class="col-xs-8">
-              <form class="navbar-form search-form js-search-form" action="{% url 'search' %}" method="get">
+              <form class="navbar-form search-form js-search-form" action="{% custom_url 'search' %}" method="get">
                 <div class="row">
                   <div class="col-xs-11">
                     <div class="form-group search-area">

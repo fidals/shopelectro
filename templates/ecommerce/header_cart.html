@@ -7,7 +7,7 @@
       <span class="cart-is-empty js-cart-is-empty" id="cart-is-empty">Корзина пуста</span>
     {% else %}
       <span class="cart-is-empty js-cart-is-empty hidden" id="cart-is-empty">Корзина пуста</span>
-      <a class="price-in-cart js-go-to-cart" href="{% url 'ecommerce:order_page' %}">
+      <a class="price-in-cart js-go-to-cart" href="{% custom_url 'order' %}">
         {{ cart.total_price|humanize_price }} руб.
       </a>
     {% endif %}
@@ -62,10 +62,10 @@
 
   <div class="text-center">
     {% if cart|length == 0 %}
-      <a href="{% url 'ecommerce:order_page' %}"
+      <a href="{% custom_url 'order' %}"
          class="btn btn-pink btn-to-order js-go-to-cart" disabled>Оформить заказ сейчас</a>
     {% else %}
-      <a href="{% url 'ecommerce:order_page' %}"
+      <a href="{% custom_url 'order' %}"
          class="btn btn-pink btn-to-order js-go-to-cart">Оформить заказ сейчас</a>
       <p>
         <span class="basket-reset js-reset-cart">Очистить корзину</span>

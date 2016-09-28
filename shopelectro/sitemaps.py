@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
-from django.conf import settings
 
 from pages.models import Page
 from shopelectro.models import Product, Category
@@ -21,14 +21,14 @@ class IndexSitemap(Sitemap):
     # Required. A method that returns a list of objects.
     # https://docs.djangoproject.com/ja/1.9/ref/contrib/sitemaps/#django.contrib.sitemaps.Sitemap.items
     def items(self):
-        return ['index']
+        return ['']
 
     # location()
     # Optional. If location isn’t provided, the framework will call the get_absolute_url()
     # method on each object as returned by items().
     # https://docs.djangoproject.com/ja/1.9/ref/contrib/sitemaps/#django.contrib.sitemaps.Sitemap.location
     def location(self, model):
-        return reverse(model)
+        return reverse(settings.CUSTOM_PAGES_URL_NAME, args=(model, ))
 
 
 class CategorySitemap(AbstractSitemap):
@@ -46,4 +46,4 @@ class ProductSitemap(AbstractSitemap):
 class PagesSitemap(AbstractSitemap):
 
     def items(self):
-        return Page.objects.filter(is_active=True, type='page')
+        return Page.objects.filter(is_active=True)

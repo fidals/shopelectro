@@ -2,6 +2,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
+from pages.models import ModelPage
 from catalog.models import AbstractProduct, AbstractCategory
 from pages.models import Page
 from ecommerce.models import Order as ecOrder
@@ -16,6 +17,7 @@ class Category(AbstractCategory):
     superclass.
     """
     product_relation = 'products'
+    TREE_PAGE_SLUG = 'catalog'
 
     @property
     def image(self):
@@ -93,3 +95,36 @@ class Order(ecOrder):
             name for option, name in settings.PAYMENT_OPTIONS
             if self.payment_type == option
         )
+
+
+def create_page_managers(*args: [models.Model]):
+    """Create managers for dividing ModelPage entities"""
+    def is_correct_arg(arg):
+        return isinstance(arg, type(models.Model))
+
+    assert all(map(is_correct_arg, args)), 'args should be ModelBase type'
+
+    def create_manager(model):
+        class ModelPageManager(models.Manager):
+            def get_queryset(self):
+                return super(ModelPageManager, self).get_queryset().filter(
+                    related_model_name=model._meta.db_table)
+        return ModelPageManager
+
+    return [create_manager(model) for model in args]
+
+CategoryPageManager, ProductPageManager = create_page_managers(Category, Product)
+
+
+class CategoryPage(ModelPage):
+    class Meta(ModelPage.Meta):
+        proxy = True
+
+    objects = CategoryPageManager()
+
+
+class ProductPage(ModelPage):
+    class Meta(ModelPage.Meta):
+        proxy = True
+
+    objects = ProductPageManager()

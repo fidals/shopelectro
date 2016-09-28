@@ -32,7 +32,6 @@ admin_urls = [
 ]
 
 catalog_urls = [
-    url(r'^$', catalog.CategoryTree.as_view(), name='category_tree'),
     url(r'^categories/(?P<slug>[\w-]+)/$',
         catalog.CategoryPage.as_view(), name='category'),
     url(r'^categories/(?P<slug>[\w-]+)/(?P<sorting>[0-9]*)/$',
@@ -65,7 +64,6 @@ service_urls = [
 
 search_urls = [
     url(r'^autocomplete/$', search.Autocomplete.as_view(), name='autocomplete'),
-    url(r'^$', search.Search.as_view(), name='search'),
 ]
 
 ecommerce_urls = [
@@ -73,15 +71,22 @@ ecommerce_urls = [
     url(r'^cart-change/$', ecommerce.ChangeCount.as_view(), name='cart_set_count'),
     url(r'^cart-flush/$', ecommerce.FlushCart.as_view(), name='cart_flush'),
     url(r'^cart-remove/$', ecommerce.RemoveFromCart.as_view(), name='cart_remove'),
-    url(r'^order/$', ecommerce.OrderPage.as_view(), name='order_page'),
     url(r'^order-call/$', ecommerce.order_call),
     url(r'^one-click-buy/$', ecommerce.one_click_buy),
     url(r'^yandex-order/$', ecommerce.YandexOrder.as_view()),
     url(r'', include('ecommerce.urls')),
 ]
 
+url_name = settings.CUSTOM_PAGES_URL_NAME
+custom_pages = [
+    url(r'^(?P<page>)$', catalog.IndexPage.as_view(), name=url_name),
+    url(r'^(?P<page>search)/$', search.Search.as_view(), name=url_name),
+    url(r'^(?P<page>catalog)/$', catalog.CategoryTree.as_view(), name=url_name),
+    url(r'^shop/(?P<page>order)/$', ecommerce.OrderPage.as_view(), name=url_name),
+]
+
 urlpatterns = [
-    url(r'^$', catalog.IndexPage.as_view(), name='index'),
+    url('', include(custom_pages)),
     url(r'^admin/', include(admin_urls)),
     url(r'^catalog/', include(catalog_urls)),
     url(r'^pages/', include('pages.urls')),
@@ -90,9 +95,7 @@ urlpatterns = [
     url(r'^shop/', include(ecommerce_urls)),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
-    url(r'^sitemap\.xml$', cached_view(sitemap), {
-        'sitemaps': sitemaps
-    }, name='sitemap'),
+    url(r'^sitemap\.xml$', cached_view(sitemap), {'sitemaps': sitemaps}, name='sitemap'),
 ]
 
 if settings.DEBUG:
