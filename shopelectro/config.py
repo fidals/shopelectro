@@ -168,7 +168,7 @@ FOOTER_LINKS = {
 
 SHOP = {
     'id': '69886',
-    'scid': '540098',
+    'scid': '64788',
     'success_url': settings.BASE_URL + '/shop/success-order/',
     'fail_url': settings.BASE_URL + '/',
     'cps_phone': '+78124163200',
