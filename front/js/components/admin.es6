@@ -55,7 +55,7 @@ const admin = (() => {
       minChars: config.minChars,
       source: (term, response) => {
         $.getJSON(config.autocompleteURL, {
-          q: term,
+          term,
           pageType: currentType,
         }, namesArray => {
           response(namesArray);

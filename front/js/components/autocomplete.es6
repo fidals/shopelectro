@@ -57,7 +57,7 @@ const autocomplete = (() => {
     minChars: config.minChars,
     source: (term, response) => {
       $.getJSON(config.url, {
-        q: term,
+        term
       }, namesArray => {
         response(namesArray);
       });
