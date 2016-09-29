@@ -32,6 +32,9 @@ DEBUG = True
 # setting from docker example: https://github.com/satyrius/paid/
 ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')]
 
+# https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Application definition
 
 INSTALLED_APPS = [
