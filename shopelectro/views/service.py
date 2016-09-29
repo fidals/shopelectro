@@ -27,18 +27,19 @@ def logging_yandex_kassa(func):
         response = None
 
         try:
+            logger.info('REQUEST_ROUTE: {}\n REQUEST_BODY: {}'.format(args[0].path, args[0].POST))
             response = func(*args, **kwargs)
             response_code = response.status_code
             response_content = str(response.content)
 
             if not response_code == 200 or 'code="0"' not in response_content:
-                logger.warning('STATUS_CODE: {}\n Response content: {}'.format(
+                logger.warning('STATUS_CODE: {}\n RESPONSE_CONTENT: {}'.format(
                     response_code, response_content))
 
-            logger.info('STATUS_CODE: {}\n Response content: {}'.format(
+            logger.info('STATUS_CODE: {}\n RESPONSE_CONTENT: {}'.format(
                     response_code, response_content))
         except:
-            logger.warning('Error \n {}'.format(sys.exc_info()))
+            logger.warning('ERROR: \n {}'.format(sys.exc_info()))
 
         return response
 
