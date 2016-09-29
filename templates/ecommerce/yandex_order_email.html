@@ -1,4 +1,5 @@
 {% extends 'ecommerce/order_email.html' %}
+{% load se_extras %}
 
 {% block se_info %}
   <table>
@@ -8,7 +9,7 @@
     </tr>
     <tr>
       <td>Оплатил</td>
-      <td>{{ sum }}</td>
+      <td>{{ paid|humanize_price }}</td>
     </tr>
     <tr>
       <td>Зашло на счет</td>
@@ -20,7 +21,7 @@
     </tr>
     <tr>
       <td>Способ оплаты</td>
-      <td>{{ payment_type_name }}</td>
+      <td>{{ order.payment_type_name }}</td>
     </tr>
   </table>
 {% endblock %}

@@ -19,7 +19,7 @@
         <div class="stuff-top-category">{{ product.get_root_category }}</div>
         <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="stuff-top-price-new">
           <meta itemprop="priceCurrency" content="RUB" />
-          <span itemprop="price">{{ product.price }}</span> руб
+          <span itemprop="price">{{ product.price|humanize_price }}</span> руб
         </div>
       </div>
     </div>

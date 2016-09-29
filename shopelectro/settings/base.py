@@ -124,6 +124,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+LANGUAGE_CODE = 'ru-ru'
+
+USE_THOUSAND_SEPARATOR = True
+THOUSAND_SEPARATOR = ' '
+NUMBER_GROUPING = 3
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
