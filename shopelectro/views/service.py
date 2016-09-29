@@ -47,7 +47,7 @@ def logging_yandex_kassa(func):
 
 YANDEX_REQUEST_PARAM = (
     'action', 'orderSumAmount', 'orderSumCurrencyPaycash', 'orderSumBankPaycash',
-    'orderSumBankPaycash', 'shopId', 'invoiceId', 'customerNumber'
+    'shopId', 'invoiceId', 'customerNumber'
 )
 
 def generate_md5_for_ya_kassa(post_body):
