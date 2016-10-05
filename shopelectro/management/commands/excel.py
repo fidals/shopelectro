@@ -5,6 +5,7 @@ import datetime
 import openpyxl
 from openpyxl.styles import Font
 from openpyxl.styles.colors import BLUE
+from openpyxl.styles.borders import Border, Side
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -18,14 +19,20 @@ class Command(BaseCommand):
     NAME = 'pricelist.xlsx'
     SHEET_TITLE = 'Прайс-лист Shopelectro'
     CATEGORY_FILL = openpyxl.styles.PatternFill(
-        start_color='99D699',
-        end_color='99D699',
+        start_color='F4FEFD',
+        end_color='F4FEFD',
         fill_type='solid'
     )
     BUY_FILL = openpyxl.styles.PatternFill(
-        start_color='FFCC66',
-        end_color='FFCC66',
+        start_color='FEFEF0',
+        end_color='FEFEF0',
         fill_type='solid'
+    )
+    THIN_BORDER = Border(
+        top=Side(style='thin'),
+        right=Side(style='thin'),
+        bottom=Side(style='thin'),
+        left=Side(style='thin')
     )
     CURRENT_ROW = '9'  # Start of catalog section in file.
 
@@ -103,6 +110,7 @@ class Command(BaseCommand):
                 sheet[product_start] = product.name
                 sheet[product_start].font = Font(color=BLUE)
                 sheet[product_start].hyperlink = settings.BASE_URL + product.get_absolute_url()
+                sheet[product_start].border = self.THIN_BORDER
                 prices = [
                     product.price,
                     product.wholesale_small,
@@ -111,9 +119,14 @@ class Command(BaseCommand):
                 ]
                 for price, total in zip('CDEF', 'HIJK'):
                     sheet[price + self.CURRENT_ROW] = prices.pop(0)
-                    sheet[total + self.CURRENT_ROW] = ('={0}{1}*G{1}'
-                                                       .format(price, self.CURRENT_ROW))
+                    sheet[total + self.CURRENT_ROW] = (
+                        '={0}{1}*G{1}'.format(price, self.CURRENT_ROW)
+                    )
+
+                    sheet[price + self.CURRENT_ROW].border = self.THIN_BORDER
+
                 sheet['G' + self.CURRENT_ROW].fill = self.BUY_FILL
+                sheet['G' + self.CURRENT_ROW].border = self.THIN_BORDER
 
                 hide_row(self.get_row(self.CURRENT_ROW))
                 self.increase_row()

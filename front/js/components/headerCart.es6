@@ -48,9 +48,11 @@
 
     const $cartWrapper = $(DOM.cartWrapper);
     $cartWrapper.addClass('active');
+
+    // timeout value now is under ux/ui experiments
     setTimeout(() => {
       $cartWrapper.removeClass('active');
-    }, 2000);
+    }, 5000);
   }
 
   /**

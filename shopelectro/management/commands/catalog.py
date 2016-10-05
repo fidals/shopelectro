@@ -1,10 +1,10 @@
 """Import catalog management command."""
 
+from ftplib import FTP
+from functools import wraps
 import os
 import time
 import typing
-from ftplib import FTP
-from functools import wraps
 from xml.etree import ElementTree
 
 from django.db import transaction
@@ -72,6 +72,10 @@ PRODUCT_TITLE = '{h1} - цены, характеристики, отзывы, о
 PRODUCT_DESCRIPTION = '{h1} - Элементы питания, зарядные устройства, ремонт. Купить ' \
                       '{category_name} в Санкт Петербурге.'
 
+# passive mode of ftp connection.
+# This option depends on ftp server settings
+FTP_PASSIVE_MODE = False
+
 
 def process(procedure_name: str) -> callable:
     """Print information before starting procedure and after it's been finished."""
@@ -135,7 +139,7 @@ class Command(BaseCommand):
     has a @process decorator.
     Such methods should return string with information about performed task.
     """
-    FTP_CONNECTION = {'host': 'office.fidals.ru',
+    FTP_CONNECTION = {'host': 'office.shopelectro.ru',
                       'user': 'it_guest',
                       'passwd': '4be13e1124'}
     FTP_XML_PATH = '/shopelectro/1c/'
@@ -159,8 +163,10 @@ class Command(BaseCommand):
         """Run 'import' command."""
         start_time = time.time()
         self.get_xml_files()
-        delete_and_create([(Category, self.parse_categories()),
-                           (Product, self.parse_products())])
+        delete_and_create([
+            (Category, self.parse_categories()),
+            (Product, self.parse_products()),
+        ])
         self.remove_xml()
         self.generate_prices()
         return 'Import completed! {0:.1f} seconds elapsed.'.format(time.time() - start_time)
@@ -203,8 +209,6 @@ class Command(BaseCommand):
                     yield Product(**product_properties)
         return products_generator(self.products_in_xml)
 
-    # TODO: This method could be moved into parse_products. Should we define
-    # more local funcs?
     @staticmethod
     def get_product_properties_or_none(node) -> typing.Optional[dict]:
         """Get product's info for given node in XML."""
@@ -251,6 +255,9 @@ class Command(BaseCommand):
     @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
+        def prepare_connection():
+            ftp.set_pasv(FTP_PASSIVE_MODE)  # Set passive mode off
+
         def download_file():
             """Download given file using FTP connection."""
             ftp.cwd(self.FTP_XML_PATH)
@@ -258,6 +265,7 @@ class Command(BaseCommand):
 
         for xml_file in self.XML_FILES:
             with FTP(**self.FTP_CONNECTION) as ftp, open(xml_file, 'wb') as save_xml:
+                prepare_connection()
                 download_file()
         return 'XML files were downloaded.'
 
@@ -271,9 +279,18 @@ class Command(BaseCommand):
     @process('Create price lists')
     def generate_prices() -> result_message:
         """Generate Excel, YM and Price.ru price files."""
-        commands = ['excel', 'price']
+        commands = [
+            'excel',
+            'price',
+            # to actualize generated files rendering
+            ('collectstatic', '--noinput')
+        ]
 
         for command in commands:
-            call_command(command)
+            with_params = isinstance(command, tuple)
+            if with_params:
+                call_command(*command)
+            else:
+                call_command(command)
 
         return 'Price lists were created.'
