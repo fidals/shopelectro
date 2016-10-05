@@ -97,8 +97,8 @@ def yandex_aviso(request):
     3. Get invoice id from request and return XML to Yandex.
     """
 
-    def first_aviso(order):
-        return not order.paid
+    def is_first_aviso(order_):
+        return order_ and not order_.paid
 
     def send_mail_to_shop(order):
         paid, profit = get_keys_from_post(request, 'orderSumAmount', 'shopSumAmount')
@@ -122,9 +122,14 @@ def yandex_aviso(request):
         return render(request, 'ecommerce/yandex_aviso.xml',
                       content_type='application/xhtml+xml')
 
-    order = get_object_or_404(Order, pk=request.POST['customerNumber'])
+    # maybe we can include django-annoying for such cases
+    # https://github.com/skorokithakis/django-annoying#get_object_or_none-function
+    try:
+        order = Order.objects.get(pk=request.POST['customerNumber'])
+    except Order.DoesNotExist:
+        order = None
 
-    if first_aviso(order):
+    if is_first_aviso(order):
         order.paid = True
         send_mail_to_customer(order)
         send_mail_to_shop(order)
