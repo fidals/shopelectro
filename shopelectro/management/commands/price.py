@@ -62,6 +62,7 @@ class Command(BaseCommand):
             return Category.objects.exclude(pk__in=others)
 
         def prepare_products(categories):
+            """Filter product list and patch it for rendering"""
             products_except_others = Product.objects.filter(
                 category__in=categories).filter(price__gt=0)
             result_products = (

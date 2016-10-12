@@ -23,6 +23,7 @@ class ImportTest(TestCase):
 
     TEST_CATEGORY_ID = 2
     TEST_PRODUCT_ID = 293
+    PRICE_FILES = ['priceru.xml', 'pricelist.xlsx', 'yandex.yml', 'gm.yml']
 
     @staticmethod
     def get_price_file_path(filename):
@@ -48,8 +49,7 @@ class ImportTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         super(ImportTest, cls).tearDownClass()
-        files_to_remove = ['priceru.xml', 'pricelist.xlsx', 'yandex.yml', 'gm.yml']
-        for file_name in files_to_remove:
+        for file_name in cls.PRICE_FILES:
             os.remove(ImportTest.get_price_file_path(file_name))
 
     def test_removed_files(self):

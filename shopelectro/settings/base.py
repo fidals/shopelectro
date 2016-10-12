@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'so_secret_key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# https://sorl-thumbnail.readthedocs.io/en/latest/logging.html#background
+# http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = False
 
 # setting from docker example: https://github.com/satyrius/paid/

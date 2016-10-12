@@ -3,9 +3,6 @@ from .base import *
 
 DEBUG = False
 
-# http://bit.ly/sorl-thumbnail-docs
-THUMBNAIL_DEBUG = False
-
 ALLOWED_HOSTS = ['*']
 
 # http->https change

@@ -342,17 +342,17 @@ class ProductPage(SeleniumTestCase):
     def test_images_switch(self):
         """If product has > 1 image, we could to switch them by clicking."""
 
-        def get_main_image():
+        def get_main_image_src():
             return self.browser.find_element_by_id('product-image-big')
 
-        main_image = get_main_image()
+        main_image = get_main_image_src()
         wait()
         not_switched_path = main_image.get_attribute('src')
 
         self.browser.find_element_by_xpath('//*[@id="product-images"]/div[2]/img').click()
         wait()
 
-        new_main_image = get_main_image()
+        new_main_image = get_main_image_src()
         switched_path = new_main_image.get_attribute('src')
         self.assertNotEquals(not_switched_path, switched_path)
 
@@ -645,6 +645,7 @@ class AdminPage(SeleniumTestCase):
         wait()
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[4]')
         # tried to unlocalize this, but this is difficult
+        # so, how it works: '1900,0' --rsplit--> '1900' --int--> 1900
         product_price = int(product.text.rsplit(',')[0])
 
         self.assertTrue(product_price >= 1000)
@@ -1106,7 +1107,6 @@ class YandexMetrika(SeleniumTestCase):
         self.assertTrue('BACK_CALL_OPEN' in self.reached_goals)
 
     # TODO - this test don't work. http://bit.ly/refarm_tail_save_js_state
-    # Because yaCounter.goal don't share state between browser screens.
     # def test_browse_product_open(self):
     #     """User browses to product's page"""
     #     self.browser.get(self.category_page)

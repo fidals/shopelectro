@@ -145,6 +145,8 @@ class AdminPage(SeleniumTestCase):
         self.browser.find_element_by_xpath(self.price_filter).click()
         wait()
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[4]')
+        # tried to unlocalize this, but this is difficult
+        # so, how it works: '1900,0' --rsplit--> '1900' --int--> 1900
         product_price = int(product.text.rsplit(',')[0])
 
         self.assertTrue(product_price >= 1000)

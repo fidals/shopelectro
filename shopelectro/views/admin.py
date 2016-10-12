@@ -153,13 +153,13 @@ def admin_remove_image(request):
 @require_POST
 def admin_upload_images(request, model_name, entity_id):
 
-    def create_image():
-        file_name = os.path.basename(file.name)
+    def create_image(file_):
+        file_name = os.path.basename(file_.name)
         short_file_name, _ = os.path.splitext(file_name)
         Image.objects.create(
             model=product.page,
             slug=slugify(short_file_name),
-            image=ImageFile(file),
+            image=ImageFile(file_),
         )
 
     referrer_url = request.META['HTTP_REFERER']
@@ -168,7 +168,7 @@ def admin_upload_images(request, model_name, entity_id):
         files = request.FILES.getlist('files')
         product = Product.objects.get(id=entity_id)
         for file in files:
-            create_image()
+            create_image(file_=file)
     return HttpResponseRedirect(referrer_url)
 
 

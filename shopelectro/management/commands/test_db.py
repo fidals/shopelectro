@@ -1,6 +1,6 @@
 """
 Create serialized data for tests.
-Now we store this data in json files.
+Store this data in json file.
 
 Usage:
 - create db named `test`
@@ -118,15 +118,14 @@ class Command(BaseCommand):
             create_image(file_path=self.SECOND_IMAGE, slug='gold')
 
         def create_product(parent: Category, price_factor):
-            k = price_factor
             product = Product.objects.create(
                 id=self.product_id,
-                name='Product #{} of {}'.format(k, parent),
-                price=k * 100,
+                name='Product #{} of {}'.format(price_factor, parent),
+                price=price_factor * 100,
                 category=parent,
-                wholesale_small=k * 75,
-                wholesale_medium=k * 50,
-                wholesale_large=k * 25
+                wholesale_small=price_factor * 75,
+                wholesale_medium=price_factor * 50,
+                wholesale_large=price_factor * 25
             )
             if product.id == self.PRODUCT_WITH_IMAGE:
                 create_images(product.page)
