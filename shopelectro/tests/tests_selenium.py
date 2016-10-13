@@ -343,17 +343,17 @@ class ProductPage(SeleniumTestCase):
         """If product has > 1 image, we could to switch them by clicking."""
 
         def get_main_image_src():
-            return self.browser.find_element_by_id('product-image-big')
+            image = self.browser.find_element_by_id('product-image-big')
+            wait()
+            return image.get_attribute('src')
 
-        main_image = get_main_image_src()
+        not_switched_path = get_main_image_src()
+
+        image_preview = self.browser.find_element_by_xpath('//*[@id="product-images"]/div[2]/img')
+        image_preview.click()
         wait()
-        not_switched_path = main_image.get_attribute('src')
 
-        self.browser.find_element_by_xpath('//*[@id="product-images"]/div[2]/img').click()
-        wait()
-
-        new_main_image = get_main_image_src()
-        switched_path = new_main_image.get_attribute('src')
+        switched_path = get_main_image_src()
         self.assertNotEquals(not_switched_path, switched_path)
 
     def test_one_click_buy_disabled_with_empty_phone(self):
