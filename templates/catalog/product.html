@@ -2,6 +2,8 @@
 {% load pages_extras %}
 {% load staticfiles %}
 {% load se_extras %}
+{% load thumbnail %}
+{% load images %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -24,24 +26,7 @@
 
       <div class="product-top">
         <div class="product-images" id="product-images">
-          <div class="product-image-big box-product">
-            <img itemprop="image" class="img-centered img-responsive" id="product-image-big"
-                 src="{{ product.image }}" data-index="0"
-                 alt="{% get_img_alt product %}">
-          </div>
-
-          {% for image in images %}
-            <div class="product-image-small box-product">
-              <img class="img-responsive js-image-switch" src="{{ MEDIA_URL }}{{ image }}"
-                   data-index="{{ forloop.counter0 }}" alt="{% get_img_alt product %}">
-            </div>
-          {% endfor %}
-
-          {% for hidden_image in images %}
-            <a class="fancybox hidden" href="{{ MEDIA_URL }}{{ hidden_image }}" rel="product-cart-gallery">
-              <img src="{{ MEDIA_URL }}{{ hidden_image }}" alt="{% get_img_alt product %}">
-            </a>
-          {% endfor %}
+          {% include 'catalog/product_images.html' with product=product page=page only %}
         </div>
 
         <div class="product-price-wrapper" id="product-price">

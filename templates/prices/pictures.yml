@@ -1,0 +1,3 @@
+{% for image in product.page.images.all %}
+  <picture>{{ base_url }}{{ image.image.url }}</picture>
+{% endfor %}

@@ -78,7 +78,7 @@ const admin = (() => {
   function removeImage() {
     const $target = $(event.target);
 
-    $.post(config.removeUrl, { url: $target.data('id') })
+    $.post(config.removeUrl, { id: $target.data('id') })
       .success(() => $target.closest(DOM.$imageItem).slideUp());
   }
 

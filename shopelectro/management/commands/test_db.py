@@ -1,33 +1,48 @@
 """
-Create testing DB.
+Create serialized data for tests.
+Store this data in json file.
 
-NOTE:
-    1. It will purge all the existing data from DB.
-    2. It creates random entities, so, tests likely will not pass with new data
-    3. It overwrites shopelectro/fixtures/dump.json
-    4. It can only run if your default database called `test`.
+Usage:
+- create db named `test`
+- fix your settings.DATABASES option
+- purge your test db manually, if it had data before this usage
+- launch this command
+- now you have json file, that'll be used by our TDD tests
 """
 
 from itertools import chain
+import os
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.images import ImageFile
 from django.core.management import call_command
+from django.core.management.base import BaseCommand
 
-from shopelectro.models import Product, Category, Order
+from images.models import Image
 from pages.models import Page
+from shopelectro.models import Product, Category, Order
+import shopelectro.tests
 
 
 class Command(BaseCommand):
 
-    def handle(self, *args, **options):
-        # We need to be sure that this command will run only on
-        # 'test' DB.
-        assert settings.DATABASES['default']['NAME'] == 'test'
+    FIRST_IMAGE = os.path.join(
+        os.path.dirname(os.path.abspath(shopelectro.tests.__file__)),
+        'assets/deer.jpg'
+    )
+    SECOND_IMAGE = os.path.join(
+        os.path.dirname(os.path.abspath(shopelectro.tests.__file__)),
+        'assets/gold.jpg'
+    )
+    PRODUCT_WITH_IMAGE = 1
 
+    def __init__(self):
+        super(BaseCommand, self).__init__()
         self._product_id = 0
 
-        self.purge_tables()
+    def handle(self, *args, **options):
+        self.prepare_db()
 
         roots = self.create_root(2)
         children = self.create_children(2, roots)
@@ -38,16 +53,30 @@ class Command(BaseCommand):
         self.create_order()
         self.save_dump()
 
+    def prepare_db(self):
+        assert settings.DATABASES['default']['NAME'] == 'test'
+        call_command('migrate')
+        self.purge_tables()
+
     @staticmethod
     def save_dump():
         """Save .json dump to fixtures."""
-        call_command('dumpdata',
-                     'shopelectro.Category',
-                     'shopelectro.Product',
-                     'pages.Page',
-                     'ecommerce.Order',
-                     'shopelectro.Order',
-                     output='shopelectro/fixtures/dump.json')
+        call_command(
+            'dumpdata',
+            'contenttypes.ContentType',
+            'shopelectro.Category',
+            'shopelectro.Product',
+            'images.Image',
+            'pages.Page',
+            'ecommerce.Order',
+            'shopelectro.Order',
+            # I don't understand why we should use this options.
+            # As well as ContentType model above.
+            # I just followed this: http://bit.ly/so-contenttype-dump-solving
+            '--natural-foreign',
+            '--natural-primary',
+            output='shopelectro/fixtures/dump.json'
+        )
 
     @staticmethod
     def create_root(count):
@@ -56,7 +85,7 @@ class Command(BaseCommand):
 
     @property
     def product_id(self):
-        self._product_id = self._product_id + 1
+        self._product_id += 1
         return self._product_id
 
     @staticmethod
@@ -74,25 +103,40 @@ class Command(BaseCommand):
             for parent in parents
         ])
 
-    def create_products(self, deep_children):
-        """Create products for every non-root category."""
-        def __create_product(categories, product_count):
-            for category in categories:
-                for i in range(1, product_count + 1):
-                    Product.objects.create(
-                        id=self.product_id,
-                        name='Product #{} of {}'.format(i, category),
-                        price=i * 100,
-                        category=category,
-                        wholesale_small=i * 75,
-                        wholesale_medium=i * 50,
-                        wholesale_large=i * 25,
-                    )
-        # Create 25 products for
-        # tests_selenium.CategoryPage.test_load_more_hidden_in_fully_loaded_categories
-        __create_product(deep_children[4:], 25)
-        # Create 50 products for tests_selenium.CategoryPage.test_load_more_products
-        __create_product(deep_children[:4], 50)
+    def create_products(self, categories):
+        """Fill given categories with products"""
+
+        def create_images(page: Page):
+            def create_image(file_path, slug):
+                Image.objects.create(
+                    model=page,
+                    slug=slug,
+                    image=ImageFile(open(file_path, mode='rb'))
+                )
+
+            create_image(file_path=self.FIRST_IMAGE, slug='deer')
+            create_image(file_path=self.SECOND_IMAGE, slug='gold')
+
+        def create_product(parent: Category, price_factor):
+            product = Product.objects.create(
+                id=self.product_id,
+                name='Product #{} of {}'.format(price_factor, parent),
+                price=price_factor * 100,
+                category=parent,
+                wholesale_small=price_factor * 75,
+                wholesale_medium=price_factor * 50,
+                wholesale_large=price_factor * 25
+            )
+            if product.id == self.PRODUCT_WITH_IMAGE:
+                create_images(product.page)
+
+        def fill_with_products(to_fill, count):
+            for category in to_fill:
+                for i in range(1, count + 1):
+                    create_product(category, price_factor=i)
+
+        fill_with_products(to_fill=categories[4:], count=25)
+        fill_with_products(to_fill=categories[:4], count=50)
 
     @staticmethod
     def create_page():
@@ -112,7 +156,10 @@ class Command(BaseCommand):
 
     @staticmethod
     def purge_tables():
-        Category.objects.all().delete()
-        Product.objects.all().delete()
-        Page.objects.all().delete()
+        # Models sorted by dependencies chain
         Order.objects.all().delete()
+        Product.objects.all().delete()
+        Category.objects.all().delete()
+        Page.objects.all().delete()
+        Image.objects.all().delete()
+        ContentType.objects.all().delete()

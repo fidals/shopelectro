@@ -29,6 +29,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'so_secret_key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# http://bit.ly/sorl-thumbnail-docs
+THUMBNAIL_DEBUG = False
+
 # setting from docker example: https://github.com/satyrius/paid/
 ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')]
 
@@ -51,6 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'mptt',
     'widget_tweaks',
+    'sorl.thumbnail',
+    'images',
     'pages',
     'catalog',
     'ecommerce',
@@ -131,7 +136,6 @@ NUMBER_GROUPING = 3
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
@@ -160,11 +164,8 @@ SITE_CREATED = datetime(2013, 1, 1)
 LOCALHOST = 'http://127.0.0.1:8000/'
 BASE_URL = 'https://www.shopelectro.ru'
 
-IMAGES = {
-    'large': 'main',
-    'small': 'small',
-    'thumbnail': 'logo.svg'
-}
+PLACEHOLDER_IMAGE = 'images/common/logo.svg'
+PLACEHOLDER_ALT = 'Логотип компании Shopelectro'
 
 # Autocomplete and search settings
 SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
@@ -264,3 +265,5 @@ PAGES = {
         'date_published': SITE_CREATED,
     },
 }
+
+TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]

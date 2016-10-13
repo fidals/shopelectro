@@ -28,16 +28,16 @@
           <price>{{ product.price }}</price>
           {% if utm != 'priceru' %}<purchase_price>{{ product.purchase_price }}</purchase_price>{% endif %}
           <currencyId>RUR</currencyId>
-          {% get_model_images product %}
+          {% include 'prices/pictures.yml' with product=product base_url=base_url only %}
           <categoryId>{{ product.category.id }}</categoryId>
           <store>false</store>
           <pickup>true</pickup>
           <delivery>true</delivery>
-          {% if product.price > shop.delivery_threshold %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
+          {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
           {% if product.trademark %}<vendor>{{ product.trademark }}</vendor>{% endif %}
           {% if product.page.content %}<description>{{ product.page.content }}</description>{% endif %}
-          <sales_notes>При заказе от {{ shop.delivery_threshold }} руб. доставка по СПб бесплатно</sales_notes>
+          <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>
         </offer>
       {% endfor %}
     </offers>

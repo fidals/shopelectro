@@ -1,0 +1,36 @@
+{% load images %}
+{% load thumbnail %}
+{% load se_extras %}
+
+<div class="product-image-big box-product">
+  {% if page.main_image %}
+    {% thumbnail page.main_image '296x440' as image %}
+      <img src="{{ image.url }}" data-index="0"
+        class="img-centered img-responsive" id="product-image-big"
+        alt="{% get_img_alt product.page %}" itemprop="image">
+    {% endthumbnail %}
+  {% else %}
+    {% placeholder_image_url as image_url %}
+      <img src="{{ image_url }}" data-index="0"
+          class="img-centered img-responsive" id="product-image-big"
+          alt="{% get_img_alt product.page %}" itemprop="image">
+  {% endif %}
+</div>
+
+{% for image_model in page.images.all %}
+  <div class="product-image-small box-product">
+    {% thumbnail image_model.image '296x440' as image %}
+      <img class="img-responsive js-image-switch" src="{{ image.url }}"
+           data-index="{{ forloop.counter0 }}" alt="{% get_img_alt product.page %}">
+    {% endthumbnail %}
+  </div>
+{% endfor %}
+
+{% for hidden_image in page.images.all %}
+  {% thumbnail hidden_image.image '600x600' as image %}
+    <a class="fancybox hidden" href="{{ image.url }}" rel="product-cart-gallery">
+        <img class="img-responsive js-image-switch" src="{{ image.url }}"
+             alt="{% get_img_alt product.page %}">
+    </a>
+  {% endthumbnail %}
+{% endfor %}

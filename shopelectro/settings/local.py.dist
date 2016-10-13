@@ -2,7 +2,12 @@
 
 from .base import *
 
+
 DEBUG = True
+
+# http://bit.ly/sorl-thumbnail-docs
+THUMBNAIL_DEBUG = True
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 DATABASES = {

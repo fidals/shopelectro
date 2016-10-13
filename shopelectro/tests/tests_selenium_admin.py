@@ -145,7 +145,9 @@ class AdminPage(SeleniumTestCase):
         self.browser.find_element_by_xpath(self.price_filter).click()
         wait()
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[4]')
-        product_price = float(product.text)
+        # tried to unlocalize this, but this is difficult
+        # so, how it works: '1900,0' --rsplit--> '1900' --int--> 1900
+        product_price = int(product.text.rsplit(',')[0])
 
         self.assertTrue(product_price >= 1000)
 
@@ -205,7 +207,7 @@ class AdminPage(SeleniumTestCase):
     def test_tree_redirect_to_entity_edit_page(self):
         """Test redirect to edit entity page by click at jstree's item"""
         self.open_js_tree_nodes()
-        h1 = 'Change page'
+        expected_h1 = ['Change page', 'Изменить page']
 
         # click at tree's item, redirect to entity edit page
         root_node = self.browser.find_element_by_id(self.root_category_id)
@@ -213,7 +215,7 @@ class AdminPage(SeleniumTestCase):
         wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
-        self.assertEqual(h1, test_h1)
+        self.assertIn(test_h1, expected_h1)
 
     def test_tree_redirect_to_table_editor_page(self):
         """Test redirect to table editor page by context click at tree's item"""

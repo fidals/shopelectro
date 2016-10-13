@@ -17,7 +17,13 @@ from shopelectro.models import Product, Category
 from shopelectro.management.commands import catalog
 
 
+# TODO - we should create (use) fixture db
+# http://bit.ly/refarm_tail_fixture_db4command
 class ImportTest(TestCase):
+
+    TEST_CATEGORY_ID = 2
+    TEST_PRODUCT_ID = 293
+    PRICE_FILES = ['priceru.xml', 'pricelist.xlsx', 'yandex.yml', 'gm.yml']
 
     @staticmethod
     def get_price_file_path(filename):
@@ -29,15 +35,21 @@ class ImportTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+
+        def get_test_yml_product():
+            for product in products:
+                if product.attrib['id'] == str(cls.TEST_PRODUCT_ID):
+                    return product
+
         call_command('catalog')
-        cls.test_product_id = 293
-        cls.test_category_id = 2  # Accumulators category
+        products = cls.get_price_xml_node().getroot().find('shop').find('offers')
+
+        cls.test_yml_product = get_test_yml_product()
 
     @classmethod
     def tearDownClass(cls):
         super(ImportTest, cls).tearDownClass()
-        files_to_remove = ['priceru.xml', 'pricelist.xlsx', 'yandex.yml']
-        for file_name in files_to_remove:
+        for file_name in cls.PRICE_FILES:
             os.remove(ImportTest.get_price_file_path(file_name))
 
     def test_removed_files(self):
@@ -61,7 +73,7 @@ class ImportTest(TestCase):
 
     def test_product_has_all_fields(self):
         """Some product has all the fields."""
-        product = Product.objects.get(id=self.test_product_id)
+        product = Product.objects.get(id=self.TEST_PRODUCT_ID)
         self.assertIsNotNone(product.id)
         self.assertIsNotNone(product.category)
         self.assertIsNotNone(product.price)
@@ -76,7 +88,7 @@ class ImportTest(TestCase):
 
     def test_category_has_all_fields(self):
         """Some product has all the fields."""
-        category = Category.objects.get(id=self.test_category_id)
+        category = Category.objects.get(id=self.TEST_CATEGORY_ID)
         self.assertIsNotNone(category.id)
         self.assertIsNotNone(category.children)
         self.assertIsNotNone(category.position)

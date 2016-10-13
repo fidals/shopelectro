@@ -13,6 +13,7 @@ src/
 node_modules/
 shopelectro/settings/local.py
 static/
+media/
 pricelist.xlsx
 priceru.xml
 yandex.yml

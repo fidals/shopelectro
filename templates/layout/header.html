@@ -9,7 +9,7 @@
       <div class="container">
 
         <div class="header-logo-wrapper">
-          <a href="/" title="На главную"><img class="header-logo" src="{% static 'images/logo.svg' %}"
+          <a href="/" title="На главную"><img class="header-logo" src="{% static 'images/common/logo.svg' %}"
                                               alt="ShopElectro"></a>
           <p class="header-logo-text">продажа элементов питания</p>
         </div>
@@ -123,10 +123,9 @@
                   {% if product %}
                     <div class="popular-product">
                       <a class="popular-product-link" href="{{ product.get_absolute_url }}">
-                      <div class="label">Популярный товар</div>
+                      <div class="label">Случайный товар</div>
                       <div class="popular-product-image-wrapper">
-                        <img class="img-centered img-responsive" src="{{ product.image }}"
-                             alt="{% get_img_alt product %}">
+                        {% include 'index/product_thumbnail.html' with product=product dimensions='150x150' only %}
                       </div>
                       <div class="text">
                         <div class="price">{{ product.price }} руб.</div>
