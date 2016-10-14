@@ -267,3 +267,14 @@ PAGES = {
 }
 
 TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
+
+SHOP = {
+    'id': '69886',
+    'scid': '64788',
+    'success_url': BASE_URL + '/shop/success-order/',
+    'fail_url': BASE_URL + '/',
+    'cps_phone': '+78124163200',
+    'cps_email': 'info@shopelectro.ru',
+    'local_delivery_cost': 300,
+    'local_delivery_cost_threshold': 3000,
+}

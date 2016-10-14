@@ -163,14 +163,3 @@ FOOTER_LINKS = {
         {'name': 'Гарантии и возврат', 'slug': 'return-goods-instr'},
     ],
 }
-
-SHOP = {
-    'id': '69886',
-    'scid': '64788',
-    'success_url': settings.BASE_URL + '/shop/success-order/',
-    'fail_url': settings.BASE_URL + '/',
-    'cps_phone': '+78124163200',
-    'cps_email': 'info@shopelectro.ru',
-    'local_delivery_cost': 300,
-    'local_delivery_cost_threshold': 5000
-}

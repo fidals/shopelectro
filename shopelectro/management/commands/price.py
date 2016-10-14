@@ -43,11 +43,11 @@ class Command(BaseCommand):
         def put_utm(product):
             """Put UTM attribute to product."""
             utm_marks = {
-                'utm_source': utm,
-                'utm_medium': 'cpc',
-                'utm_content': product.get_root_category().slug,
-                'utm_term': str(product.id)
-            }
+                    'utm_source': utm,
+                    'utm_medium': 'cpc',
+                    'utm_content': product.get_root_category().slug,
+                    'utm_term': str(product.id)
+                }
             url = reverse('product', args=(product.id,))
             utm_mark = '&'.join(
                 ['{}={}'.format(k, v) for k, v in utm_marks.items()]
@@ -76,7 +76,7 @@ class Command(BaseCommand):
             'base_url': settings.BASE_URL,
             'categories': filtered_categories,
             'products': prepare_products(filtered_categories),
-            'shop': config.SHOP,
+            'shop': settings.SHOP,
             'utm': utm,
         }
 

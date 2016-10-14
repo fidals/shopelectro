@@ -16,7 +16,6 @@ from ecommerce.models import Order
 from shopelectro.models import Product, Order
 from shopelectro.cart import WholesaleCart
 from shopelectro.forms import OrderForm
-from shopelectro.config import SHOP
 
 
 # ECOMMERCE VIEWS
@@ -97,10 +96,10 @@ class YandexOrder(OrderPage):
         # Took form fields from Yandex docs https://goo.gl/afKfsz
         response_data = {
             'yandex_kassa_link': settings.YANDEX_KASSA_LINK, # Required
-            'shopId': SHOP['id'], # Required
-            'scid': SHOP['scid'], # Required
-            'shopSuccessURL': SHOP['success_url'],
-            'shopFailURL': SHOP['fail_url'],
+            'shopId': settings.SHOP['id'],  # Required
+            'scid': settings.SHOP['scid'],  # Required
+            'shopSuccessURL': settings.SHOP['success_url'],
+            'shopFailURL': settings.SHOP['fail_url'],
             'customerNumber': order.id, # Required
             'sum': order.total_price, # Required
             'orderNumber': order.fake_order_number,
