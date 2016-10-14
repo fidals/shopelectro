@@ -44,14 +44,15 @@ class CategoryPage(catalog.CategoryPage):
             category.get_recursive_products_with_count(sorting=sorting_option)
         )
 
-        context['products'] = products
-        context['total_products'] = total_count
-        context['sorting_options'] = config.category_sorting()
-        context['sort'] = sorting
-        context['view_type'] = view_type
-        context['page'] = category.page
-
-        return context
+        return {
+            **context,
+            'products': products,
+            'total_products': total_count,
+            'sorting_options': config.category_sorting(),
+            'sort': sorting,
+            'view_type': view_type,
+            'page': category.page,
+        }
 
 
 @set_csrf_cookie
@@ -68,9 +69,10 @@ class ProductPage(catalog.ProductPage):
         context = super(ProductPage, self).get_context_data(**kwargs)
         product = self.get_object()
 
-        context['page'] = product.page
-
-        return context
+        return {
+            **context,
+            'page': product.page,
+        }
 
 
 # SHOPELECTRO-SPECIFIC VIEWS
@@ -83,12 +85,11 @@ class IndexPage(pages_views.IndexPage):
 
         top_products = Product.objects.filter(id__in=settings.TOP_PRODUCTS)
 
-        context.update({
+        return {
+            **context,
             'category_tile': config.MAIN_PAGE_TILE,
             'top_products': top_products,
-        })
-
-        return context
+        }
 
 
 def load_more(request, category_slug, offset=0, sorting=0):
@@ -108,5 +109,7 @@ def load_more(request, category_slug, offset=0, sorting=0):
         sorting=sorting_option, offset=int(offset))
     view = request.session.get('view_type', 'tile')
 
-    return render(request, 'catalog/category_products.html',
-                  {'products': products, 'view_type': view})
+    return render(
+        request, 'catalog/category_products.html',
+        {'products': products, 'view_type': view}
+    )
