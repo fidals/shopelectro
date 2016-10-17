@@ -38,8 +38,12 @@ ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')]
 # https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Application definition
+# Enable in frame loading for Ya.Metric
+# https://docs.djangoproject.com/es/1.10/ref/clickjacking/
+# https://yandex.ru/support/metrika/general/counter-webvisor.xml#download-page
+X_FRAME_OPTIONS = 'ALLOW-FROM ^https?:\/\/([^\/]+\.)?(shopelectro\.ru|webvisor\.com)\/'
 
+# Application definition
 INSTALLED_APPS = [
     # https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#django.contrib.admin.autodiscover
     'django.contrib.admin.apps.SimpleAdminConfig',
@@ -267,3 +271,14 @@ PAGES = {
 }
 
 TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
+
+SHOP = {
+    'id': '69886',
+    'scid': '64788',
+    'success_url': BASE_URL + '/shop/success-order/',
+    'fail_url': BASE_URL + '/',
+    'cps_phone': '+78124163200',
+    'cps_email': 'info@shopelectro.ru',
+    'local_delivery_cost': 300,
+    'local_delivery_cost_threshold': 3000,
+}

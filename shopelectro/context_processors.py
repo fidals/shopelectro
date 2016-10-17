@@ -1,4 +1,4 @@
-from .config import SHOP
+from django.conf import settings
 
 
 def shop(request):
@@ -8,4 +8,4 @@ def shop(request):
     Shop dict contains information about shop:
     emails, phones, API-integrations.
     """
-    return {'shop': SHOP}
+    return {'shop': settings.SHOP}

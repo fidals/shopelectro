@@ -36,7 +36,8 @@ class Product(AbstractProduct):
     """
 
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, default=None, related_name='products',
+        Category, on_delete=models.CASCADE, default=None,
+        related_name='products', db_index=True
     )
 
     purchase_price = models.FloatField(default=0)
@@ -62,10 +63,10 @@ class Product(AbstractProduct):
 
 class Property(models.Model):
     """Property of a Product."""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     is_numeric = models.SmallIntegerField(default=0)
     value = models.CharField(max_length=255)
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, db_index=True)
 
     def __str__(self):
         return self.name
@@ -79,12 +80,16 @@ def _default_payment():
 
 class Order(ecOrder):
     """Extended Order model."""
-    payment_type = models.CharField(max_length=255,
-                                      choices=settings.PAYMENT_OPTIONS,
-                                      default=_default_payment())
+    payment_type = models.CharField(
+        max_length=255,
+        choices=settings.PAYMENT_OPTIONS,
+        default=_default_payment()
+    )
 
     @property
     def payment_type_name(self):
         """Return name for an order's payment option."""
-        return next(name for option, name in settings.PAYMENT_OPTIONS
-                if self.payment_type == option)
+        return next(
+            name for option, name in settings.PAYMENT_OPTIONS
+            if self.payment_type == option
+        )

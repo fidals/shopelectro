@@ -119,8 +119,10 @@ def yandex_aviso(request):
             subject=settings.EMAIL_SUBJECTS['yandex_order'], order=order, to_shop=False)
 
     if not has_correct_md5(request.POST):
-        return render(request, 'ecommerce/yandex_aviso.xml',
-                      content_type='application/xhtml+xml')
+        return render(
+            request, 'ecommerce/yandex_aviso.xml',
+            content_type='application/xhtml+xml'
+        )
 
     # maybe we can include django-annoying for such cases
     # https://github.com/skorokithakis/django-annoying#get_object_or_none-function
