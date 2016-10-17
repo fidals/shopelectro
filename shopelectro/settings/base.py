@@ -41,7 +41,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Enable in frame loading for Ya.Metric
 # https://docs.djangoproject.com/es/1.10/ref/clickjacking/
 # https://yandex.ru/support/metrika/general/counter-webvisor.xml#download-page
-X_FRAME_OPTIONS = 'ALLOW-FROM ^https?:\/\/([^\/]+\.)?(shopelectro\.com|webvisor\.com)\/'
+X_FRAME_OPTIONS = 'ALLOW-FROM ^https?:\/\/([^\/]+\.)?(shopelectro\.ru|webvisor\.com)\/'
 
 # Application definition
 INSTALLED_APPS = [
