@@ -74,7 +74,7 @@ PRODUCT_DESCRIPTION = '{h1} - Элементы питания, зарядные 
 
 # passive mode of ftp connection.
 # This option depends on ftp server settings
-FTP_PASSIVE_MODE = False
+FTP_PASSIVE_MODE = True
 
 
 def process(procedure_name: str) -> callable:
