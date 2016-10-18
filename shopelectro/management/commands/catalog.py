@@ -97,19 +97,21 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
     def update_instances(Model, collection) -> list:
         """Save instances from generator into db."""
         saved_entities_id = []
-        created_entities = []
+        created_entities = 0
         for entity_id, entity_data in collection:
             entity, is_created = Model.objects.update_or_create(id=entity_id, defaults=entity_data)
             update_page_data(entity)
 
             saved_entities_id.append(entity.id)
             if is_created:
-                created_entities.append(1)
+                created_entities += 1
 
-        print('{} {} were updated...'.format(
-            len(saved_entities_id) - len(created_entities), Model._meta.verbose_name_plural))
-        print('{} {} were created...'.format(
-            len(created_entities), Model._meta.verbose_name_plural))
+        print('{1} {0} were updated...\n{2} {0} were created...'.format(
+            Model._meta.verbose_name_plural,
+            len(saved_entities_id) - created_entities,
+            created_entities
+        ))
+
         return saved_entities_id
 
     def delete_instances(Model, entities_id):

@@ -253,6 +253,7 @@ SHOP = {
     'local_delivery_cost_threshold': 3000,
 }
 
+# used in data-migrations and tests
 PAGES = [{
     'slug': '',
     '_title': 'Интернет магазин Элементов питания с доставкой по России',

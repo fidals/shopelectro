@@ -16,7 +16,7 @@ const admin = (() => {
     autocompleteURL: '/admin/autocomplete/',
     removeUrl: '/admin/remove-image/',
     minChars: 3,
-    pageType: document.location.pathname.split('/').slice(-2, -1)[0],
+    currentPageType: document.location.pathname.split('/').slice(-2, -1)[0],
     pagesType: {'categorypage': 'category', 'productpage': 'product'},
     showText: 'Показать фильтр полей',
     hideText: 'Скрыть фильтр полей',
@@ -68,7 +68,7 @@ const admin = (() => {
    * Return current entity page type.
    */
   function getCurrentPageType() {
-    return config.pagesType[config.pageType];
+    return config.pagesType[config.currentPageType];
   }
 
   /**

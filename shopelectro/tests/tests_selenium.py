@@ -364,7 +364,7 @@ class ProductPage(SeleniumTestCase):
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys('22222222222')
         self.one_click.click()
-        wait(5)
+        wait()
         self.assertEqual(self.browser.current_url, self.success_order)
 
     def test_add_to_cart(self):
