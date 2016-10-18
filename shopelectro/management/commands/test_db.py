@@ -34,7 +34,7 @@ class Command(BaseCommand):
     )
     SECOND_IMAGE = os.path.join(
         os.path.dirname(os.path.abspath(shopelectro.tests.__file__)),
-        'assets/gold.jpg'
+        'assets/gold_deer.jpg'
     )
     PRODUCT_WITH_IMAGE = 1
 
@@ -65,13 +65,7 @@ class Command(BaseCommand):
         """Save .json dump to fixtures."""
         call_command(
             'dumpdata',
-            'contenttypes.ContentType',
-            'shopelectro.Category',
-            'shopelectro.Product',
-            'images.Image',
-            'pages.Page',
-            'ecommerce.Order',
-            'shopelectro.Order',
+            '--all',
             # I don't understand why we should use this options.
             # As well as ContentType model above.
             # I just followed this: http://bit.ly/so-contenttype-dump-solving

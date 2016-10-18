@@ -17,6 +17,16 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='category',
+            name='name',
+            field=models.CharField(db_index=True, max_length=255, unique=True),
+        ),
+        migrations.AlterField(
+            model_name='product',
+            name='name',
+            field=models.CharField(db_index=True, max_length=255),
+        ),
+        migrations.AlterField(
+            model_name='category',
             name='page',
             field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='shopelectro_category', to='pages.Page'),
         ),
@@ -37,12 +47,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='in_stock',
-            field=models.BooleanField(default=True),
+            field=models.BooleanField(db_index=True, default=True),
+        ),
+        migrations.AlterField(
+            model_name='product',
+            name='price',
+            field=models.FloatField(blank=True, db_index=True, null=True),
         ),
         migrations.AlterField(
             model_name='product',
             name='is_popular',
-            field=models.BooleanField(default=False),
+            field=models.BooleanField(db_index=True, default=False),
         ),
         migrations.CreateModel(
             name='CategoryPage',
@@ -63,5 +78,10 @@ class Migration(migrations.Migration):
                 'proxy': True,
             },
             bases=('pages.modelpage',),
+        ),
+        migrations.AlterField(
+            model_name='property',
+            name='name',
+            field=models.CharField(db_index=True, max_length=255),
         ),
     ]

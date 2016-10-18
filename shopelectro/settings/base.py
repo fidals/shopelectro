@@ -47,8 +47,8 @@ X_FRAME_OPTIONS = 'ALLOW-FROM ^https?:\/\/([^\/]+\.)?(shopelectro\.ru|webvisor\.
 INSTALLED_APPS = [
     # https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#django.contrib.admin.autodiscover
     'django.contrib.admin.apps.SimpleAdminConfig',
-    'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.auth',
     'django.contrib.messages',
     'django.contrib.redirects',
     'django.contrib.sessions',

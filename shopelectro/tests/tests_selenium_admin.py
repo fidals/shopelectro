@@ -207,7 +207,7 @@ class AdminPage(SeleniumTestCase):
     def test_tree_redirect_to_entity_edit_page(self):
         """Test redirect to edit entity page by click at jstree's item"""
         self.open_js_tree_nodes()
-        expected_h1 = ['Change page', 'Изменить page']
+        expected_h1 = 'Изменить category page'
 
         # click at tree's item, redirect to entity edit page
         root_node = self.browser.find_element_by_id(self.root_category_id)
@@ -215,7 +215,7 @@ class AdminPage(SeleniumTestCase):
         wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
-        self.assertIn(test_h1, expected_h1)
+        self.assertEqual(test_h1, expected_h1)
 
     def test_tree_redirect_to_table_editor_page(self):
         """Test redirect to table editor page by context click at tree's item"""

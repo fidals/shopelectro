@@ -165,7 +165,7 @@ class CategoryInline(admin.StackedInline):
     fieldsets = ((None, {
         'classes': ('primary-chars', ),
         'fields': (
-            # 'slug',TODO
+            # 'slug',TODO in dev-775
             ('name', 'id'),
             ('parent', 'correct_parent_id'),
         )
@@ -199,7 +199,7 @@ class PageAdmin(admin.ModelAdmin):
             'fields': (
                 ('id', 'is_active'),
                 'date_published',
-               # 'slug', TODO
+               # 'slug', TODO in dev-775
                 '_menu_title',
                 'seo_text',
                 'position',
@@ -292,14 +292,13 @@ class CustomPageAdmin(PageAdmin):
 
 
 class FlatPageAdmin(PageAdmin):
-    # Fieldsets
     fieldsets = (
         ('Дополнительные характеристики', {
             'classes': ('seo-chars',),
             'fields': (
                 ('id', 'is_active'),
                 'date_published',
-               # 'slug', TODO
+               # 'slug', TODO in dev-775
                 '_menu_title',
                 'seo_text',
                 'position',
