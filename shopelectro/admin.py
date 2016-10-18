@@ -389,6 +389,8 @@ class ProductPageAdmin(PageAdmin):
 
     links.short_description = 'Link'
 
+    def has_add_permission(self, request):
+        return False
 
 class CategoryPageAdmin(PageAdmin):
 
@@ -424,6 +426,8 @@ class CategoryPageAdmin(PageAdmin):
     custom_parent.short_description = 'Parent'
     custom_parent.admin_order_field = 'parent__h1'
 
+    def has_add_permission(self, request):
+        return False
 
 custom_admin_site.register(CustomPage, CustomPageAdmin)
 custom_admin_site.register(ProductPage, ProductPageAdmin)
