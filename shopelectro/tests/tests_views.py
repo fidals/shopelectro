@@ -332,3 +332,14 @@ class YandexKassa(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'code="1"')
+
+
+class ProductsWithoutContent(TestCase):
+
+    def test_products_without_images(self):
+        response = self.client.get(reverse('products_without_images'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_products_without_text(self):
+        response = self.client.get(reverse('products_without_text'))
+        self.assertEqual(response.status_code, 200)
