@@ -113,3 +113,11 @@ def load_more(request, category_slug, offset=0, sorting=0):
         request, 'catalog/category_products.html',
         {'products': products, 'view_type': view}
     )
+
+
+class ProductsWithoutImages(catalog.ProductsWithoutImages):
+    model = Product
+
+
+class ProductsWithoutText(catalog.ProductsWithoutText):
+    model = Product
