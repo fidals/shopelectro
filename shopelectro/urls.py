@@ -42,6 +42,10 @@ catalog_urls = [
         catalog.load_more, name='load_more'),
     url(r'^products/(?P<product_id>[0-9]+)/$',
         catalog.ProductPage.as_view(), name='product'),
+    url(r'^no_images/$', catalog.ProductsWithoutImages.as_view(),
+        name='products_without_images'),
+    url(r'^no_text/$', catalog.ProductsWithoutText.as_view(),
+        name='products_without_text'),
 ]
 
 # Orders sitemaps instances
