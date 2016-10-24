@@ -96,35 +96,35 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
     """Perform db transaction of updating entity or creating new ones."""
     def update_instances(Model, collection) -> list:
         """Save instances from generator into db."""
-        saved_entities_id = []
+        saved_entity_ids = []
         created_entities = 0
         for entity_id, entity_data in collection:
             entity, is_created = Model.objects.update_or_create(id=entity_id, defaults=entity_data)
             update_page_data(entity)
 
-            saved_entities_id.append(entity.id)
+            saved_entity_ids.append(entity.id)
             if is_created:
                 created_entities += 1
 
         print('{1} {0} were updated...\n{2} {0} were created...'.format(
             Model._meta.verbose_name_plural,
-            len(saved_entities_id) - created_entities,
+            len(saved_entity_ids) - created_entities,
             created_entities
         ))
 
-        return saved_entities_id
+        return saved_entity_ids
 
-    def delete_instances(Model, entities_id):
-        instances_for_delete = Model.objects.exclude(id__in=entities_id)
+    def delete_instances(Model, entity_ids):
+        instances_for_delete = Model.objects.exclude(id__in=entity_ids)
         count = instances_for_delete.count()
         instances_for_delete.delete()
-        print('{} {} were delete'.format(
+        print('{} {} were deleted'.format(
             count, Model._meta.verbose_name_plural))
 
     with transaction.atomic():
         for model_class, generator in model_generator_mapping:
-            updated_id = update_instances(model_class, generator)
-            delete_instances(model_class, updated_id)
+            updated_ids = update_instances(model_class, generator)
+            delete_instances(model_class, updated_ids)
 
     return 'Categories and Products were saved to DB.'
 
@@ -210,7 +210,7 @@ class Command(BaseCommand):
                     'name': category.text.strip(),
                     'parent_id': parent_id_or_none(category)
                 }
-                yield [category_id(category), category_data]
+                yield category_id(category), category_data
 
         return categories_generator(self.categories_in_xml)
 
@@ -226,10 +226,8 @@ class Command(BaseCommand):
                     continue
                 product_properties = self.get_product_properties_or_none(product)
                 if product_properties:
-                    yield [
-                        product_properties.pop('id'),
-                        product_properties
-                    ]
+                    yield product_properties.pop('id'), product_properties
+
         return products_generator(self.products_in_xml)
 
     @staticmethod

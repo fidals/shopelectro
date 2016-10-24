@@ -26,7 +26,7 @@
         Благодарим
       {% endif %}
       за использование корзины в интернет-магазине
-      <a href="{% full_url 'custom_pages' '' %}" target="_blank">www.shopelectro.ru</a>
+      <a href="{% full_url 'custom_page' '' %}" target="_blank">www.shopelectro.ru</a>
       <br>
       Ваш заказ {{ order.paid|yesno:'оплачен,,' }} на сумму {{ order.total_price|humanize_price }} руб.
     </p>

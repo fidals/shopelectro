@@ -3,7 +3,6 @@ Tests for catalog command, which call other commands like price and excel.
 
 Note: tests running pretty long.
 """
-
 import os
 import types
 
@@ -178,7 +177,7 @@ class ImportTest(TestCase):
         self.assertEqual(test_title, product_page.title)
         self.assertEqual(test_description, product_page.description)
 
-    def test_exist_products_should_be_update(self):
+    def test_exist_products_should_be_updated(self):
         product = Product.objects.get(id=self.test_product_id)
 
         product_fields = [
@@ -187,7 +186,7 @@ class ImportTest(TestCase):
             self.assertNotEqual(
                 getattr(product, field), getattr(self.product_for_update, field))
 
-    def test_exist_categories_should_be_update(self):
+    def test_exist_categories_should_be_updated(self):
         category = Category.objects.get(id=self.test_category_id)
 
         category_fields = ['name',]
@@ -195,12 +194,12 @@ class ImportTest(TestCase):
             self.assertNotEqual(
                 getattr(category, field), getattr(self.category_for_update, field))
 
-    def test_not_exist_products_should_be_delete(self):
+    def test_not_exist_products_should_be_deleted(self):
         product = Product.objects.filter(id=self.id_for_delete)
 
         self.assertFalse(product)
 
-    def test_not_exist_category_should_be_delete(self):
+    def test_not_exist_category_should_be_deleted(self):
         category = Category.objects.filter(id=self.id_for_delete)
 
         self.assertFalse(category)

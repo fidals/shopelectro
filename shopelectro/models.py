@@ -2,13 +2,12 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from pages.models import ModelPage
+from pages.models import ModelPage, SyncPageMixin
 from catalog.models import AbstractProduct, AbstractCategory
-from pages.models import Page
 from ecommerce.models import Order as ecOrder
 
 
-class Category(AbstractCategory):
+class Category(AbstractCategory, SyncPageMixin):
     """
     SE-specific Category model.
 
@@ -17,7 +16,7 @@ class Category(AbstractCategory):
     superclass.
     """
     product_relation = 'products'
-    TREE_PAGE_SLUG = 'catalog'
+    DEFAULT_PARENT_FIELD = {'slug': 'catalog'}
 
     @property
     def image(self):
@@ -26,10 +25,10 @@ class Category(AbstractCategory):
 
     def get_absolute_url(self):
         """Return url for model."""
-        return reverse('category', args=(self.slug,))
+        return reverse('category', args=(self.page.slug,))
 
 
-class Product(AbstractProduct):
+class Product(AbstractProduct, SyncPageMixin):
     """
     SE-specific Product model.
 
@@ -97,7 +96,7 @@ class Order(ecOrder):
         )
 
 
-def create_page_managers(*args: [models.Model]):
+def create_model_page_managers(*args: [models.Model]):
     """Create managers for dividing ModelPage entities"""
     def is_correct_arg(arg):
         return isinstance(arg, type(models.Model))
@@ -113,10 +112,11 @@ def create_page_managers(*args: [models.Model]):
 
     return [create_manager(model) for model in args]
 
-CategoryPageManager, ProductPageManager = create_page_managers(Category, Product)
+CategoryPageManager, ProductPageManager = create_model_page_managers(Category, Product)
 
 
 class CategoryPage(ModelPage):
+    """Create proxy model for Admin"""
     class Meta(ModelPage.Meta):
         proxy = True
 
@@ -124,6 +124,7 @@ class CategoryPage(ModelPage):
 
 
 class ProductPage(ModelPage):
+    """Create proxy model for Admin"""
     class Meta(ModelPage.Meta):
         proxy = True
 

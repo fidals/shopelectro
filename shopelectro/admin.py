@@ -98,7 +98,7 @@ class PriceRange(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         """
-        Returns a list of tuples. The first element in each
+        Return a list of tuples. The first element in each
         tuple is the coded value for the option that will
         appear in the URL query. The second element is the
         human-readable name for the option that will appear
@@ -109,9 +109,8 @@ class PriceRange(admin.SimpleListFilter):
             price_segment(
                 '{}'.format(i - 1),
                 _('{} 000 - {} 000 руб.'.format(i - 1, i))
-            )
-            for i in range(2, 11)
-            ]
+            ) for i in range(2, 11)
+        ]
 
         price_segment_list.insert(0, price_segment('0', _('0 руб.')))
         price_segment_list.append(price_segment('10', _('10 000+ руб.')))
@@ -120,7 +119,7 @@ class PriceRange(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         """
-        Returns the filtered queryset based on the value provided in the query string.
+        Return the filtered queryset based on the value provided in the query string.
         """
         if not self.value():
             return
@@ -181,7 +180,7 @@ class CategoryInline(admin.StackedInline):
 
 # Model admin classes
 class PageAdmin(admin.ModelAdmin):
-    save_on_top = True
+    save_on_top = True #  https://goo.gl/al9CEc
 
     list_filter = ['is_active']
     list_display = ['id', 'h1', 'custom_parent', 'is_active']
@@ -199,7 +198,7 @@ class PageAdmin(admin.ModelAdmin):
             'fields': (
                 ('id', 'is_active'),
                 'date_published',
-               # 'slug', TODO in dev-775
+                # 'slug', TODO in dev-775
                 '_menu_title',
                 'seo_text',
                 'position',
@@ -223,7 +222,7 @@ class PageAdmin(admin.ModelAdmin):
         self.message_user(request,
                           '{} marked as active.'.format(message_prefix))
 
-    make_items_active.short_description = 'Активировать страницы'
+    make_items_active.short_description = 'Make active'
 
     def make_items_non_active(self, request, queryset):
         updated_rows = queryset.update(is_active=0)
@@ -232,7 +231,7 @@ class PageAdmin(admin.ModelAdmin):
         self.message_user(request,
                           '{} marked as non-active.'.format(message_prefix))
 
-    make_items_non_active.short_description = 'Деактивировать страницы'
+    make_items_non_active.short_description = 'Make inactive'
 
 
 class CustomPageAdmin(PageAdmin):
@@ -284,10 +283,19 @@ class CustomPageAdmin(PageAdmin):
     custom_parent.admin_order_field = 'parent__h1'
 
     def has_add_permission(self, request):
+        """
+        Site always should contain defined set of custom pages.
+        For example SE should contain only one `/order/` page.
+        This pages are created with migrate command.
+        """
         return False
 
     def has_delete_permission(self, request, obj=None):
-        """If someone deletes custom pages, then we will have problems."""
+        """
+        Site always should contain defined set of custom pages.
+        For example SE should contain only one `/order/` page.
+        This pages are created with migrate command.
+        """
         return False
 
 
@@ -298,7 +306,7 @@ class FlatPageAdmin(PageAdmin):
             'fields': (
                 ('id', 'is_active'),
                 'date_published',
-               # 'slug', TODO in dev-775
+                # 'slug', TODO in dev-775
                 '_menu_title',
                 'seo_text',
                 'position',
@@ -357,7 +365,6 @@ class ProductPageAdmin(PageAdmin):
     product_id.short_description = 'Id'
     product_id.admin_order_field = 'shopelectro_product__id'
 
-
     def price(self, obj):
         return obj.model.price
 
@@ -382,7 +389,7 @@ class ProductPageAdmin(PageAdmin):
 
     def links(self, model):
         context = {
-            'site_url': model.get_absolute_url(),
+            'site_url': model.url,
         }
 
         return render_to_string('admin/includes/items_list_row.html', context)

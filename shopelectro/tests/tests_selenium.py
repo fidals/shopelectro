@@ -17,7 +17,8 @@ from django.test import LiveServerTestCase
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 
-from pages.models import FlatPage, CustomPage
+from pages.models import FlatPage, CustomPage, Page
+
 from shopelectro.models import Category, Product
 
 
@@ -132,10 +133,10 @@ class CategoryPage(SeleniumTestCase):
             prod_count=Count('products')).exclude(prod_count=0).filter(
             prod_count__lt=settings.PRODUCTS_TO_LOAD).first()
 
-        self.root_category = self.testing_url(root_category.slug)
-        self.children_category= self.testing_url(children_category.slug)
+        self.root_category = self.testing_url(root_category.page.slug)
+        self.children_category= self.testing_url(children_category.page.slug)
         self.deep_children_category = self.testing_url(
-            category_with_product_less_then_LOAD_LIMIT.slug)
+            category_with_product_less_then_LOAD_LIMIT.page.slug)
 
     @property
     def load_more_button(self):
@@ -294,9 +295,8 @@ class ProductPage(SeleniumTestCase):
         """Set up testing url and dispatch selenium webdriver."""
         product = Product.objects.get(id=self.PRODUCT_ID)
         server = self.live_server_url
-        self.test_product_page = server + reverse(
-            'product', args=(product.id,))
-        self.success_order = server + reverse('ecommerce:order_success')
+        self.test_product_page = server + reverse('product', args=(product.id,))
+        self.success_order = server + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('success-order',))
         self.product_name = product.name
         self.browser.get(self.test_product_page)
         self.one_click = self.browser.find_element_by_id('btn-one-click-order')
@@ -416,7 +416,7 @@ class OrderPage(SeleniumTestCase):
         self.remove_product = self.get_cell(pos=4, col='remove') + '/img'
         self.product_count = self.get_cell(pos=4, col='count') + '/div[2]/input'
         self.add_product = self.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
-        self.category = reverse('category', args=(Category.objects.first().slug,))
+        self.category = reverse('category', args=(Category.objects.first().page.slug,))
         self.buy_products()
         wait()
         self.browser.get(self.live_server_url + self.order_page.url)
@@ -505,7 +505,7 @@ class OrderPage(SeleniumTestCase):
         self.fill_and_submit_form()
         self.assertEqual(
             self.browser.current_url,
-            self.live_server_url + reverse('ecommerce:order_success')
+            self.live_server_url + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('success-order', ))
         )
 
     def fill_and_submit_form(self, yandex=False):
@@ -756,7 +756,7 @@ class YandexMetrika(SeleniumTestCase):
         product_id = Product.objects.first().id
         self.product_page = server + reverse('product', args=(product_id,))
         self.category_page = server + reverse(
-            'category', args=(Category.objects.first().slug,))
+            'category', args=(Category.objects.first().page.slug,))
         self.browser.get(self.live_server_url)
 
     @property

@@ -129,7 +129,7 @@
                         {% include 'index/product_thumbnail.html' with product=product dimensions='150x150' only %}
                       </div>
                       <div class="text">
-                        <div class="price">{{ product.price }} руб.</div>
+                        <div class="price">{{ product.price|humanize_price }} руб.</div>
                         <div class="desc"><span>{{ product.name }}</span></div>
                       </div>
                       </a>

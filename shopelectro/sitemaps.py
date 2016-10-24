@@ -1,8 +1,8 @@
-from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
 
 from pages.models import Page
+
 from shopelectro.models import Product, Category
 
 
@@ -28,7 +28,7 @@ class IndexSitemap(Sitemap):
     # method on each object as returned by items().
     # https://docs.djangoproject.com/ja/1.9/ref/contrib/sitemaps/#django.contrib.sitemaps.Sitemap.location
     def location(self, model):
-        return reverse(settings.CUSTOM_PAGES_URL_NAME, args=(model, ))
+        return reverse(Page.CUSTOM_PAGES_URL_NAME, args=(model, ))
 
 
 class CategorySitemap(AbstractSitemap):

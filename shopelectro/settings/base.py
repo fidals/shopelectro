@@ -232,9 +232,6 @@ MODEL_TYPES = {
     }
 }
 
-# Used for reversing custom pages
-CUSTOM_PAGES_URL_NAME = 'custom_pages'
-
 # This need for using {% debug %} variable in templates.
 INTERNAL_IPS = (
     '127.0.0.1',
@@ -271,4 +268,8 @@ PAGES = [{
     '_title': 'Каталог товаров',
     'h1': 'Каталог товаров',
     '_menu_title': 'Каталог',
+}, {
+    'slug': 'success-order',
+    '_title': 'Заказ принят',
+    'h1': 'Заказ принят',
 }]

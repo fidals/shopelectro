@@ -9,14 +9,15 @@ All Selenium-tests should live in tests_selenium.
 from xml.etree import ElementTree as ET
 from functools import partial
 
-from django.contrib.redirects.models import Redirect
 from django.core.management import call_command
-from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.contrib.redirects.models import Redirect
+from django.contrib.auth.models import User
+from django.conf import settings
 from django.test import TestCase
 
 from pages.models import FlatPage
+
 from shopelectro.models import CategoryPage, ProductPage
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
@@ -42,7 +43,7 @@ class SitemapPage(TestCase):
         Redirect.objects.all().delete()
 
     def setUp(self):
-        """Sets up testing url."""
+        """Set up testing url."""
 
         content = self.client.get('/sitemap.xml').content.decode('utf-8')
         self.root = ET.fromstring(content)

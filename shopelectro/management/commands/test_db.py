@@ -14,16 +14,15 @@ from itertools import chain
 import os
 
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.core.files.images import ImageFile
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 import shopelectro.tests
-from images.models import Image
-from pages.models import Page
 from shopelectro.models import Product, Category, Order
-from pages.models import FlatPage, CustomPage
+
+from images.models import Image
+from pages.models import Page, FlatPage, CustomPage
 
 
 class Command(BaseCommand):
@@ -94,10 +93,10 @@ class Command(BaseCommand):
         def get_name(number, parent=None):
             return name.format(number, parent)
 
-        return chain(*[
+        return chain.from_iterable(
             [create_categories(get_name(i, parent), parent) for i in range(count)]
             for parent in parents
-        ])
+        )
 
     def create_products(self, categories):
         """Fill given categories with products"""

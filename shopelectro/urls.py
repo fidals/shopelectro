@@ -13,6 +13,8 @@ from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
 
 from pages.views import robots
+from pages.models import Page
+
 from shopelectro import sitemaps, config
 from shopelectro.admin import custom_admin_site
 from shopelectro.views import admin, catalog, ecommerce, search, helpers, service
@@ -77,12 +79,13 @@ ecommerce_urls = [
     url(r'', include('ecommerce.urls')),
 ]
 
-url_name = settings.CUSTOM_PAGES_URL_NAME
+url_name = Page.CUSTOM_PAGES_URL_NAME
 custom_pages = [
     url(r'^(?P<page>)$', catalog.IndexPage.as_view(), name=url_name),
     url(r'^(?P<page>search)/$', search.Search.as_view(), name=url_name),
     url(r'^(?P<page>catalog)/$', catalog.CategoryTree.as_view(), name=url_name),
     url(r'^shop/(?P<page>order)/$', ecommerce.OrderPage.as_view(), name=url_name),
+    url(r'^shop/(?P<page>success-order)/$', ecommerce.SuccessOrder.as_view(), name=url_name),
 ]
 
 urlpatterns = [
