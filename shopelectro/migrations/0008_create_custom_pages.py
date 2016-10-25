@@ -10,8 +10,6 @@ from pages.models import Page
 
 def create_custom_pages(apps, schema_editor):
     db_alias = schema_editor.connection.alias
-    apps.get_model('pages', 'Page').objects.using(db_alias)
-
     PageManager = apps.get_model('pages', 'Page').objects.using(db_alias)
 
     for fields in settings.PAGES:

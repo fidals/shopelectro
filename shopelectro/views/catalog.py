@@ -19,13 +19,7 @@ from shopelectro.views.helpers import set_csrf_cookie
 # CATALOG VIEWS
 class CategoryTree(catalog.CategoryTree):
     """Override model attribute to SE-specific Category."""
-    def get_context_data(self, **kwargs):
-        """Add to the context correct entities."""
-        context = super(CategoryTree, self).get_context_data(**kwargs)
-        return {
-            **context,
-            'nodes': Category.objects.all()
-        }
+    category_model = Category
 
 
 @set_csrf_cookie

@@ -180,7 +180,6 @@ SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
 
 # Used to retrieve instances in ecommerce.Cart
-PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
 
 # Used to define choices attr in definition of Order.payment_type field

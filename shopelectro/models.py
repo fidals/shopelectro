@@ -2,7 +2,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from pages.models import ModelPage, SyncPageMixin
+from pages.models import ModelPage, SyncPageMixin, CustomPage
 from catalog.models import AbstractProduct, AbstractCategory
 from ecommerce.models import Order as ecOrder
 
@@ -16,7 +16,11 @@ class Category(AbstractCategory, SyncPageMixin):
     superclass.
     """
     product_relation = 'products'
-    DEFAULT_PARENT_FIELD = {'slug': 'catalog'}
+
+    @classmethod
+    def get_default_parent(cls):
+        """You can override this method, if need a default parent"""
+        return CustomPage.objects.get(slug='catalog')
 
     @property
     def image(self):
