@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 
 from images.models import ImageMixin
-from pages.models import Page
 
 from shopelectro import config
 from shopelectro.models import Category, Product
@@ -120,8 +119,3 @@ def get_img_alt(entity: ImageMixin):
     entity_name = next(
         filter(None, (getattr(entity, attr, None) for attr in name_attrs)))
     return product_alt.format(entity_name)
-
-
-@register.simple_tag
-def custom_url(*args):
-    return reverse(Page.CUSTOM_PAGES_URL_NAME, args=(*args, ) or ('', ))

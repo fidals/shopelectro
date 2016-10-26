@@ -8,19 +8,9 @@ from ecommerce.models import Order as ecOrder
 
 
 class Category(AbstractCategory, SyncPageMixin):
-    """
-    SE-specific Category model.
-
-    Define product_relation class attribute to make use of
-    get_recursive_products_with_count method in its abstract
-    superclass.
-    """
-    product_relation = 'products'
-
     @classmethod
     def get_default_parent(cls):
-        """You can override this method, if need a default parent"""
-        return CustomPage.objects.get(slug='catalog')
+        return CustomPage.objects.filter(slug='catalog').first()
 
     @property
     def image(self):
@@ -28,14 +18,11 @@ class Category(AbstractCategory, SyncPageMixin):
         return products[0].image if products else None
 
     def get_absolute_url(self):
-        """Return url for model."""
         return reverse('category', args=(self.page.slug,))
 
 
 class Product(AbstractProduct, SyncPageMixin):
     """
-    SE-specific Product model.
-
     Define n:1 relation with SE-Category and 1:n with Property.
     Add wholesale prices.
     """
@@ -84,7 +71,6 @@ def _default_payment():
 
 
 class Order(ecOrder):
-    """Extended Order model."""
     payment_type = models.CharField(
         max_length=255,
         choices=settings.PAYMENT_OPTIONS,

@@ -43,15 +43,9 @@ def create_correct_slug_fields_for_custom_pages(apps, schema_editor):
 def delete_redundant_model_page(apps, schema_editor):
     model_pages = get_page_model_manager(apps, schema_editor).filter(type=Page.MODEL_TYPE)
     for page in model_pages:
-        if not page.model:
+        related_model = getattr(page, page.related_model_name, None)
+        if related_model is None:
             page.delete()
-
-
-def create_correct_slug_fields_for_model_pages(apps, schema_editor):
-    model_pages = get_page_model_manager(apps, schema_editor).filter(type=Page.MODEL_TYPE)
-    for page in model_pages:
-        page.slug = page.model.slug
-        page.save()
 
 
 def generate_parents_for_model_pages(apps, schema_editor):
@@ -78,6 +72,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(restore_pages_relationships),
         migrations.RunPython(create_correct_slug_fields_for_custom_pages),
         migrations.RunPython(delete_redundant_model_page),
-        migrations.RunPython(create_correct_slug_fields_for_model_pages),
         migrations.RunPython(generate_parents_for_model_pages),
     ]

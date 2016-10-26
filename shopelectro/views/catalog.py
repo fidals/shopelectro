@@ -34,7 +34,7 @@ class CategoryPage(catalog.CategoryPage):
     def get_context_data(self, **kwargs):
         """Extended method. Add sorting options and view_types."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
-        page = self.get_object()
+        category = context['category']
 
         sorting = int(self.kwargs.get('sorting', 0))
         sorting_option = config.category_sorting(sorting)
@@ -42,13 +42,12 @@ class CategoryPage(catalog.CategoryPage):
         # if there is no view_type specified, default will be tile
         view_type = self.request.session.get('view_type', 'tile')
 
-        products = Product.objects.get_products_by_category(page.model, ordering=(sorting_option, ))
+        products = Product.objects.get_products_by_category(category, ordering=(sorting_option, ))
         total_count = products.count()
 
         return {
             **context,
-            'category': page.model,
-            'products': products[:settings.PRODUCTS_TO_LOAD],
+            'products': products.get_offset(0, 30),
             'total_products': total_count,
             'sorting_options': config.category_sorting(),
             'sort': sorting,
@@ -64,16 +63,6 @@ class ProductPage(catalog.ProductPage):
     Extend get_context_data.
     """
     model = Product
-
-    def get_context_data(self, **kwargs):
-        """Extended method. Add product's images to context.."""
-        context = super(ProductPage, self).get_context_data(**kwargs)
-        product = self.get_object()
-
-        return {
-            **context,
-            'page': product.page,
-        }
 
 
 # SHOPELECTRO-SPECIFIC VIEWS
@@ -115,3 +104,11 @@ def load_more(request, category_slug, offset=0, sorting=0):
         request, 'catalog/category_products.html',
         {'products': products.get_offset(int(offset), 30), 'view_type': view}
     )
+
+
+class ProductsWithoutImages(catalog.ProductsWithoutImages):
+    model = Product
+
+
+class ProductsWithoutText(catalog.ProductsWithoutText):
+    model = Product
