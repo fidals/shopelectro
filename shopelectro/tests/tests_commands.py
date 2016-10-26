@@ -3,7 +3,6 @@ Tests for catalog command, which call other commands like price and excel.
 
 Note: tests running pretty long.
 """
-
 import os
 import types
 
@@ -35,6 +34,32 @@ class ImportTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        cls.test_product_id = 293
+        cls.test_category_id = 2  # Accumulators category
+
+        cls.category_for_update = Category.objects.create(
+            id=cls.test_category_id, name='FOR UPDATE')
+        cls.product_for_update = Product.objects.create(
+            id=cls.test_product_id,
+            name='FOR UPDATE',
+            category=cls.category_for_update,
+            price=123,
+            wholesale_small=123,
+            wholesale_medium=123,
+            wholesale_large=123,
+        )
+
+        cls.id_for_delete = 324132222
+        category_for_delete = Category.objects.create(id=cls.id_for_delete, name='FOR DELETE')
+        Product.objects.create(
+            id=cls.id_for_delete,
+            name='FOR DELETE',
+            category=category_for_delete,
+            price=123,
+            wholesale_small=123,
+            wholesale_medium=123,
+            wholesale_large=123,
+        )
 
         def get_test_yml_product():
             for product in products:
@@ -91,7 +116,7 @@ class ImportTest(TestCase):
         category = Category.objects.get(id=self.TEST_CATEGORY_ID)
         self.assertIsNotNone(category.id)
         self.assertIsNotNone(category.children)
-        self.assertIsNotNone(category.position)
+        self.assertIsNotNone(category.page.position)
 
     def test_prices_exists(self):
         """Catalog command should generate various price-list files."""
@@ -132,7 +157,7 @@ class ImportTest(TestCase):
         for product in products_in_price:
             self.assertFalse(product.attrib['id'] in products_others.values())
 
-    def test_create_meta_tags_for_category(self):
+    def test_update_pages_for_category(self):
         """Every category's page should have a filled title field"""
         category_page = Category.objects.first().page
 
@@ -140,7 +165,7 @@ class ImportTest(TestCase):
 
         self.assertEqual(test_title, category_page.title)
 
-    def test_create_meta_tags_for_product(self):
+    def test_update_pages_for_product(self):
         """Every product's page should have a filled title and description field"""
         product = Product.objects.first()
         product_page = product.page
@@ -151,3 +176,30 @@ class ImportTest(TestCase):
 
         self.assertEqual(test_title, product_page.title)
         self.assertEqual(test_description, product_page.description)
+
+    def test_exist_products_should_be_updated(self):
+        product = Product.objects.get(id=self.test_product_id)
+
+        product_fields = [
+            'category', 'price', 'wholesale_small', 'wholesale_medium', 'wholesale_large']
+        for field in product_fields:
+            self.assertNotEqual(
+                getattr(product, field), getattr(self.product_for_update, field))
+
+    def test_exist_categories_should_be_updated(self):
+        category = Category.objects.get(id=self.test_category_id)
+
+        category_fields = ['name',]
+        for field in category_fields:
+            self.assertNotEqual(
+                getattr(category, field), getattr(self.category_for_update, field))
+
+    def test_not_exist_products_should_be_deleted(self):
+        product = Product.objects.filter(id=self.id_for_delete)
+
+        self.assertFalse(product)
+
+    def test_not_exist_category_should_be_deleted(self):
+        category = Category.objects.filter(id=self.id_for_delete)
+
+        self.assertFalse(category)

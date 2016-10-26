@@ -11,7 +11,7 @@ class WholesaleCartTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         """Create products and category for them."""
-        category = Category.objects.create(name='Test', slug='test')
+        category = Category.objects.create(name='Test')
         cls.item_quantity = 2
         cls.products = cls.first_product, cls.second_product = [
             Product.objects.create(

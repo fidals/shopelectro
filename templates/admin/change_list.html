@@ -1,34 +1,4 @@
 {% extends 'admin/change_list.html' %}
-{% load i18n admin_urls admin_static admin_list %}
-
-{% if not is_popup %}
-  {% block breadcrumbs %}
-    <div class="breadcrumbs">
-      <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-      &rsaquo;
-      {% if breadcrumbs_name %}
-        {{ breadcrumbs_name }}
-      {% else %}
-        {{ cl.opts.verbose_name_plural|capfirst }}
-      {% endif %}
-    </div>
-  {% endblock %}
-{% endif %}
-
-{% block object-tools-items %}
-  <li>
-    {% if add_name and add_url %}
-      <a href="{% url add_url %}" class="addlink">
-        {% blocktrans with cl.opts.verbose_name as name %}Add {{ add_name }}{% endblocktrans %}
-      </a>
-    {% else %}
-      {% url cl.opts|admin_urlname:'add' as add_url %}
-      <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
-        {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
-      </a>
-    {% endif %}
-  </li>
-{% endblock %}
 
 {% block result_list %}
   {% block pagination %}{{ block.super }}{% endblock %}

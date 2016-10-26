@@ -8,7 +8,7 @@
             {% for option in sorting_options %}
               <option {% if forloop.counter0 == sort %}selected{% endif %}
                       value="{{ forloop.counter0 }}"
-                      data-path="{% url 'category' category.slug forloop.counter0 %}">
+                      data-path="{% url 'category' category.page.slug forloop.counter0 %}">
                 {{ option.label }}
               </option>
             {% endfor %}

@@ -16,15 +16,18 @@
       <a href="{% url 'custom_admin:editor' %}" class="sidebar-link" id="admin-editor-link">Табличный редактор</a>
     </li>
     <li class="sidebar-links-item">
-      <a href="{% url 'custom_admin:category_changelist' %}" class="sidebar-link"
+      <a href="{% url 'custom_admin:shopelectro_categorypage_changelist' %}" class="sidebar-link"
          id="admin-categories-link">Категории</a>
     </li>
     <li class="sidebar-links-item">
-      <a href="{% url 'custom_admin:product_changelist' %}" class="sidebar-link"
+      <a href="{% url 'custom_admin:shopelectro_productpage_changelist' %}" class="sidebar-link"
          id="admin-products-link">Продукты</a>
     </li>
     <li class="sidebar-links-item">
-      <a href="{% url 'custom_admin:pages_page_changelist' %}" class="sidebar-link" id="admin-pages-link">Страницы</a>
+      <a href="{% url 'custom_admin:pages_flatpage_changelist' %}" class="sidebar-link" id="admin-pages-link">Страницы</a>
+    </li>
+    <li class="sidebar-links-item">
+      <a href="{% url 'custom_admin:pages_custompage_changelist' %}" class="sidebar-link" id="admin-pages-link">Уникальные страницы</a>
     </li>
   </ul>
 

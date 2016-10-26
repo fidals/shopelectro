@@ -47,8 +47,8 @@ X_FRAME_OPTIONS = 'ALLOW-FROM ^https?:\/\/([^\/]+\.)?(shopelectro\.ru|webvisor\.
 INSTALLED_APPS = [
     # https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#django.contrib.admin.autodiscover
     'django.contrib.admin.apps.SimpleAdminConfig',
-    'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.auth',
     'django.contrib.messages',
     'django.contrib.redirects',
     'django.contrib.sessions',
@@ -180,7 +180,6 @@ SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
 
 # Used to retrieve instances in ecommerce.Cart
-PRODUCT_MODEL = 'shopelectro.Product'
 CART_ID = 'cart'
 
 # Used to define choices attr in definition of Order.payment_type field
@@ -232,43 +231,10 @@ MODEL_TYPES = {
     }
 }
 
-# Used mostly in breadcrumbs to generate URL for catalog's root.
-CATEGORY_TREE_URL = 'category_tree'
-
 # This need for using {% debug %} variable in templates.
 INTERNAL_IPS = (
     '127.0.0.1',
 )
-
-# Some defaults for autocreation struct pages: index, catalog tree
-# Pages with this data are created in DB only once.
-PAGES = {
-    'index': {
-        'slug': 'index',
-        'route': 'index',
-        'title': 'Shopelectro | Элементы питания',
-        'h1': 'Элементы питания в СПб с доставкой по России',
-        'menu_title': 'Главная',
-        'date_published': SITE_CREATED,
-    },
-    'category_tree': {
-        'slug': 'category_tree',
-        'route': 'category_tree',
-        'title': 'Каталог товаров',
-        'menu_title': 'Каталог',
-        'date_published': SITE_CREATED,
-    },
-    'search': {
-        'slug': 'search',
-        'title': 'Результаты поиска',
-        'date_published': SITE_CREATED,
-    },
-    'order': {
-        'slug': 'order',
-        'title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
-        'date_published': SITE_CREATED,
-    },
-}
 
 TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
 
@@ -282,3 +248,27 @@ SHOP = {
     'local_delivery_cost': 300,
     'local_delivery_cost_threshold': 3000,
 }
+
+# used in data-migrations and tests
+PAGES = [{
+    'slug': '',
+    '_title': 'Интернет магазин Элементов питания с доставкой по России',
+    'h1': 'Интернет магазин элементов питания "ShopElectro"',
+    '_menu_title': 'Главная',
+}, {
+    'slug': 'order',
+    '_title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
+    'h1': 'Оформление заказа',
+}, {
+    'slug': 'search',
+    '_title': 'Результаты поиска',
+}, {
+    'slug': 'catalog',
+    '_title': 'Каталог товаров',
+    'h1': 'Каталог товаров',
+    '_menu_title': 'Каталог',
+}, {
+    'slug': 'success-order',
+    '_title': 'Заказ принят',
+    'h1': 'Заказ принят',
+}]

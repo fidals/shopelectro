@@ -11,14 +11,15 @@ from pages import views as pages_views
 from catalog.views import catalog
 
 from shopelectro import config
-from shopelectro.models import Product, Category
+from shopelectro.models import (
+    Product, Category, CategoryPage as CategoryPageModel)
 from shopelectro.views.helpers import set_csrf_cookie
 
 
 # CATALOG VIEWS
 class CategoryTree(catalog.CategoryTree):
     """Override model attribute to SE-specific Category."""
-    model = Category
+    category_model = Category
 
 
 @set_csrf_cookie
@@ -28,30 +29,29 @@ class CategoryPage(catalog.CategoryPage):
 
     Extend get_context_data.
     """
-    model = Category
+    model = CategoryPageModel
 
     def get_context_data(self, **kwargs):
         """Extended method. Add sorting options and view_types."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
-        category = self.get_object()
+        category = context['category']
 
         sorting = int(self.kwargs.get('sorting', 0))
         sorting_option = config.category_sorting(sorting)
 
         # if there is no view_type specified, default will be tile
         view_type = self.request.session.get('view_type', 'tile')
-        products, total_count = (
-            category.get_recursive_products_with_count(sorting=sorting_option)
-        )
+
+        products = Product.objects.get_products_by_category(category, ordering=(sorting_option, ))
+        total_count = products.count()
 
         return {
             **context,
-            'products': products,
+            'products': products.get_offset(0, 30),
             'total_products': total_count,
             'sorting_options': config.category_sorting(),
             'sort': sorting,
             'view_type': view_type,
-            'page': category.page,
         }
 
 
@@ -64,20 +64,10 @@ class ProductPage(catalog.ProductPage):
     """
     model = Product
 
-    def get_context_data(self, **kwargs):
-        """Extended method. Add product's images to context.."""
-        context = super(ProductPage, self).get_context_data(**kwargs)
-        product = self.get_object()
-
-        return {
-            **context,
-            'page': product.page,
-        }
-
 
 # SHOPELECTRO-SPECIFIC VIEWS
 @set_csrf_cookie
-class IndexPage(pages_views.IndexPage):
+class IndexPage(pages_views.CustomPageView):
 
     def get_context_data(self, **kwargs):
         """Extended method. Add product's images to context."""
@@ -102,16 +92,17 @@ def load_more(request, category_slug, offset=0, sorting=0):
     :param offset: used for slicing QuerySet.
     :return:
     """
-
-    category = get_object_or_404(Category.objects, slug=category_slug)
+    category_page = get_object_or_404(CategoryPageModel, slug=category_slug)
     sorting_option = config.category_sorting(int(sorting))
-    products, _ = category.get_recursive_products_with_count(
-        sorting=sorting_option, offset=int(offset))
+
+    products = Product.objects.get_products_by_category(
+        category_page.model, ordering=(sorting_option, )
+    )
     view = request.session.get('view_type', 'tile')
 
     return render(
         request, 'catalog/category_products.html',
-        {'products': products, 'view_type': view}
+        {'products': products.get_offset(int(offset), 30), 'view_type': view}
     )
 
 

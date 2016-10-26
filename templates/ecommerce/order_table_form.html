@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load widget_tweaks %}
 {% load se_extras %}
+{% load pages_extras %}
 
 {% if cart|length %}
   <h1>Оформление заказа</h1>
@@ -143,6 +144,6 @@
 {% else %}
   <h1>Корзина пуста</h1>
   <span class="page-info-message">В вашей корзине пока нет товаров.
-    <a href="{% url 'category_tree' %}">Перейти к каталогу</a>
+    <a href="{% custom_url 'catalog' %}">Перейти к каталогу</a>
   </span>
 {% endif %}

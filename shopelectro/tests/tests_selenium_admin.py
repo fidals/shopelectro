@@ -15,7 +15,7 @@ from django.conf import settings
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 
-from pages.models import Page
+from pages.models import FlatPage, ModelPage
 from shopelectro.models import Category, Product
 
 
@@ -67,7 +67,7 @@ class AdminPage(SeleniumTestCase):
         cls.password = 'asdfjkl;'
         cls.title_text = 'Shopelectro administration'
         cls.table_with_app_list = '//*[@id="content-main"]/div/table'
-        cls.products = '//*[@id="content-main"]/div/table/tbody/tr[3]/th/a'
+        cls.products = '//*[@id="content-main"]/div[2]/table/tbody/tr[2]/th/a'
         cls.category = '//*[@id="content-main"]/div/table/tbody/tr[2]/th/a'
         cls.page = '//*[@id="content-main"]/div/table/tbody/tr[1]/th/a'
         cls.price_filter = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
@@ -207,7 +207,7 @@ class AdminPage(SeleniumTestCase):
     def test_tree_redirect_to_entity_edit_page(self):
         """Test redirect to edit entity page by click at jstree's item"""
         self.open_js_tree_nodes()
-        expected_h1 = ['Change page', 'Изменить page']
+        expected_h1 = 'Изменить category page'
 
         # click at tree's item, redirect to entity edit page
         root_node = self.browser.find_element_by_id(self.root_category_id)
@@ -215,7 +215,7 @@ class AdminPage(SeleniumTestCase):
         wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
-        self.assertIn(test_h1, expected_h1)
+        self.assertEqual(test_h1, expected_h1)
 
     def test_tree_redirect_to_table_editor_page(self):
         """Test redirect to table editor page by context click at tree's item"""
@@ -270,91 +270,6 @@ class AdminPage(SeleniumTestCase):
         wait()
 
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
-
-    def test_add_button_at_index_page(self):
-        """App's add-button from index page should redirects us to add-page with needed url"""
-        for model_name in self.models_name:
-            self.browser.find_element_by_class_name(
-                'model-{}'.format(model_name)).find_element_by_class_name('addlink').click()
-            wait()
-
-            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
-
-            self.assertEqual(
-                self.browser.current_url,
-                self.live_server_url + '/admin/pages/page/add/{}'.format(
-                    edite_model_name(model_name)))
-
-            self.browser.get(self.admin_page)
-            wait()
-
-    def test_changelist_button_at_index_page(self):
-        """
-        App's changelist-button from index page should redirects us to changelist-page with
-        needed url
-        """
-        for model_name in self.models_name:
-            self.browser.find_element_by_class_name(
-                'model-{}'.format(model_name)).find_element_by_class_name('changelink').click()
-            wait()
-
-            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
-
-            self.assertEqual(
-                self.browser.current_url,
-                self.live_server_url + '/admin/pages/page/{}'.format(edite_model_name(model_name)))
-
-            self.browser.get(self.admin_page)
-            wait()
-
-    def test_add_button_at_changelist_page(self):
-        """App's add-button from changelist page should redirects us to add-page with needed url"""
-        urls_name = [
-            'custom_admin:pages_page_changelist', 'custom_admin:product_changelist',
-            'custom_admin:category_changelist',
-        ]
-
-        for url_name, model_name in zip(urls_name, self.models_name):
-            self.browser.get(self.live_server_url + reverse(url_name))
-            wait()
-
-            self.browser.find_element_by_class_name('addlink').click()
-
-            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
-
-            self.assertEqual(
-                self.browser.current_url,
-                self.live_server_url + '/admin/pages/page/add/{}'.format(
-                    edite_model_name(model_name)))
-
-            self.browser.get(self.admin_page)
-            wait()
-
-    def test_breadcrumbs_at_change_page(self):
-        """Breadcrumbs from change page should redirects us to needed changelist page"""
-        entities_id = [
-            Page.objects.filter(type=Page.FLAT_TYPE).first().id,
-            Page.objects.filter(type='shopelectro_product').first().id,
-            Page.objects.filter(type='shopelectro_category').first().id
-        ]
-        url_name = 'custom_admin:pages_page_change'
-
-        for id, model_name in zip(entities_id, self.models_name):
-            self.browser.get(self.live_server_url + reverse(url_name, args=[id, ]))
-            wait()
-
-            self.browser.find_element_by_class_name('breadcrumbs').find_elements_by_tag_name(
-                'a')[1].click()
-
-            edite_model_name = lambda model_name: '' if model_name == 'page' else model_name + '/'
-
-            self.assertEqual(
-                self.browser.current_url,
-                self.live_server_url + '/admin/pages/page/{}'.format(
-                    edite_model_name(model_name)))
-
-            self.browser.get(self.admin_page)
-            wait()
 
 
 class TableEditor(SeleniumTestCase):
@@ -563,6 +478,7 @@ class TableEditor(SeleniumTestCase):
 
         self.browser.refresh()
         self.open_filters()
+        wait(2)
 
         self.browser.find_element_by_class_name('js-drop-filters').click()
         wait(2)

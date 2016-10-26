@@ -6,14 +6,14 @@
        itemscope itemtype="http://schema.org/Product">
     <meta itemprop="name" content="{{ product.name }}">
     <div class="img-wrp">
-      <a class="js-browse-product" target="_blank" href="{% url "product" product.id %}">
+      <a class="js-browse-product" target="_blank" href="{{ product.url }}">
         {% include 'catalog/category_product_image.html' with product=product only%}
       </a>
     </div>
     <div class="text" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
       <div class="articul">Артикул: {{ product.id }}</div>
       <div class="desc">
-        <a class="product-card-desc js-browse-product" target="_blank" href="{% url "product" product.id %}">
+        <a class="product-card-desc js-browse-product" target="_blank" href="{{ product.url }}">
           {{ product.name }}
         </a>
       </div>

@@ -45,7 +45,7 @@ class Command(BaseCommand):
             utm_marks = {
                     'utm_source': utm,
                     'utm_medium': 'cpc',
-                    'utm_content': product.get_root_category().slug,
+                    'utm_content': product.get_root_category().page.slug,
                     'utm_term': str(product.id)
                 }
             url = reverse('product', args=(product.id,))

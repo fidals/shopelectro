@@ -42,7 +42,7 @@ class Command(BaseCommand):
         return Category.objects.filter(
             id__in=[int(key) for key in links]
         ).exclude(
-            slug__in=links.values()
+            page__slug__in=links.values()
         )
 
     def connect_to_the_db(self):
@@ -76,7 +76,7 @@ class Command(BaseCommand):
             return self.CATALOG_ROOT + links[str(category.id)] + '/'
 
         def get_new_path(category):
-            return self.CATALOG_ROOT + category.slug + '/'
+            return self.CATALOG_ROOT + category.page.slug + '/'
 
         insertions_data = list(chain(*[
             (

@@ -25,20 +25,24 @@ class OrderPage(ec_views.OrderPage):
 
 class AddToCart(ec_views.AddToCart):
     cart = WholesaleCart
+    product_model = Product
     order_form = OrderForm
 
 
 class RemoveFromCart(ec_views.RemoveFromCart):
     cart = WholesaleCart
+    product_model = Product
     order_form = OrderForm
 
 
 class ChangeCount(ec_views.ChangeCount):
     cart = WholesaleCart
+    product_model = Product
     order_form = OrderForm
 
 
 class FlushCart(ec_views.FlushCart):
+    product_model = Product
     order_form = OrderForm
 
 

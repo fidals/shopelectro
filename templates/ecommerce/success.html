@@ -1,5 +1,7 @@
 {% extends 'layout/base.html' %}
 {% load se_extras %}
+{% load pages_extras %}
+
 {% block title %}Спасибо за Ваш заказ{% endblock %}
 
 {% block content %}
@@ -30,7 +32,7 @@
         <li>СБ-ВС - выходной</li>
       </ul>
 
-      <a href="{% url 'index' %}">Вернуться на главную</a>
+      <a href="{% custom_url '' %}">Вернуться на главную</a>
     </div>
   </div>
 {% endblock %}

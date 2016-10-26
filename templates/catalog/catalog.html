@@ -16,7 +16,7 @@
     <ul class="catalog-list">
       {% recursetree nodes %}
         <li class="catalog-list-item">
-          <a href="{{ node.get_absolute_url }}" class="catalog-list-item">{{ node.name }}</a>
+          <a href="{{ node.url }}" class="catalog-list-item">{{ node.name }}</a>
           {% if not node.is_leaf_node %}
             <ul class="catalog-list-children">
               {{ children }}

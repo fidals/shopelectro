@@ -10,8 +10,9 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 
 from images.models import ImageMixin
+
 from shopelectro import config
-from shopelectro.models import Category
+from shopelectro.models import Category, Product
 
 
 register = template.Library()
@@ -19,7 +20,7 @@ register = template.Library()
 
 @register.assignment_tag
 def roots():
-    return Category.objects.root_nodes().order_by('position')
+    return Category.objects.root_nodes().order_by('page__position')
 
 
 @register.assignment_tag
@@ -29,7 +30,7 @@ def footer_links():
 
 @register.simple_tag
 def random_product(category):
-    products, _ = category.get_recursive_products_with_count(size=None)
+    products = Product.objects.get_products_by_category(category)
     if not products:
         return ''
     product = products[random.randint(0, len(products) - 1)]
@@ -94,8 +95,8 @@ def upload_form(model):
 
 
 @register.simple_tag
-def full_url(path='index', *args):
-    return settings.BASE_URL + reverse(path, args=args)
+def full_url(url_name, *args):
+    return settings.BASE_URL + reverse(url_name, args=args)
 
 
 @register.filter

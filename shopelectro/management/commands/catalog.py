@@ -52,33 +52,53 @@ def process(procedure_name: str) -> callable:
 
 
 @process('Load info to DB')
-def delete_and_create(model_generator_mapping: list) -> result_message:
-    """Perform db transaction of removing current rows and creating new ones."""
-    def purge_table(model):
-        """Removes every row from Model's table."""
-        model.objects.all().delete()
-
-    def save_instances(collection):
+def update_and_delete(model_generator_mapping: list) -> result_message:
+    """Perform db transaction of updating entity or creating new ones."""
+    def update_instances(Model, collection) -> list:
         """Save instances from generator into db."""
-        for instance in collection:
-            instance.save()
-            create_meta_tags(instance)
+        saved_entity_ids = []
+        created_entities = 0
+        for entity_id, entity_data in collection:
+            entity, is_created = Model.objects.update_or_create(id=entity_id, defaults=entity_data)
+            update_page_data(entity)
+
+            saved_entity_ids.append(entity.id)
+            if is_created:
+                created_entities += 1
+
+        print('{1} {0} were updated...\n{2} {0} were created...'.format(
+            Model._meta.verbose_name_plural,
+            len(saved_entity_ids) - created_entities,
+            created_entities
+        ))
+
+        return saved_entity_ids
+
+    def delete_instances(Model, entity_ids):
+        instances_for_delete = Model.objects.exclude(id__in=entity_ids)
+        count = instances_for_delete.count()
+        instances_for_delete.delete()
+        print('{} {} were deleted'.format(
+            count, Model._meta.verbose_name_plural))
 
     with transaction.atomic():
         for model_class, generator in model_generator_mapping:
-            purge_table(model_class)
-            save_instances(generator)
+            updated_ids = update_instances(model_class, generator)
+            delete_instances(model_class, updated_ids)
+
     return 'Categories and Products were saved to DB.'
 
 
-def create_meta_tags(instance):
+def update_page_data(instance):
     """Create meta tags for every product and category"""
-    page = Page.objects.get(id=instance.page.id)
+    page = instance.page
     h1 = page.h1
 
     if isinstance(instance, Category):
         if not page._title:
             page._title = CATEGORY_TITLE.format(h1=h1)
+        page.position = CATEGORY_POSITIONS.get(instance.id, 0)
+
     else:
         category_name = instance.category.name
         if not page._title:
@@ -123,7 +143,7 @@ class Command(BaseCommand):
         """Run 'import' command."""
         start_time = time.time()
         self.get_xml_files()
-        delete_and_create([
+        update_and_delete([
             (Category, self.parse_categories()),
             (Product, self.parse_products()),
         ])
@@ -134,7 +154,7 @@ class Command(BaseCommand):
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
         def categories_generator(catalog):
-            """Yield Category instances."""
+            """Yield Category data."""
             def category_id(node):
                 """Return category id."""
                 return int(node.attrib['folder_id'])
@@ -146,27 +166,28 @@ class Command(BaseCommand):
                 return parent_property if valid_parent else None
 
             for category in catalog:
-                yield Category(id=category_id(category),
-                               name=category.text.strip(),
-                               position=CATEGORY_POSITIONS.get(
-                                   category_id(category), 10000),
-                               parent_id=parent_id_or_none(category))
+                category_data = {
+                    'name': category.text.strip(),
+                    'parent_id': parent_id_or_none(category)
+                }
+                yield category_id(category), category_data
+
         return categories_generator(self.categories_in_xml)
 
     def parse_products(self) -> typing.Generator:
         """Parse XML and return product's generator."""
         def products_generator(catalog):
-            """Create Product's instance and yield it."""
+            """Yield Product's data."""
             def has_no_category(node):
                 return not node.attrib['parent_id2_1']
 
             for product in catalog:
                 if has_no_category(product):
                     continue
-                product_properties = self.get_product_properties_or_none(
-                    product)
+                product_properties = self.get_product_properties_or_none(product)
                 if product_properties:
-                    yield Product(**product_properties)
+                    yield product_properties.pop('id'), product_properties
+
         return products_generator(self.products_in_xml)
 
     @staticmethod
