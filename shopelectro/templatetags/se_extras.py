@@ -18,6 +18,7 @@ from shopelectro.models import Category, Product
 register = template.Library()
 
 
+# TODO - move it in catalog. Inspired by lp_electric
 @register.assignment_tag
 def roots():
     return Category.objects.root_nodes().order_by('page__position')
@@ -37,6 +38,7 @@ def random_product(category):
     return product
 
 
+# TODO - move in pages. Inspired by LP electric
 @register.filter
 def class_name(model):
     """Return Model name."""
@@ -94,6 +96,7 @@ def upload_form(model):
         return model_type in models_with_upload_form
 
 
+# TODO - move it in pages. Inpired by LP electic
 @register.simple_tag
 def full_url(url_name, *args):
     return settings.BASE_URL + reverse(url_name, args=args)
