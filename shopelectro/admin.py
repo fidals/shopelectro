@@ -139,7 +139,7 @@ class PriceRange(admin.SimpleListFilter):
         return queryset.filter(shopelectro_product__price__in=range(*range_for_query))
 
 
-# Inline classes
+# --------------------- Inlines ---------------------
 class ProductInline(admin.StackedInline):
     model = Product
     can_delete = False
@@ -191,8 +191,7 @@ class ImageInline(GenericStackedInline):
             'classes': ('primary-chars', ),
             'fields': (
                 ('picture', 'image'),
-                # 'slug', TODO in dev-775
-                ('_title', 'is_main'),
+                ('slug', '_title', 'is_main'),
                 ('description', ),
             ),
         }),
@@ -205,7 +204,7 @@ class ImageInline(GenericStackedInline):
         )
 
 
-# Model admin classes
+# --------------------- Model admin classes ---------------------
 class PageAdmin(admin.ModelAdmin):
     save_on_top = True #  https://goo.gl/al9CEc
 
@@ -428,6 +427,7 @@ class ProductPageAdmin(PageAdmin):
 
     def has_add_permission(self, request):
         return False
+
 
 class CategoryPageAdmin(PageAdmin):
 
