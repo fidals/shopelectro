@@ -220,7 +220,6 @@ class YandexKassa(TestCase):
         """Respose should contain attr code="0" - it's mean, that all right"""
         response = self.yandex_check_request()
 
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'code="0"')
         self.assertContains(response, 'invoiceId="123"')
 
@@ -231,13 +230,11 @@ class YandexKassa(TestCase):
         """
         response = self.yandex_aviso_request()
 
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'code="0"')
 
         self.yandex_aviso_request_data['data']['md5'] = 'incorrect data'
         response = self.yandex_aviso_request()
 
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'code="1"')
 
 

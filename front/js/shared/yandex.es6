@@ -59,7 +59,7 @@
   }
 
   function reachGoal(goal) {
-    yaCounter.reachGoal(goal);
+    yaCounter20644114.reachGoal(goal);
   }
 
   /**

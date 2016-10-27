@@ -37,7 +37,6 @@ const admin = (() => {
     mediator.subscribe('onFiltersSave', saveFilters, reloadPage);
     DOM.$saveFiltersBtn.click(() => mediator.publish('onFiltersSave'));
 
-    DOM.$removeIcon.click(removeImage);
     DOM.$hideFilterBtn.click(toggleFilters);
     DOM.$dropFiltersBtn.click(dropFilters);
     DOM.$filterCheckbox.change(updateSortFields);

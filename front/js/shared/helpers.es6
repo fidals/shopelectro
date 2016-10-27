@@ -23,12 +23,12 @@ const helpers = (() => {
   /**
    * Disabling button prevent submit event.
    */
-  const disableSubmit = $button => {
+  function disableSubmit($button, loadingText = config.loadingText) {
     $button
       .attr('disabled', 'disabled')
-      .text(config.loadingText)
-      .val(config.loadingText);
-  };
+      .text(loadingText)
+      .val(loadingText);
+  }
 
   return {
     disableSubmit,
