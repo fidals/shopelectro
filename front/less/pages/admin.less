@@ -61,7 +61,7 @@ body.admin {
 .messagelist,
 .main-content,
 .sidebar-links,
-.images-list-item,
+.images-item,
 .admin-breadcrumb-wrapper {
   transition: all 0.5s ease;
 }
@@ -372,50 +372,14 @@ div.autocomplete-suggestion {
   }
 }
 
-.images {
-  &-list {
-    margin: 0;
-    padding: 0;
-
-    .fa {
-      text-shadow: 0 1px 3px @c-white;
-      cursor: pointer;
-      font-size: @f-size-base + 8;
-      left: 0;
-      margin: auto;
-      opacity: 0.7;
-      position: absolute;
-      right: 0;
-      width: 20px;
-      z-index: 1;
-    }
-  }
-
-  &-list-item {
-    border: 1px solid @c-sidebar-border;
-    border-radius: 4px;
-    display: inline-block;
-    height: 150px;
-    margin: 0 2px 20px 0;
-    padding: 2px;
-    position: relative;
-    text-align: center;
-    top: 0;
-    vertical-align: top;
-    width: 150px;
-
-    &:hover {
-      top: -3px;
-    }
-
-    &:hover .fa {
-      opacity: 1;
-    }
-  }
-
-  &-item {
-    max-width: 100%;
-  }
+.images-item {
+  border: 1px solid @c-sidebar-border;
+  border-radius: 4px;
+  height: 150px;
+  padding: 2px;
+  position: relative;
+  top: 0;
+  max-width: 100%;
 }
 
 .admin {

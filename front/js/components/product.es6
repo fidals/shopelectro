@@ -47,6 +47,7 @@ const product = (() => {
    * Send product data & redirect page.
    */
   const oneClick = () => {
+    helpers.disableSubmit(DOM.$oneClick, 'Ожидайте...');
     server.oneClickBuy(productId(), DOM.$counter.val(), DOM.$phone.val())
       .then(() => mediator.publish('onOneClickBuy'));
   };

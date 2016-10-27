@@ -727,22 +727,6 @@ class TableEditor(SeleniumTestCase):
         self.assertNotEqual(rows_before, rows_after)
 
 
-class YandexKassa(SeleniumTestCase):
-    """Selenium-based tests for YandexKassa"""
-
-    @classmethod
-    def setUpClass(cls):
-        super(YandexKassa, cls).setUpClass()
-        cls.yandex_check = cls.live_server_url + reverse('yandex_check')
-        cls.yandex_aviso = cls.live_server_url + reverse('yandex_aviso')
-
-    def test_yandex_check_valid_invoice(self):
-        response = self.browser.request('POST',
-                                        self.yandex_check,
-                                        data={'invoiceId': '42'})
-        self.assertTrue('invoiceId="42"' in response.text)
-
-
 @override_settings(DEBUG=True)
 class YandexMetrika(SeleniumTestCase):
     """Selenium-based tests for YandexMetrika"""
@@ -762,7 +746,7 @@ class YandexMetrika(SeleniumTestCase):
     @property
     def reached_goals(self):
         """Return yaCounter.goals array after goal triggering."""
-        return self.browser.execute_script('return yaCounter.goals;')
+        return self.browser.execute_script('return yaCounter20644114.goals;')
 
     def prevent_default(self, event, selector):
         """Set prevent default for elements so web page wouldn't be reloaded."""

@@ -45,6 +45,7 @@ const PATH = {
       pages: [
         'front/js/vendors/bootstrap-select.js',
         'front/js/vendors/jquery.fancybox.min.js',
+        'front/js/shared/helpers.es6',
         'front/js/components/category.es6',
         'front/js/components/product.es6',
         'front/js/components/order.es6',

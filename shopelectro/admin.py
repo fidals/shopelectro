@@ -1,6 +1,8 @@
 from collections import namedtuple
 
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericStackedInline
+from django.contrib.redirects.models import Redirect
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.template.response import TemplateResponse
@@ -10,6 +12,7 @@ from django.utils.html import format_html
 
 from shopelectro.models import Category, Product, CategoryPage, ProductPage
 from pages.models import CustomPage, FlatPage
+from images.models import Image
 
 
 class CustomAdminSite(admin.AdminSite):
@@ -110,7 +113,7 @@ class PriceRange(admin.SimpleListFilter):
                 '{}'.format(i - 1),
                 _('{} 000 - {} 000 руб.'.format(i - 1, i))
             ) for i in range(2, 11)
-        ]
+            ]
 
         price_segment_list.insert(0, price_segment('0', _('0 руб.')))
         price_segment_list.append(price_segment('10', _('10 000+ руб.')))
@@ -178,6 +181,30 @@ class CategoryInline(admin.StackedInline):
     readonly_fields = ['id', 'correct_parent_id']
 
 
+class ImageInline(GenericStackedInline):
+    model = Image
+    extra = 1
+    readonly_fields = ['picture']
+    verbose_name = 'Image'
+    fieldsets = (
+        (None, {
+            'classes': ('primary-chars', ),
+            'fields': (
+                ('picture', 'image'),
+                # 'slug', TODO in dev-775
+                ('_title', 'is_main'),
+                ('description', ),
+            ),
+        }),
+    )
+
+    def picture(self, obj):
+        return format_html(
+            '<img src="{url}" class="images-item">',
+            url=obj.image.url
+        )
+
+
 # Model admin classes
 class PageAdmin(admin.ModelAdmin):
     save_on_top = True #  https://goo.gl/al9CEc
@@ -185,6 +212,8 @@ class PageAdmin(admin.ModelAdmin):
     list_filter = ['is_active']
     list_display = ['id', 'h1', 'custom_parent', 'is_active']
     list_display_links = ['h1']
+
+    inlines = [ImageInline]
 
     search_fields = ['id', 'h1', 'parent__h1']
 
@@ -351,6 +380,7 @@ class FlatPageAdmin(PageAdmin):
 class ProductPageAdmin(PageAdmin):
     inlines = [
         ProductInline,
+        ImageInline,
     ]
 
     list_filter = ['is_active', PriceRange]
@@ -403,6 +433,7 @@ class CategoryPageAdmin(PageAdmin):
 
     inlines = [
         CategoryInline,
+        ImageInline
     ]
 
     search_fields = ['shopelectro_category__id', 'h1', 'parent__h1']
@@ -440,3 +471,4 @@ custom_admin_site.register(CustomPage, CustomPageAdmin)
 custom_admin_site.register(ProductPage, ProductPageAdmin)
 custom_admin_site.register(CategoryPage, CategoryPageAdmin)
 custom_admin_site.register(FlatPage, FlatPageAdmin)
+custom_admin_site.register(Redirect)

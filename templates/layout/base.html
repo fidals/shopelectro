@@ -3,6 +3,7 @@
 <html prefix="ya: http://webmaster.yandex.ru/vocabularies/ og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" lang="ru">
 
 <head>
+  {% include 'layout/google_tag_manager.html' with DEBUG=DEBUG is_head_tag=True %}
   {% if page %}
     {% include 'layout/metadata.html' with page=page only %}
   {% endif %}
@@ -11,33 +12,33 @@
   {% endblock %}
 </head>
 <body>
+  {% include 'layout/google_tag_manager.html' with DEBUG=DEBUG is_body_tag=True %}
 
-{% block header %}
-  {% include 'layout/header.html' %}
-{% endblock %}
+  {% block header %}
+    {% include 'layout/header.html' %}
+  {% endblock %}
 
-<div class="content">
-  {% block content %}{% endblock %}
-</div>
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
 
-{% block footer %}
-  {% include 'layout/footer.html' %}
-{% endblock %}
+  {% block footer %}
+    {% include 'layout/footer.html' %}
+  {% endblock %}
 
-<div class="btn-scroll-to-top" id="btn-scroll-to-top">
-  <i class="fa fa-arrow-circle-up"></i>
-</div>
+  <div class="btn-scroll-to-top" id="btn-scroll-to-top">
+    <i class="fa fa-arrow-circle-up"></i>
+  </div>
 
-{% include 'layout/back_call_modal.html' %}
+  {% include 'layout/back_call_modal.html' %}
 
-{% block jslibs %}
-  <script src="{% static 'js/vendors.min.js' %}"></script>
-{% endblock %}
+  {% block jslibs %}
+    <script src="{% static 'js/vendors.min.js' %}"></script>
+  {% endblock %}
 
-{% block jslinks %}
-  <script src="{% static 'js/main.min.js' %}"></script>
-{% endblock %}
+  {% block jslinks %}
+    <script src="{% static 'js/main.min.js' %}"></script>
+  {% endblock %}
 
-{% include 'layout/marketing.html' %}
 </body>
 </html>
