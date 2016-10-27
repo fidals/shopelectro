@@ -34,6 +34,8 @@
       return;
     }
 
+    helpers.disableSubmit(DOM.$orderButton);
+
     server.sendOrderCall(phone, time, url)
       .then(() => {
         DOM.$timeText.text(DOM.$timeTag.val());

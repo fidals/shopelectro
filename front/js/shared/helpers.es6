@@ -2,6 +2,7 @@ const helpers = (() => {
   const config = {
     regexpPhone: /(\+\d\s|\+\d)\(?\d{3}(\)|\)\s)?-?\d{1}-?\d{1}-?(\d{1}|\d{1}\s)-?\d{1}-?(\d{1}|\d{1}\s)-?\d{1}-?\d{1}/g,
     regexpEmail: /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,}$/,
+    loadingText: 'Пожалуйста, подождите...',
   };
 
   /**
@@ -19,7 +20,18 @@ const helpers = (() => {
    */
   const isEmailValid = data => config.regexpEmail.test(data.toLowerCase());
 
+  /**
+   * Disabling button prevent submit event.
+   */
+  const disableSubmit = $button => {
+    $button
+      .attr('disabled', 'disabled')
+      .text(config.loadingText)
+      .val(config.loadingText);
+  };
+
   return {
+    disableSubmit,
     isPhoneValid,
     isEmailValid,
   };

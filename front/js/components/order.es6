@@ -184,6 +184,7 @@
 
     DOM.$yandexFormWrapper.html(formHtml);
   };
+
   /**
    * Before submit: 
    * 1. Validate user's email and phone
@@ -198,15 +199,18 @@
       return;
     }
 
-    if (isYandex()) {
-      event.preventDefault();
+    helpers.disableSubmit($(DOM.submit));
 
+    if (isYandex()) {
       server.sendYandexOrder(orderInfo)
         .then(formData => {
           renderYandexForm(formData);
           $(DOM.yandexForm).submit();
         });
+    } else {
+      $(DOM.fullForm).submit(); // Disabling button prevent submit event.
     }
+
   };
 
   /**

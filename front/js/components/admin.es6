@@ -1,7 +1,5 @@
 const admin = (() => {
   const DOM = {
-    $removeIcon: $('.js-remove-image'),
-    $imageItem: $('.js-list-item'),
     $sortableList: $('#sortable'),
     $hideFilterBtn: $('.js-hide-filter'),
     $filterWrapper: $('.js-filter-wrapper'),
@@ -14,7 +12,6 @@ const admin = (() => {
 
   const config = {
     autocompleteURL: '/admin/autocomplete/',
-    removeUrl: '/admin/remove-image/',
     minChars: 3,
     currentPageType: document.location.pathname.split('/').slice(-2, -1)[0],
     pagesType: {'categorypage': 'category', 'productpage': 'product'},
@@ -69,16 +66,6 @@ const admin = (() => {
    */
   function getCurrentPageType() {
     return config.pagesType[config.currentPageType];
-  }
-
-  /**
-   * Remove Product image.
-   */
-  function removeImage() {
-    const $target = $(event.target);
-
-    $.post(config.removeUrl, { id: $target.data('id') })
-      .success(() => $target.closest(DOM.$imageItem).slideUp());
   }
 
   /**
