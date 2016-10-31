@@ -1,7 +1,10 @@
 // ================================================================
 // IMPORTS
 // ================================================================
+const spawnSync = require('child_process').spawnSync;
+
 const $ = require('gulp-load-plugins')();
+import requireDir from 'require-dir';
 import gulp from 'gulp';
 import lessGlob from 'less-plugin-glob';
 import sequence from 'run-sequence';
@@ -99,6 +102,7 @@ gulp.task('build', callback => {
   ENV.production = true;
 
   sequence(
+    'getTasksFromApps',
     'styles',
     'js-vendors',
     'js-main',
@@ -109,6 +113,16 @@ gulp.task('build', callback => {
     'build-fonts',
     callback
   );
+});
+
+// ================================================================
+// Js: Collect gulpfile's tasks from INSTALLED_APPS
+// ================================================================
+gulp.task('getTasksFromApps', () => {
+  const appPaths = spawnSync('python3', ['manage.py', 'interact_with_gulp', 'site_admin']);
+  for (var path of appPaths.stdout.toString().trim().split(';')) {
+    requireDir(path);
+  }
 });
 
 // ================================================================
