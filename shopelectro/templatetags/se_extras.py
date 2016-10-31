@@ -24,20 +24,6 @@ def roots():
     return Category.objects.root_nodes().order_by('page__position')
 
 
-@register.assignment_tag
-def footer_links():
-    return config.FOOTER_LINKS
-
-
-@register.simple_tag
-def random_product(category):
-    products = Product.objects.get_products_by_category(category)
-    if not products:
-        return ''
-    product = products[random.randint(0, len(products) - 1)]
-    return product
-
-
 # TODO - move in pages. Inspired by LP electric
 @register.filter
 def class_name(model):

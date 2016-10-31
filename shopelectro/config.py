@@ -4,47 +4,6 @@ Every config-like option which doesn't belong to settings should be here.
 """
 from django.conf import settings
 
-pages = {
-    'main': {
-        'name': 'Батарейки, Аккумуляторы, ЗУ в СПб',
-        'title': 'ShopElectro | Батарейки, Аккумуляторы, ЗУ в СПб',
-        'h1': 'Батарейки, Аккумуляторы, ЗУ в СПб',
-        'keywords': 'купить аккумуляторы, '
-                    'купить батарейки, '
-                    'купить зарядные устройства, купить блоки питания',
-        'description': 'Купить Батарейки, Аккумуляторы, ЗУ в СПб. Доставка по России',
-        'site_url': 'www.shopelectro.ru'
-    },
-    'navigation': {
-        'name': 'О магазине. Выбор, заказ, оплата, доставка',
-        'h1': 'Контакты, реквизиты, услуги',
-        'title': 'ShopElectro | О магазине. Выбор, заказ, оплата, доставка',
-        'keywords': 'Выбрать товар, заказать товар, оплатить товар, получить товар',
-        'description': 'Как выбрать товар, заказать, оплатить и получить',
-        'date_published': settings.SITE_CREATED,
-    },
-    'news': {
-        'name': 'Новости магазина',
-        'h1': 'Новости магазина',
-        'title': 'ShopElectro | Новости магазина',
-        'keywords': 'Новости shopelectro',
-        'description': 'Новости магазина. Изменение цен, ассортимента, обсуживания',
-        'date_published': settings.SITE_CREATED,
-    },
-    'article': {
-        'name': 'Статьи о товарах',
-        'h1': 'Статьи о товарах',
-        'title': 'ShopElectro | Статьи о товарах',
-        'keywords': 'батарейки, аккумуляторы, зу',
-        'description': 'Как выбрать товар',
-        'date_published': settings.SITE_CREATED,
-    },
-    'catalog': {
-        'title': 'Карта каталога',
-        'name': 'Каталог аккумов',
-    },
-}
-
 
 def category_sorting(sorting_index=None):
     """
@@ -158,7 +117,6 @@ FOOTER_LINKS = {
     ],
     'about': [
         {'name': 'Реквизиты', 'slug': 'rekvisity'},
-        {'name': 'Нормативные документы', 'slug': 'norm-docs'},
         {'name': 'Оптовым покупателям', 'slug': 'wholesale'},
         {'name': 'Гарантии и возврат', 'slug': 'return-goods-instr'},
     ],

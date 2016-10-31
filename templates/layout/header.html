@@ -42,7 +42,6 @@
           <ul class="navbar navbar-default hed-mnu">
             <li><a href="{% url 'pages:flat_page' 'delivery' %}">Доставка</a></li>
             <li><a href="{% url 'pages:flat_page' 'pay' %}">Оплата</a></li>
-            <li><a href="{% url 'pages:flat_page' 'news' %}">Новости</a></li>
             <li><a href="{% url 'pages:flat_page' 'contacts' %}">Контакты</a></li>
           </ul>
         </div>
@@ -121,21 +120,6 @@
                       </a></li>
                     {% endfor %}
                   </ul>
-                  {% random_product root as product %}
-                  {% if product %}
-                    <div class="popular-product">
-                      <a class="popular-product-link" href="{{ product.get_absolute_url }}">
-                      <div class="label">Случайный товар</div>
-                      <div class="popular-product-image-wrapper">
-                        {% include 'index/product_thumbnail.html' with product=product dimensions='150x150' only %}
-                      </div>
-                      <div class="text">
-                        <div class="price">{{ product.price|humanize_price }} руб.</div>
-                        <div class="desc"><span>{{ product.name }}</span></div>
-                      </div>
-                      </a>
-                    </div>
-                  {% endif %}
                 </div>
               {% endif %}
             </li>
