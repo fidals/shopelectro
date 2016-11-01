@@ -1,7 +1,6 @@
 """Shopelectro template tags"""
 
 import datetime
-import random
 
 from django import template
 from django.conf import settings
@@ -12,7 +11,7 @@ from django.template.defaultfilters import floatformat
 from images.models import ImageMixin
 
 from shopelectro import config
-from shopelectro.models import Category, Product
+from shopelectro.models import Category
 
 
 register = template.Library()
@@ -22,6 +21,11 @@ register = template.Library()
 @register.assignment_tag
 def roots():
     return Category.objects.root_nodes().order_by('page__position')
+
+
+@register.assignment_tag
+def footer_links():
+    return config.FOOTER_LINKS
 
 
 # TODO - move in pages. Inspired by LP electric

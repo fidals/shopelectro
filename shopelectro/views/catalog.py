@@ -79,7 +79,6 @@ class IndexPage(pages_views.CustomPageView):
             **context,
             'category_tile': config.MAIN_PAGE_TILE,
             'top_products': top_products,
-            'footer_links': config.FOOTER_LINKS,
         }
 
 

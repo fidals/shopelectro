@@ -7,13 +7,18 @@ body {
 }
 
 body {
-  background: @c-grey-body-main;
+  background: @mount; // Remove after new year
+  //background: @c-grey-body-main; Uncomment after new year
   color: @c-body-text;
   font-family: @proxima, sans-serif;
   font-size: @f-size-base;
   line-height: @line-height-body;
   min-width: 980px;
   text-align: left;
+
+  .new-year-background { // Remove after new year
+    background: @c-grey-body-main;
+  }
 }
 
 a, a:hover, a:active, a:focus {
@@ -160,9 +165,13 @@ h3 {
 // HEADER
 // ================================================================
 .header {
-  padding: 0 0 23px 0;
+  //padding: 0 0 23px 0; Uncomment after new year
   position: relative;
   z-index: 2;
+
+  .new-year-background { // Remove after new year
+    padding: 0 0 23px 0;
+  }
 
   &-logo {
     max-width: 185px;
@@ -1092,8 +1101,17 @@ h3 {
 }
 
 .btm-footer {
-  background: @c-grey-body-main;
-  padding: 15px 0;
+  background: @mount; // Remove after new year
+  //background: @c-grey-body-main; Uncomment after new year
+  //padding: 15px 0; Uncomment after new year
+
+  .row { // Remove after new year
+    padding: 0 10px;
+  }
+
+  .new-year-background { // Remove after new year
+    padding: 15px 0;
+  }
 
   .counter {
     display: inline-block;
@@ -1212,6 +1230,18 @@ h3 {
   border-radius: 0;
   margin-top: -2px;
   border-bottom-right-radius: 4px;
+}
+
+.carousel-control { // Remove after new year
+  &.left, &.right {
+    background-image: none;
+  }
+
+  .glyphicon-chevron {
+    &-right, &-left{
+      font-size: 45px;
+    }
+  }
 }
 
 // ================================================================
