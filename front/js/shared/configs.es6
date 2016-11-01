@@ -72,7 +72,6 @@ const configs = (() => {
         const $phoneInput = $(event.target);
         if (!$phoneInput.val()) $phoneInput.val('+7').trigger('change');
       });
-      
   }
 
   const scrollbarReinit = () => $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
