@@ -63,19 +63,16 @@ class AdminPage(SeleniumTestCase):
     def setUpClass(cls):
         super(AdminPage, cls).setUpClass()
         cls.admin_page = cls.live_server_url + reverse('admin:index')
+        cls.change_products_url = cls.live_server_url + reverse(
+            'admin:shopelectro_productpage_changelist')
         cls.login = 'admin'
         cls.password = 'asdfjkl;'
         cls.title_text = 'Shopelectro administration'
-        cls.table_with_app_list = '//*[@id="content-main"]/div/table'
-        cls.products = '//*[@id="content-main"]/div[2]/table/tbody/tr[2]/th/a'
-        cls.category = '//*[@id="content-main"]/div/table/tbody/tr[2]/th/a'
-        cls.page = '//*[@id="content-main"]/div/table/tbody/tr[1]/th/a'
         cls.price_filter = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
         cls.active_products = '//*[@id="changelist-filter"]/ul[1]/li[2]/a'
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[1]/li[3]/a'
         cls.is_active_img = 'field-is_active'
         cls.autocomplete_text = 'Prod'
-        cls.models_name = ['page', 'product', 'category']
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
@@ -139,24 +136,19 @@ class AdminPage(SeleniumTestCase):
         In this case we filter products with 1000 - 2000 price range.
         """
         # separated var for debugging
-        products_list = self.browser.find_element_by_xpath(self.products)
-        products_list.click()
-        wait()
+        self.browser.get(self.change_products_url)
         self.browser.find_element_by_xpath(self.price_filter).click()
         wait()
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[4]')
-        # tried to unlocalize this, but this is difficult
-        # so, how it works: '1900,0' --rsplit--> '1900' --int--> 1900
-        product_price = int(product.text.rsplit(',')[0])
+        product_price = int(float(product.text))
 
         self.assertTrue(product_price >= 1000)
 
     def test_is_active_filter(self):
         """Activity filter returns only active or non active items."""
 
-        self.browser.find_element_by_xpath(self.products).click()
+        self.browser.get(self.change_products_url)
         wait()
-
         self.browser.find_element_by_xpath(self.active_products).click()
         wait()
 
@@ -175,9 +167,7 @@ class AdminPage(SeleniumTestCase):
     def test_search_autocomplete(self):
         """Search field should autocomplete."""
 
-        self.browser.find_element_by_xpath(self.products).click()
-        wait()
-
+        self.browser.get(self.change_products_url)
         self.browser.find_element_by_id('searchbar').send_keys(self.autocomplete_text)
         wait()
 
@@ -191,8 +181,7 @@ class AdminPage(SeleniumTestCase):
     def test_sidebar_not_on_dashboard(self):
         """Sidebar should be not only on dashboard page."""
 
-        self.browser.find_element_by_xpath(self.products).click()
-        wait()
+        self.browser.get(self.change_products_url)
         sidebar = self.browser.find_element_by_class_name('sidebar')
 
         self.assertTrue(sidebar.is_displayed())
@@ -207,7 +196,7 @@ class AdminPage(SeleniumTestCase):
     def test_tree_redirect_to_entity_edit_page(self):
         """Test redirect to edit entity page by click at jstree's item"""
         self.open_js_tree_nodes()
-        expected_h1 = 'Изменить category page'
+        expected_h1 = ['Change category page', 'Изменить category page']
 
         # click at tree's item, redirect to entity edit page
         root_node = self.browser.find_element_by_id(self.root_category_id)
@@ -215,7 +204,7 @@ class AdminPage(SeleniumTestCase):
         wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
-        self.assertEqual(test_h1, expected_h1)
+        self.assertIn(test_h1, expected_h1)
 
     def test_tree_redirect_to_table_editor_page(self):
         """Test redirect to table editor page by context click at tree's item"""

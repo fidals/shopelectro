@@ -20,6 +20,12 @@
     </div>
 
     <div class="col-xs-9 category-right view-mode-{{ view_type }}" id="category-right">
+      {% if page.seo_text %}
+        {% autoescape off %}
+          <div class="category-text" id="category-text">{{ page.seo_text }}</div>
+        {% endautoescape %}
+      {% endif %}
+
       {% include 'catalog/category_navigation.html' %}
 
       <p class="products-showed">
@@ -42,12 +48,6 @@
           <span class="js-total-products">{{ total_products }}</span>
         </p>
       </div>
-
-      {% if page.seo_text %}
-        {% autoescape off %}
-        <div class="category-text" id="category-text">{{ page.seo_text }}</div>
-        {% endautoescape %}
-      {% endif %}
     </div>
   </div>
 {% endblock %}

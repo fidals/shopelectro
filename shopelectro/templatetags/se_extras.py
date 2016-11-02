@@ -1,7 +1,6 @@
 """Shopelectro template tags"""
 
 import datetime
-import random
 
 from django import template
 from django.conf import settings
@@ -12,7 +11,7 @@ from django.template.defaultfilters import floatformat
 from images.models import ImageMixin
 
 from shopelectro import config
-from shopelectro.models import Category, Product
+from shopelectro.models import Category
 
 
 register = template.Library()
@@ -27,15 +26,6 @@ def roots():
 @register.assignment_tag
 def footer_links():
     return config.FOOTER_LINKS
-
-
-@register.simple_tag
-def random_product(category):
-    products = Product.objects.get_products_by_category(category)
-    if not products:
-        return ''
-    product = products[random.randint(0, len(products) - 1)]
-    return product
 
 
 # TODO - move in pages. Inspired by LP electric

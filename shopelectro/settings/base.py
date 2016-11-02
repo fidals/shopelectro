@@ -41,7 +41,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Enable in frame loading for Ya.Metric
 # https://docs.djangoproject.com/es/1.10/ref/clickjacking/
 # https://yandex.ru/support/metrika/general/counter-webvisor.xml#download-page
-X_FRAME_OPTIONS = 'ALLOW-FROM ^https?:\/\/([^\/]+\.)?(shopelectro\.ru|webvisor\.com)\/'
+X_FRAME_OPTIONS = 'DENY'
 
 # Application definition
 INSTALLED_APPS = [
@@ -124,19 +124,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LOCALE_NAME = 'en_US'
-
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-LANGUAGE_CODE = 'ru-ru'
-
-THOUSAND_SEPARATOR = ' '
-NUMBER_GROUPING = 3
+FORMAT_MODULE_PATH = [
+    'shopelectro.formats',
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

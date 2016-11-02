@@ -65,8 +65,12 @@ const configs = (() => {
       .mask('+0 (000) 000 00 00', {
         placeholder: '+7 (999) 000 00 00',
       })
-      .on('keyup', (event) => {
+      .on('change', event => {
         localStorage.setItem(labels.phone, $(event.target).val());
+      })
+      .on('click', event => {
+        const $phoneInput = $(event.target);
+        if (!$phoneInput.val()) $phoneInput.val('+7').trigger('change');
       });
   }
 
