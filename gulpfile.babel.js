@@ -4,10 +4,38 @@
 const spawnSync = require('child_process').spawnSync;
 
 const $ = require('gulp-load-plugins')();
-import requireDir from 'require-dir';
 import gulp from 'gulp';
 import lessGlob from 'less-plugin-glob';
 import sequence from 'run-sequence';
+
+// ================================================================
+// Utils
+// ================================================================
+
+/**
+ * Get src paths from given appName.
+ * Usage:
+ *   appPath = getAppSrcPath('pages')
+ *   const PATH = {
+ *     src: {
+ *       styles: [
+ *         'front/less/admin.less',
+ *         'front/less/styles.less',
+ *         'front/less/pages.less',
+ *         ...appPath.styles,
+ *       ],
+ * @param appName
+ * @returns {Object} - app's source file paths 
+ *   (ex. {styles: ['~/app_name/front/styles/style.css'], ...})
+ */
+function getAppSrcPath(appName) {
+  const processData = spawnSync('python3', ['manage.py', 'get_app_path_for_gulp', appName]);
+  const err = processData.stderr.toString().trim();
+  if (err) throw Error(err);
+
+  const appPath = processData.stdout.toString().trim();
+  return require(appPath + '/paths.js')
+};
 
 // ================================================================
 // CONSTS
@@ -102,7 +130,6 @@ gulp.task('build', callback => {
   ENV.production = true;
 
   sequence(
-    'getTasksFromApps',
     'styles',
     'js-vendors',
     'js-main',
@@ -113,16 +140,6 @@ gulp.task('build', callback => {
     'build-fonts',
     callback
   );
-});
-
-// ================================================================
-// Js: Collect gulpfile's tasks from INSTALLED_APPS
-// ================================================================
-gulp.task('getTasksFromApps', () => {
-  const appPaths = spawnSync('python3', ['manage.py', 'interact_with_gulp', 'site_admin']);
-  for (var path of appPaths.stdout.toString().trim().split(';')) {
-    requireDir(path);
-  }
 });
 
 // ================================================================
