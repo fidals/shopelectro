@@ -1,12 +1,11 @@
 // ================================================================
 // IMPORTS
 // ================================================================
-const spawnSync = require('child_process').spawnSync;
-
-const $ = require('gulp-load-plugins')();
 import gulp from 'gulp';
 import lessGlob from 'less-plugin-glob';
 import sequence from 'run-sequence';
+const $ = require('gulp-load-plugins')();
+const spawnSync = require('child_process').spawnSync;
 
 // ================================================================
 // Utils
@@ -24,11 +23,11 @@ import sequence from 'run-sequence';
  *         'front/less/pages.less',
  *         ...appPath.styles,
  *       ],
- * @param appName
+ * @param {string} appName
  * @returns {Object} - app's source file paths 
- *   (ex. {styles: ['~/app_name/front/styles/style.css'], ...})
+ *   (ex. {styles: ['~/app_name/front/styles/style.less'], ...})
  */
-function getAppSrcPath(appName) {
+function getAppSrcPaths(appName) {
   const processData = spawnSync('python3', ['manage.py', 'get_app_path_for_gulp', appName]);
   const err = processData.stderr.toString().trim();
   if (err) throw Error(err);
