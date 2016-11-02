@@ -1,10 +1,40 @@
 // ================================================================
 // IMPORTS
 // ================================================================
-const $ = require('gulp-load-plugins')();
 import gulp from 'gulp';
 import lessGlob from 'less-plugin-glob';
 import sequence from 'run-sequence';
+const $ = require('gulp-load-plugins')();
+const spawnSync = require('child_process').spawnSync;
+
+// ================================================================
+// Utils
+// ================================================================
+
+/**
+ * Get src paths from given appName.
+ * Usage:
+ *   appPath = getAppSrcPath('pages')
+ *   const PATH = {
+ *     src: {
+ *       styles: [
+ *         'front/less/admin.less',
+ *         'front/less/styles.less',
+ *         'front/less/pages.less',
+ *         ...appPath.styles,
+ *       ],
+ * @param {string} appName
+ * @returns {Object} - app's source file paths 
+ *   (ex. {styles: ['~/app_name/front/styles/style.less'], ...})
+ */
+function getAppSrcPaths(appName) {
+  const processData = spawnSync('python3', ['manage.py', 'get_app_path_for_gulp', appName]);
+  const err = processData.stderr.toString().trim();
+  if (err) throw Error(err);
+
+  const appPath = processData.stdout.toString().trim();
+  return require(appPath + '/paths.js')
+};
 
 // ================================================================
 // CONSTS
