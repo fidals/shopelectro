@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'mptt',
     'widget_tweaks',
     'sorl.thumbnail',
-    'site_admin',
     'images',
     'pages',
     'catalog',
