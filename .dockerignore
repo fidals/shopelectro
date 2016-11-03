@@ -1,7 +1,7 @@
-/node_modules/
-/front/build/
-/static/
-/media/
-!/static/assets/  # TODO - move assets to another folder
+node_modules/
+front/build/
+static/
+media/
+!static/assets/  # TODO - move assets to another folder
 *.sqlite*
 *.log
