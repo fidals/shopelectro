@@ -1,8 +1,14 @@
-"""Management command for generating Excel price-list."""
+"""
+Generate Excel price-list.
 
-import os
+Uses this excel editor lib:
+https://openpyxl.readthedocs.io/en/default/
+"""
+
 import datetime
+import os
 import openpyxl
+from collections import namedtuple
 from openpyxl.styles import Font
 from openpyxl.styles.colors import BLUE
 from openpyxl.styles.borders import Border, Side
@@ -35,6 +41,8 @@ class Command(BaseCommand):
         left=Side(style='thin')
     )
     CURRENT_ROW = '9'  # Start of catalog section in file.
+    cell = namedtuple('cell', ['row', 'col'])
+    BAD_STYLED_CELLS = cell(5, 3), cell(5, 4), cell(6, 3), cell(6, 8)
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
@@ -47,8 +55,15 @@ class Command(BaseCommand):
         self.fill_header()
         self.write_catalog()
         self.hide_formulas()
+        self.set_styles()
         base_dir = settings.ASSETS_DIR
         self.file.save(os.path.join(base_dir, self.NAME))
+
+    def set_styles(self):
+        for cell_position in self.BAD_STYLED_CELLS:
+            cell = self.sheet.cell(
+                row=cell_position.row, column=cell_position.col)
+            cell.border = self.THIN_BORDER
 
     def set_collapse_controls(self):
         """
