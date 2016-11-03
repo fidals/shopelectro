@@ -42,7 +42,7 @@ class Command(BaseCommand):
     )
     CURRENT_ROW = '9'  # Start of catalog section in file.
     cell = namedtuple('cell', ['row', 'col'])
-    BAD_STYLED_CELLS = cell(5, 3), cell(5, 4), cell(6, 3), cell(6, 8)
+    BAD_STYLED_CELLS = ['D5', 'E5', 'D6', 'G8']
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
@@ -60,10 +60,8 @@ class Command(BaseCommand):
         self.file.save(os.path.join(base_dir, self.NAME))
 
     def set_styles(self):
-        for cell_position in self.BAD_STYLED_CELLS:
-            cell = self.sheet.cell(
-                row=cell_position.row, column=cell_position.col)
-            cell.border = self.THIN_BORDER
+        for cell in self.BAD_STYLED_CELLS:
+            self.sheet[cell].border = self.THIN_BORDER
 
     def set_collapse_controls(self):
         """
