@@ -26,6 +26,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         python3-psycopg2 \
         git \
         python-imaging libjpeg62 libjpeg62-dev \
+        nano \
 
     && BUILD_DEPS='build-essential python3-dev' \
     && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
