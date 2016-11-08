@@ -63,6 +63,7 @@ class SitemapPage(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+
 class AdminPage(TestCase):
     """Tests for Admin page UI."""
 
@@ -76,7 +77,7 @@ class AdminPage(TestCase):
         cls.password = 'asdfjkl'
 
         cls.list_display = {
-            'page': ['Id', 'H1', 'Parent', 'Is active', ],
+            'page': ['ID', 'H1', 'Parent', 'Is active', ],
             'product': ['Id', 'H1', 'Category', 'Price', 'Link', 'Is active', ],
             'category': ['Id', 'H1', 'Parent', 'Is active', ],
         }

@@ -145,35 +145,6 @@ def admin_tree_items(request):
     return create_json_response(root_categories)
 
 
-def admin_remove_image(request):
-    image_id = request.POST['id']
-    image = Image.objects.get(id=image_id)
-    image.delete()
-    return HttpResponse('ok')
-
-
-@require_POST
-def admin_upload_images(request, model_name, entity_id):
-
-    def create_image(file_):
-        file_name = os.path.basename(file_.name)
-        short_file_name, _ = os.path.splitext(file_name)
-        Image.objects.create(
-            model=product.page,
-            slug=slugify(short_file_name),
-            image=ImageFile(file_),
-        )
-
-    referrer_url = request.META['HTTP_REFERER']
-
-    if model_name == 'product':
-        files = request.FILES.getlist('files')
-        product = Product.objects.get(id=entity_id)
-        for file in files:
-            create_image(file_=file)
-    return HttpResponseRedirect(referrer_url)
-
-
 @require_GET
 def admin_table_editor_data(request):
     products = Product.objects.annotate(

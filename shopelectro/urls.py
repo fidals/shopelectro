@@ -28,9 +28,6 @@ admin_urls = [
     url(r'^product-create/$', admin.admin_create_product),
     url(r'^product-update/$', admin.admin_update_product),
     url(r'^product-delete/$', admin.admin_delete_product),
-    url(r'^remove-image/$', admin.admin_remove_image),
-    url(r'^uploads/(?P<model_name>[\w-]+)/(?P<entity_id>[0-9]+)$', admin.admin_upload_images,
-        name='admin_upload'),
 ]
 
 catalog_urls = [

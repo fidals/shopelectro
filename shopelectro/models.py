@@ -86,31 +86,12 @@ class Order(ecOrder):
         )
 
 
-def create_model_page_managers(*args: [models.Model]):
-    """Create managers for dividing ModelPage entities"""
-    def is_correct_arg(arg):
-        return isinstance(arg, type(models.Model))
-
-    assert all(map(is_correct_arg, args)), 'args should be ModelBase type'
-
-    def create_manager(model):
-        class ModelPageManager(models.Manager):
-            def get_queryset(self):
-                return super(ModelPageManager, self).get_queryset().filter(
-                    related_model_name=model._meta.db_table)
-        return ModelPageManager
-
-    return [create_manager(model) for model in args]
-
-CategoryPageManager, ProductPageManager = create_model_page_managers(Category, Product)
-
-
 class CategoryPage(ModelPage):
     """Create proxy model for Admin"""
     class Meta(ModelPage.Meta):
         proxy = True
 
-    objects = CategoryPageManager()
+    objects = ModelPage.create_model_page_managers(Category)
 
 
 class ProductPage(ModelPage):
@@ -118,4 +99,5 @@ class ProductPage(ModelPage):
     class Meta(ModelPage.Meta):
         proxy = True
 
-    objects = ProductPageManager()
+    objects = ModelPage.create_model_page_managers(Product)
+
