@@ -4,19 +4,15 @@ Shopelectro's admin views.
 NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
-import os
 import json
 
-from django.core.files.images import ImageFile
 from django.core.urlresolvers import reverse
 from django.db.models import F
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_GET
-from django.utils.text import slugify
 
 from pages.models import Page
 from shopelectro.models import Product, Category
-from images.models import Image
 
 
 @require_POST
@@ -110,8 +106,8 @@ def admin_tree_items(request):
     def create_json_response(entities):
         """Create data for jsTree and return Json response"""
         def setup_view_name(entity):
-            """Get view's name for certain entity (ex.'custom_admin:pages_page_change')"""
-            return ('custom_admin:shopelectro_{model_name}page_change'
+            """Get view's name for certain entity (ex.'se_admin:pages_page_change')"""
+            return ('se_admin:shopelectro_{model_name}page_change'
                     .format(model_name=entity._meta.model_name))
         if not entities.first():
             return JsonResponse({'text': 'У категории нет товаров.'})

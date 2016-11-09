@@ -15,7 +15,6 @@ from django.conf import settings
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 
-from pages.models import FlatPage, ModelPage
 from shopelectro.models import Category, Product
 
 
@@ -37,7 +36,7 @@ def context_click(browser, element):
 class SeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
 
-    fixtures = ['dump.json']
+    fixtures = ['dump.json', 'admin.json']
 
     @classmethod
     def setUpClass(cls):
@@ -56,8 +55,6 @@ class SeleniumTestCase(LiveServerTestCase):
 
 class AdminPage(SeleniumTestCase):
     """Selenium-based tests for Admin page UI."""
-
-    fixtures = ['dump.json', 'admin.json']
 
     @classmethod
     def setUpClass(cls):
@@ -170,7 +167,6 @@ class AdminPage(SeleniumTestCase):
         table = self.get_table_with_products().text
 
         self.assertTrue('299' in table)
-
 
     def test_content_filter(self):
         """
@@ -311,7 +307,6 @@ class AdminPage(SeleniumTestCase):
 class TableEditor(SeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""
 
-    fixtures = ['dump.json', 'admin.json']
     new_product_name = 'Product'
 
     @classmethod

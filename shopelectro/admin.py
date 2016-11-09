@@ -1,11 +1,12 @@
 from django.contrib.redirects.models import Redirect
 
-from shopelectro.models import CategoryPage, ProductPage, Product, Category
 from pages.models import CustomPage, FlatPage
-from generic_admin.admin import models, inlines, sites
+from generic_admin import models, inlines, sites
+
+from shopelectro.models import CategoryPage, ProductPage, Product, Category
 
 
-class ShopelectroAdminSite(sites.TableEditor):
+class SEAdminSite(sites.TableEditor):
     site_header = 'Shopelectro administration'
 
 
@@ -41,10 +42,10 @@ class CategoryPageAdmin(models.CategoryPageAdmin):
     inlines = [CategoryInline, inlines.ImageInline]
 
 
-custom_admin_site = ShopelectroAdminSite(name='custom_admin')
+se_admin_site = SEAdminSite(name='se_admin')
 
-custom_admin_site.register(CustomPage, models.CustomPageAdmin)
-custom_admin_site.register(FlatPage, models.FlatPageAdmin)
-custom_admin_site.register(ProductPage, ProductPageAdmin)
-custom_admin_site.register(CategoryPage, CategoryPageAdmin)
-custom_admin_site.register(Redirect)
+se_admin_site.register(CustomPage, models.CustomPageAdmin)
+se_admin_site.register(FlatPage, models.FlatPageAdmin)
+se_admin_site.register(ProductPage, ProductPageAdmin)
+se_admin_site.register(CategoryPage, CategoryPageAdmin)
+se_admin_site.register(Redirect)

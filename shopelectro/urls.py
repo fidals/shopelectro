@@ -16,12 +16,12 @@ from pages.views import robots
 from pages.models import Page
 
 from shopelectro import sitemaps, config
-from shopelectro.admin import custom_admin_site
+from shopelectro.admin import se_admin_site
 from shopelectro.views import admin, catalog, ecommerce, search, helpers, service
 
 
 admin_urls = [
-    url(r'^', custom_admin_site.urls),
+    url(r'^', se_admin_site.urls),
     url(r'^autocomplete/$', search.AdminAutocomplete.as_view()),
     url(r'^get-table-editor-data/$', admin.admin_table_editor_data),
     url(r'^get-tree-items/$', admin.admin_tree_items),

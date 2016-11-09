@@ -103,7 +103,7 @@ class AdminPage(TestCase):
         in Admin.py
         """
         response = self.client.get(
-            reverse('custom_admin:pages_flatpage_changelist'))
+            reverse('se_admin:pages_flatpage_changelist'))
 
         for field in self.list_display['page']:
             self.assertContains(response, field)
@@ -112,7 +112,7 @@ class AdminPage(TestCase):
         """Pages model's change-page must have all needed fields, which was define in Admin.py"""
         response = self.client.get(
             reverse(
-                'custom_admin:pages_flatpage_change', args=(FlatPage.objects.filter().first().id, )
+                'se_admin:pages_flatpage_change', args=(FlatPage.objects.filter().first().id, )
             )
         )
 
@@ -128,7 +128,7 @@ class AdminPage(TestCase):
         in Admin.py
         """
         response = self.client.get(
-            reverse('custom_admin:shopelectro_categorypage_changelist'))
+            reverse('se_admin:shopelectro_categorypage_changelist'))
 
         for field in self.list_display['category']:
             self.assertContains(response, field)
@@ -139,7 +139,7 @@ class AdminPage(TestCase):
         """
         response = self.client.get(
             reverse(
-                'custom_admin:shopelectro_categorypage_change', args=(
+                'se_admin:shopelectro_categorypage_change', args=(
                     CategoryPage.objects.filter().first().id,
                 )
             )
@@ -159,7 +159,7 @@ class AdminPage(TestCase):
         in Admin.py
         """
         response = self.client.get(
-            reverse('custom_admin:shopelectro_productpage_changelist'))
+            reverse('se_admin:shopelectro_productpage_changelist'))
 
         for field in self.list_display['product']:
             self.assertContains(response, field)
@@ -168,7 +168,7 @@ class AdminPage(TestCase):
         """Products model's change-page must have all needed fields, which was define in Admin.py"""
         response = self.client.get(
             reverse(
-                'custom_admin:shopelectro_productpage_change', args=(
+                'se_admin:shopelectro_productpage_change', args=(
                     ProductPage.objects.filter().first().id,
                 )
             )
