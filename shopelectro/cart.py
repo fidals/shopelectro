@@ -1,8 +1,10 @@
 from collections import OrderedDict
 from functools import wraps
 
-from shopelectro.models import Product
 from ecommerce.cart import Cart
+
+from shopelectro.config import PRICE_BOUNDS
+from shopelectro.models import Product
 
 
 def recalculate(func):
@@ -13,11 +15,12 @@ def recalculate(func):
 
 
 def recalculate_price(cart: Cart) -> Cart:
-    """Define what type of price should be used in cart. Actualize price if needed."""
+    """Define what type of price should be used in Cart. Actualize price if needed."""
+
     wholesale_types = OrderedDict(sorted({
-        'wholesale_large': 100000,
-        'wholesale_medium': 40000,
-        'wholesale_small': 15000,
+        'wholesale_large': PRICE_BOUNDS['wholesale_large'],
+        'wholesale_medium': PRICE_BOUNDS['wholesale_medium'],
+        'wholesale_small': PRICE_BOUNDS['wholesale_small'],
     }.items(), key=lambda type: type[1], reverse=True))
 
     def get_product_data(price_type: str) -> list:

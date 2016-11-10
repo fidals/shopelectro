@@ -4,11 +4,11 @@ Shopelectro's catalog views.
 NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
-from django.shortcuts import render, get_object_or_404
 from django.conf import settings
+from django.shortcuts import render, get_object_or_404
 
-from pages import views as pages_views
 from catalog.views import catalog
+from pages import views as pages_views
 
 from shopelectro import config
 from shopelectro.models import (

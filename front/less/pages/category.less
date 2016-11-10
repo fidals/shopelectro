@@ -281,9 +281,9 @@
     padding: 0;
 
     &:hover {
-      cursor: pointer;
-      color: @c-tooltip-hovered-link;
       background: none;
+      color: @c-tooltip-hovered-link;
+      cursor: pointer;
     }
   }
 
@@ -325,17 +325,10 @@
 
   .bootstrap-touchspin-up,
   .bootstrap-touchspin-down {
-    background-color: @c-btn-increase;
-    border: 1px solid @c-btn-increase;
-    color: @c-white;
     height: 20px;
-    padding: 9px;
   }
 
   .bootstrap-touchspin-down {
-    border-top: 1px solid @c-white;
-    border-bottom-left-radius: 4px;
-
     &:hover {
       background-color: @c-btn-decrease-active;
       border-color: @c-btn-decrease-active;
@@ -344,8 +337,6 @@
   }
 
   .bootstrap-touchspin-up {
-    border-top-left-radius: 4px;
-
     &:hover {
       background-color: @c-btn-increase-active;
       border-color: @c-btn-increase-active;
@@ -361,10 +352,6 @@
     position: absolute;
     left: 51px;
     z-index: 999;
-
-    i {
-      top: 5px;
-    }
   }
 
   .pkg-toggle {
