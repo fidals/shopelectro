@@ -1,6 +1,7 @@
 Django==1.9.5
 django-mptt==0.8.3
 django-widget-tweaks
+tblib
 pillow
 selenium
 selenium-requests

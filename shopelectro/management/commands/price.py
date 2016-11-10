@@ -11,7 +11,6 @@ from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
-from shopelectro import config
 from shopelectro.models import Product, Category
 
 
@@ -43,22 +42,27 @@ class Command(BaseCommand):
         def put_utm(product):
             """Put UTM attribute to product."""
             utm_marks = {
-                    'utm_source': utm,
-                    'utm_medium': 'cpc',
-                    'utm_content': product.get_root_category().page.slug,
-                    'utm_term': str(product.id)
-                }
+                'utm_source': utm,
+                'utm_medium': 'cpc',
+                'utm_content': product.get_root_category().page.slug,
+                'utm_term': str(product.id)
+            }
             url = reverse('product', args=(product.id,))
             utm_mark = '&'.join(
                 ['{}={}'.format(k, v) for k, v in utm_marks.items()]
             )
             product.utm_url = ''.join([settings.BASE_URL, url, '?' + utm_mark])
+
             return product
 
         def filter_categories():
+            new_year_lights = Category.objects.get(name='Новогодние гирлянды').get_descendants(include_self=True)
             others = (
-                Category.objects.get(name='Прочее').get_descendants(include_self=True)
+                Category.objects.get(name='Прочее')
+                                .get_descendants(include_self=True)
+                                .exclude(pk__in=new_year_lights)
             )
+
             return Category.objects.exclude(pk__in=others)
 
         def prepare_products(categories):
@@ -68,6 +72,7 @@ class Command(BaseCommand):
             result_products = (
                 put_utm(product) for product in products_except_others
             )
+
             return result_products
 
         filtered_categories = filter_categories()
