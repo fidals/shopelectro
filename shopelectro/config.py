@@ -2,7 +2,6 @@
 Config storage for shopelectro.ru.
 Every config-like option which doesn't belong to settings should be here.
 """
-from django.conf import settings
 
 
 def category_sorting(sorting_index=None):
@@ -120,4 +119,10 @@ FOOTER_LINKS = {
         {'name': 'Оптовым покупателям', 'slug': 'wholesale'},
         {'name': 'Гарантии и возврат', 'slug': 'return-goods-instr'},
     ],
+}
+
+PRICE_BOUNDS = {
+    'wholesale_large': 100000,
+    'wholesale_medium': 50000,
+    'wholesale_small': 20000,
 }

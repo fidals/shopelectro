@@ -33,8 +33,9 @@ function getAppSrcPaths(appName) {
   if (err) throw Error(err);
 
   const appPath = processData.stdout.toString().trim();
-  return require(appPath + '/paths.js')
-};
+
+  return require(appPath + '/paths.js');
+}
 
 // ================================================================
 // CONSTS
@@ -60,7 +61,7 @@ const PATH = {
         'front/js/vendors/jscrollpane.js',
         'front/js/vendors/jquery.mask.min.js',
         'front/js/vendors/jquery.bootstrap-touchspin.min.js',
-        'front/js/vendors/auto-complete.min.js',
+        'front/js/vendors/autocomplete.min.js',
         'front/js/vendors/babel.polyfill.min.js',
       ],
 

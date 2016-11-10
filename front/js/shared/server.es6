@@ -19,9 +19,10 @@ const server = (() => {
   const sendOrderCall = (phone, time, url) => $.post(config.orderCallUrl, { phone, time, url });
 
   /**
-   * @param url
+   * Load products set from server.
+   * @param {string} url
    */
-  const fetchProducts = url => fetch(url).then(response => response.text());
+  const fetchProducts = url => $.post(url);
 
   /**
    * Send viewType to store user's default view type.

@@ -1,7 +1,7 @@
 /**
  * Category Page module defines logic, operations and DOM for CategoryPage.
  */
-(() => {
+{
   const DOM = {
     $loadedProducts: $('.js-products-showed-count'),
     $productsList: $('#products-wrapper'),
@@ -107,6 +107,13 @@
   const sortingOption = () => DOM.$sorting.find(':selected');
 
   /**
+   * Get number of already loaded products
+   *
+   * @returns {int} - number of products which are loaded and presented in DOM
+   */
+  const loadedProductsCount = () => parseInt(DOM.$loadedProducts.first().text(), 10);
+
+  /**
    * Number of products remained un-fetched from back-end.
    * Calculates due to a simple formula:
    * left products = total products - already loaded products
@@ -116,13 +123,6 @@
   const productsLeft = () => parseInt(config.totalProductsCount - loadedProductsCount(), 10);
 
   /**
-   * Get number of already loaded products
-   *
-   * @returns {int} - number of products which are loaded and presented in DOM
-   */
-  const loadedProductsCount = () => parseInt(DOM.$loadedProducts.first().text(), 10);
-
-  /**
    * Load products from back-end using promise-like fetch object fetchProducts.
    * After products successfully loaded - publishes 'onProductLoad' event.
    */
@@ -130,7 +130,7 @@
     const categoryUrl = DOM.$loadMore.attr('data-url');
     const offset = loadedProductsCount();
     const sorting = sortingOption().val();
-    const url = `${categoryUrl}load-more/${offset}/${sorting}`;
+    const url = `${categoryUrl}load-more/${offset}/${sorting}/`;
 
     server.fetchProducts(url)
       .then(products => mediator.publish('onProductsLoad', products));
@@ -154,4 +154,4 @@
   }
 
   init();
-})();
+};

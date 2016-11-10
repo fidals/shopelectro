@@ -7,8 +7,8 @@ Put here only calls of other commands.
 If you have not command for current release, just leave Command.handle method empty.
 """
 
-from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

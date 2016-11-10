@@ -15,6 +15,7 @@
     tr td {
       vertical-align: top;
       width: 49%;
+      padding: 0 10px; // Remove after new year
     }
   }
 
@@ -74,11 +75,11 @@
     border-radius: 3px !important; // Need to override bootstrap rule;
     font-size: @f-size-base + 2;
     font-family: @proxima;
-    height: 38px;
+    height: 41px;
     outline: none;
     padding: 0;
     text-align: center;
-    width: 70px;
+    width: 67px;
   }
 }
 
@@ -144,53 +145,6 @@
 
   .btn-cart {
     cursor: pointer;
-  }
-  .bootstrap-touchspin {
-    display: block;
-  }
-
-  .bootstrap-touchspin-up,
-  .bootstrap-touchspin-down {
-    background-color: @c-btn-increase;
-    border: 1px solid @c-btn-increase;
-    color: @c-white;
-    height: 20px;
-    padding: 9px;
-  }
-
-  .bootstrap-touchspin-down {
-    border-top: 1px solid @c-white;
-    border-bottom-left-radius: 4px;
-
-    &:hover {
-      background-color: @c-btn-decrease-active;
-      border-color: @c-btn-decrease-active;
-      border-top-color: @c-white;
-    }
-  }
-
-  .bootstrap-touchspin-up {
-    border-top-left-radius: 4px;
-
-    &:hover {
-      background-color: @c-btn-increase-active;
-      border-color: @c-btn-increase-active;
-    }
-
-    i {
-      margin-top: -1px;
-    }
-  }
-
-  .input-group-btn-vertical {
-    display: block;
-    position: absolute;
-    left: 51px;
-    z-index: 999;
-
-    i {
-      top: 5px;
-    }
   }
 }
 

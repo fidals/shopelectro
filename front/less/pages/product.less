@@ -178,7 +178,7 @@
 
     .form-control {
       float: left;
-      margin: 3px 11px 0 18px;
+      margin: 0 11px 0 18px;
       width: 160px;
     }
 
@@ -187,30 +187,6 @@
       color: @c-black;
       cursor: pointer;
       text-decoration: none;
-    }
-
-    .bootstrap-touchspin-up,
-    .bootstrap-touchspin-down {
-      height: 21px;
-      background-color: @c-btn-increase;
-      border: none;
-      color: @c-white;
-    }
-
-    .bootstrap-touchspin-down {
-      border-top: 1px solid @c-white;
-    }
-
-    .bootstrap-touchspin-up {
-      height: 22px;
-    }
-
-    .bootstrap-touchspin-up:hover {
-      background-color: @c-product-pop-label;
-    }
-
-    .bootstrap-touchspin-down:hover {
-      background-color: @c-btn-decrease-active;
     }
   }
 
@@ -251,7 +227,7 @@
       display: block;
       height: 43px;
       float: left;
-      padding: 3px 0 0 18px;
+      padding: 0 0 0 18px;
       width: 102px;
     }
   }
@@ -412,6 +388,33 @@
         color: @c-black-lighter-x;
       }
     }
+  }
+}
+
+.bootstrap-touchspin-up,
+.bootstrap-touchspin-down {
+  height: 21px;
+  background-color: @c-btn-increase;
+  border: none;
+  color: @c-white;
+}
+
+.bootstrap-touchspin-up {
+  height: 22px;
+
+  &:hover {
+    background-color: @c-product-pop-label;
+    color: @c-white;
+  }
+}
+
+.bootstrap-touchspin-down {
+  border-top: 1px solid @c-white;
+
+  &:hover {
+    background-color: @c-btn-decrease-active;
+    border-color: @c-white;
+    color: @c-white;
   }
 }
 
@@ -642,8 +645,9 @@
 .btn-to-basket {
   .btn-dark-blue;
   font-size: @f-size-base + 3;
-  padding: 4px 56px;
-  margin: 2px 0 20px;
+  margin: 0 0 20px;
+  padding: 5px 40px;
+  width: 208px;
 }
 
 .btn-order {
@@ -651,7 +655,6 @@
   font-size: @f-size-base + 1;
   padding: 6px 0;
   width: 143px;
-  margin: 2px 0 0;
 }
 
 .modal-delivery-link {
@@ -665,7 +668,8 @@
 .page-product {
   table.product-table {
     border-color: @c-price-border-color;
-    margin-bottom: 25px;
+    margin: 0 -1px 25px;
+    width: 357px;
 
     thead th,
     tbody td {

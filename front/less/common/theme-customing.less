@@ -16,8 +16,8 @@
   position: relative;
 
   > thead > tr > th {
-    color: @c-grey-text-main;
     border-bottom: 1px solid @c-tooltip;
+    color: @c-grey-text-main;
   }
 
   > tbody > tr > td {
@@ -225,81 +225,6 @@
     border: 2px solid @c-btn-remove-active;
     color: @c-btn-remove-active;
   }
-}
-
-.btn-dark-blue {
-  .font-anti;
-  .transition;
-  background: @c-blue-dark-focused;
-  border: 2px solid @c-blue-dark-focused;
-  border-radius: 5px;
-  color: @c-white;
-  font-size: @f-size-base + 2;
-  min-width: 150px;
-  text-decoration: none;
-
-  &:hover {
-    background: @c-blue-dark-hovered;
-    border-color: @c-blue-dark-hovered;
-    color: @c-white;
-  }
-
-  &:focus,
-  &:active,
-  &:active:focus {
-    box-shadow: none;
-    background: @c-white;
-    border-color: @c-blue-dark-focused;
-    color: @c-blue-dark-focused;
-    outline: none;
-  }
-}
-
-.btn-grey {
-  .font-anti;
-  .transition;
-  background: @c-grey-text-main;
-  border: 2px solid @c-grey-text-main;
-  border-radius: 3px;
-  color: @c-white;
-  font-size: @f-size-base;
-  letter-spacing: -0.015em;
-  padding: 10px 28px;
-  text-decoration: none;
-
-  &:hover {
-    background: @c-btn-remove-hovered;
-    border-color: @c-btn-remove-hovered;
-    color: @c-black;
-  }
-
-  &:focus,
-  &:active,
-  &:active:focus {
-    box-shadow: none;
-    background: @c-product-pop-label;
-    border-color: @c-product-pop-label;
-    color: @c-white;
-    outline: none;
-  }
-}
-
-.btn-wrapper-center {
-  text-align: center;
-}
-
-.input-number {
-  -moz-appearance: textfield;
-  appearance: none;
-  background-color: transparent;
-  border: 1px solid @c-btn-increase;
-  border-radius: 3px;
-  height: 38px;
-  font-family: @proxima;
-  font-size: @f-size-base;
-  outline: none;
-  text-align: center;
-  width: 70px;
 }
 
 // ================================================================
