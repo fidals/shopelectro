@@ -11,6 +11,7 @@ from catalog.views import catalog
 from pages import views as pages_views
 
 from shopelectro import config
+from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import (
     Product, Category, CategoryPage as CategoryPageModel)
 from shopelectro.views.helpers import set_csrf_cookie
@@ -63,6 +64,15 @@ class ProductPage(catalog.ProductPage):
     Extend get_context_data.
     """
     model = Product
+
+    def get_context_data(self, **kwargs):
+        """Inject breadcrumbs into context."""
+        context = super(ProductPage, self).get_context_data(**kwargs)
+
+        return {
+            **context,
+            'price_bounds': PRICE_BOUNDS,
+        }
 
 
 # SHOPELECTRO-SPECIFIC VIEWS
