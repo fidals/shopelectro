@@ -35,8 +35,10 @@ function getAppSrcPaths(appName) {
 
   const appPath = processData.stdout.toString().trim();
 
-  return require(appPath + '/paths.js');
+  return require(appPath + '/front/paths.js');
 }
+
+const adminSrc = getAppSrcPaths('generic_admin');
 
 // ================================================================
 // CONSTS
@@ -48,11 +50,17 @@ const env = {
 
 const path = {
   src: {
-    styles: [
-      'front/less/admin.less',
-      'front/less/styles.less',
-      'front/less/pages.less',
-    ],
+    styles: {
+      admin: [
+        'front/less/common/variables.less',
+        adminSrc.css,
+        'front/less/pages/admin.less',
+      ],
+      main: [
+        'front/less/styles.less',
+        'front/less/pages.less',
+      ],
+    },
 
     js: {
       vendors: [
@@ -85,25 +93,11 @@ const path = {
         'front/js/components/staticPages.es6',
       ],
 
-      adminVendors: [
-        'front/js/vendors/jquery-ui.min.js',
-        'front/js/vendors/jquery.slimscroll.min.js',
-        'front/js/vendors/jqGrid.locale-ru.js',
-        'front/js/vendors/jqGrid.min.js',
-        'front/js/vendors/jstree.min.js',
-        'front/js/vendors/jquery.webui-popover.min.js',
-      ],
-
-      admin: [
-        'front/js/components/admin.es6',
-        'front/js/components/adminSidebar.es6',
-        'front/js/components/adminPopover.es6',
-        'front/js/components/jQgridSettings.es6',
-        'front/js/components/jQgrid.es6',
-      ],
+      adminVendors: adminSrc.vendors,
+      admin: [...adminSrc.admin, 'front/js/components/admin.es6'],
     },
 
-    images: 'front/images/**/*',
+    images: ['front/images/**/*', adminSrc.img],
     fonts: 'front/fonts/**/*',
   },
 
@@ -113,10 +107,12 @@ const path = {
     images: 'front/build/images/',
     fonts: 'front/build/fonts/',
   },
-
   watch: {
     styles: 'front/less/**/*',
-    js: 'front/js/**/*',
+    js: [
+      'front/js/**/*',
+      adminSrc.watch,
+    ],
     images: 'src/images/**/*',
     fonts: 'src/fonts/**/*',
     html: 'templates/**/*',
@@ -131,7 +127,8 @@ gulp.task('build', callback => {
   env.production = true;
 
   sequence(
-    'styles',
+    'styles-main',
+    'styles-admin',
     'js-vendors',
     'js-main',
     'js-pages',
@@ -146,8 +143,8 @@ gulp.task('build', callback => {
 // ================================================================
 // STYLES : Build common stylesheets
 // ================================================================
-gulp.task('styles', () => {
-  gulp.src(path.src.styles)
+gulp.task('styles-main', () => {
+  gulp.src(path.src.styles.main)
     .pipe($.changed(path.build.styles, { extension: '.css' }))
     .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
@@ -160,6 +157,24 @@ gulp.task('styles', () => {
     .pipe($.rename({
       suffix: '.min',
     }))
+    .pipe($.if(env.production, $.cssnano()))
+    .pipe($.if(env.development, $.sourcemaps.write('.')))
+    .pipe(gulp.dest(path.build.styles))
+    .pipe($.livereload());
+});
+
+gulp.task('styles-admin', () => {
+  gulp.src(path.src.styles.admin)
+    .pipe($.changed(path.build.styles, { extension: '.css' }))
+    .pipe($.if(env.development, $.sourcemaps.init()))
+    .pipe($.plumber())
+    .pipe($.concat('admin.min.css'))
+    .pipe($.less({
+      plugins: [lessGlob],
+    }))
+    .pipe($.if(env.production, $.autoprefixer({
+      browsers: ['last 3 versions'],
+    })))
     .pipe($.if(env.production, $.cssnano()))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(path.build.styles))
@@ -246,7 +261,7 @@ gulp.task('js-admin', () => {
     .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
     .pipe($.babel({
-      presets: ['es2015'],
+      presets: [require('babel-preset-es2015')],
     }))
     .pipe($.concat('admin.js'))
     .pipe($.rename({
@@ -280,6 +295,8 @@ gulp.task('fonts', () => {
 // ================================================================
 gulp.task('watch', () => {
   $.livereload.listen();
+  env.development = true;
+  env.production = false;
   gulp.watch(path.watch.styles, ['styles']);
   gulp.watch(path.watch.js, ['js-main', 'js-pages', 'js-admin']);
   gulp.watch(path.watch.images, ['images']);

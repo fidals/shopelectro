@@ -720,7 +720,7 @@ class YandexMetrika(SeleniumTestCase):
         self.buy_product()
         self.prevent_default('click', '.js-go-to-cart')
         self.go_to_cart()
-        wait()
+        wait(30)
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
         self.prevent_default('click', '.btn-to-order')

@@ -21,11 +21,9 @@ from shopelectro.admin import se_admin_site
 admin_urls = [
     url(r'^', se_admin_site.urls),
     url(r'^autocomplete/$', views.AdminAutocomplete.as_view()),
-    url(r'^get-table-editor-data/$', views.admin_table_editor_data),
-    url(r'^get-tree-items/$', views.admin_tree_items),
-    url(r'^product-create/$', views.admin_create_product),
-    url(r'^product-update/$', views.admin_update_product),
-    url(r'^product-delete/$', views.admin_delete_product),
+    url(r'^table-editor-api/$', views.TableEditorAPI.as_view()),
+    url(r'^redirect-to-product/$', views.RedirectToProduct.as_view()),
+    url(r'^get-tree-items/$', views.Tree.as_view()),
 ]
 
 catalog_urls = [

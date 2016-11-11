@@ -319,7 +319,6 @@ class TableEditor(SeleniumTestCase):
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
-
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
         login_field.clear()
@@ -339,7 +338,6 @@ class TableEditor(SeleniumTestCase):
 
     def update_input_value(self, index, new_data):
         """Clear input, pass new data and emulate Return keypress."""
-
         editable_input = self.browser.find_elements_by_class_name('inline-edit-cell')[index]
         editable_input.clear()
         editable_input.send_keys(new_data)
@@ -348,20 +346,17 @@ class TableEditor(SeleniumTestCase):
 
     def get_cell(self, index=0):
         """Return WebElement for subsequent manipulations by index."""
-
         table = self.browser.find_element_by_class_name('jqgrow')
         return table.find_elements_by_tag_name('td')[index]
 
     def get_current_price(self, index):
         """Return sliced integer price of first product by cell index."""
-
         raw_string = self.get_cell(index).text
 
         return int(''.join(raw_string.split(' '))[1:-3])
 
     def perform_checkbox_toggle(self, checkbox_name):
         """Change checkbox state by checkbox_name."""
-
         self.get_cell().click()
         checkbox = self.browser.find_element_by_name(checkbox_name)
         old_active_state = checkbox.is_selected()
@@ -376,7 +371,6 @@ class TableEditor(SeleniumTestCase):
 
     def open_filters(self):
         """Open TE filters cause they are collapsed by default."""
-
         filters_wrapper = self.browser.find_element_by_class_name('js-filter-wrapper')
 
         if not filters_wrapper.is_displayed():
@@ -385,25 +379,35 @@ class TableEditor(SeleniumTestCase):
 
     def check_filters_and_table_headers_equality(self):
         """TE filters and table headers text should be equal."""
-
         filters = self.browser.find_elements_by_class_name('js-sortable-item')
 
         for index, item in enumerate(filters):
             filter_text = item.text.lower()
             table_header_text = self.browser.find_elements_by_class_name('ui-th-div')[index + 1].text.lower()
 
-            self.assertEqual(filter_text, table_header_text)
+            self.assertIn(table_header_text, filter_text)
+
+    def add_col_to_grid(self, col_name):
+        filter_fields = self.browser.find_elements_by_class_name('filter-fields-label')
+
+        def is_correct_col(col):
+            return col_name in col.get_attribute('for')
+
+        next(filter(is_correct_col, filter_fields)).click()
+        self.save_filters()
+
+    def save_filters(self):
+        self.browser.find_element_by_class_name('js-save-filters').click()
+        wait(2)
 
     def test_products_loaded(self):
         """TE should have all products."""
-
         rows = self.browser.find_elements_by_class_name('jqgrow')
 
         self.assertTrue(len(rows) > 0)
 
     def test_edit_product_name(self):
         """We could change Product name from TE."""
-
         self.get_cell(1).click()
         self.update_input_value(0, self.new_product_name)
         self.refresh_table_editor_page()
@@ -413,11 +417,11 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_price(self):
         """We could change Product price from TE."""
-
         price_cell_index = 3
         price_cell_input = 2
         new_price = self.get_current_price(price_cell_index) + 100
         self.get_cell(price_cell_index).click()
+        wait()
         self.update_input_value(price_cell_input, new_price)
         self.refresh_table_editor_page()
         updated_price = self.get_current_price(price_cell_index)
@@ -426,21 +430,22 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_activity(self):
         """We could change Product is_active state from TE."""
-
-        old_active_state, new_active_state = self.perform_checkbox_toggle('is_active')
+        self.open_filters()
+        self.add_col_to_grid('is_active')
+        old_active_state, new_active_state = self.perform_checkbox_toggle('page_is_active')
 
         self.assertNotEqual(new_active_state, old_active_state)
 
     def test_edit_product_popularity(self):
         """We could change Product price is_popular state from TE."""
-
+        self.open_filters()
+        self.add_col_to_grid('is_popular')
         old_popular_state, new_popular_state = self.perform_checkbox_toggle('is_popular')
 
         self.assertNotEqual(new_popular_state, old_popular_state)
 
     def test_remove_product(self):
         """We could remove Product from TE."""
-
         old_first_row_id = self.get_cell().text
         self.browser.find_element_by_class_name('js-confirm-delete-modal').click()
         wait()
@@ -452,7 +457,6 @@ class TableEditor(SeleniumTestCase):
 
     def test_sort_table_by_id(self):
         """We could sort products in TE by id."""
-
         first_product_id_before = self.get_cell().text
         self.browser.find_element_by_class_name('ui-jqgrid-sortable').click()
         self.browser.find_element_by_class_name('ui-jqgrid-sortable').click()
@@ -462,7 +466,6 @@ class TableEditor(SeleniumTestCase):
 
     def test_sort_table_by_price(self):
         """We could sort products in TE by price."""
-
         first_product_price_before = self.get_cell(1).text
         name_header = self.browser.find_elements_by_class_name('ui-jqgrid-sortable')[1]
         name_header.click()
@@ -473,7 +476,6 @@ class TableEditor(SeleniumTestCase):
 
     def test_filter_table(self):
         """We could make live search in TE."""
-
         rows_before = len(self.browser.find_elements_by_class_name('jqgrow'))
         search_field = self.browser.find_element_by_id('search-field')
         search_field.send_keys('384')
@@ -484,7 +486,6 @@ class TableEditor(SeleniumTestCase):
 
     def test_filters_equals_table_headers(self):
         """Headers in TE should be equal to chosen filters respectively."""
-
         self.open_filters()
         self.check_filters_and_table_headers_equality()
 
@@ -494,7 +495,6 @@ class TableEditor(SeleniumTestCase):
 
         This test case is contains save & drop cases cause they are depends on each other.
         """
-
         self.browser.refresh()
         self.open_filters()
 
@@ -503,8 +503,7 @@ class TableEditor(SeleniumTestCase):
         for index, item in enumerate(checkboxes):
             self.browser.find_elements_by_class_name('filter-fields-item')[index].click()
 
-        self.browser.find_element_by_class_name('js-save-filters').click()
-        wait(2)
+        self.save_filters()
         self.check_filters_and_table_headers_equality()
 
         self.browser.refresh()
@@ -517,9 +516,8 @@ class TableEditor(SeleniumTestCase):
 
     def test_non_existing_category_change(self):
         """We should see popover after trying to change Product's category to non existing one."""
-
         self.get_cell().click()
-        self.update_input_value(1, 'yo')
+        self.update_input_value(3, 'yo')
 
         popover = self.browser.find_element_by_class_name('webui-popover')
 
