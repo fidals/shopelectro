@@ -15,7 +15,6 @@ from django.conf import settings
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 
-from pages.models import FlatPage, ModelPage
 from shopelectro.models import Category, Product
 
 
@@ -37,7 +36,7 @@ def context_click(browser, element):
 class SeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
 
-    fixtures = ['dump.json']
+    fixtures = ['dump.json', 'admin.json']
 
     @classmethod
     def setUpClass(cls):
@@ -57,8 +56,6 @@ class SeleniumTestCase(LiveServerTestCase):
 class AdminPage(SeleniumTestCase):
     """Selenium-based tests for Admin page UI."""
 
-    fixtures = ['dump.json', 'admin.json']
-
     @classmethod
     def setUpClass(cls):
         super(AdminPage, cls).setUpClass()
@@ -68,9 +65,14 @@ class AdminPage(SeleniumTestCase):
         cls.login = 'admin'
         cls.password = 'asdfjkl;'
         cls.title_text = 'Shopelectro administration'
-        cls.price_filter = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
+        cls.product_table = 'paginator'
         cls.active_products = '//*[@id="changelist-filter"]/ul[1]/li[2]/a'
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[1]/li[3]/a'
+        cls.price_filter = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
+        cls.filter_by_has_content = '//*[@id="changelist-filter"]/ul[3]/li[2]/a'
+        cls.filter_by_has_not_content = '//*[@id="changelist-filter"]/ul[3]/li[3]/a'
+        cls.filter_by_has_image = '//*[@id="changelist-filter"]/ul[4]/li[2]/a'
+        cls.filter_by_has_not_image = '//*[@id="changelist-filter"]/ul[4]/li[3]/a'
         cls.is_active_img = 'field-is_active'
         cls.autocomplete_text = 'Prod'
 
@@ -94,6 +96,9 @@ class AdminPage(SeleniumTestCase):
         login_form = self.browser.find_element_by_id('login-form')
         login_form.submit()
         wait()
+
+    def get_table_with_products(self):
+        return self.browser.find_element_by_class_name(self.product_table)
 
     def open_js_tree_nodes(self):
         def get_change_state_button(id):
@@ -143,6 +148,44 @@ class AdminPage(SeleniumTestCase):
         product_price = int(float(product.text))
 
         self.assertTrue(product_price >= 1000)
+
+    def test_image_filter(self):
+        """
+        Image filter is able to filter pages by the presence of the image.
+        """
+        self.browser.get(self.change_products_url)
+        self.browser.find_element_by_xpath(self.filter_by_has_image).click()
+        wait()
+
+        table = self.get_table_with_products().text
+
+        self.assertTrue('1' in table)
+
+        self.browser.find_element_by_xpath(self.filter_by_has_not_image).click()
+        wait()
+
+        table = self.get_table_with_products().text
+
+        self.assertTrue('299' in table)
+
+    def test_content_filter(self):
+        """
+        Content filter is able to filter pages by the presence of the content.
+        """
+        self.browser.get(self.change_products_url)
+        self.browser.find_element_by_xpath(self.filter_by_has_content).click()
+        wait()
+
+        table = self.browser.find_element_by_class_name(self.product_table).text
+
+        self.assertTrue('0' in table)
+
+        self.browser.find_element_by_xpath(self.filter_by_has_not_content).click()
+        wait()
+
+        table = self.get_table_with_products().text
+
+        self.assertTrue('300' in table)
 
     def test_is_active_filter(self):
         """Activity filter returns only active or non active items."""
@@ -264,7 +307,6 @@ class AdminPage(SeleniumTestCase):
 class TableEditor(SeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""
 
-    fixtures = ['dump.json', 'admin.json']
     new_product_name = 'Product'
 
     @classmethod

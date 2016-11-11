@@ -4,19 +4,15 @@ Shopelectro's admin views.
 NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
-import os
 import json
 
-from django.core.files.images import ImageFile
 from django.core.urlresolvers import reverse
 from django.db.models import F
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_GET
-from django.utils.text import slugify
 
 from pages.models import Page
 from shopelectro.models import Product, Category
-from images.models import Image
 
 
 @require_POST
@@ -110,8 +106,8 @@ def admin_tree_items(request):
     def create_json_response(entities):
         """Create data for jsTree and return Json response"""
         def setup_view_name(entity):
-            """Get view's name for certain entity (ex.'custom_admin:pages_page_change')"""
-            return ('custom_admin:shopelectro_{model_name}page_change'
+            """Get view's name for certain entity (ex.'se_admin:pages_page_change')"""
+            return ('se_admin:shopelectro_{model_name}page_change'
                     .format(model_name=entity._meta.model_name))
         if not entities.first():
             return JsonResponse({'text': 'У категории нет товаров.'})
@@ -143,35 +139,6 @@ def admin_tree_items(request):
 
     root_categories = Category.objects.root_nodes().order_by('page__position')
     return create_json_response(root_categories)
-
-
-def admin_remove_image(request):
-    image_id = request.POST['id']
-    image = Image.objects.get(id=image_id)
-    image.delete()
-    return HttpResponse('ok')
-
-
-@require_POST
-def admin_upload_images(request, model_name, entity_id):
-
-    def create_image(file_):
-        file_name = os.path.basename(file_.name)
-        short_file_name, _ = os.path.splitext(file_name)
-        Image.objects.create(
-            model=product.page,
-            slug=slugify(short_file_name),
-            image=ImageFile(file_),
-        )
-
-    referrer_url = request.META['HTTP_REFERER']
-
-    if model_name == 'product':
-        files = request.FILES.getlist('files')
-        product = Product.objects.get(id=entity_id)
-        for file in files:
-            create_image(file_=file)
-    return HttpResponseRedirect(referrer_url)
 
 
 @require_GET

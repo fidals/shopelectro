@@ -34,7 +34,7 @@ function getAppSrcPaths(appName) {
 
   const appPath = processData.stdout.toString().trim();
 
-  return require(appPath + '/paths.js');
+  return require(appPath + '/paths.js')
 }
 
 // ================================================================
