@@ -71,8 +71,8 @@
       </td>
     </tr>
   </table>
-  <form class="order-form" id="order-form-full" action="." method="post">
-    {% csrf_token %}
+
+  <form class="order-form" id="order-form-full" method="post">{% csrf_token %}
     <table class="order-info">
       <tr>
         <td>
@@ -85,7 +85,7 @@
       </tr>
       <tr>
         <td class="payment-types-form">
-          {% include 'ecommerce/payment_types.html' %}
+          {% include 'ecommerce/order/payment_types.html' %}
         </td>
         <td>
           {% csrf_token %}

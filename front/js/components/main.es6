@@ -4,6 +4,8 @@
     $touchspin: $('.js-touchspin'),
     $timeTag: $('.js-select-time'),
     $phoneInputs: $('.js-masked-phone'),
+    $searchExampleText: $('#search-example-text'),
+    $searchInput: $('.js-search-input'),
   };
 
   const init = () => {
@@ -28,6 +30,7 @@
 
   function setUpListeners() {
     $(window).scroll(toggleToTopBtn);
+    DOM.$searchExampleText.click(pasteSearchExampleText);
     DOM.$btnScrollTop.click(() => $('html, body').animate({ scrollTop: 0 }, 300));
   }
 
@@ -44,6 +47,15 @@
    */
   function toggleToTopBtn() {
     ($(window).scrollTop() > 300) ? enableScrollToTop() : disableScrollToTop();
+  }
+
+  /**
+   * Paste search example text in search input.
+   */
+  function pasteSearchExampleText() {
+    const searchText = DOM.$searchExampleText.text().trim();
+
+    $(DOM.$searchInput).val(searchText).focus();
   }
 
   init();

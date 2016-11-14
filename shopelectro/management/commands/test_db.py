@@ -143,7 +143,7 @@ class Command(BaseCommand):
     @staticmethod
     def create_custom_pages():
         """Create required custom pages for reversing, breadcrumbs and etc"""
-        for fields in settings.PAGES:
+        for fields in settings.CUSTOM_PAGES:
             CustomPage.objects.get_or_create(**fields)
 
     @staticmethod

@@ -12,7 +12,7 @@ def create_custom_pages(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     PageManager = apps.get_model('pages', 'Page').objects.using(db_alias)
 
-    for fields in settings.PAGES:
+    for fields in settings.CUSTOM_PAGES:
         PageManager.get_or_create(type=Page.CUSTOM_TYPE, slug=fields['slug'], defaults=fields)
 
 

@@ -1,4 +1,4 @@
-const product = (() => {
+{
   const DOM = {
     $imageBig: $('#product-image-big'),
     $imagesToSwitch: $('.js-image-switch'),
@@ -16,7 +16,7 @@ const product = (() => {
     changeOneClickButtonState();
   };
 
-  const setUpListeners = () => {
+  function setUpListeners() {
     mediator.subscribe('onOneClickBuy', successOrder);
 
     DOM.$imageBig.click(fancyBoxStart);
@@ -24,12 +24,12 @@ const product = (() => {
     DOM.$addToCart.click(buyProduct);
     DOM.$oneClick.click(oneClick);
     DOM.$phone.keyup(changeOneClickButtonState);
-  };
+  }
 
   /**
    * Initialize fancyBox on specific index image.
    */
-  const fancyBoxStart = () => {
+  function fancyBoxStart() {
     $.fancybox(
       DOM.$fancybox, {
         index: DOM.$imageBig.attr('data-index'),
@@ -40,33 +40,34 @@ const product = (() => {
         },
       });
 
-    return false;
-  };
+    return false; // this return is required
+  }
 
   /**
    * Send product data & redirect page.
    */
-  const oneClick = () => {
+  function oneClick() {
     helpers.disableSubmit(DOM.$oneClick, 'Ожидайте...');
+
     server.oneClickBuy(productId(), DOM.$counter.val(), DOM.$phone.val())
       .then(() => mediator.publish('onOneClickBuy'));
-  };
+  }
 
   /**
    * Change button disable state.
    */
-  const changeOneClickButtonState = () => {
+  function changeOneClickButtonState() {
     if (DOM.$oneClick.size() > 0) {
       DOM.$oneClick.attr('disabled', !helpers.isPhoneValid(DOM.$phone.val()));
     }
-  };
+  }
 
   /**
    * Switch product images.
    *
    * @param event - click on image preview;
    */
-  const productImgSwitch = event => {
+  function productImgSwitch(event) {
     const targetSrc = $(event.target).attr('src');
     const dataIndex = $(event.target).attr('data-index');
 
@@ -76,9 +77,9 @@ const product = (() => {
         'data-index': dataIndex,
       });
     }
-  };
+  }
 
-  const buyProduct = () => {
+  function buyProduct() {
     const { id, count } = {
       id: productId(),
       count: DOM.$counter.val(),
@@ -86,11 +87,11 @@ const product = (() => {
 
     server.addToCart(id, count)
       .then(data => mediator.publish('onCartUpdate', data));
-  };
+  }
 
   function successOrder() {
-    location.href = '/shop/success-order';
+    location.href = '/shop/order-success';
   }
 
   init();
-})();
+}
