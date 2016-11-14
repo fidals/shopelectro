@@ -102,13 +102,13 @@ class YandexOrder(OrderPage):
 
         # Took form fields from Yandex docs https://goo.gl/afKfsz
         response_data = {
-            'yandex_kassa_link': settings.YANDEX_KASSA_LINK,  # Required
+            'yandex_kassa_link': settings.YANDEX_KASSA_LINK, # Required
             'shopId': settings.SHOP['id'],  # Required
             'scid': settings.SHOP['scid'],  # Required
             'shopSuccessURL': settings.SHOP['success_url'],
             'shopFailURL': settings.SHOP['fail_url'],
-            'customerNumber': order.id,  # Required
-            'sum': order.total_price,  # Required
+            'customerNumber': order.id, # Required
+            'sum': order.total_price, # Required
             'orderNumber': order.fake_order_number,
             'cps_phone': order.phone,
             'cps_email': order.email,

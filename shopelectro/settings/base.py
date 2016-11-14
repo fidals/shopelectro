@@ -23,7 +23,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# It is fake-url. Correct url will be created on `docker-compose up` stage from `docker/.env`
 SECRET_KEY = os.environ.get('SECRET_KEY', 'so_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
