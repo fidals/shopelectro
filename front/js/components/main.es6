@@ -53,9 +53,9 @@
    * Paste search example text in search input.
    */
   function pasteSearchExampleText() {
-    const searchText = DOM.$searchExampleText.text().trim();
+    const searchExampleText = DOM.$searchExampleText.text().trim();
 
-    $(DOM.$searchInput).val(searchText).focus();
+    $(DOM.$searchInput).val(searchExampleText).focus();
   }
 
   init();

@@ -70,8 +70,8 @@
       }
     },
     onSelect: (event, term, item) => {
-      const isRightClick = () => event.button === 2 || event.which === 3;
-      if (isRightClick()) return;
+      const isRightClick = event.button === 2 || event.which === 3;
+      if (isRightClick) return;
 
       window.location = $(item).find('a').attr('href');
     },

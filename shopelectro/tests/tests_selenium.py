@@ -37,21 +37,21 @@ def context_click(browser, element):
     wait()
 
 
-def make_backcall(self):
+def make_backcall(browser):
     """Trigger backcall modal. Fill it and submit."""
-    self.browser.find_element_by_class_name('js-backcall-order').click()
+    browser.find_element_by_class_name('js-backcall-order').click()
     wait()
-    self.browser.find_element_by_id('back-call-phone').send_keys('22222222222')
-    self.browser.find_element_by_xpath(
+    browser.find_element_by_id('back-call-phone').send_keys('22222222222')
+    browser.find_element_by_xpath(
         '//*[@id="back-call-time"]/option[3]').click()
     wait()
-    self.browser.find_element_by_class_name('js-send-backcall').click()
+    browser.find_element_by_class_name('js-send-backcall').click()
     wait()
 
 
-def show_cart_dropdown(self):
-    cart_parent = self.browser.find_element_by_class_name('basket-parent')
-    hover(self.browser, cart_parent)
+def show_cart_dropdown(browser):
+    cart_parent = browser.find_element_by_class_name('basket-parent')
+    hover(browser, cart_parent)
     wait()
 
 
@@ -90,7 +90,7 @@ class Header(SeleniumTestCase):
 
     def test_order_backcall(self):
         """After filling modal fields user can successfully order backcall."""
-        make_backcall(self)
+        make_backcall(self.browser)
 
         self.assertTrue(self.browser.find_element_by_class_name(
             'js-backcall-success').is_displayed())
@@ -104,7 +104,7 @@ class Header(SeleniumTestCase):
 
     def test_cart_hover(self):
         """Cart dropdown should be visible on hover."""
-        show_cart_dropdown(self)
+        show_cart_dropdown(self.browser)
         cart = self.browser.find_element_by_class_name('basket-wrapper')
 
         self.assertTrue(cart.is_displayed())
@@ -115,7 +115,7 @@ class Header(SeleniumTestCase):
         self.browser.get(self.live_server_url + reverse('product', args=(product_id,)))
         self.browser.find_element_by_class_name('btn-to-basket').click()
         wait()
-        show_cart_dropdown(self)
+        show_cart_dropdown(self.browser)
         self.browser.find_element_by_class_name('basket-reset').click()
         wait()
         cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
@@ -375,7 +375,7 @@ class ProductPage(SeleniumTestCase):
     def test_product_name_in_cart_dropdown(self):
         self.browser.find_element_by_class_name('btn-to-basket').click()
         wait()
-        show_cart_dropdown(self)
+        show_cart_dropdown(self.browser)
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         cart = cart_parent.find_element_by_class_name('basket-wrapper')
 
@@ -385,7 +385,7 @@ class ProductPage(SeleniumTestCase):
         self.browser.find_element_by_id('product-count').send_keys('42')
         self.browser.find_element_by_class_name('btn-to-basket').click()
         wait()
-        show_cart_dropdown(self)
+        show_cart_dropdown(self.browser)
         cart_size = self.browser.find_element_by_class_name('js-cart-size')
 
         self.assertTrue('42' in cart_size.text)
@@ -686,7 +686,7 @@ class YandexMetrika(SeleniumTestCase):
 
     def test_backcall_request(self):
         """Test goal when user requested backcall successfully."""
-        make_backcall(self)
+        make_backcall(self.browser)
 
         self.assertTrue('BACK_CALL_SEND' in self.reached_goals)
 
@@ -711,7 +711,7 @@ class YandexMetrika(SeleniumTestCase):
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
         self.prevent_default('click', '.btn-to-order')
-        show_cart_dropdown(self)
+        show_cart_dropdown(self.browser)
         self.browser.find_element_by_class_name('btn-to-order').click()
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
