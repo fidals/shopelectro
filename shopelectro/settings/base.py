@@ -187,7 +187,6 @@ PAYMENT_OPTIONS = (
     ('PC', 'Яндекс.Деньги'),
     ('GP', 'Связной (терминал)'),
     ('AB', 'Альфа-Клик'),
-    ('MC', 'Мобильный телефон')
 )
 
 # It is fake-pass. Correct pass will be created on `docker-compose up` stage from `docker/.env`

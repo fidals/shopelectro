@@ -1,4 +1,6 @@
+{# TODO: inner_page.html template should be realized. #}
 {% extends 'layout/base.html' %}
+
 {% load staticfiles %}
 
 {% block stylesheets %}
@@ -7,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container order-contain js-order-contain">
+  <div class="order-contain js-order-contain">
     {% include 'ecommerce/order/table_form.html' %}
   </div>
 {% endblock %}
