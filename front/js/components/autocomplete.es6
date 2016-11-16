@@ -1,4 +1,4 @@
-const autocomplete = (() => {
+{
   const config = {
     url: '/search/autocomplete/',
     searchInput: '.js-search-input',
@@ -56,9 +56,7 @@ const autocomplete = (() => {
     selector: config.searchInput,
     minChars: config.minChars,
     source: (term, response) => {
-      $.getJSON(config.url, {
-        term
-      }, namesArray => {
+      $.getJSON(config.url, { term }, namesArray => {
         response(namesArray);
       });
     },
@@ -72,11 +70,12 @@ const autocomplete = (() => {
       }
     },
     onSelect: (event, term, item) => {
-      const isRightClick = event => event.button === 2 || event.which === 3;
-      if (isRightClick(event)) return false;
+      const isRightClick = event.button === 2 || event.which === 3;
+      if (isRightClick) return;
+
       window.location = $(item).find('a').attr('href');
     },
   };
 
   init();
-})();
+}

@@ -11,12 +11,11 @@ from django.db import transaction
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from shopelectro.models import Product, Category
 from pages.models import Page
 
+from shopelectro.models import Product, Category
 
 result_message = str  # Type alias for returning result information
-
 
 CATEGORY_POSITIONS = {
     24: 1, 22: 2, 18: 3, 17: 4, 7: 5, 137: 1, 160: 2,
@@ -27,10 +26,16 @@ CATEGORY_POSITIONS = {
 }
 
 CATEGORY_TITLE = '{h1} купить в интернет магазине shopelectro.ru в Санкт-Петербурге'
-PRODUCT_TITLE = '{h1} - цены, характеристики, отзывы, описание, фотографии. Купить по выгодной ' \
-                'цене в интернет-магазине shopelectro.ru Санкт-Петербург'
-PRODUCT_DESCRIPTION = '{h1} - Элементы питания, зарядные устройства, ремонт. Купить ' \
-                      '{category_name} в Санкт Петербурге.'
+
+PRODUCT_TITLE = '''
+    {h1} - цены, характеристики, отзывы, описание, фотографии. Купить по выгодной
+    цене в интернет-магазине shopelectro.ru Санкт-Петербург
+'''
+
+PRODUCT_DESCRIPTION = '''
+    {h1} - Элементы питания, зарядные устройства, ремонт. Купить
+    {category_name} в Санкт Петербурге.
+'''
 
 # passive mode of ftp connection.
 # This option depends on ftp server settings
@@ -47,6 +52,7 @@ def process(procedure_name: str) -> callable:
             print('{}...'.format(procedure_name))
             result = procedure(*args, **kwargs)
             print(result or 'Completed: {}'.format(procedure_name))
+
         return wrapper
     return inner
 
@@ -54,6 +60,7 @@ def process(procedure_name: str) -> callable:
 @process('Load info to DB')
 def update_and_delete(model_generator_mapping: list) -> result_message:
     """Perform db transaction of updating entity or creating new ones."""
+
     def update_instances(Model, collection) -> list:
         """Save instances from generator into db."""
         saved_entity_ids = []
@@ -153,8 +160,10 @@ class Command(BaseCommand):
 
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
+
         def categories_generator(catalog):
             """Yield Category data."""
+
             def category_id(node):
                 """Return category id."""
                 return int(node.attrib['folder_id'])
@@ -176,8 +185,10 @@ class Command(BaseCommand):
 
     def parse_products(self) -> typing.Generator:
         """Parse XML and return product's generator."""
+
         def products_generator(catalog):
             """Yield Product's data."""
+
             def has_no_category(node):
                 return not node.attrib['parent_id2_1']
 
@@ -193,6 +204,7 @@ class Command(BaseCommand):
     @staticmethod
     def get_product_properties_or_none(node) -> typing.Optional[dict]:
         """Get product's info for given node in XML."""
+
         def stock_or_zero():
             """Return product's stock or zero if it's negative."""
             stock = sum([int(node.attrib[stock])
@@ -236,6 +248,7 @@ class Command(BaseCommand):
     @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
+
         def prepare_connection():
             ftp.set_pasv(FTP_PASSIVE_MODE)  # Set passive mode off
 
@@ -261,8 +274,8 @@ class Command(BaseCommand):
     def generate_prices() -> result_message:
         """Generate Excel, YM and Price.ru price files."""
         commands = [
-            ('excel', ),
-            ('price', ),
+            ('excel',),
+            ('price',),
             # to actualize generated files rendering
             ('collectstatic', '--noinput')
         ]

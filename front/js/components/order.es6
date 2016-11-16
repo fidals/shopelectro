@@ -1,4 +1,4 @@
-(() => {
+{
   const DOM = {
     $fancybox: $('.fancybox'),
     $formErrorText: $('.js-form-error-text'),
@@ -42,8 +42,10 @@
   }
 
   function setUpListeners() {
-    mediator.subscribe('onCartUpdate', renderTable, fillSavedInputs,
-      touchSpinReinit, restoreSelectedPayment, cityAutocomplete);
+    mediator.subscribe(
+      'onCartUpdate', renderTable, fillSavedInputs,
+      touchSpinReinit, restoreSelectedPayment, cityAutocomplete
+    );
     $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
 
     /**
@@ -120,18 +122,18 @@
   /**
    * Remove product from cart's table
    */
-  const removeProduct = productId => {
+  function removeProduct(productId) {
     server.removeFromCart(productId)
       .then(data => {
         mediator.publish('onCartUpdate', data);
-    });
-  };
+      });
+  }
 
   /**
    * Event handler for changing product's count in Cart.
    * We wait at least 100ms every time the user pressed the button.
    */
-  const changeProductCount = event => {
+  function changeProductCount(event) {
     const productID = getElAttr(event, 'productId');
     const newCount = event.target.value;
 
@@ -139,7 +141,7 @@
       () => server.changeInCart(productID, newCount)
         .then(data => mediator.publish('onCartUpdate', data)), 100
     );
-  };
+  }
 
   /**
    * Return name (which is value) of a selected payment option.
@@ -168,30 +170,32 @@
   const isYandex = () => !config.sePayments.includes(getSelectedPaymentName());
 
   const renderYandexForm = formData => {
-    const formHtml = `<form action="${formData['yandex_kassa_link']}" method="POST" id="yandex-form">
-      <input type="text" name="shopId" value="${formData['shopId']}">
-      <input type="text" name="scid" value="${formData['scid']}">
-      <input type="text" name="shopSuccessURL" value="${formData['shopSuccessURL']}">
-      <input type="text" name="shopFailURL" value="${formData['shopFailURL']}">
-      <input type="text" name="cps_phone" value="${formData['cps_phone']}">
-      <input type="text" name="cps_email" value="${formData['cps_email']}">
-      <input type="text" name="sum" value="${formData['sum']}">
-      <input type="text" name="customerNumber" value="${formData['customerNumber']}">
-      <input type="text" name="orderNumber" value="${formData['orderNumber']}">
-      <input type="text" name="paymentType" value="${formData['paymentType']}">
-      <input type="submit">
-    </form>`;
+    const formHtml = `
+      <form action="${formData['yandex_kassa_link']}" method="POST" id="yandex-form">
+        <input type="text" name="shopId" value="${formData['shopId']}">
+        <input type="text" name="scid" value="${formData['scid']}">
+        <input type="text" name="shopSuccessURL" value="${formData['shopSuccessURL']}">
+        <input type="text" name="shopFailURL" value="${formData['shopFailURL']}">
+        <input type="text" name="cps_phone" value="${formData['cps_phone']}">
+        <input type="text" name="cps_email" value="${formData['cps_email']}">
+        <input type="text" name="sum" value="${formData['sum']}">
+        <input type="text" name="customerNumber" value="${formData['customerNumber']}">
+        <input type="text" name="orderNumber" value="${formData['orderNumber']}">
+        <input type="text" name="paymentType" value="${formData['paymentType']}">
+        <input type="submit">
+      </form>
+    `;
 
     DOM.$yandexFormWrapper.html(formHtml);
   };
 
   /**
-   * Before submit: 
+   * Before submit:
    * 1. Validate user's email and phone
    * 2. Define payment type, if it is Yandex order make request and wait response with form
    * 3. Submit this form.
    */
-  const submitOrder = event => {
+  function submitOrder() {
     const orderInfo = getOrderInfo();
 
     if (!isValid(orderInfo)) {
@@ -210,8 +214,7 @@
     } else {
       $(DOM.fullForm).submit(); // Disabling button prevent submit event.
     }
-
-  };
+  }
 
   /**
    * Store inputted value into LocalStorage.
@@ -228,4 +231,4 @@
   const renderTable = (event, data) => DOM.$order.html(data.table);
 
   init();
-})();
+}

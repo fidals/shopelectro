@@ -187,7 +187,6 @@ PAYMENT_OPTIONS = (
     ('PC', 'Яндекс.Деньги'),
     ('GP', 'Связной (терминал)'),
     ('AB', 'Альфа-Клик'),
-    ('MC', 'Мобильный телефон')
 )
 
 # It is fake-pass. Correct pass will be created on `docker-compose up` stage from `docker/.env`
@@ -238,7 +237,7 @@ TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
 SHOP = {
     'id': '69886',
     'scid': '64788',
-    'success_url': BASE_URL + '/shop/success-order/',
+    'success_url': BASE_URL + '/shop/order-success/',
     'fail_url': BASE_URL + '/',
     'cps_phone': '+78124163200',
     'cps_email': 'info@shopelectro.ru',
@@ -247,7 +246,7 @@ SHOP = {
 }
 
 # used in data-migrations and tests
-PAGES = [{
+CUSTOM_PAGES = [{
     'slug': '',
     '_title': 'Интернет магазин Элементов питания с доставкой по России',
     'h1': 'Интернет магазин элементов питания "ShopElectro"',
@@ -265,7 +264,7 @@ PAGES = [{
     'h1': 'Каталог товаров',
     '_menu_title': 'Каталог',
 }, {
-    'slug': 'success-order',
+    'slug': 'order-success',
     '_title': 'Заказ принят',
     'h1': 'Заказ принят',
 }]

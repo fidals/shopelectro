@@ -5,6 +5,7 @@
     "admin": true,
     "configs": true,
     "Cookies": true,
+    "helpers": true,
     "jQgridSettings": true,
     "mediator": true,
     "popover": true,
@@ -12,7 +13,7 @@
     "validator": true,
     "google": true,
     "window": true,
-    "yaCounter": true
+    "yaCounter20644114": true
   },
   "rules": {
     "no-use-before-define": ["error", {

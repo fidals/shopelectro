@@ -12,6 +12,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 
 from pages.models import Page
+
 from shopelectro.models import Product, Category
 
 
@@ -26,7 +27,6 @@ def admin_create_product(request):
 @require_POST
 def admin_update_product(request):
     """Update Product data from Table editor"""
-
     request_data = {key: value[0] for key, value in dict(request.POST).items()}
     new_product_data = {}
     new_page_data = {}

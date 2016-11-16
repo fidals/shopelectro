@@ -13,9 +13,9 @@ from ecommerce import mailer, views as ec_views
 from ecommerce.cart import Cart
 from ecommerce.models import Order
 
-from shopelectro.models import Product, Order
 from shopelectro.cart import WholesaleCart
 from shopelectro.forms import OrderForm
+from shopelectro.models import Product, Order
 
 
 # ECOMMERCE VIEWS
@@ -46,7 +46,7 @@ class FlushCart(ec_views.FlushCart):
     order_form = OrderForm
 
 
-class SuccessOrder(ec_views.SuccessOrder):
+class OrderSuccess(ec_views.OrderSuccess):
     order = Order
 
 
@@ -66,9 +66,10 @@ def one_click_buy(request):
     order = Order(phone=request.POST['phone'])
     order.set_positions(cart)
     ec_views.save_order_to_session(request.session, order)
-    mailer.send_order(subject=settings.EMAIL_SUBJECTS['order'],
-                      order=order,
-                      to_customer=False)
+    mailer.send_order(
+        subject=settings.EMAIL_SUBJECTS['order'],
+        order=order, to_customer=False
+    )
     return HttpResponse('ok')
 
 
@@ -76,10 +77,12 @@ def one_click_buy(request):
 def order_call(request):
     """Send email about ordered call."""
     phone, time, url = ec_views.get_keys_from_post(request, 'phone', 'time', 'url')
-    mailer.order_call(subject=settings.EMAIL_SUBJECTS['call'],
-                      phone=phone,
-                      time=time,
-                      url=url)
+
+    mailer.order_backcall(
+        subject=settings.EMAIL_SUBJECTS['call'],
+        phone=phone, time=time, url=url
+    )
+
     return HttpResponse('ok')
 
 
@@ -99,13 +102,13 @@ class YandexOrder(OrderPage):
 
         # Took form fields from Yandex docs https://goo.gl/afKfsz
         response_data = {
-            'yandex_kassa_link': settings.YANDEX_KASSA_LINK, # Required
+            'yandex_kassa_link': settings.YANDEX_KASSA_LINK,  # Required
             'shopId': settings.SHOP['id'],  # Required
             'scid': settings.SHOP['scid'],  # Required
             'shopSuccessURL': settings.SHOP['success_url'],
             'shopFailURL': settings.SHOP['fail_url'],
-            'customerNumber': order.id, # Required
-            'sum': order.total_price, # Required
+            'customerNumber': order.id,  # Required
+            'sum': order.total_price,  # Required
             'orderNumber': order.fake_order_number,
             'cps_phone': order.phone,
             'cps_email': order.email,
