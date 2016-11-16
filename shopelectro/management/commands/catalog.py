@@ -60,7 +60,6 @@ def process(procedure_name: str) -> callable:
 @process('Load info to DB')
 def update_and_delete(model_generator_mapping: list) -> result_message:
     """Perform db transaction of updating entity or creating new ones."""
-
     def update_instances(Model, collection) -> list:
         """Save instances from generator into db."""
         saved_entity_ids = []
@@ -84,7 +83,9 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
     def delete_instances(Model, entity_ids):
         instances_for_delete = Model.objects.exclude(id__in=entity_ids)
         count = instances_for_delete.count()
-        instances_for_delete.delete()
+        # https://goo.gl/61kj19
+        for instance in instances_for_delete:
+            instance.delete()
         print('{} {} were deleted'.format(
             count, Model._meta.verbose_name_plural))
 
@@ -126,6 +127,7 @@ class Command(BaseCommand):
     has a @process decorator.
     Such methods should return string with information about performed task.
     """
+
     FTP_CONNECTION = {'host': 'office.shopelectro.ru',
                       'user': 'it_guest',
                       'passwd': '4be13e1124'}
@@ -160,10 +162,8 @@ class Command(BaseCommand):
 
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
-
         def categories_generator(catalog):
             """Yield Category data."""
-
             def category_id(node):
                 """Return category id."""
                 return int(node.attrib['folder_id'])
@@ -185,10 +185,8 @@ class Command(BaseCommand):
 
     def parse_products(self) -> typing.Generator:
         """Parse XML and return product's generator."""
-
         def products_generator(catalog):
             """Yield Product's data."""
-
             def has_no_category(node):
                 return not node.attrib['parent_id2_1']
 
@@ -204,7 +202,6 @@ class Command(BaseCommand):
     @staticmethod
     def get_product_properties_or_none(node) -> typing.Optional[dict]:
         """Get product's info for given node in XML."""
-
         def stock_or_zero():
             """Return product's stock or zero if it's negative."""
             stock = sum([int(node.attrib[stock])
@@ -248,7 +245,6 @@ class Command(BaseCommand):
     @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
-
         def prepare_connection():
             ftp.set_pasv(FTP_PASSIVE_MODE)  # Set passive mode off
 
