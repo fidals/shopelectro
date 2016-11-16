@@ -44,10 +44,8 @@ FTP_PASSIVE_MODE = True
 
 def process(procedure_name: str) -> callable:
     """Print information before starting procedure and after it's been finished."""
-
     def inner(procedure: callable) -> callable:
         """Decorator's factory."""
-
         @wraps(procedure)
         def wrapper(*args: tuple, **kwargs: dict) -> None:
             """Print result before function call and after it."""
@@ -56,7 +54,6 @@ def process(procedure_name: str) -> callable:
             print(result or 'Completed: {}'.format(procedure_name))
 
         return wrapper
-
     return inner
 
 

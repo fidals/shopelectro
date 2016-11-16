@@ -57,6 +57,7 @@ def show_cart_dropdown(self):
 
 class SeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
+
     fixtures = ['dump.json']
 
     @classmethod
@@ -76,6 +77,7 @@ class SeleniumTestCase(LiveServerTestCase):
 
 @override_settings(DEBUG=True)
 class Header(SeleniumTestCase):
+
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
         self.browser.get(self.live_server_url)
@@ -122,6 +124,7 @@ class Header(SeleniumTestCase):
 
 
 class CategoryPage(SeleniumTestCase):
+
     def setUp(self):
         server = self.live_server_url
         self.testing_url = lambda slug: server + reverse('category', args=(slug,))
@@ -285,6 +288,7 @@ class CategoryPage(SeleniumTestCase):
 
 
 class ProductPage(SeleniumTestCase):
+
     PRODUCT_ID = 1
 
     def setUp(self):
@@ -388,6 +392,7 @@ class ProductPage(SeleniumTestCase):
 
 
 class OrderPage(SeleniumTestCase):
+
     @staticmethod
     def get_cell(pos, col):
         # table columns mapping: http://prntscr.com/bsv5hp
@@ -459,6 +464,7 @@ class OrderPage(SeleniumTestCase):
                             'js-order-contain').text)
 
     def test_table_and_dropdown_are_synchronized(self):
+
         def get_counts():
             table_count = (self.browser
                            .find_element_by_id('cart-page-prods-count').text)
@@ -512,6 +518,7 @@ class OrderPage(SeleniumTestCase):
 
 
 class SitePage(SeleniumTestCase):
+
     def setUp(self):
         self.page_top = FlatPage.objects.create(
             title='Navigation',
@@ -564,6 +571,7 @@ class SitePage(SeleniumTestCase):
 
 @override_settings(DEBUG=True)
 class YandexMetrika(SeleniumTestCase):
+
     def setUp(self):
         """
         We should use self.browser.get(...) in this case, because we
@@ -724,6 +732,7 @@ class YandexMetrika(SeleniumTestCase):
 
 
 class Search(SeleniumTestCase):
+
     QUERY = 'Cate'
 
     def setUp(self):
