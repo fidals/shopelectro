@@ -1,6 +1,3 @@
-// ================================================================
-// MIXINS
-// ================================================================
 .font-anti (@val: antialiased) {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: @val;
@@ -28,6 +25,14 @@
   border-radius: @border-radius;
 }
 
+.transition (
+  @property : all,
+  @duration : 0.3s,
+  @style    : ease
+) {
+  transition: @property @duration @style;
+}
+
 .link-dotted {
   border-bottom: 1px dotted @c-grey-text-main;
   color: @c-grey-text-main;
@@ -44,32 +49,6 @@
   }
 }
 
-.link-style {
-  border-bottom: 1px solid @c-head-mail-border;
-  color: @c-black-lighter-x;
-  display: inline;
-  text-decoration: none !important; // Prevent double lines;
-
-  &:hover {
-    border-color: transparent;
-  }
-
-  &:visited {
-    color: @c-black-lighter-x;
-  }
-}
-
-.transition (
-  @property : all,
-  @duration : 0.3s,
-  @style    : ease
-) {
-  transition: @property @duration @style;
-}
-
-// ================================================================
-// PLACEHOLDERS
-// ================================================================
 .link-style {
   border-bottom: 1px solid @c-head-mail-border;
   color: @c-black-lighter-x;

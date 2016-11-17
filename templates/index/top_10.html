@@ -13,8 +13,9 @@
 
       <div class="stuff-top-description">
         <div class="stuff-top-wrap">
-          <a class="stuff-top-name js-browse-product" href="{% url 'product' product.id %}">
-            <span itemprop="name">{{ product.name }}</span>
+          <a class="stuff-top-name js-browse-product"
+             href="{% url 'product' product.id %}" itemprop="name">
+            {{ product.name }}
           </a>
         </div>
         <div class="stuff-top-category">{{ product.get_root_category }}</div>
