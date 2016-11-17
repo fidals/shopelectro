@@ -136,7 +136,7 @@ gulp.task('build', callback => {
     'js-pages',
     'js-admin-vendors',
     'js-admin',
-    'build-imgs',
+    'build-images',
     'build-fonts',
     callback
   );
@@ -259,7 +259,7 @@ gulp.task('js-admin', () => {
 // ================================================================
 // Images : Copy images
 // ================================================================
-gulp.task('build-imgs', () => {
+gulp.task('build-images', () => {
   gulp.src(PATH.src.images)
     .pipe($.changed(PATH.build.images))
     .pipe(gulp.dest(PATH.build.images));

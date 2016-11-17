@@ -3,13 +3,13 @@
 {% load staticfiles %}
 
 {% block content %}
-  {% include 'index/new_year_carousel.html' %}
-
-  <div class="container page-front">
-
-    <h1>Интернет магазин элементов питания "ShopElectro"</h1>
+  <div class="page-front">
+    {# New Year stuff #}
+    <h2 class="h1">Для украшения дома к Новому году</h2>
+    {% include 'index/lights.html' %}
 
     {# Tile on main page #}
+    <h1>Интернет-магазин элементов питания "ShopElectro"</h1>
     {% include 'index/tile.html' %}
 
     {# Top 10 offers #}

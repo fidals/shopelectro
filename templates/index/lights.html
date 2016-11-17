@@ -1,0 +1,45 @@
+{% load staticfiles %}
+
+<div class="lights-wrapper">
+  <div class="lights-item">
+    <div class="stuff-wrapper">
+      <div class="lights-item-title">
+        <div class="lights-item-link-wrapper">
+          <a class="lights-item-link" href="{% url 'category' 'akkumuliatory' %}">Новогодние гирлянды</a>
+        </div>
+      </div>
+      <a class="lights-img-wrapper" href="{% url 'category' 'novogodnie-girliandy' %}">
+        <img src="{% static 'images/lights/lights-03.jpg' %}"
+             class="img-responsive img-centered" alt="Светодиодные лампы">
+      </a>
+    </div>
+  </div>
+
+  <div class="lights-item">
+    <div class="stuff-wrapper">
+      <div class="lights-item-title">
+        <div class="lights-item-link-wrapper">
+          <a class="lights-item-link" href="{% url 'category' 'akkumuliatory' %}">Лазерный проектор для вечеринок</a>
+        </div>
+      </div>
+      <a class="lights-img-wrapper" href="{% url 'category' 'novogodnie-lazernye-proektory' %}">
+        <img src="{% static 'images/lights/lights-01.jpg' %}"
+             class="img-responsive img-centered" alt="Гирлянды">
+      </a>
+    </div>
+  </div>
+
+  <div class="lights-item">
+    <div class="stuff-wrapper">
+      <div class="lights-item-title">
+        <div class="lights-item-link-wrapper">
+          <a class="lights-item-link" href="{% url 'category' 'akkumuliatory' %}">Диско-лампы для вечеринок на светодиодах</a>
+        </div>
+      </div>
+      <a class="lights-img-wrapper" href="{% url 'category' 'novogodnie-vrashchaiushchiesia-svetodiodnye-lampy' %}">
+        <img src="{% static 'images/lights/lights-02.jpg' %}"
+             class="img-responsive img-centered" alt="Лазерные проекторы">
+      </a>
+    </div>
+  </div>
+</div>
