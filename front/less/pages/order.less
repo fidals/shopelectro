@@ -17,6 +17,17 @@
       width: 49%;
       padding: 0 10px; // Remove after new year
     }
+
+    .form-submit-wrapper {
+      display: block;
+      float: right;
+      margin: 10px 0 0;
+      width: 280px;
+
+      .btn {
+        min-width: 220px;
+      }
+    }
   }
 
   &-contain {
@@ -90,41 +101,23 @@
   top: 17px;
 }
 
-.btn-send,
-#btn-send-ya {
-  background-color: @c-legacy-red;
-  border: none;
-  box-shadow: 5px 5px #C3C3C3;
-  display: block;
-  width: 100%;
-}
-
-.form-submit-wrapper {
-  display: block;
-  float: right;
-  width: 40%;
-}
-
 .order-list {
   margin-bottom: 50px;
 
   a {
-    color: #595B5C;
+    color: @c-order-link;
     text-decoration: none;
-    font-size: @f-size-base - 1;
   }
 
   tr th {
     background-color: fadeout(@c-middle-head-bg, 50%);
-    border: 1px solid @c-table-header-bg !important;
     text-align: center;
   }
 
-  tr td, tr th {
+  tr td,
+  tr th {
     border: 1px solid @c-table-header-bg !important;
     padding: 10px !important;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-    font-size: 14px;
   }
 
   .prod-count {
@@ -183,7 +176,7 @@ div.info-header {
   label {
     cursor: pointer;
     line-height: 1.8;
-    margin: 0 0 20px;
+    margin: 0 0 26px;
   }
 
   img {

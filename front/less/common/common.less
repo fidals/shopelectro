@@ -9,7 +9,6 @@ body {
 body {
   background: @mount; // Remove after new year
   //background: @c-grey-body-main; Uncomment after new year
-  color: @c-body-text;
   font-family: @proxima, sans-serif;
   font-size: @f-size-base;
   line-height: @line-height-body;
@@ -216,7 +215,7 @@ h3,
     }
 
     span {
-      color: @c-grey-footer;
+      color: @text-color;
       display: block;
     }
   }
@@ -237,7 +236,7 @@ h3,
     width: 197px;
 
     &-label {
-      color: @c-grey-footer;
+      color: @text-color;
       display: inline-block;
       margin: 0 5px 0 0;
       position: relative;
@@ -274,14 +273,14 @@ h3,
 
   & .header-contact-link {
     border-bottom: 1px dashed @c-subway-station;
-    color: @c-grey-subway-link;
+    color: @text-color;
     text-decoration: none;
   }
 }
 
 .subway-contact-link {
   border-bottom: 1px solid @c-subway-station;
-  color: @c-grey-subway-link;
+  color: @text-color;
   padding: 0 0 1px;
   text-decoration: none;
 }
@@ -308,7 +307,6 @@ h3,
     position: relative;
     text-align: left;
     text-decoration: none;
-    transition: all 0.3s ease;
 
     &:hover {
       background: @c-btn-red-hover;
@@ -1535,11 +1533,25 @@ h3,
     padding: 8px 10px;
     min-width: 311px;
   }
-}
 
-.par-header {
-  a {
+  &-link {
     .link-style;
+  }
+
+  &-item {
+    padding: 10px;
+
+    p {
+      margin: 0 0 5px;
+    }
+  }
+
+  &-type {
+    display: inline;
+    float: right;
+    font-style: italic;
+    color: #AAA;
+    margin-bottom: 0;
   }
 }
 
@@ -1698,22 +1710,6 @@ div.info-text {
     border: 2px solid @c-btn-red-hover;
     color: @c-white;
   }
-}
-
-.buy-btn {
-  margin-top: 5px;
-  width: 115px;
-  height: 40px;
-  background-color: #AC0000;
-  box-shadow: 3px 3px 1px 1px #C2C2C2;
-  text-align: center;
-  vertical-align: middle;
-  font-size: @f-size-base;
-  cursor: pointer;
-  font-weight: bold;
-  color: @c-white;
-  padding-top: 3px;
-  box-sizing: border-box;
 }
 
 .payments {
@@ -1982,7 +1978,7 @@ div.info-text {
 .footer {
   & .footer-contact-link {
     border-bottom: 1px dashed @c-subway-station;
-    color: @c-grey-subway-link;
+    color: @text-color;
     text-decoration: none;
   }
 
@@ -1993,7 +1989,7 @@ div.info-text {
     width: 216px;
 
     span {
-      color: @c-grey-footer;
+      color: @text-color;
       display: block;
     }
   }
@@ -2006,7 +2002,7 @@ div.info-text {
     width: 215px;
 
     &-label {
-      color: @c-grey-footer;
+      color: @text-color;
       display: inline-block;
       margin: 0 5px 0 0;
       position: relative;
@@ -2094,19 +2090,6 @@ div.info-text {
   padding: 0 30px 0 30px;
 }
 
-.par-header {
-  margin-bottom: 20px;
-  width: 95%;
-
-  .search-type-res {
-    display: inline;
-    float: right;
-    font-style: italic;
-    color: #AAA;
-    margin-bottom: 0;
-  }
-}
-
 .total {
   display: inline;
   font-weight: bold;
@@ -2149,7 +2132,7 @@ a.main-link {
 }
 
 .sub-footer-link {
-  color: @c-grey-footer;
+  color: @text-color;
   line-height: 1.25;
   text-decoration: none;
 }

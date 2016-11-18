@@ -5,7 +5,7 @@
     $order: $('.js-order-contain'),
     $yandexFormWrapper: $('#yandex-form-wrapper'),
     yandexForm: '#yandex-form',
-    submit: '#btn-send-se',
+    submit: '#submit-order',
     fullForm: '#order-form-full',
     productCount: '.js-prod-count',
     remove: '.js-remove',
@@ -49,7 +49,7 @@
     $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
 
     /**
-     * Bind events to parent's elements, because we can't bind event to dynamically added element.
+     * Bind events to parent's elements, because of dynamic elements.
      */
     DOM.$order.on('click', DOM.submit, submitOrder);
     DOM.$order.on('click', DOM.remove, () => removeProduct(getElAttr(event, 'productId')));
@@ -163,8 +163,12 @@
     return orderInfo;
   };
 
+  /**
+   * Return true if form has valid phone & email.
+   */
   function isValid(customerInfo) {
-    return helpers.isPhoneValid(customerInfo.phone) && helpers.isEmailValid(customerInfo.email);
+    return helpers.isPhoneValid(customerInfo.phone) &&
+           helpers.isEmailValid(customerInfo.email);
   }
 
   const isYandex = () => !config.sePayments.includes(getSelectedPaymentName());
@@ -191,11 +195,12 @@
 
   /**
    * Before submit:
-   * 1. Validate user's email and phone
-   * 2. Define payment type, if it is Yandex order make request and wait response with form
+   * 1. Validate user's email and phone.
+   * 2. Define payment type, if it is Yandex order make request and wait response with form.
    * 3. Submit this form.
    */
   function submitOrder() {
+    event.preventDefault();
     const orderInfo = getOrderInfo();
 
     if (!isValid(orderInfo)) {
@@ -203,7 +208,7 @@
       return;
     }
 
-    helpers.disableSubmit($(DOM.submit));
+    helpers.disableSubmit($(DOM.submit)); // disabling button from user multiple clicks;
 
     if (isYandex()) {
       server.sendYandexOrder(orderInfo)
@@ -212,7 +217,7 @@
           $(DOM.yandexForm).submit();
         });
     } else {
-      $(DOM.fullForm).submit(); // Disabling button prevent submit event.
+      $(DOM.fullForm).submit();
     }
   }
 
@@ -223,10 +228,9 @@
     localStorage.setItem(target.attr('name'), target.val());
   };
 
-
   /**
    * Render table and form.
-   * After that, fill in saved form data.
+   * Fill in saved form data after.
    */
   const renderTable = (event, data) => DOM.$order.html(data.table);
 

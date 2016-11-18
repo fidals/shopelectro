@@ -85,6 +85,8 @@ custom_pages = [
     url(r'^(?P<page>catalog)/$', views.CategoryTree.as_view(), name=url_name),
     url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view(), name=url_name),
     url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view(), name=url_name),
+    # TEST
+    url(r'^shop/(?P<page>order/email)/$', views.OrderEmailPage.as_view(), name=url_name),
 ]
 
 urlpatterns = [

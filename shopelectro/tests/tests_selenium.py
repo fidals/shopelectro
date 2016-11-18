@@ -512,8 +512,7 @@ class OrderPage(SeleniumTestCase):
         self.browser.find_element_by_id('id_phone').send_keys('22222222222')
         self.browser.find_element_by_id('id_email').send_keys('test@test.test')
         wait()
-        submit = 'btn-send-se'
-        self.browser.find_element_by_id(submit).click()
+        self.browser.find_element_by_id('submit-order').click()
         wait()
 
 

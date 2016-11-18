@@ -10,11 +10,49 @@ from django.shortcuts import render, get_object_or_404
 from catalog.views import catalog
 from pages import views as pages_views
 
+# TEST
+from django.views.generic import TemplateView
+# end test
+
 from shopelectro import config
 from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import (
     Product, Category, CategoryPage as CategoryPageModel)
 from shopelectro.views.helpers import set_csrf_cookie
+
+
+# TEST VIEW
+class OrderEmailPage(TemplateView):
+    template_name = 'ecommerce/order/email.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderEmailPage, self).get_context_data(**kwargs)
+        order = {
+            'fake_order_number': 150,
+            'phone': +79787818233,
+            'email': 'yozhezhi@ya.ru',
+            'total_price': 9999,
+            'payment_type': 'cash',
+            'items': [
+                {
+                    'product_id': 4023,
+                    'name': 'Wassup!',
+                    'quantity': 12,
+                    'price': 150
+                },
+                {
+                    'product_id': 4020,
+                    'name': 'Yo!',
+                    'quantity': 11,
+                    'price': 15
+                },
+            ]
+        }
+
+        context['order'] = order
+
+        return context
+# end test
 
 
 # CATALOG VIEWS
