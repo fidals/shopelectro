@@ -29,10 +29,10 @@ class OrderEmailPage(TemplateView):
         context = super(OrderEmailPage, self).get_context_data(**kwargs)
         order = {
             'fake_order_number': 150,
-            'phone': +79787818233,
+            'phone': '+79787818233',
             'email': 'yozhezhi@ya.ru',
             'total_price': 9999,
-            'payment_type': 'cash',
+            'payment_type_name': 'Наличными',
             'items': [
                 {
                     'product_id': 4023,

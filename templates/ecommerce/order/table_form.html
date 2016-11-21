@@ -49,7 +49,7 @@
           <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" type="number" name="prod-count"
                  productId="{{ id }}">
         </td>
-        <td class="price js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб</td>
+        <td class="price js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб.</td>
         <td class="product-delete">
           <img class="btn-cart js-remove" productId="{{ id }}" src="{% static 'images/btn-close-icon.png' %}"
                alt="Убрать из корзины" title="Убрать из заказа">
