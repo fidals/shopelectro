@@ -210,8 +210,8 @@ EMAIL_HOST_USER = 'info@shopelectro.ru'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'info@shopelectro.ru'
-DEFAULT_TO_EMAIL = 'info@shopelectro.ru'
+EMAIL_SENDER = 'info@shopelectro.ru'
+EMAIL_RECIPIENT = 'info@shopelectro.ru'
 SHOP_EMAIL = 'info@shopelectro.ru'
 
 # Used in admin image uploads
