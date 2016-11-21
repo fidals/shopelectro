@@ -71,14 +71,15 @@
         <div class="middle-header-inner">
           <div class="row">
             <div class="col-xs-8">
-              <form class="navbar-form search-form js-search-form" action="{% custom_url 'search' %}" method="get">
+              <form class="navbar-form search-form js-search-form"
+                    action="{% custom_url 'search' %}" method="get">
                 <div class="row">
                   <div class="col-xs-11">
                     <div class="form-group search-area">
                       <div class="row">
                         <div class="col-xs-7">
                           <input class="form-control js-search-input" type="text" name="term"
-                                 placeholder="Поиск по названию, артикулу, производителю">
+                                 placeholder="Поиск по названию, артикулу, производителю" value="{{ term }}">
                         </div>
                         <div class="col-xs-5">
                           <div class="example">

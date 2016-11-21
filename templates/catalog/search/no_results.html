@@ -1,18 +1,14 @@
 {% extends 'layout/base.html' %}
 
-{% block title %}Результаты поиска{% endblock %}
-
 {% block content %}
   <div class="container">
     <h1>По вашему запросу ничего не найдено</h1>
-    {% include 'catalog/search/form.html' %}
-    <div class="src-rqst">
-      <p>Попробуйте такие запросы:</p>
-      <ul>
-        <li>Блоки питания</li>
-        <li>Заряднoе устройствo ANSMANN</li>
-        <li>Аккумулятор GP</li>
-      </ul>
-    </div>
+
+    <p>Попробуйте такие запросы:</p>
+    <ul>
+      <li>Блоки питания</li>
+      <li>Заряднoе устройствo ANSMANN</li>
+      <li>Аккумулятор GP</li>
+    </ul>
   </div>
 {% endblock %}

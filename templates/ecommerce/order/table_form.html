@@ -29,9 +29,6 @@
           {% if 'logo' in position.image %} {# position has image #}
             <img src="{% static 'images/camera-icon.png' %}" alt="{% get_img_alt position %}">
           {% else %}
-            {# TODO: Images module needs refactoring. We should have #}
-            {# ability to use product.main_image in template #}
-            {# Added to GDoc #}
             <a class="fancybox" rel="product-cart-gallery" href="{% static position.image %}"
                title="{{ position.name }}">
               <img src="{% static 'images/camera-icon-clr.png' %}" alt="{% get_img_alt position %}">
@@ -52,7 +49,7 @@
           <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" type="number" name="prod-count"
                  productId="{{ id }}">
         </td>
-        <td class="price js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб</td>
+        <td class="price js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб.</td>
         <td class="product-delete">
           <img class="btn-cart js-remove" productId="{{ id }}" src="{% static 'images/btn-close-icon.png' %}"
                alt="Убрать из корзины" title="Убрать из заказа">
@@ -64,10 +61,10 @@
         <b>Итого:</b>
       </td>
       <td class="order-count">
-        <b><span id="cart-page-prods-count">{{ cart.total_quantity }}</span> шт.</b>
+        <b id="cart-page-prods-count">{{ cart.total_quantity }} шт.</b>
       </td>
       <td class="order-sum" colspan="2">
-        <b><span id="cart-page-sum">{{ cart.total_price|humanize_price }}</span> руб.</b>
+        <b id="cart-page-sum">{{ cart.total_price|humanize_price }} руб.</b>
       </td>
     </tr>
   </table>
@@ -130,8 +127,9 @@
               </td>
             </tr>
             <tr>
-              <td class="form-order form-submit-wrapper">
-                <input id="btn-send-se" class="buy-btn btn-send" type="submit" value="Продолжить">
+              <td class="form-order form-submit-wrapper text-right">
+                <button id="submit-order" class="btn btn-pink"
+                        type="submit">Продолжить</button>
               </td>
             </tr>
           </table>
@@ -139,8 +137,7 @@
       </tr>
     </table>
   </form>
-  <div class="hidden" id="yandex-form-wrapper">
-  </div>
+  <div class="hidden" id="yandex-form-wrapper"></div>
 {% else %}
   <h1>Корзина пуста</h1>
   <span class="page-info-message">В вашей корзине пока нет товаров.

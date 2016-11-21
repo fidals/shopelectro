@@ -10,5 +10,6 @@ def shop(request):
     """
     return {
         'shop': settings.SHOP,
-        'DEBUG': settings.DEBUG
+        'DEBUG': settings.DEBUG,
+        'BASE_URL': settings.BASE_URL
     }
