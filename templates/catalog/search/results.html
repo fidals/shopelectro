@@ -5,14 +5,14 @@
 
   {% for category in categories %}
     <div class="par-header">
-      <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+      <a href="{{ category.url }}">{{ category.name }}</a>
       <p class="search-type-res">Категория</p>
     </div>
   {% endfor %}
 
   {% for product in products %}
     <div class="search-result-item">
-      <a class="search-result-link js-browse-product" href="{{ product.get_absolute_url }}">
+      <a class="search-result-link js-browse-product" href="{{ product.url }}">
         <p>Арт. {{ product.id }}</p>
         {{ product.name }}
       </a>
