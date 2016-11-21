@@ -61,10 +61,10 @@
         <b>Итого:</b>
       </td>
       <td class="order-count">
-        <b>{{ cart.total_quantity }} шт.</b>
+        <b id="cart-page-prods-count">{{ cart.total_quantity }} шт.</b>
       </td>
       <td class="order-sum" colspan="2">
-        <b>{{ cart.total_price|humanize_price }} руб.</b>
+        <b id="cart-page-sum">{{ cart.total_price|humanize_price }} руб.</b>
       </td>
     </tr>
   </table>

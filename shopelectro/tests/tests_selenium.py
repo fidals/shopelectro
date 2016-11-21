@@ -460,11 +460,9 @@ class OrderPage(SeleniumTestCase):
             removes = self.browser.find_elements_by_class_name('js-remove')
 
         self.assertTrue('Корзина пуста' in
-                        self.browser.find_element_by_class_name(
-                            'js-order-contain').text)
+                        self.browser.find_element_by_class_name('js-order-contain').text)
 
     def test_table_and_dropdown_are_synchronized(self):
-
         def get_counts():
             table_count = (self.browser
                            .find_element_by_id('cart-page-prods-count').text)
@@ -475,15 +473,15 @@ class OrderPage(SeleniumTestCase):
 
         self.browser.refresh()
         table_count, dropdown_count = get_counts()
-        self.assertEqual(table_count, '5')
-        self.assertEqual(dropdown_count, table_count)
+        self.assertIn('5', table_count)
+        self.assertIn('5', dropdown_count)
         self.browser.find_element_by_xpath(
             self.add_product.format(self.first_product_id)).click()
         wait()
 
         table_count, dropdown_count = get_counts()
-        self.assertEqual(table_count, '6')
-        self.assertEqual(table_count, dropdown_count)
+        self.assertIn('6', table_count)
+        self.assertIn('6', dropdown_count)
         wait()
 
         self.browser.find_element_by_xpath(
@@ -491,8 +489,8 @@ class OrderPage(SeleniumTestCase):
         wait()
 
         table_count, dropdown_count = get_counts()
-        self.assertEqual(table_count, dropdown_count)
-        self.assertEqual(table_count, '4')
+        self.assertIn('4', dropdown_count)
+        self.assertIn('4', table_count)
 
     def test_confirm_order(self):
         """After filling the form we should be able to confirm an Order."""
