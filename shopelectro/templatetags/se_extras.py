@@ -10,6 +10,7 @@ from django.template.defaultfilters import floatformat
 
 from images.models import ImageMixin
 
+from pages.models import Page
 from shopelectro import config
 from shopelectro.models import Category
 
@@ -112,3 +113,11 @@ def get_img_alt(entity: ImageMixin):
     entity_name = next(
         filter(None, (getattr(entity, attr, None) for attr in name_attrs)))
     return product_alt.format(entity_name)
+
+
+@register.simple_tag
+def image(page: Page):
+    if page.main_image:
+        return page.main_image
+    else:
+        return settings.STATIC_URL + 'images/common/logo.svg'
