@@ -18,6 +18,7 @@
         </a>
       </div>
       <div class="price">{{ product.price|humanize_price }} руб / шт</div>
+      <meta itemprop="description" content="{{ product.page.description }}">
       <meta itemprop="price" content="{{ product.price }}">
       <meta itemprop="priceCurrency" content="RUB">
       <div class="stock">
@@ -37,7 +38,6 @@
         </button>
       </div>
     </div>
-    <div itemprop="description" class="hidden">{{ product.description }}</div>
   </div>
 {% endfor %}
 <div class="hidden js-products-loaded">{{ products|length }}</div>

@@ -11,9 +11,11 @@
     <div class="top-header">
       <div class="container">
 
-        <div class="header-logo-wrapper">
-          <a href="/" title="На главную"><img class="header-logo" src="{% static 'images/common/logo.svg' %}"
-                                              alt="ShopElectro"></a>
+        <div class="header-logo-wrapper" itemscope itemtype="http://schema.org/Organization">
+          <a href="/" title="На главную" itemprop="logo">
+            <img class="header-logo" alt="ShopElectro"
+                 src="{% static 'images/common/logo.svg' %}">
+          </a>
           <p class="header-logo-text">продажа элементов питания</p>
         </div>
 

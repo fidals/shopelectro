@@ -36,7 +36,7 @@
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
           {% if product.trademark %}<vendor>{{ product.trademark }}</vendor>{% endif %}
-          {% if product.page.content %}<description>{{ product.page.content }}</description>{% endif %}
+          {% if product.page.description %}<description>{{ product.page.description }}</description>{% endif %}
           <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>
         </offer>
       {% endfor %}
