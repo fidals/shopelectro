@@ -161,7 +161,7 @@ class ImportTest(TestCase):
         """Every category's page should have a filled title field"""
         category_page = Category.objects.first().page
 
-        test_title = catalog.CATEGORY_TITLE.format(h1=category_page.h1)
+        test_title = catalog.CATEGORY_TITLE.format(h1=category_page.h1, price=123)
 
         self.assertEqual(test_title, category_page.title)
 
@@ -170,7 +170,7 @@ class ImportTest(TestCase):
         product = Product.objects.first()
         product_page = product.page
 
-        test_title = catalog.PRODUCT_TITLE.format(h1=product_page.h1)
+        test_title = catalog.PRODUCT_TITLE.format(h1=product_page.h1, price=int(product.price))
         test_description = catalog.PRODUCT_DESCRIPTION.format(
             h1=product_page.h1, category_name=product.category.name)
 
