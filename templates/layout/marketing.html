@@ -1,0 +1,6 @@
+{# Contains all scripts of out ecommerce web services #}
+
+{% if not DEBUG %}
+  {# huckster service #}
+  <script id="huckster"> (function(w,d,s,c) { var h=document.getElementById('huckster'),r=d.createElement('script');w.Huckster={};w.Huckster.config=c||{};w.Huckster.config.server=s;r.setAttribute('src', '//'+Huckster.config.server+'/app/huckster.min.js');h.parentNode.insertBefore(r,h.nextSibling); })(window,document,'files.hucksterbot.com',{companyId:245}); </script>
+{% endif %}
