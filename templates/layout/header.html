@@ -9,61 +9,57 @@
     <div class="top-header-plate text-muted text-center">Бесплатная доставка по России от 3000 рублей</div>
 
     <div class="top-header">
-      <div class="container">
-
-        <div class="header-logo-wrapper" itemscope itemtype="http://schema.org/Organization">
+      <div class="row">
+        <div class="col-xs-3 header-logo-wrapper" itemscope itemtype="http://schema.org/Organization">
           <a href="/" title="На главную" itemprop="logo">
-            <img class="header-logo" alt="ShopElectro"
-                 src="{% static 'images/common/logo.svg' %}">
+            <img class="header-logo" src="{% static 'images/common/logo.svg' %}" alt="ShopElectro">
           </a>
-          <p class="header-logo-text">продажа элементов питания</p>
         </div>
 
-        <div class="header-price-wrapper">
-          <a href="{% static 'pricelist.xlsx' %}" class="download js-download-price">Скачать
-            прайс-лист</a>
-        </div>
-
-        <div class="header-sub-wrapper-left">
-          <div class="header-sub">
-            <span class="header-sub-text">Санкт-Петербург</span>
-            <span title="м. Автово"><img src="{% static 'images/metro_red.png' %}" alt="м. Автово">
-              <a class="subway-contact-link" rel="nofollow"
-                 href="{% url 'pages:flat_page' 'contacts' %}"> Ярмарка «Юнона», пав. 660, 662</a></span>
-            <span class="header-sub-text">пн-вс 10:00-18:00</span>
+        <div class="col-xs-5 header-info">
+          <div class="header-phone js-copy-phone">
+            <span class="header-phone-code">812</span> <span class="ya-opt-phone">416-32-00</span>
           </div>
-          <div class="header-sub">
-            <span title="м. Елизаровская"><img src="{% static 'images/metro_green.png' %}" alt="м.
-            Елизаровская">
-              <a class="subway-contact-link" rel="nofollow" href="{% url 'pages:flat_page' 'contacts' %}">
-                пр-т Елизарова 38А, офис 312</a></span>
-            <span class="header-sub-text">пн-чт 10:00-18:00, пт 10:00-17:00</span>
-          </div>
-        </div>
 
-        <div class="header-sub-wrapper-right">
-          <ul class="navbar navbar-default hed-mnu">
-            <li><a href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">Доставка</a></li>
-            <li><a href="{% url 'pages:flat_page' 'navigation' 'pay' %}">Оплата</a></li>
-            <li><a href="{% url 'pages:flat_page' 'navigation' 'contacts' %}">Контакты</a></li>
-          </ul>
-        </div>
-
-        <div class="header-call clearfix">
-          <div class="header-phone">
-            <span class="header-phone-cifre js-copy-phone">
-              <span class="cifre-span">+7 (812)</span> <span class="ya-opt-phone">416-32-00</span>
-            </span>
-            <p class="mail-wrapper js-copy-mail">
-              <a href="mailto:info@shopelectro.ru" class="mail">info@shopelectro.ru</a>
+          <div class="header-email">
+            <p class="header-mail-wrapper js-copy-mail">
+              <a href="mailto:info@shopelectro.ru" class="header-mail">info@shopelectro.ru</a>
+            </p>
+            <p class="header-time">
+              пн-чт 10:00-18:00, пт 10:00-17:00
             </p>
           </div>
+        </div>
+
+        <div class="col-xs-4 header-navigation-wrapper">
+          <ul class="list-unstyled header-navigation">
+            <li class="header-navigation-item">
+              <a class="header-navigation-link" href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">
+                Доставка
+              </a>
+            </li>
+            <li class="header-navigation-item">
+              <a class="header-navigation-link" href="{% url 'pages:flat_page' 'navigation' 'pay' %}">
+                Оплата
+              </a>
+            </li>
+            <li class="header-navigation-item">
+              <a class="header-navigation-link" href="{% url 'pages:flat_page' 'navigation' 'contacts' %}">
+                Контакты
+              </a>
+            </li>
+          </ul>
+
           <!--noindex-->
-            <div class="feedback-but js-backcall-order" data-toggle="modal" data-target="#back-call-modal">
-              <i class="fa fa-mobile"></i>
-              <span class="feedback-but-btn">Заказать звонок</span>
-            </div>
+            <span class="btn-feedback js-backcall-order" data-toggle="modal" data-target="#back-call-modal">
+              <i class="fa fa-mobile" aria-hidden="true"></i> Заказать звонок
+            </span>
           <!--/noindex-->
+
+          <a class="header-download-pricelist right js-download-price"
+             href="{% static 'pricelist.xlsx' %}">
+            <i class="fa fa-download" aria-hidden="true"></i> Скачать прайс
+          </a>
         </div>
       </div>
     </div>

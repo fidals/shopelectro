@@ -70,14 +70,12 @@
   const getSelectionText = () => window.getSelection().toString();
 
   /**
-   * We store this users event for current user.
-   * So it fires once per user.
+   * Fire when user selects 9 or more numbers of phone.
    */
   function reachCopyPhone() {
-    const wasPhoneCopied = localStorage.getItem('phoneIsCopied');
-    const isFullPhoneNumberCopied = helpers.isPhoneValid(getSelectionText());
+    const selectedTextLength = getSelectionText().length;
 
-    if (isFullPhoneNumberCopied && !wasPhoneCopied) {
+    if (selectedTextLength > 8) {
       localStorage.setItem('phoneIsCopied', 'true');
       reachGoal('COPY_PHONE');
     }

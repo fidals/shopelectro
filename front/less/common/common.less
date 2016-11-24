@@ -159,6 +159,14 @@ h3,
   height: auto;
 }
 
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
 // ================================================================
 // HEADER
 // ================================================================
@@ -175,17 +183,8 @@ h3,
     max-width: 185px;
 
     &-wrapper {
-      display: block;
-      float: left;
-      margin: 18px 20px 0 0;
-    }
-
-    &-text {
-      color: @c-logo-text;
-      font-family: @proxima-cond-bold;
-      font-size: @font-size-base - 1;
-      padding: 4px 0 0 2px;
-      letter-spacing: 0.015em;
+      margin: 2px 3px 0 5px;
+      width: 200px;
     }
   }
 
@@ -193,47 +192,17 @@ h3,
     float: left;
   }
 
-  &-sub-wrapper-left {
+  &-time {
     font-size: @f-size-base - 2;
-    float: left;
-    line-height: 18px;
-    width: 230px;
-  }
-
-  &-sub-wrapper-right {
-    float: right;
-    width: 331px;
-  }
-
-  &-sub {
-    font-size: @f-size-base - 2;
-    line-height: 145%;
-    margin: 0 0 3px;
-
-    &-text {
-      padding-left: 21px;
-    }
-
-    span {
-      color: @text-color;
-      display: block;
-    }
-  }
-
-  &-price-wrapper {
-    display: block;
-    float: left;
-    margin: 25px 15px 0 0;
-    text-align: center;
-    width: 142px;
   }
 
   &-phone {
-    float: left;
-    font-size: @f-size-base - 2;
-    line-height: 28px;
-    text-align: right;
-    width: 197px;
+    display: inline-block;
+    margin: 0 19px 0 0;
+    font-size: @f-size-base + 9;
+    font-weight: 600;
+    position: relative;
+    top: 13px;
 
     &-label {
       color: @text-color;
@@ -253,28 +222,59 @@ h3,
       width: auto;
     }
 
-    .cifre-span {
-      color: @c-phone-cifer;
-      display: inline;
-      font-weight: normal;
-      margin: 0;
-      width: auto;
-    }
-
     .hours {
       text-transform: uppercase;
       color: @c-phone-hours;
     }
   }
 
-  &-call {
-    margin-top: 23px;
+  &-info {
+    margin: 0 6px 0 0;
+  }
+
+  &-email {
+    display: inline-block;
+    vertical-align: top;
   }
 
   & .header-contact-link {
     border-bottom: 1px dashed @c-subway-station;
     color: @text-color;
     text-decoration: none;
+  }
+
+  &-phone-code {
+    color: @c-phone-code;
+  }
+
+  &-download-pricelist {
+    border-bottom: 1px dotted;
+    color: @c-black;
+    text-decoration: none;
+
+    &:hover,
+    &:active {
+      color: @c-black;
+      border-color: transparent;
+    }
+  }
+
+  &-mail {
+    border-bottom: 1px solid @c-head-mail-border;
+    color: @c-black;
+    display: inline-block;
+    font-size: @f-size-base + 4;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+
+    &:hover {
+      border-bottom: 1px solid transparent;
+    }
+
+    &-wrapper {
+     margin: 3px 0 6px;
+    }
   }
 }
 
@@ -286,100 +286,35 @@ h3,
 }
 
 .top-header {
-  padding: 17px 0 15px;
+  padding: 17px 0 8px;
 
   &-plate {
     border-bottom: 1px solid @c-white;
     padding: 10px 0;
   }
+}
 
-  .download {
-    background: @c-btn-price-bg;
-    border: 2px solid @c-text-red-lighter;
-    border-radius: 4px;
-    color: @c-text-red-lighter;
-    display: inline-block;
+.header-navigation {
+  height: 20px;
+  text-align: justify;
+
+  &-wrapper {
     font-size: @f-size-base;
-    font-family: @proxima;
-    line-height: 18px;
-    height: 55px;
-    padding: 8px 0 0 49px;
-    position: relative;
-    text-align: left;
-    text-decoration: none;
-
-    &:hover {
-      background: @c-btn-red-hover;
-      border: 2px solid @c-btn-red-hover;
-      color: @c-white;
-    }
-
-    &:active {
-      color: @c-white;
-      background: @c-btn-price-bg-active;
-      border: 2px solid @c-btn-price-bg-active;
-    }
-
-    &:after {
-      background: url("@{img-path}/downl-ico.png") left top no-repeat;
-      content: "";
-      height: 23px;
-      left: 10px;
-      position: absolute;
-      top: 14px;
-      width: 29px;
-    }
-
-    &:hover:after,
-    &:active:after {
-      background-position: left -23px;
-    }
+    width: 335px;
   }
 
-  .mail-wrapper {
-    margin: -2px -15px 0;
-    padding: 0 43px;
+  &-item {
+    display: inline;
   }
 
-  .mail {
+  &-link {
     border-bottom: 1px solid @c-head-mail-border;
-    color: @c-black;
+    color: @c-head-menu-link;
     display: inline-block;
-    font-family: @proxima-light;
-    font-size: @f-size-base;
-    font-weight: bold;
-    position: relative;
-    text-align: center;
     text-decoration: none;
 
     &:hover {
       border-bottom: 1px solid transparent;
-    }
-  }
-}
-
-.hed-mnu {
-  cursor: default;
-  height: 20px;
-  margin: 0 0 23px;
-  overflow: hidden;
-  padding: 0 !important;
-  text-align: justify;
-
-  li {
-    display: inline;
-
-    a {
-      border-bottom: 1px solid @c-head-mail-border;
-      color: @c-head-menu-link;
-      display: inline-block;
-      font-size: @f-size-base - 2;
-      line-height: 14px;
-      text-decoration: none;
-
-      &:hover {
-        border-bottom: 1px solid transparent;
-      }
     }
   }
 
@@ -392,53 +327,13 @@ h3,
   }
 }
 
-.feedback-but {
-  background: @c-feedback-bg;
-  border: 2px solid @c-white;
-  border-radius: 4px;
-  box-shadow: 0 0 4px 1px @c-feedback-shadow;
+.btn-feedback {
+  border-bottom: 1px dotted;
   cursor: pointer;
-  display: block;
-  float: right;
-  height: 50px;
-  margin: 5px 0 0;
-  padding: 5px 9px 0;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  width: 135px;
 
-  i {
-    display: inline-block;
-    color: @c-white;
-    font-size: @f-size-base + 28;
-    line-height: 35px;
-    text-shadow: 1px 2px 2px @c-feedback-span;
-  }
-
-  &-btn {
-    color: @c-white;
-    display: inline-block;
-    font: 18px/18px @proxima-cond-bold;
-    margin: 0 0 0 5px;
-    text-align: center;
-    text-transform: uppercase;
-    text-shadow: 1px 2px 2px @c-feedback-span;
-    width: 82px;
-  }
-
-  &:hover {
-    background: @c-white;
-    border: 2px solid @c-feedback-bg;
-
-    span {
-      color: @c-feedback-bg;
-      text-shadow: 1px 2px 2px @c-white;
-    }
-
-    i {
-      color: @c-feedback-bg;
-      text-shadow: 1px 2px 2px @c-white;
-    }
+  &:hover,
+  &:active {
+    border-color: transparent;
   }
 }
 
@@ -573,93 +468,6 @@ h3,
   }
 }
 
-.hed-nav {
-  div {
-    padding: 0 0 0 22px;
-    position: relative;
-    line-height: 16px;
-    font-size: @f-size-base - 2;
-  }
-
-  a {
-    border-bottom: 1px solid @c-head-nav-link-border;
-    color: @c-head-nav-link;
-    display: inline-block;
-    text-decoration: none;
-
-    &:hover {
-      border-bottom: 1px solid transparent;
-    }
-  }
-
-  span {
-    display: inline-block;
-    margin: 2px 0 0 3px;
-    font-size: @f-size-base - 4;
-  }
-
-  .compare {
-    margin: -6px 0 7px 0;
-
-    &:after {
-      background: url("@{img-path}/icons.png") left -16px no-repeat;
-      content: "";
-      height: 16px;
-      left: 0;
-      position: absolute;
-      top: 1px;
-      width: 17px;
-    }
-
-    &:hover:after {
-      background-position: left top;
-    }
-  }
-
-  .bookmark {
-    i {
-      color: @c-bookmark;
-      display: inline-block;
-      font-size: @f-size-base + 2;
-      left: 0;
-      position: absolute;
-      top: 0;
-    }
-
-    &:hover {
-      i {
-        color: @c-bookmark-hover;
-      }
-    }
-  }
-}
-
-.srch-hd {
-  color: @c-tooltip-img-border;
-  font-size: @f-size-base - 2;
-  margin: 0 0 7px 0;
-  padding: 0 0 0 25px;
-  position: relative;
-
-  span {
-    display: inline-block;
-    padding: 0 6px;
-    background: @c-white;
-    position: relative;
-    z-index: 2;
-  }
-
-  &:after {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    left: 0;
-    right: 0;
-    top: 10px;
-    border-top: 1px solid @c-tooltip-img-border;
-  }
-}
-
 .search-product {
   padding-right: 30px;
 }
@@ -709,7 +517,7 @@ h3,
 .cart-is-empty,
 .price-in-cart {
   border-bottom: 1px solid @c-head-nav-link-border;
-  color: @c-head-nav-link;
+  color: @c-black-lighter-x;
   display: inline-block;
   font-family: @proxima-bold;
   font-size: @f-size-base;
@@ -971,34 +779,16 @@ h3,
     text-decoration: none;
     transition: all 0.3s ease;
 
-    &:after {
-      background: url("@{img-path}/downl-ico.png") no-repeat left -23px;
-      content: "";
-      height: 23px;
-      left: 9px;
-      position: absolute;
-      top: 8px;
-      width: 29px;
-    }
-
     &:hover {
       background: @c-btn-red-hover;
       border: 2px solid @c-btn-red-hover;
       color: @c-white;
     }
 
-    &:hover:after {
-      background-position: left -23px;
-    }
-
     &:active {
       background: @c-white;
       border: 2px solid @c-btn-price-bg-active;
       color: @c-btn-price-bg-active;
-    }
-
-    &:active:after {
-      background-position: left 0;
     }
 
     span {
@@ -1033,7 +823,7 @@ h3,
     font-size: @f-size-base + 34;
     font-weight: normal;
     line-height: 30px;
-    color: @c-text-red-lighter;
+    color: @c-text-red;
     text-shadow: 1px 2px 2px @c-footer-percent-shadow;
   }
 
@@ -1107,7 +897,7 @@ h3,
   }
 
   .new-year-background { // Remove after new year
-    padding: 15px 0;
+    padding: 15px 0 5px;
   }
 
   .counter {
@@ -1558,73 +1348,8 @@ h3,
 // ================================================================
 // OLD STYLES IS NEEDED
 // ================================================================
-.left {
-  float: left;
-}
-
-.right {
-  float: right;
-}
-
-.info-text-self-export-left-prod {
-  float: left;
-  width: 300px;
-}
-
-.info-text-self-export-right-prod {
-  margin-left: 420px;
-  width: 300px;
-}
-
-.info-text-self-export-left-static,
-.info-text-self-export-right-static {
-  background-color: #E6E6E6;
-  display: inline-block;
-  padding: 10px 0;
-  text-align: center;
-
-  a {
-    color: @c-legacy-red;
-  }
-}
-
-.info-text-self-export-left-static {
-  border-right: 1px solid #C3C3C3;
-  width: 48%;
-}
-
-div.info-text {
-  img {
-    display: inline;
-    float: left;
-    margin: 40px 0 30px 55px;
-  }
-
-  > div {
-    display: inline;
-    float: right;
-    width: 77%;
-    text-align: justify;
-    margin-right: 20px;
-  }
-}
-
-.delivery-table {
-  width: 95%;
-  margin: 0 auto;
-
-  td {
-    width: 50%;
-    padding: 15px;
-  }
-}
-
 .div-header {
   margin-left: 68px;
-}
-
-.red {
-  color: @c-legacy-red;
 }
 
 .error-msg {
@@ -1643,22 +1368,6 @@ div.info-text {
   border: solid 1px #950303;
   border-radius: 5px;
   font-weight: bold;
-}
-
-.card-buy-button,
-.one-click-button {
-  display: inline-block;
-  width: auto;
-  padding: 12px 35px;
-  color: @c-white;
-  background-color: @c-legacy-red;
-  box-shadow: 5px 5px #C3C3C3;
-  font-weight: normal;
-  font-size: @f-size-base;
-
-  &:hover {
-    cursor: pointer;
-  }
 }
 
 .one-click-button {
@@ -1733,47 +1442,6 @@ div.info-text {
   padding: 15px;
 }
 
-.nav-tabs {
-  margin: -1px auto 20px;
-  width: 93% !important;
-
-  li {
-    background-color: #C3C3C3;
-    border-bottom: 1px solid @c-legacy-red;
-    color: @c-white;
-    margin-left: 1px;
-  }
-
-  li:first-child {
-    margin-left: 0;
-  }
-
-  li.active {
-    background-color: @c-legacy-red;
-    color: @c-white;
-  }
-
-  li.active a {
-    background-color: @c-legacy-red;
-
-    &:hover {
-      background: transparent;
-      border: none;
-      color: @c-white;
-    }
-  }
-
-  li a {
-    border: none;
-    color: @c-white;
-    text-decoration: none;
-
-    &:hover {
-      border: none;
-    }
-  }
-}
-
 .price-card,
 .product-price-card {
   width: 50%;
@@ -1795,10 +1463,6 @@ div.info-text {
   padding: 5px 15px;
   font-weight: bold;
   font-size: @f-size-base + 1;
-}
-
-.red {
-  color: @c-legacy-red;
 }
 
 .price-card-table tr.red td {
@@ -1891,25 +1555,6 @@ div.info-text {
   right: 0;
   width: 20px;
   z-index: 999;
-}
-
-.product-count input {
-  border-radius: 5px;
-  font-size: @f-size-base + 6;
-  color: @c-legacy-red;
-}
-
-#product-tab {
-  margin: 5px;
-  width: 95%;
-}
-
-#list-thumbs > table {
-  margin-left: 40px;
-}
-
-#list-thumbs > table td:nth-child(2) {
-  vertical-align: top;
 }
 
 .tab-content {
@@ -2010,18 +1655,8 @@ div.info-text {
       width: 50px;
     }
 
-    &-cifre {
-      color: @c-black-lighter-x;
-      display: inline;
-      font-size: @f-size-base + 4;
-      font-family: @proxima-bold;
-      font-weight: normal;
-      margin: 0;
-      width: auto;
-    }
-
     .cifre-span {
-      color: @c-phone-cifer;
+      color: @c-phone-code;
       display: inline;
       font-weight: normal;
       margin: 0;
@@ -2042,14 +1677,11 @@ div.info-text {
     &-img {
       max-width: 185px;
     }
+  }
 
-    &-text {
-      color: @c-logo-text;
-      font-family: @proxima-cond-bold;
-      font-size: @font-size-base - 1;
-      padding: 4px 0 0 2px;
-      letter-spacing: 0.015em;
-    }
+  &-info {
+    margin: 0 20px 0 0;
+    width: 370px;
   }
 
   .mail,
