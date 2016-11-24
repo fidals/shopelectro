@@ -55,6 +55,16 @@ class Command(BaseCommand):
 
             return product
 
+        def put_crumbs(product):
+            """
+            Crumbs for google merchant.
+            Google merchant doc: https://goo.gl/b0UJQp
+            """
+            product.crumbs = ' > '.join(
+                product.page.get_ancestors_fields('h1', include_self=False)[1:]
+            )
+            return product
+
         def filter_categories():
             new_year_lights = Category.objects.get(name='Новогодние гирлянды').get_descendants(include_self=True)
             others = (
@@ -70,7 +80,8 @@ class Command(BaseCommand):
             products_except_others = Product.objects.filter(
                 category__in=categories).filter(price__gt=0)
             result_products = (
-                put_utm(product) for product in products_except_others
+                put_crumbs(put_utm(product))
+                for product in products_except_others
             )
 
             return result_products
