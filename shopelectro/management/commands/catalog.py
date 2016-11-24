@@ -25,11 +25,10 @@ CATEGORY_POSITIONS = {
     104: 10, 111: 11, 140: 12, 63: 13, 6: 1, 2: 2, 3: 3, 4: 4, 5: 5,
 }
 
-CATEGORY_TITLE = '{h1} купить в интернет-магазине shopelectro.ru в Санкт-Петербурге'
+CATEGORY_TITLE = '{h1} купить в интернет-магазине, цена от {price} руб'
 
 PRODUCT_TITLE = '''
-    {h1} - цены, характеристики, отзывы, описание, фотографии. Купить по выгодной
-    цене в интернет-магазине shopelectro.ru Санкт-Петербург
+    {h1} - купить недорого, со скидкой в интернет-магазине ShopElectro, цена - {price} руб
 '''
 
 PRODUCT_DESCRIPTION = '''
@@ -97,22 +96,34 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
     return 'Categories and Products were saved to DB.'
 
 
-def update_page_data(instance):
+def update_page_data(catalog_model: typing.Union[Category, Product]):
     """Create meta tags for every product and category"""
-    page = instance.page
+
+    def get_min_price(category: Category):
+        """Returns min price among given category products"""
+        min_product = (
+            Product.objects
+                .filter(category=catalog_model)
+                .order_by('price').first()
+        )
+        return int(min_product.price) if min_product else 666
+
+    page = catalog_model.page
     h1 = page.h1
 
-    if isinstance(instance, Category):
-        if not page._title:
-            page._title = CATEGORY_TITLE.format(h1=h1)
-        page.position = CATEGORY_POSITIONS.get(instance.id, 0)
+    if isinstance(catalog_model, Category):
+        page._title = CATEGORY_TITLE.format(
+            h1=h1, price=get_min_price(catalog_model)
+        )
+        page.position = CATEGORY_POSITIONS.get(catalog_model.id, 0)
 
-    else:
-        category_name = instance.category.name
-        if not page._title:
-            page._title = PRODUCT_TITLE.format(h1=h1)
+    if isinstance(catalog_model, Product):
+        category = catalog_model.category
+        page._title = PRODUCT_TITLE.format(h1=h1, price=int(catalog_model.price))
         if not page.description:
-            page.description = PRODUCT_DESCRIPTION.format(h1=h1, category_name=category_name)
+            page.description = PRODUCT_DESCRIPTION.format(
+                h1=h1, category_name=category.name
+            )
 
     page.save()
 
