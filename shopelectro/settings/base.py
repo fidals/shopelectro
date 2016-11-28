@@ -14,7 +14,6 @@ import os
 from datetime import datetime
 import dj_database_url
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
@@ -172,7 +171,6 @@ SEARCH_SEE_ALL_LABEL = 'Смотреть все результаты'
 SITE_ID = 1
 SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
-
 # Used to retrieve instances in ecommerce.Cart
 CART_ID = 'cart'
 
@@ -243,25 +241,36 @@ SHOP = {
 }
 
 # used in data-migrations and tests
-CUSTOM_PAGES = [{
-    'slug': '',
-    '_title': 'Интернет-магазин Элементов питания с доставкой по России',
-    'h1': 'Интернет-магазин элементов питания "ShopElectro"',
-    '_menu_title': 'Главная',
-}, {
-    'slug': 'order',
-    '_title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
-    'h1': 'Оформление заказа',
-}, {
-    'slug': 'search',
-    '_title': 'Результаты поиска',
-}, {
-    'slug': 'catalog',
-    '_title': 'Каталог товаров',
-    'h1': 'Каталог товаров',
-    '_menu_title': 'Каталог',
-}, {
-    'slug': 'order-success',
-    '_title': 'Заказ принят',
-    'h1': 'Заказ принят',
-}]
+CUSTOM_PAGES = {
+    'index': {
+        'slug': '',
+        'h1': 'Интернет-магазин элементов питания "ShopElectro"',
+        '_menu_title': 'Главная',
+        '_title': 'Интернет-магазин Элементов питания с доставкой по России',
+    },
+    'sitemap': {
+        'slug': 'sitemap',
+        'h1': 'Карта сайта',
+    },
+    'order': {
+        'slug': 'order',
+        'h1': 'Оформление заказа',
+        '_title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
+    },
+    'search': {
+        'slug': 'search',
+        'h1': 'Результаты поиска',
+        '_title': 'Результаты поиска',
+    },
+    'catalog': {
+        'slug': 'catalog',
+        'h1': 'Каталог товаров',
+        '_menu_title': 'Каталог',
+        '_title': 'Каталог товаров',
+    },
+    'order-success': {
+        'slug': 'order-success',
+        'h1': 'Заказ принят',
+        '_title': 'Заказ принят',
+    }
+}

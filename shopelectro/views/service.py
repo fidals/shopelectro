@@ -8,12 +8,13 @@ from hashlib import md5
 from functools import wraps
 
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_POST
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from ecommerce import mailer
 from ecommerce.views import get_keys_from_post
+
 from shopelectro.models import Order
 
 
@@ -49,6 +50,7 @@ YANDEX_REQUEST_PARAM = (
     'action', 'orderSumAmount', 'orderSumCurrencyPaycash', 'orderSumBankPaycash',
     'shopId', 'invoiceId', 'customerNumber'
 )
+
 
 def generate_md5_for_ya_kassa(post_body):
     """

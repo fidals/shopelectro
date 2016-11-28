@@ -1,0 +1,56 @@
+{% extends 'layout/base.html' %}
+
+{% load staticfiles %}
+{% load pages_extras %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1>{{ page.h1 }}</h1>
+
+    <ul class="catalog-list">
+      {% for page in paginator_pages|dictsort:'h1' %}
+        <li class="catalog-list-item">
+          <a href="{{ page.url }}">{{ page.h1 }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="text-center">
+      {% if paginator_pages.has_other_pages %}
+        <ul class="pagination">
+          {% if paginator_pages.has_previous %}
+            <li><a href="?{{ url_pagination_hash }}={{ paginator_pages.previous_page_number }}">&laquo;</a></li>
+          {% else %}
+            <li class="disabled"><span>&laquo;</span></li>
+          {% endif %}
+
+          {% for link in paginator_links %}
+            {% if paginator_pages.number == link %}
+              <li class="active"><span>{{ link }} <span class="sr-only">(current)</span></span></li>
+            {% else %}
+              <li><a href="?{{ url_pagination_hash }}={{ link }}">{{ link }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if paginator_pages.has_next %}
+            <li><a href="?{{ url_pagination_hash }}={{ paginator_pages.next_page_number }}">&raquo;</a></li>
+          {% else %}
+            <li class="disabled"><span>&raquo;</span></li>
+          {% endif %}
+        </ul>
+      {% endif %}
+
+      <p>Страница {{ paginator_pages.number }} из {{ paginator_pages.paginator.num_pages }}</p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block jslinks %}
+  {{ block.super }}
+  <script src="{% static 'js/pages.min.js' %}"></script>
+{% endblock %}

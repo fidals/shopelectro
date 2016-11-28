@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopelectro', '0008_create_custom_pages'),
+        ('shopelectro', '0007_pages_data_migrations'),
     ]
 
     operations = [
