@@ -78,7 +78,7 @@ def order_call(request):
     """Send email about ordered call."""
     phone, time, url = ec_views.get_keys_from_post(request, 'phone', 'time', 'url')
 
-    mailer.order_backcall(
+    mailer.send_backcall(
         subject=settings.EMAIL_SUBJECTS['call'],
         phone=phone, time=time, url=url
     )
