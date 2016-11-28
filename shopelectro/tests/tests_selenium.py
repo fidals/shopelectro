@@ -173,14 +173,14 @@ class CategoryPage(SeleniumTestCase):
 
     def test_load_more_products(self):
         """
-        We can load another 30 by clicking load more button.
+        We can load another set of products by clicking load more button.
 
         After that we wait some time for XHR will be performed
         and there will be new count of loaded products.
         """
         self.browser.get(self.root_category)
         self.browser.refresh()
-        self.load_more_button.click()  # Let's load another 30 products.
+        self.load_more_button.click()  # Let's load another set of products.
         wait()
         loaded_products_count = self.browser.find_element_by_class_name(
             'js-products-showed-count').text
