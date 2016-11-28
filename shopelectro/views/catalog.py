@@ -111,10 +111,12 @@ def load_more(request, category_slug, offset=0, sorting=0):
     )
     view = request.session.get('view_type', 'tile')
 
-    return render(
-        request, 'catalog/category_products.html',
-        {'products': products.get_offset(int(offset), 30), 'view_type': view}
-    )
+    return render(request, 'catalog/category_products.html', {
+        'products': products.get_offset(
+            int(offset), CategoryPage.PRODUCTS_ON_PAGE),
+        'view_type': view,
+        'prods': CategoryPage.PRODUCTS_ON_PAGE,
+    })
 
 
 class ProductsWithoutImages(catalog.ProductsWithoutImages):

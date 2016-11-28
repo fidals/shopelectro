@@ -125,6 +125,8 @@ class Header(SeleniumTestCase):
 
 class CategoryPage(SeleniumTestCase):
 
+    PRODUCTS_TO_LOAD = 48
+
     def setUp(self):
         server = self.live_server_url
         self.testing_url = lambda slug: server + reverse('category', args=(slug,))
@@ -133,7 +135,7 @@ class CategoryPage(SeleniumTestCase):
         children_category = Category.objects.filter(parent=root_category).first()
         category_with_product_less_then_LOAD_LIMIT = Category.objects.annotate(
             prod_count=Count('products')).exclude(prod_count=0).filter(
-            prod_count__lt=settings.PRODUCTS_TO_LOAD).first()
+            prod_count__lt=self.PRODUCTS_TO_LOAD).first()
 
         self.root_category = self.testing_url(root_category.page.slug)
         self.children_category = self.testing_url(children_category.page.slug)
@@ -162,12 +164,12 @@ class CategoryPage(SeleniumTestCase):
 
         self.assertEqual(len(crumbs), 4)
 
-    def test_30_products_by_default(self):
-        """Any CategoryPage should contain 30 products by default."""
+    def test_loaded_products_count(self):
+        """Any CategoryPage should contain predefined products count by default."""
         self.browser.get(self.root_category)
         loaded_products = self.browser.find_element_by_class_name(
             'js-products-showed-count').text
-        self.assertEqual('30', loaded_products)
+        self.assertEqual(self.PRODUCTS_TO_LOAD, int(loaded_products))
 
     def test_load_more_products(self):
         """
@@ -183,7 +185,7 @@ class CategoryPage(SeleniumTestCase):
         loaded_products_count = self.browser.find_element_by_class_name(
             'js-products-showed-count').text
 
-        self.assertEqual('60', loaded_products_count)
+        self.assertEqual(2 * self.PRODUCTS_TO_LOAD, int(loaded_products_count))
 
     def test_load_more_hidden_in_fully_loaded_categories(self):
         """
@@ -278,7 +280,7 @@ class CategoryPage(SeleniumTestCase):
         self.load_more_button.click()  # Let's load another 30 products.
         wait(15)
         recently_loaded_product = self.browser.find_elements_by_class_name(
-            'js-product-to-cart')[settings.PRODUCTS_TO_LOAD + 1]
+            'js-product-to-cart')[self.PRODUCTS_TO_LOAD + 1]
         recently_loaded_product.click()
         wait()
         cart_is_empty = self.browser.find_element_by_class_name(
