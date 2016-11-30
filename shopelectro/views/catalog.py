@@ -31,6 +31,7 @@ class CategoryPage(catalog.CategoryPage):
     Extend get_context_data.
     """
     model = CategoryPageModel
+    PRODUCTS_ON_PAGE = 48
 
     def get_context_data(self, **kwargs):
         """Extended method. Add sorting options and view_types."""
@@ -48,7 +49,7 @@ class CategoryPage(catalog.CategoryPage):
 
         return {
             **context,
-            'products': products.get_offset(0, 30),
+            'products': products.get_offset(0, self.PRODUCTS_ON_PAGE),
             'total_products': total_count,
             'sorting_options': config.category_sorting(),
             'sort': sorting,
@@ -110,10 +111,12 @@ def load_more(request, category_slug, offset=0, sorting=0):
     )
     view = request.session.get('view_type', 'tile')
 
-    return render(
-        request, 'catalog/category_products.html',
-        {'products': products.get_offset(int(offset), 30), 'view_type': view}
-    )
+    return render(request, 'catalog/category_products.html', {
+        'products': products.get_offset(
+            int(offset), CategoryPage.PRODUCTS_ON_PAGE),
+        'view_type': view,
+        'prods': CategoryPage.PRODUCTS_ON_PAGE,
+    })
 
 
 class ProductsWithoutImages(catalog.ProductsWithoutImages):

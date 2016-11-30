@@ -23,6 +23,7 @@ class Command(BaseCommand):
         'YM': 'yandex.yml',
         'priceru': 'priceru.xml',
         'GM': 'gm.yml',
+        'SE78': 'se78.yml',
     }
     # price files will be stored at this dir
     BASE_DIR = settings.ASSETS_DIR
@@ -55,6 +56,15 @@ class Command(BaseCommand):
 
             return product
 
+        def put_crumbs(product):
+            """
+            Crumbs for google merchant. https://goo.gl/b0UJQp
+            """
+            product.crumbs = ' > '.join(
+                product.page.get_ancestors_fields('h1', include_self=False)[1:]
+            )
+            return product
+
         def filter_categories():
             new_year_lights = Category.objects.get(name='Новогодние гирлянды').get_descendants(include_self=True)
             others = (
@@ -70,17 +80,21 @@ class Command(BaseCommand):
             products_except_others = Product.objects.filter(
                 category__in=categories).filter(price__gt=0)
             result_products = (
-                put_utm(product) for product in products_except_others
+                put_crumbs(put_utm(product))
+                for product in products_except_others
             )
 
             return result_products
 
-        filtered_categories = filter_categories()
+        categories = (
+            filter_categories() if utm != 'SE78'
+            else Category.objects.all()
+        )
 
         return {
             'base_url': settings.BASE_URL,
-            'categories': filtered_categories,
-            'products': prepare_products(filtered_categories),
+            'categories': categories,
+            'products': prepare_products(categories),
             'shop': settings.SHOP,
             'utm': utm,
         }

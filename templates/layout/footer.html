@@ -23,13 +23,13 @@
         </div>
         <div class="col-xs-4">
           <div class="delivery-text">
-            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'delivery' %}">
+            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">
               <span>Самовывоз со склада</span>
             </a>
-            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'delivery' %}">
+            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">
               <span>Доставка курьером по СПБ и ЛО</span>
             </a>
-            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'delivery' %}">
+            <a class="sub-footer-link" href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">
               <span>Доставка по всей России</span>
             </a>
           </div>
@@ -59,7 +59,10 @@
           <ul class="list-unstyled">
             {% for item in footer_links.services %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'pages:flat_page' item.slug %}">{{ item.name }}</a>
+                <a class="footer-list-link"
+                   href="{% url 'pages:flat_page' 'navigation' item.slug %}">
+                  {{ item.name }}
+                </a>
               </li>
             {% endfor %}
           </ul>
@@ -67,12 +70,12 @@
 
         <div class="col-xs-4 middle-footer-col">
           <div class="middle-footer-title">
-            <a class="middle-footer-title-link" href="{% url 'pages:flat_page' 'about' %}">О компании</a>
+            <a class="middle-footer-title-link" href="{% url 'pages:flat_page' 'navigation' 'about' %}">О компании</a>
           </div>
           <ul class="list-unstyled">
             {% for item in footer_links.about %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'pages:flat_page' item.slug %} ">{{ item.name }}</a>
+                <a class="footer-list-link" href="{% url 'pages:flat_page' 'navigation' item.slug %} ">{{ item.name }}</a>
               </li>
             {% endfor %}
           </ul>

@@ -11,9 +11,11 @@
     <div class="top-header">
       <div class="container">
 
-        <div class="header-logo-wrapper">
-          <a href="/" title="На главную"><img class="header-logo" src="{% static 'images/common/logo.svg' %}"
-                                              alt="ShopElectro"></a>
+        <div class="header-logo-wrapper" itemscope itemtype="http://schema.org/Organization">
+          <a href="/" title="На главную" itemprop="logo">
+            <img class="header-logo" alt="ShopElectro"
+                 src="{% static 'images/common/logo.svg' %}">
+          </a>
           <p class="header-logo-text">продажа элементов питания</p>
         </div>
 
@@ -41,9 +43,9 @@
 
         <div class="header-sub-wrapper-right">
           <ul class="navbar navbar-default hed-mnu">
-            <li><a href="{% url 'pages:flat_page' 'delivery' %}">Доставка</a></li>
-            <li><a href="{% url 'pages:flat_page' 'pay' %}">Оплата</a></li>
-            <li><a href="{% url 'pages:flat_page' 'contacts' %}">Контакты</a></li>
+            <li><a href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">Доставка</a></li>
+            <li><a href="{% url 'pages:flat_page' 'navigation' 'pay' %}">Оплата</a></li>
+            <li><a href="{% url 'pages:flat_page' 'navigation' 'contacts' %}">Контакты</a></li>
           </ul>
         </div>
 

@@ -20,7 +20,7 @@
   };
 
   const config = {
-    productsToFetch: 30,
+    productsToFetch: 48,
     totalProductsCount: parseInt($('.js-total-products').first().text(), 10),
   };
 
