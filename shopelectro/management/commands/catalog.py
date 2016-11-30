@@ -27,7 +27,9 @@ CATEGORY_POSITIONS = {
 
 CATEGORY_TITLE = '{h1} купить в интернет-магазине, цена от {price} руб'
 
-CATEGORY_SEO_TEXT_SUFFIX = ' Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у производителя.'
+CATEGORY_SEO_TEXT_SUFFIX = '''
+      Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у производителя.
+'''
 
 PRODUCT_TITLE = '''
     {h1} - купить недорого, со скидкой в интернет-магазине ShopElectro, цена - {price} руб
@@ -117,6 +119,8 @@ def update_page_data(catalog_model: typing.Union[Category, Product]):
             h1=page.h1, price=get_min_price(catalog_model)
         )
         page.position = CATEGORY_POSITIONS.get(catalog_model.id, 0)
+        if CATEGORY_SEO_TEXT_SUFFIX not in page.seo_text:
+            page.seo_text += CATEGORY_SEO_TEXT_SUFFIX
 
     if isinstance(catalog_model, Product):
         category = catalog_model.category
@@ -125,7 +129,6 @@ def update_page_data(catalog_model: typing.Union[Category, Product]):
             page.description = PRODUCT_DESCRIPTION.format(
                 h1=page.h1, category_name=category.name
             )
-        page.seo_text += CATEGORY_SEO_TEXT_SUFFIX
 
     page.save()
 
