@@ -25,7 +25,8 @@ CATEGORY_POSITIONS = {
     104: 10, 111: 11, 140: 12, 63: 13, 6: 1, 2: 2, 3: 3, 4: 4, 5: 5,
 }
 
-CATEGORY_TITLE = '{h1} купить в интернет-магазине, цена от {price} руб'
+CATEGORY_TITLE = '{h1} купить в интернет-магазине'
+CATEGORY_TITLE_WITH_PRICE = '{h1} купить в интернет-магазине, цена от {price} руб'
 
 CATEGORY_SEO_TEXT_SUFFIX = '''
       Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у производителя.
@@ -110,13 +111,17 @@ def update_page_data(catalog_model: typing.Union[Category, Product]):
                 .filter(category=catalog_model)
                 .order_by('price').first()
         )
-        return int(min_product.price) if min_product else 666
+        return int(min_product.price) if min_product else 0
 
     page = catalog_model.page
 
     if isinstance(catalog_model, Category):
-        page._title = CATEGORY_TITLE.format(
-            h1=page.h1, price=get_min_price(catalog_model)
+        min_price = get_min_price(catalog_model)
+        page._title = (
+            CATEGORY_TITLE_WITH_PRICE.format(
+                h1=page.h1, price=min_price
+            ) if min_price
+            else CATEGORY_TITLE.format(h1=page.h1)
         )
         page.position = CATEGORY_POSITIONS.get(catalog_model.id, 0)
         if CATEGORY_SEO_TEXT_SUFFIX not in page.seo_text:

@@ -9,7 +9,6 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 
 from images.models import ImageMixin
-
 from pages.models import Page
 from shopelectro import config
 from shopelectro.models import Category
@@ -116,7 +115,7 @@ def get_img_alt(entity: ImageMixin):
 
 
 @register.simple_tag
-def image(page: Page):
+def main_image_or_logo(page: Page):
     if page.main_image:
         return page.main_image
     else:

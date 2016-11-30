@@ -58,8 +58,7 @@ class Command(BaseCommand):
 
         def put_crumbs(product):
             """
-            Crumbs for google merchant.
-            Google merchant doc: https://goo.gl/b0UJQp
+            Crumbs for google merchant. https://goo.gl/b0UJQp
             """
             product.crumbs = ' > '.join(
                 product.page.get_ancestors_fields('h1', include_self=False)[1:]
