@@ -19,17 +19,11 @@ from shopelectro.views.helpers import set_csrf_cookie
 
 # CATALOG VIEWS
 class CategoryTree(catalog.CategoryTree):
-    """Override model attribute to SE-specific Category."""
     category_model = Category
 
 
 @set_csrf_cookie
 class CategoryPage(catalog.CategoryPage):
-    """
-    Override model attribute to SE-specific Category.
-
-    Extend get_context_data.
-    """
     model = CategoryPageModel
     PRODUCTS_ON_PAGE = 48
 
@@ -59,11 +53,6 @@ class CategoryPage(catalog.CategoryPage):
 
 @set_csrf_cookie
 class ProductPage(catalog.ProductPage):
-    """
-    Override model attribute to SE-specific Product.
-
-    Extend get_context_data.
-    """
     model = Product
 
     def get_context_data(self, **kwargs):

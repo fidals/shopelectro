@@ -13,7 +13,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page
 
 from pages.models import Page
-from pages.views import robots
+from pages.views import robots, SitemapPage
 
 from shopelectro import sitemaps, config, views
 from shopelectro.admin import se_admin_site
@@ -85,6 +85,7 @@ custom_pages = [
     url(r'^(?P<page>catalog)/$', views.CategoryTree.as_view(), name=url_name),
     url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view(), name=url_name),
     url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view(), name=url_name),
+    url(r'^(?P<page>sitemap)/$', SitemapPage.as_view(), name=url_name),
 ]
 
 urlpatterns = [

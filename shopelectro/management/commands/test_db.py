@@ -18,11 +18,12 @@ from django.core.files.images import ImageFile
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+from images.models import Image
+from pages.models import Page, FlatPage
+from pages.utils import save_custom_pages, init_redirects_app
+
 import shopelectro.tests
 from shopelectro.models import Product, Category, Order
-
-from images.models import Image
-from pages.models import Page, FlatPage, CustomPage
 
 
 class Command(BaseCommand):
@@ -43,7 +44,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.prepare_db()
-        self.create_custom_pages()
+        save_custom_pages()
+        init_redirects_app()
 
         roots = self.create_root(2)
         children = self.create_children(2, roots)
@@ -139,12 +141,6 @@ class Command(BaseCommand):
         FlatPage.objects.create(
             slug='flat',
         )
-
-    @staticmethod
-    def create_custom_pages():
-        """Create required custom pages for reversing, breadcrumbs and etc"""
-        for fields in settings.CUSTOM_PAGES:
-            CustomPage.objects.get_or_create(**fields)
 
     @staticmethod
     def create_order():

@@ -9,9 +9,7 @@ All Selenium-tests should live in tests_selenium.
 from xml.etree import ElementTree as ET
 from functools import partial
 
-from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.contrib.redirects.models import Redirect
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.test import TestCase
@@ -22,29 +20,18 @@ from shopelectro.models import CategoryPage, ProductPage
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 
-class SitemapPage(TestCase):
+class SitemapXML(TestCase):
     """
-    Tests for Sitemap.
+    Tests for Sitemap XML.
     Getting sitemap.xml and parsing it as string.
     """
 
     fixtures = ['dump.json']
 
-    @classmethod
-    def setUpClass(cls):
-        """Import testing data into DB and create site domain name."""
-        call_command('redirects')
-
-        # Namespace for using ET.find()
-        cls.NAMESPACE = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-
-    @classmethod
-    def tearDownClass(cls):
-        Redirect.objects.all().delete()
-
     def setUp(self):
         """Set up testing url."""
-
+        # Namespace for using ET.find()
+        self.NAMESPACE = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
         content = self.client.get('/sitemap.xml').content.decode('utf-8')
         self.root = ET.fromstring(content)
 
@@ -56,12 +43,30 @@ class SitemapPage(TestCase):
     def test_models_urls(self):
         """Sitemap page should to print correct urls for models."""
         slice_start_index = len('https://' + settings.SITE_DOMAIN_NAME)
-
         path = '{0}url[2]/{0}loc'.format(self.NAMESPACE)
         model_url_text = self.root.find(path).text[slice_start_index:]
         response = self.client.get(model_url_text)
 
         self.assertEqual(response.status_code, 200)
+
+
+class SitemapPage(TestCase):
+
+    fixtures = ['dump.json']
+
+    def setUp(self):
+        self.response = self.client.get('/sitemap/')
+
+    def test_pagination_on_page(self):
+        paginator_pages = self.response.context['paginator_pages']
+        paginator_links = self.response.context['paginator_links']
+
+        self.assertTrue(len(paginator_pages) == 50)
+        self.assertFalse(len(paginator_links) == 0)
+
+    def test_sitemap_self_link_on_page(self):
+        sitemap_url_slug = reverse('custom_page', args=('sitemap', ))
+        self.assertIn(sitemap_url_slug, self.response.content.decode('utf-8'))
 
 
 class AdminPage(TestCase):
@@ -215,7 +220,6 @@ class YandexKassa(TestCase):
 
         self.yandex_aviso_request = partial(self.client.post, **self.yandex_aviso_request_data)
         self.yandex_check_request = partial(self.client.post, **self.yandex_check_request_data)
-
 
     def test_yandex_check_body(self):
         """Respose should contain attr code="0" - it's mean, that all right"""
