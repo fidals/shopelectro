@@ -12,6 +12,15 @@
     position: relative;
     width: 100%;
 
+    &-header {
+      background: @c-order-table-header-bg;
+      font-size: @f-size-base;
+      font-weight: bold;
+      height: 30px;
+      margin: 20px 0;
+      padding-top: 9px;
+    }
+
     tr td {
       vertical-align: top;
       width: 49%;
@@ -144,23 +153,6 @@
 div.info {
   text-align: center;
   width: 100%;
-}
-
-div.info-header {
-  background: @c-order-table-header-bg;
-  font-size: @f-size-base;
-  font-weight: bold;
-  height: 30px;
-  margin: 20px 0 20px 0;
-  padding-top: 9px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.payment-message {
-  display: none;
-  top: 60px;
-  left: 302px;
 }
 
 .order-form tr td input.btn-buy {

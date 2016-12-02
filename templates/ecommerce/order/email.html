@@ -7,185 +7,110 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
-
-    <style type="text/css">
-      @media only screen and (max-width: 770px) {
-        .email-footer {
-          width: 90%!important;
-        }
-
-        .email-phone-image {
-          top: 28%!important;
-          left: 0!important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .email-phone-image {
-          display: none!important;
-        }
-
-        .email-footer {
-          margin-left: -6%!important;
-        }
-      }
-    </style>
   </head>
+
   <body style="font-family: arial, sans-serif; margin: 0; width: 100%;">
-    <div>
-      <div style="padding:20px 0;">
-        <a href="https://www.shopelectro.ru" target="_blank" style="color: #D24A43; font-size:25px;
-           font-family: arial, sans-serif; font-weight: bold; text-decoration: none;">ShopElectro</a>
+    <div style="width:100% ;margin-bottom:35px;">
+      <span style="float: right; font-size: 16px; color: #767a7b;">
+        <small style="position:relative; top:-.2em;">(812)</small>
+        <span style="color:#CC0000; font-size:25px;" class="ya-opt-phone">
+          <a href="tel:+78124163200">416-32-00</a>
+        </span>
+      </span>
 
-        <div class="wmi-callto" style="float: right; color: #626262;">
-          <span style="position: relative; top: -0.2em;">(812)</span>
-          <a style="font-size:1.5em;" class="ya-opt-phone" href="tel:+78124163200">416-32-00</a>
-        </div>
-      </div>
-      <div style="background-color: #F94451; height:20px;"></div>
+      <a href="https://www.shopelectro.ru/" target="_blank"
+         style="color:#CC0000; font-size:25px; font-family: arial, sans-serif;
+                font-weight: bold; text-decoration: none;">
+        ShopElectro
+      </a>
+      <div style="width: 100%; background-color: rgb(215, 215, 215); height:1px;"></div>
     </div>
-
-    <div style="color: #626262; font-size: 1.077em; line-height: 1.43;">
-      <h1 style="margin: 0.5em 0; font-weight: 400; font-size: 34px;">
-        Здравствуйте, {% if order.name %}{{ order.name }}{% else %}клиент{% endif %}!
-      </h1>
-      <p style="font-size: 1.2em; margin-bottom: 0;">Заказ принят.</p>
-      <p style="font-size: 1.2em; margin: 0 0 2em;">
-        В течение 30 минут позвонит менеджер и обсудит детали доставки.
+    <div style="font-size: 1.077em; line-height: 1.43; margin:35px 0;">
+      <p style="margin:0 0 1.15em; font-family: arial, sans-serif;">
+        {% if order.name %}
+          {{ order.name }}, заказ
+        {% else %}
+          Заказ
+        {% endif %}
+           на сумму {{ order.total_price|humanize_price }} руб. принят.
+        В течение 30 минут позвонит менеджер и обсудит доставку.
       </p>
 
-      <h2 style="font-weight: 400; font-size: 23px;">Сведения о вашем заказе:</h2>
-      <table width="100%" cellspacing="0" cellpadding="3px"
-             style="border: 1px solid #626262; margin: 0 0 2.5em;">
-        <tbody>
-          <tr>
-            <td style="border: none; border-right: 1px solid #626262; padding: 8px 12px; width: 50%;">
-              <span style="margin: 0.385em 0;"><strong>Номер заказа: </strong>{{ order.fake_order_number }}</span>
-            </td>
-            <td style="border: none; padding: 8px 12px; width: 50%;">
-              <span style="margin: 0.385em 0;"><strong>Телефон: </strong>{{ order.phone }}</span>
-            </td>
-          </tr>
-          <tr>
-            <td align="left" style="border: none;border-right: 1px solid #626262;padding: 8px 12px; width: 50%;">
-              <span style="margin: 0.385em 0;"><strong>Способ оплаты: </strong>{{ order.payment_type_name }}</span>
-            </td>
-            <td style="border: none; padding: 8px 12px; width: 50%;">
-              <span style="margin: 0.385em 0;">
-                <strong>Email: </strong>
-                <a href="mailto:{{ order.email }}">{{ order.email }}</a>
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td style="border: none;border-right: 1px solid #626262;padding: 8px 12px; width: 50%;">
-              <span style="margin: 0.385em 0;"><strong>К оплате: </strong>
-                {{ order.total_price|humanize_price }} руб.</span>
-            </td>
-            <td style="border: none;padding: 8px 12px; width: 50%;">
-              <span style="margin: 0.385em 0;">
-                <strong>Город: </strong>{{ order.city|default:'Санкт-Петербург' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <p>Номер заказа: <strong>{{ order.fake_order_number }}</strong></p>
 
-      <h2 style="font-weight: 400; font-size: 23px;">Состав заказа №{{ order.fake_order_number }}:</h2>
-      <table width="100%" cellspacing="0" cellpadding="3px" border="0"
-             style="font-size:100%; margin-bottom: 1.15em;">
+      <table width="100%" cellspacing="0" cellpadding="3px" border="0">
         <tbody>
-          <tr style="background-color: #9C9C9C; color: #FFFFFF;">
-            <td align="left" style="padding: 0.5em 0.75em; font-weight:bold;
-                width: 70%;">Артикул/Наименование</td>
-            <td align="right" style="padding: 0.5em 0.75em; font-weight:bold; width: 15%;">Кол-во, шт</td>
-            <td align="right" style="padding: 0.5em 0.75em; font-weight:bold; width: 15%;">Цена, руб</td>
+          <tr>
+            <td width="5%" align="left" style="border-bottom: 1px solid #E4E4E4;
+                padding: 10px; font-weight:bold;">Артикул</td>
+            <td width="65%" align="left" style="border-bottom: 1px solid #E4E4E4;
+                padding: 10px; font-weight:bold;">Наименование</td>
+            <td width="10%" align="right" style="border-bottom: 1px solid #E4E4E4;
+                padding: 10px; font-weight:bold;">Кол-во</td>
+            <td width="10%" align="right" style="border-bottom: 1px solid #E4E4E4;
+                padding: 10px; font-weight:bold;">Цена</td>
+            <td width="10%" align="right" style="border-bottom: 1px solid #E4E4E4;
+                padding: 10px; font-weight:bold;">Сумма</td>
           </tr>
 
           {% for position in order.items %}
             <tr>
-              <td align="left" style="padding: 0.75em; border-bottom: 1px solid #E4E4E4">
+              <td align="left" style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
+                {{ position.product_id }}
+              </td>
+              <td align="left" style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
                 <a href="{% full_url 'product' position.product_id %}">
-                  {{ position.product_id }} {{ position.name }}
+                  {{ position.name }}
                 </a>
               </td>
-              <td align="right" style="padding: 0.75em; border-bottom: 1px solid #E4E4E4">
+              <td align="right" style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
                 {{ position.quantity }} шт.
               </td>
-              <td align="right" style="padding: 0.75em; border-bottom: 1px solid #E4E4E4">
+              <td align="right" style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
                 {{ position.price|humanize_price }} руб.
+              </td>
+              <td align="right" style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
+                {{ position.total_price|humanize_price }} руб.
               </td>
             </tr>
           {% endfor %}
 
           <tr>
-            <td style="padding: 0.75em; border-top: 1px solid #000; position: relative;
-                top: -1px;"></td>
-            <td style="padding: 0.75em; border-top: 1px solid #000; position: relative;
-                top: -1px; text-align: right;">
-              <strong>Итого к оплате:</strong>
-            </td>
-            <td style="padding: 0.75em; border-top: 1px solid #000; position: relative;
-                top: -1px; text-align: right;">
-              {{ order.total_price|humanize_price }} руб.
-            </td>
+            <td colspan="2" style="padding:5px 10px;">&nbsp;</td>
+            <td align="right" colspan="2" style="padding: 10px; font-weight: bold;">Итого:</td>
+            <td align="right" style="padding:5px 10px;">{{ order.total_price|humanize_price }} руб.</td>
           </tr>
         </tbody>
       </table>
 
-      {% block se_info %}{% endblock %}
+      <p style="border-top: 1px solid #E4E4E4;"></p>
 
-      <div class="email-footer" style="width: 50%; margin: 50px 0 0; padding: 1em;
-           font-size: 0.9em; color: #000; border: 1px solid #000;">
-        <table width="100%" cellspacing="0" cellpadding="0" border="0">
-          <tbody>
-          <tr>
-            <td width="20%">
-              <div class="email-phone-image" style="text-align: center;">
-                <img src="https://www.shopelectro.ru/static/images/i-phone.png" alt="Phone icon"
-                     style="max-width: 100%; height: auto;">
-              </div>
-            </td>
-            <td width="80%">
-              <table width="100%" cellspacing="0" cellpadding="0" border="0">
-                <tbody>
-                  <tr>
-                    <td style="padding: 0.3em 0.5em; font-size: 14px;">
-                      <span><strong>Наш телефон:</strong> +7(812) 416-32-00</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 0.3em 0.5em; font-size: 14px;">
-                      <span><strong>Время работы:</strong> с 10:00 до 18:00, в пятницу до 17:00</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 0.3em 0.5em; font-size: 14px;">
-                      <span><strong>Адреса магазинов:</strong></span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 0.3em 0.5em; font-size: 14px;">
-                      <span>Спб, пр-кт Елизарова, д.38А, офис 312</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 0.3em 0.5em; font-size: 14px;">
-                      <span>Спб, ул. Маршала Казакова, д.35, ярмарка "Юнона", пав. 660, 662</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-        </table>
-      </div>
+      <ul style="padding: 0; list-style: none;">
+        <li style="margin: 0 0 1em;">Тип платежа:
+          <strong style="font-weight:bold;"> {{ order.payment_type_name }}</strong>
+        </li>
+        <li style="margin: 0 0 1em;">Телефон:
+          <strong style="font-weight:bold;"> {{ order.phone }}</strong>
+        </li>
+        <li style="margin: 0 0 1em;">Email:
+          <strong style="font-weight:bold;"> {{ order.email }}</strong>
+        </li>
+        <li style="margin: 0 0 1em;">Город:
+          <strong style="font-weight:bold;"> {{ order.city|default:'Санкт-Петербург' }}</strong>
+        </li>
+        {% if order.address %}
+          <li style="margin: 0 0 1em;">Адрес, комментарий:
+            <strong style="font-weight:bold;"> {{ order.address }}</strong>
+          </li>
+        {% endif %}
+      </ul>
 
-      <p style="font-size: 14px; margin: 3em 0;">
-        <strong>Важно!</strong> Магазин не работает на выходных. Поэтому заказы, оформленные в пятницу после 16:00,
-        менеджер обработает в понедельник. Он перезвонит вам в 10:30.
+      <p style="border-bottom: 1px solid #E4E4E4; padding: 0 0 15px;">
+        Адреса магазинов: СПб, пр-т Елизарова, 38А, 3 этаж, офис 312;
+        ул. Маршала Казакова, 35, ярмарка «Юнона», пав. №660, 662
       </p>
+
+      {% block se_info %}{% endblock %}
     </div>
   </body>
 </html>

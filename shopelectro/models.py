@@ -2,9 +2,9 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from pages.models import ModelPage, SyncPageMixin, CustomPage
 from catalog.models import AbstractProduct, AbstractCategory
 from ecommerce.models import Order as ecOrder
+from pages.models import ModelPage, SyncPageMixin, CustomPage
 
 
 class Category(AbstractCategory, SyncPageMixin):
@@ -71,6 +71,7 @@ def _default_payment():
 
 
 class Order(ecOrder):
+    address = models.TextField(null=True, blank=True)
     payment_type = models.CharField(
         max_length=255,
         choices=settings.PAYMENT_OPTIONS,
@@ -100,4 +101,3 @@ class ProductPage(ModelPage):
         proxy = True
 
     objects = ModelPage.create_model_page_managers(Product)
-
