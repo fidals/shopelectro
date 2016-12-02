@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(
 SECRET_KEY = os.environ.get('SECRET_KEY', 'so_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = False
