@@ -29,7 +29,7 @@ CATEGORY_TITLE = '{h1} купить в интернет-магазине'
 CATEGORY_TITLE_WITH_PRICE = '{h1} купить в интернет-магазине, цена от {price} руб'
 
 CATEGORY_SEO_TEXT_SUFFIX = '''
-      Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у производителя.
+    Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у производителя.
 '''
 
 PRODUCT_TITLE = '''
@@ -48,8 +48,10 @@ FTP_PASSIVE_MODE = True
 
 def process(procedure_name: str) -> callable:
     """Print information before starting procedure and after it's been finished."""
+
     def inner(procedure: callable) -> callable:
         """Decorator's factory."""
+
         @wraps(procedure)
         def wrapper(*args: tuple, **kwargs: dict) -> None:
             """Print result before function call and after it."""
@@ -58,12 +60,14 @@ def process(procedure_name: str) -> callable:
             print(result or 'Completed: {}'.format(procedure_name))
 
         return wrapper
+
     return inner
 
 
 @process('Load info to DB')
 def update_and_delete(model_generator_mapping: list) -> result_message:
     """Perform db transaction of updating entity or creating new ones."""
+
     def update_instances(Model, collection) -> list:
         """Save instances from generator into db."""
         saved_entity_ids = []
@@ -108,8 +112,8 @@ def update_page_data(catalog_model: typing.Union[Category, Product]):
         """Returns min price among given category products"""
         min_product = (
             Product.objects
-                .filter(category=catalog_model)
-                .order_by('price').first()
+                   .filter(category=catalog_model)
+                   .order_by('price').first()
         )
         return int(min_product.price) if min_product else 0
 
@@ -183,8 +187,10 @@ class Command(BaseCommand):
 
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
+
         def categories_generator(catalog):
             """Yield Category data."""
+
             def category_id(node):
                 """Return category id."""
                 return int(node.attrib['folder_id'])
@@ -206,8 +212,10 @@ class Command(BaseCommand):
 
     def parse_products(self) -> typing.Generator:
         """Parse XML and return product's generator."""
+
         def products_generator(catalog):
             """Yield Product's data."""
+
             def has_no_category(node):
                 return not node.attrib['parent_id2_1']
 
@@ -223,6 +231,7 @@ class Command(BaseCommand):
     @staticmethod
     def get_product_properties_or_none(node) -> typing.Optional[dict]:
         """Get product's info for given node in XML."""
+
         def stock_or_zero():
             """Return product's stock or zero if it's negative."""
             stock = sum([int(node.attrib[stock])
@@ -266,6 +275,7 @@ class Command(BaseCommand):
     @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
+
         def prepare_connection():
             ftp.set_pasv(FTP_PASSIVE_MODE)  # Set passive mode off
 

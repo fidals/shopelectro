@@ -28,16 +28,10 @@ class SitemapXML(TestCase):
 
     fixtures = ['dump.json']
 
-    @classmethod
-    def setUpClass(cls):
-        """Import testing data into DB and create site domain name."""
-        super(SitemapXML, cls).setUpClass()
-
-        # Namespace for using ET.find()
-        cls.NAMESPACE = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-
     def setUp(self):
         """Set up testing url."""
+        # Namespace for using ET.find()
+        self.NAMESPACE = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
         content = self.client.get('/sitemap.xml').content.decode('utf-8')
         self.root = ET.fromstring(content)
 
@@ -71,8 +65,8 @@ class SitemapPage(TestCase):
         self.assertFalse(len(paginator_links) == 0)
 
     def test_sitemap_self_link_on_page(self):
-        sitemap_url_slug = reverse('custom_page', args=['sitemap'])
-        self.assertIn(sitemap_url_slug, sitemap_url_slug)
+        sitemap_url_slug = reverse('custom_page', args=('sitemap', ))
+        self.assertIn(sitemap_url_slug, self.response.content.decode('utf-8'))
 
 
 class AdminPage(TestCase):

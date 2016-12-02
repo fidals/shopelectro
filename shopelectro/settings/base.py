@@ -268,7 +268,7 @@ CUSTOM_PAGES = {
         '_menu_title': 'Каталог',
         '_title': 'Каталог товаров',
     },
-    'order-success': {
+    'order_success': {
         'slug': 'order-success',
         'h1': 'Заказ принят',
         '_title': 'Заказ принят',
