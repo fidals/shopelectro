@@ -11,7 +11,7 @@ class OrderForm(forms.ModelForm):
     """
     class Meta:
         model = Order
-        inputs_css_class = 'form-control'
+        input_css_class = 'form-control'
 
         fields = [
             'name', 'email', 'phone', 'city',
@@ -19,10 +19,10 @@ class OrderForm(forms.ModelForm):
         ]
 
         widgets = {
-            'name': TextInput(attrs={'class': inputs_css_class}),
-            'email': TextInput(attrs={'class': inputs_css_class}),
-            'phone': TextInput(attrs={'class': inputs_css_class}),
-            'city': TextInput(attrs={'class': inputs_css_class}),
-            'address': Textarea(attrs={'class': inputs_css_class}),
+            'name': TextInput(attrs={'class': input_css_class}),
+            'email': TextInput(attrs={'class': input_css_class}),
+            'phone': TextInput(attrs={'class': input_css_class}),
+            'city': TextInput(attrs={'class': input_css_class}),
+            'address': Textarea(attrs={'class': input_css_class}),
             'payment_type': forms.RadioSelect(),
         }
