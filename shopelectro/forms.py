@@ -22,7 +22,13 @@ class OrderForm(forms.ModelForm):
             'name': TextInput(attrs={'class': input_css_class}),
             'email': TextInput(attrs={'class': input_css_class}),
             'phone': TextInput(attrs={'class': input_css_class}),
-            'city': TextInput(attrs={'class': input_css_class}),
-            'address': Textarea(attrs={'class': input_css_class}),
+            'city': TextInput(attrs={
+                'class': input_css_class,
+                'placeholder': 'Санкт - Петербург'
+            }),
+            'address': Textarea(attrs={
+                'class': input_css_class,
+                'rows': 5,
+            }),
             'payment_type': forms.RadioSelect(),
         }

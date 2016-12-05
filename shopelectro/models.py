@@ -71,7 +71,7 @@ def _default_payment():
 
 
 class Order(ecOrder):
-    address = models.TextField(null=True, blank=True)
+    address = models.TextField(blank=True, default='')
     payment_type = models.CharField(
         max_length=255,
         choices=settings.PAYMENT_OPTIONS,

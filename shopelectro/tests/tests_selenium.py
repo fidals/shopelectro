@@ -55,8 +55,7 @@ def show_cart_dropdown(browser):
 
 
 def add_to_cart(browser, live_server_url):
-    product_id = Product.objects.first().id
-    browser.get(live_server_url + reverse('product', args=(product_id,)))
+    browser.get(live_server_url + Product.objects.first().url)
     browser.find_element_by_class_name('btn-to-basket').click()
     wait()
 
