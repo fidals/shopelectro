@@ -39,7 +39,7 @@
           <div class="basket-stuff-price">
             <span class="basket-price js-basket-price">{{ position.price|humanize_price }} руб</span> х
             <span class="basket-count js-basket-count">{{ position.quantity }} шт.</span> =
-            <span class="basket-sum js-basket-sum">{{ position.total|humanize_price }} руб.</span>
+            <span class="basket-sum js-basket-sum">{{ position.total_price|humanize_price }} руб.</span>
           </div>
           <div class="basket-remove js-cart-remove" data-id="{{ id }}" title="Удалить товар"></div>
         </li>

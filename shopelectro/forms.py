@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import TextInput, Textarea
 
 from shopelectro.models import Order
 
@@ -10,7 +11,24 @@ class OrderForm(forms.ModelForm):
     """
     class Meta:
         model = Order
-        fields = ['name', 'email', 'phone', 'city', 'payment_type']
+        input_css_class = 'form-control'
+
+        fields = [
+            'name', 'email', 'phone', 'city',
+            'address', 'payment_type'
+        ]
+
         widgets = {
-            'payment_type': forms.RadioSelect()
+            'name': TextInput(attrs={'class': input_css_class}),
+            'email': TextInput(attrs={'class': input_css_class}),
+            'phone': TextInput(attrs={'class': input_css_class}),
+            'city': TextInput(attrs={
+                'class': input_css_class,
+                'placeholder': 'Санкт - Петербург'
+            }),
+            'address': Textarea(attrs={
+                'class': input_css_class,
+                'rows': 5,
+            }),
+            'payment_type': forms.RadioSelect(),
         }

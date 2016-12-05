@@ -73,11 +73,14 @@
     <table class="order-info">
       <tr>
         <td>
-          <div class="payment-message order-answ">Выберете способ оплаты!</div>
-          <div class="info-header"><b style="color:red">*</b> способы оплаты</div>
+          <div class="order-info-header text-center">
+            <b style="color:red">*</b> СПОСОБЫ ОПЛАТЫ
+          </div>
         </td>
         <td>
-          <div class="info-header">форма заказа</div>
+          <div class="order-info-header text-center">
+            ФОРМА ЗАКАЗА
+          </div>
         </td>
       </tr>
       <tr>
@@ -93,8 +96,7 @@
                 <label class="control-label" for="{{ form.name.id_for_label }}">Ваше имя:</label>
               </td>
               <td class="form-order data">
-                {{ form.name.errors }}
-                {{ form.name|add_class:"form-control" }}
+                {{ form.name }}
               </td>
             </tr>
             <tr>
@@ -104,7 +106,7 @@
               </td>
               <td class="form-order data">
                 {{ form.phone.errors }}
-                {{ form.phone|add_class:'form-control js-masked-phone' }}
+                {{ form.phone|add_class:'js-masked-phone' }}
               </td>
             </tr>
             <tr>
@@ -114,7 +116,7 @@
               </td>
               <td class="form-order data">
                 {{ form.email.errors }}
-                {{ form.email|add_class:'form-control' }}
+                {{ form.email }}
               </td>
             </tr>
             <tr>
@@ -122,8 +124,15 @@
                 <label class="control-label" for="{{ form.city.id_for_label }}">Город:</label>
               </td>
               <td class="form-order data">
-                {{ form.city.errors }}
-                {{ form.city|add_class:'form-control'|attr:'placeholder: Санкт-Петербург' }}
+                {{ form.city }}
+              </td>
+            </tr>
+            <tr>
+              <td class="form-order title">
+                <label class="control-label" for="{{ form.address.id_for_label }}">Адрес, Комментарий:</label>
+              </td>
+              <td class="form-order data">
+                {{ form.address }}
               </td>
             </tr>
             <tr>
