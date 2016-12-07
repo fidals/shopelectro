@@ -17,7 +17,7 @@
   {% endif %}
 </div>
 
-{% for image_model in page.images.all %}
+{% for image_model in page.images.all|dictsortreversed:'is_main' %}
   <div class="product-image-small box-product">
     {% thumbnail image_model.image '296x440' as image %}
       <img class="img-responsive js-image-switch" src="{{ image.url }}"
@@ -26,7 +26,7 @@
   </div>
 {% endfor %}
 
-{% for hidden_image in page.images.all %}
+{% for hidden_image in page.images.all|dictsortreversed:'is_main' %}
   {% thumbnail hidden_image.image '600x600' as image %}
     <a class="fancybox hidden" href="{{ image.url }}" rel="product-cart-gallery">
         <img class="img-responsive js-image-switch" src="{{ image.url }}"

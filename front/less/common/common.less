@@ -183,7 +183,7 @@ h3,
     max-width: 185px;
 
     &-wrapper {
-      margin: 2px 3px 0 5px;
+      margin: 9px -21px 0 5px;
       width: 200px;
     }
   }
@@ -198,9 +198,9 @@ h3,
 
   &-phone {
     display: inline-block;
-    margin: 0 19px 0 0;
     font-size: @f-size-base + 9;
     font-weight: 600;
+    margin: 0 27px 0 0;
     position: relative;
     top: 13px;
 
@@ -229,7 +229,7 @@ h3,
   }
 
   &-info {
-    margin: 0 6px 0 0;
+    margin: 7px 6px 0 0;
   }
 
   &-email {
@@ -243,8 +243,31 @@ h3,
     text-decoration: none;
   }
 
+  &-phone-body {
+    color: @text-color;
+  }
+
   &-phone-code {
     color: @c-phone-code;
+    font-size: @f-size-base + 2;
+    left: 5px;
+    position: relative;
+    top: -9px;
+  }
+
+  &-phone-link {
+    text-decoration: none;
+
+    &:hover,
+    &:active,
+    &:visited {
+      text-decoration: none;
+    }
+  }
+
+  &-phone-precode {
+    color: @c-grey-body-main;
+    left: 10px;
   }
 
   &-download-pricelist {
@@ -286,21 +309,17 @@ h3,
 }
 
 .top-header {
-  padding: 17px 0 8px;
-
-  &-plate {
-    border-bottom: 1px solid @c-white;
-    padding: 10px 0;
-  }
+  padding: 17px 0 16px;
 }
 
 .header-navigation {
   height: 20px;
+  margin-bottom: 25px;
   text-align: justify;
 
   &-wrapper {
     font-size: @f-size-base;
-    width: 335px;
+    width: 345px;
   }
 
   &-item {
@@ -1653,6 +1672,18 @@ h3,
       position: relative;
       top: -2px;
       width: 50px;
+    }
+
+    &-link {
+      color: @text-color;
+      text-decoration: none;
+
+      &:hover,
+      &:active,
+      &:visited {
+        color: @text-color;
+        text-decoration: none;
+      }
     }
 
     .cifre-span {

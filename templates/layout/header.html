@@ -4,10 +4,8 @@
 {% roots as root_categories %}
 
 <div class="header">
-  {# Remove after new year #}
+  {# Remove .new-year-background after new year #}
   <div class="new-year-background container">
-    <div class="top-header-plate text-muted text-center">Бесплатная доставка по России от 3000 рублей</div>
-
     <div class="top-header">
       <div class="row">
         <div class="col-xs-3 header-logo-wrapper" itemscope itemtype="http://schema.org/Organization">
@@ -18,7 +16,11 @@
 
         <div class="col-xs-5 header-info">
           <div class="header-phone js-copy-phone">
-            <span class="header-phone-code">812</span> <span class="ya-opt-phone">416-32-00</span>
+            <a class="header-phone-link substitute-phone-link" href="tel:+78124163200">
+              <span class="header-phone-code header-phone-precode">+7</span>
+              <span class="header-phone-code">812</span>
+              <span class="header-phone-body substitute-phone">416-32-00</span>
+            </a>
           </div>
 
           <div class="header-email">
@@ -26,7 +28,7 @@
               <a href="mailto:info@shopelectro.ru" class="header-mail">info@shopelectro.ru</a>
             </p>
             <p class="header-time">
-              пн-чт 10:00-18:00, пт 10:00-17:00
+              пн-чт с 10 до 18, пт до 17
             </p>
           </div>
         </div>
@@ -41,6 +43,11 @@
             <li class="header-navigation-item">
               <a class="header-navigation-link" href="{% url 'pages:flat_page' 'navigation' 'pay' %}">
                 Оплата
+              </a>
+            </li>
+            <li class="header-navigation-item">
+              <a class="header-navigation-link" href="{% url 'pages:flat_page' 'navigation' 'return-goods-instr' %}">
+                Возврат
               </a>
             </li>
             <li class="header-navigation-item">
