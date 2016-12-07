@@ -25,8 +25,8 @@ CATEGORY_POSITIONS = {
     104: 10, 111: 11, 140: 12, 63: 13, 6: 1, 2: 2, 3: 3, 4: 4, 5: 5,
 }
 
-CATEGORY_TITLE = '{h1} купить в интернет-магазине'
-CATEGORY_TITLE_WITH_PRICE = '{h1} купить в интернет-магазине, цена от {price} руб'
+CATEGORY_TITLE = '{h1} купить в интернет-магазине - ShopElectro'
+CATEGORY_TITLE_WITH_PRICE = '{h1} купить в интернет-магазине, цена от {price} руб - ShopElectro'
 
 CATEGORY_SEO_TEXT_SUFFIX = '''
     Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у производителя.
