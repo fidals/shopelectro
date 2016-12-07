@@ -4,7 +4,7 @@
 {% for product in products %}
   <div class="product-card col-xs-4" productId="{{ product.id }}"
        itemscope itemtype="http://schema.org/Product">
-    <meta itemprop="name" content="{{ product.name }}">
+    <meta property="name" itemprop="name" content="{{ product.name }}">
     <div class="img-wrp">
       <a class="js-browse-product" target="_blank" href="{{ product.url }}">
         {% include 'catalog/category_product_image.html' with product=product only%}
@@ -18,9 +18,9 @@
         </a>
       </div>
       <div class="price">{{ product.price|humanize_price }} руб / шт</div>
-      <meta itemprop="description" content="{{ product.page.description }}">
-      <meta itemprop="price" content="{{ product.price }}">
-      <meta itemprop="priceCurrency" content="RUB">
+      <meta property="description" itemprop="description" content="{{ product.page.description }}">
+      <meta property="price" itemprop="price" content="{{ product.price }}">
+      <meta property="priceCurrency" itemprop="priceCurrency" content="RUB">
       <div class="stock">
         {% if product.in_stock > 0 %}
           <i class="fa fa-circle in-stock"></i> В наличии
