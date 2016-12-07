@@ -356,7 +356,8 @@ class ProductPage(SeleniumTestCase):
 
         not_switched_path = get_main_image_src()
 
-        image_preview = self.browser.find_element_by_xpath('//*[@id="product-images"]/div[2]/img')
+        # click on second image preview
+        image_preview = self.browser.find_elements_by_class_name('js-image-switch')[1]
         image_preview.click()
         wait()
         switched_path = get_main_image_src()

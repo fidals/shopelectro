@@ -243,12 +243,26 @@ h3,
     text-decoration: none;
   }
 
+  &-phone-body {
+    color: @text-color;
+  }
+
   &-phone-code {
     color: @c-phone-code;
     font-size: @f-size-base + 2;
     left: 5px;
     position: relative;
     top: -9px;
+  }
+
+  &-phone-link {
+    text-decoration: none;
+
+    &:hover,
+    &:active,
+    &:visited {
+      text-decoration: none;
+    }
   }
 
   &-phone-precode {
@@ -1658,6 +1672,18 @@ h3,
       position: relative;
       top: -2px;
       width: 50px;
+    }
+
+    &-link {
+      color: @text-color;
+      text-decoration: none;
+
+      &:hover,
+      &:active,
+      &:visited {
+        color: @text-color;
+        text-decoration: none;
+      }
     }
 
     .cifre-span {
