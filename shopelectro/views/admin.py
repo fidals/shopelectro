@@ -1,7 +1,8 @@
 from django.db.models import ObjectDoesNotExist
 
-from shopelectro.models import Product, Category
 from generic_admin import views as admin_views
+
+from shopelectro.models import Product, Category
 
 
 def category_name_strategy(product, related_model_entity, related_model_value):

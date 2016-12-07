@@ -19,7 +19,7 @@ def update_page_names(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopelectro', '0011_order_address'),
+        ('shopelectro', '0010_auto_20161205_1532'),
         ('pages', '0007_rename_private_field'),
     ]
 

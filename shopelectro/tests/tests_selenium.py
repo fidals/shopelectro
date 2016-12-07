@@ -13,8 +13,7 @@ from seleniumrequests import Chrome  # We use this instead of standard selenium
 
 from django.core.urlresolvers import reverse
 from django.db.models import Count
-from django.test import LiveServerTestCase
-from django.test.utils import override_settings
+from django.test import LiveServerTestCase, override_settings
 
 from pages.models import FlatPage, CustomPage, Page
 
@@ -720,7 +719,7 @@ class YandexMetrika(SeleniumTestCase):
         self.buy_product()
         self.prevent_default('click', '.js-go-to-cart')
         self.go_to_cart()
-        wait(30)
+        wait()
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
         self.prevent_default('click', '.btn-to-order')

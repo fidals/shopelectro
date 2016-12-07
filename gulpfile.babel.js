@@ -94,7 +94,10 @@ const path = {
       ],
 
       adminVendors: adminSrc.vendors,
-      admin: [...adminSrc.admin, 'front/js/components/admin.es6'],
+      admin: [
+        ...adminSrc.admin,
+        'front/js/components/admin.es6',
+      ],
     },
 
     images: ['front/images/**/*', adminSrc.img],
@@ -295,8 +298,6 @@ gulp.task('fonts', () => {
 // ================================================================
 gulp.task('watch', () => {
   $.livereload.listen();
-  env.development = true;
-  env.production = false;
   gulp.watch(path.watch.styles, ['styles']);
   gulp.watch(path.watch.js, ['js-main', 'js-pages', 'js-admin']);
   gulp.watch(path.watch.images, ['images']);
