@@ -13,6 +13,12 @@ def category_name_strategy(product, related_model_entity, related_model_value):
     product.category = new_category
 
 
+def sync_page_name(product, value):
+    product.name = product.page.name = value
+    product.save()
+    product.page.save()
+
+
 class GenericTableEditor:
     model = Product
     relation_field_names = ['category', 'page']
@@ -45,6 +51,9 @@ class GenericTableEditor:
 
 
 class TableEditorAPI(GenericTableEditor, admin_views.TableEditorAPI):
+    pattern_to_update_model = {
+        'name': sync_page_name
+    }
     pattern_to_update_related_model = {
         'category': {
             'name': category_name_strategy

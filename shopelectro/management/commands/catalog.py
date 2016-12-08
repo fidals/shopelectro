@@ -11,9 +11,8 @@ from django.db import transaction
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from pages.models import Page
-
 from shopelectro.models import Product, Category
+
 
 result_message = str  # Type alias for returning result information
 

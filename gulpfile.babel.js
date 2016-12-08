@@ -19,7 +19,6 @@ const spawnSync = require('child_process').spawnSync;
  *   const path = {
  *     src: {
  *       styles: [
- *         'front/less/admin.less',
  *         'front/less/styles.less',
  *         'front/less/pages.less',
  *         ...appPath.styles,
@@ -52,9 +51,7 @@ const path = {
   src: {
     styles: {
       admin: [
-        'front/less/common/variables.less',
         adminSrc.css,
-        'front/less/pages/admin.less',
       ],
       main: [
         'front/less/styles.less',
@@ -169,17 +166,12 @@ gulp.task('styles-main', () => {
 gulp.task('styles-admin', () => {
   gulp.src(path.src.styles.admin)
     .pipe($.changed(path.build.styles, { extension: '.css' }))
-    .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
     .pipe($.concat('admin.min.css'))
-    .pipe($.less({
-      plugins: [lessGlob],
-    }))
     .pipe($.if(env.production, $.autoprefixer({
       browsers: ['last 3 versions'],
     })))
     .pipe($.if(env.production, $.cssnano()))
-    .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(path.build.styles))
     .pipe($.livereload());
 });
