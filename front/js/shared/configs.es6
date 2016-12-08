@@ -5,7 +5,7 @@
 const configs = (() => {
   const DOM = {
     scrollWrapper: '#scroll-wrapper',
-    $touchspin: $('.js-touchspin'),
+    touchspin: '.js-touchspin',
     $phoneInputs: $('.js-masked-phone'),
   };
 
@@ -58,8 +58,8 @@ const configs = (() => {
   }
 
   function pluginsInit() {
-    $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
-    DOM.$touchspin.TouchSpin(plugins.touchspin);
+    initScrollbar();
+    initTouchspin();
 
     DOM.$phoneInputs
       .mask('+0 (000) 000 00 00', {
@@ -74,13 +74,20 @@ const configs = (() => {
       });
   }
 
-  const scrollbarReinit = () => $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
+  function initScrollbar() {
+    $(DOM.scrollWrapper).jScrollPane(plugins.scrollbar);
+  }
+
+  function initTouchspin() {
+    $(DOM.touchspin).TouchSpin(plugins.touchspin);
+  }
 
   init();
 
   return {
     plugins,
     labels,
-    scrollbarReinit,
+    initScrollbar,
+    initTouchspin,
   };
 })();

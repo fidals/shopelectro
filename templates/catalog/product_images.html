@@ -2,7 +2,7 @@
 {% load thumbnail %}
 {% load se_extras %}
 
-<div class="product-image-big box-product">
+<div class="product-image-big teaser-shadow">
   {% if page.main_image %}
     {% thumbnail page.main_image '296x440' as image %}
       <img src="{{ image.url }}" data-index="0"
@@ -18,7 +18,7 @@
 </div>
 
 {% for image_model in page.images.all|dictsortreversed:'is_main' %}
-  <div class="product-image-small box-product">
+  <div class="product-image-small teaser-shadow">
     {% thumbnail image_model.image '296x440' as image %}
       <img class="img-responsive js-image-switch" src="{{ image.url }}"
            data-index="{{ forloop.counter0 }}" alt="{% get_img_alt product.page %}">

@@ -21,8 +21,7 @@
     </div>
 
     <div class="container">
-      <p>{% breadcrumbs page %}</p>
-
+      {% breadcrumbs_with_siblings page %}
       <h1 class="product-h1" itemprop="name">{{ page.h1 }}</h1>
       <span class="product-article">Арт. {{ product.id }}</span>
 
@@ -31,7 +30,7 @@
           {% include 'catalog/product_images.html' with product=product page=page only %}
         </div>
 
-        <div class="product-price-wrapper" id="product-price">
+        <div class="product-price-wrapper teaser-shadow" id="product-price">
           <p class="product-label-price-retail">Розничная цена:</p>
           <p class="product-price active">{{ product.price|humanize_price }} руб / шт</p>
 

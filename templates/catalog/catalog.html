@@ -10,7 +10,7 @@
 
 {% block content %}
   <div class="container">
-    <p>{% breadcrumbs page %}</p>
+    {% breadcrumbs_with_siblings page %}
     <h1>{{ page.h1 }}</h1>
 
     <ul class="catalog-list">

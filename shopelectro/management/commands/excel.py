@@ -10,11 +10,11 @@ import os
 import openpyxl
 from collections import namedtuple
 from openpyxl.styles import Font
-from openpyxl.styles.colors import BLUE
 from openpyxl.styles.borders import Border, Side
+from openpyxl.styles.colors import BLUE
 
-from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.core.management.base import BaseCommand
 
 from shopelectro.models import Product, Category
 
@@ -23,7 +23,7 @@ class Command(BaseCommand):
     """Command class."""
     TEMPLATE = 'templates/ecommerce/template.xlsx'
     NAME = 'pricelist.xlsx'
-    SHEET_TITLE = 'Прайс-лист Shopelectro'
+    SHEET_TITLE = 'Прайс Shopelectro'
     CATEGORY_FILL = openpyxl.styles.PatternFill(
         start_color='F4FEFD',
         end_color='F4FEFD',

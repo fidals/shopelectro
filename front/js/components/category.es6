@@ -34,7 +34,8 @@
    */
   function setUpListeners() {
     mediator.subscribe('onViewTypeChange', updateViewType, server.sendViewType);
-    mediator.subscribe('onProductsLoad', updateLoadedCount, updateProductsList, updateButtonState);
+    mediator.subscribe('onProductsLoad', updateProductsList, updateLoadedCount,
+      updateButtonState, configs.initTouchspin);
     DOM.tileView.$.click(() => mediator.publish('onViewTypeChange', DOM.tileView.mode));
     DOM.listView.$.click(() => mediator.publish('onViewTypeChange', DOM.listView.mode));
 

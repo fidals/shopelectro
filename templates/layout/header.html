@@ -119,15 +119,15 @@
             <li class="nav-category-item">
               <a class="nav-category-link" href="{{ root.get_absolute_url }}">{{ root.name }}</a>
               {% if root.get_children %}
-                <div class="nav-menu-dropdown">
-                  <ul class="list-unstyled">
-                    {% for child in root.get_children %}
-                      <li><a href="{{ child.get_absolute_url }}" class="nav-menu-dropdown-link">
+                <ul class="list-white nav-menu-dropdown">
+                  {% for child in root.get_children %}
+                    <li>
+                      <a href="{{ child.get_absolute_url }}" class="list-white-link">
                         {{ child.name }}
-                      </a></li>
-                    {% endfor %}
-                  </ul>
-                </div>
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
               {% endif %}
             </li>
           {% endfor %}
