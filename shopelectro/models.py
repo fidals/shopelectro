@@ -29,7 +29,7 @@ class Product(AbstractProduct, SyncPageMixin):
 
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, default=None,
-        related_name='products', db_index=True
+        related_name='products'
     )
 
     purchase_price = models.FloatField(default=0)
@@ -50,6 +50,36 @@ class Product(AbstractProduct, SyncPageMixin):
 
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
+
+    @property
+    def averaged_rating(self):
+        """Return rounded to first decimal averaged rating."""
+        product_feedbacks = self.product_feedbacks.all()
+
+        if product_feedbacks:
+            rating_list = [item.rating for item in product_feedbacks]
+            averaged_rating = sum(rating_list) / len(rating_list)
+            return round(averaged_rating, 1)
+        else:
+            return 0
+
+    @property
+    def feedbacks_count(self):
+        return self.product_feedbacks.count()
+
+
+class ProductFeedback(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, null=True,
+        related_name='product_feedbacks'
+    )
+
+    date = models.DateTimeField(auto_now=True)
+    user_name = models.CharField(max_length=255, db_index=True)
+    rating = models.PositiveIntegerField(default=1, db_index=True)
+    dignities = models.TextField(default='', blank=True)
+    limitations = models.TextField(default='', blank=True)
+    general = models.TextField(default='', blank=True)
 
 
 class Property(models.Model):

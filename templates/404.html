@@ -1,4 +1,5 @@
 {% extends 'layout/base.html' %}
+
 {% load mptt_tags %}
 {% load staticfiles %}
 {% load pages_extras %}
@@ -13,11 +14,18 @@
     <div class="container m-content">
       <div class="message-404">
         <img alt="Запрашиваемая страница не найдена" src="{% static 'images/404.png' %}">
-        <h3 id="page-not-found">Запрашиваемая страница не найдена</h3>
-        <button id="return-main" type="button" class="btn btn-primary">
+
+        <h3 class="not-found-text">Запрашиваемая страница не найдена</h3>
+
+        <button type="button" class="btn btn-blue">
           <a class="main-link" href="{% custom_url '' %}">Вернуться на главную</a>
         </button>
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block jslinks %}
+  {{ block.super }}
+  <script src="{% static 'js/pages.min.js' %}"></script>
 {% endblock %}

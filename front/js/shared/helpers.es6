@@ -20,10 +20,7 @@ const helpers = (() => {
    */
   const isEmailValid = data => config.regexpEmail.test(data.toLowerCase());
 
-  /**
-   * Disabling button prevent submit event.
-   */
-  function disableSubmit($button, loadingText = config.loadingText) {
+  function setDisabledState($button, loadingText = config.loadingText) {
     $button
       .attr('disabled', 'disabled')
       .text(loadingText)
@@ -31,7 +28,7 @@ const helpers = (() => {
   }
 
   return {
-    disableSubmit,
+    setDisabledState,
     isPhoneValid,
     isEmailValid,
   };

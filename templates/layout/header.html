@@ -76,11 +76,10 @@
         <div class="middle-header-inner">
           <div class="row">
             <div class="col-xs-8">
-              <form class="navbar-form search-form js-search-form"
-                    action="{% custom_url 'search' %}" method="get">
+              <form class="search-form js-search-form" action="{% custom_url 'search' %}" method="get">
                 <div class="row">
                   <div class="col-xs-11">
-                    <div class="form-group search-area">
+                    <div class="header-search-area">
                       <div class="row">
                         <div class="col-xs-7">
                           <input class="form-control js-search-input" type="text" name="term"
@@ -99,7 +98,7 @@
                   </div>
 
                   <div class="col-xs-1">
-                    <button type="submit" class="form-btn btn fa fa-search" id="search-submit"></button>
+                    <button type="submit" class="btn btn-blue btn-search fa fa-search" id="search-submit"></button>
                   </div>
                 </div>
               </form>

@@ -6,6 +6,7 @@ distinct lists and then include them all at once.
 """
 
 from collections import OrderedDict
+
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
@@ -34,12 +35,12 @@ catalog_urls = [
     url(r'categories/(?P<category_slug>[\w-]+)/load-more/'
         r'(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/$',
         views.load_more, name='load_more'),
-    url(r'^products/(?P<product_id>[0-9]+)/$',
-        views.ProductPage.as_view(), name='product'),
     url(r'^no-images/$', views.ProductsWithoutImages.as_view(),
         name='products_without_images'),
     url(r'^no-text/$', views.ProductsWithoutText.as_view(),
         name='products_without_text'),
+    url(r'^products/(?P<product_id>[0-9]+)/$',
+        views.ProductPage.as_view(), name='product'),
 ]
 
 # Orders sitemaps instances
@@ -92,6 +93,8 @@ urlpatterns = [
     url(r'^catalog/', include(catalog_urls)),
     url(r'^pages/', include('pages.urls')),
     url(r'^robots\.txt$', robots),
+    url(r'^save-feedback/$', views.save_feedback),
+    url(r'^delete-feedback/$', views.delete_feedback),
     url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),
     url(r'^shop/', include(ecommerce_urls)),
     url(r'^search/', include(search_urls)),

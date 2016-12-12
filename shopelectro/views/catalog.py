@@ -5,7 +5,9 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 from django.conf import settings
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_POST
 
 from catalog.views import catalog
 from pages import views as pages_views
@@ -13,7 +15,7 @@ from pages import views as pages_views
 from shopelectro import config
 from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import (
-    Product, Category, CategoryPage as CategoryPageModel)
+    Product, ProductFeedback, Category, CategoryPage as CategoryPageModel)
 from shopelectro.views.helpers import set_csrf_cookie
 
 
@@ -62,6 +64,7 @@ class ProductPage(catalog.ProductPage):
         return {
             **context,
             'price_bounds': PRICE_BOUNDS,
+            'feedbacks': ProductFeedback.objects.all(),
         }
 
 
@@ -106,6 +109,37 @@ def load_more(request, category_slug, offset=0, sorting=0):
         'view_type': view,
         'prods': CategoryPage.PRODUCTS_ON_PAGE,
     })
+
+
+@require_POST
+def save_feedback(request):
+    def get_keys_from_post(*args):
+        return tuple(request.POST.get(arg) or '' for arg in args)
+
+    fields = ['id', 'rating', 'name', 'dignities', 'limitations', 'general']
+    id, rating, name, dignities, limitations, general = get_keys_from_post(*fields)
+
+    feedback_data = {
+        'product': Product.objects.get(id=id),
+        'rating': rating,
+        'user_name': name,
+        'dignities': dignities,
+        'limitations': limitations,
+        'general': general
+    }
+
+    ProductFeedback.objects.create(**feedback_data)
+    return HttpResponse('ok')
+
+
+@require_POST
+def delete_feedback(request):
+    if not request.user.is_authenticated():
+        return HttpResponseForbidden('Not today, sly guy...')
+
+    feedback_id = int(request.POST.get('id'))
+    ProductFeedback.objects.get(id=feedback_id).delete()
+    return HttpResponse('Feedback with id={} was deleted.'.format(feedback_id))
 
 
 class ProductsWithoutImages(catalog.ProductsWithoutImages):

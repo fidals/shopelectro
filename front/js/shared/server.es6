@@ -8,6 +8,8 @@ const server = (() => {
     flushCartUrl: '/shop/cart-flush/',
     yandexOrderUrl: '/shop/yandex-order/',
     setViewTypeUrl: '/set-view-type/',
+    saveFeedback: '/save-feedback/',
+    deleteFeedback: '/delete-feedback/',
   };
 
   /**
@@ -17,6 +19,25 @@ const server = (() => {
    * @param url
    */
   const sendOrderCall = (phone, time, url) => $.post(config.orderCallUrl, { phone, time, url });
+
+  /**
+   * Send Product feedback.
+   */
+  function sendFeedback(feedback) {
+    return $.post({
+      url: config.saveFeedback,
+      data: {
+        id: feedback.id,
+        name: feedback.name,
+        dignities: feedback.dignities,
+        limitations: feedback.limitations,
+        general: feedback.general,
+        rating: feedback.rating,
+      },
+    });
+  }
+
+  const deleteFeedback = id => $.post(config.deleteFeedback, { id });
 
   /**
    * Load products set from server.
@@ -36,7 +57,7 @@ const server = (() => {
    * @param productId
    * @param quantity
    */
-  const addToCart = (productId, quantity) => {
+  function addToCart(productId, quantity) {
     return $.post(
       config.addToCartUrl,
       {
@@ -44,7 +65,7 @@ const server = (() => {
         quantity,
       }
     );
-  };
+  }
 
   /**
    * Flush (clear) the cart on backend.
@@ -57,9 +78,9 @@ const server = (() => {
    * @param quantity - selected quantity
    * @param phone    - customer's phone
    */
-  const oneClickBuy = (product, quantity, phone) => {
+  function oneClickBuy(product, quantity, phone) {
     return $.post(config.oneClickBuyUrl, { product, quantity, phone });
-  };
+  }
 
   /**
    * Remove given product from Cart.
@@ -72,7 +93,7 @@ const server = (() => {
    * @param productId
    * @param quantity - new quantity of a product
    */
-  const changeInCart = (productId, quantity) => {
+  function changeInCart(productId, quantity) {
     return $.post(
       config.changeCartUrl,
       {
@@ -80,7 +101,7 @@ const server = (() => {
         quantity,
       }
     );
-  };
+  }
 
   const sendYandexOrder = data => $.post(config.yandexOrderUrl, data);
 
@@ -94,5 +115,7 @@ const server = (() => {
     removeFromCart,
     changeInCart,
     sendYandexOrder,
+    sendFeedback,
+    deleteFeedback,
   };
 })();

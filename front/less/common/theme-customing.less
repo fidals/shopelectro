@@ -8,6 +8,7 @@
 // VARIABLES
 // ================================================================
 @sp-main: url("@{img-path}/sp-png.png");
+@modal-inner-padding: 25px 15px 15px;
 
 // ================================================================
 // Tables
@@ -76,13 +77,10 @@
   border-color: @c-grey-text-main;
   color: @c-black;
   height: @input-height-base + 5;
+  max-width: 100%;
   padding: @padding-base-vertical @padding-base-horizontal - 3;
 
   &::-moz-placeholder {
-    color: @c-grey-text-main;
-  }
-
-  &:-ms-placeholder {
     color: @c-grey-text-main;
   }
 
@@ -125,7 +123,7 @@
     height: 17px;
     left: 0;
     position: absolute;
-    top: 1px;
+    top: 0;
     width: 17px;
   }
 
@@ -150,7 +148,7 @@
     content: "";
     left: 3px;
     position: absolute;
-    top: 5px;
+    top: 4px;
   }
 
   [type="radio"]:checked + label:after,
@@ -176,11 +174,6 @@
   [type="radio"]:checked + label:after {
     opacity: 1;
     transform: scale(1);
-  }
-
-  [type="checkbox"]:checked + label:after {
-    opacity: 1;
-    transform: scale(1.2);
   }
 
   // Disabled checkbox:
@@ -247,7 +240,7 @@
     display: inline-block;
     text-align: left;
     vertical-align: middle;
-    width: 444px;
+    width: 500px;
   }
 
   &-backdrop {
@@ -269,7 +262,8 @@
 
   &-header {
     border-bottom: 4px solid @c-order-blue-text;
-    padding: 8px 0 5px;
+    padding: 15px 0 12px;
+    position: relative;
     text-align: center;
   }
 
@@ -296,17 +290,18 @@
 
   &-footer {
     border: none;
-    padding: 0 0 17px;
+    padding: 0 0 25px;
     text-align: center;
   }
 
   .close {
     background: @sp-main;
     .sprite(@05);
+    margin: -8px 0 0;
     opacity: 1;
     position: absolute;
-    right: 10px;
-    top: 15px;
+    right: 15px;
+    top: 50%;
 
     &:hover {
       .sprite(@06);
@@ -314,23 +309,6 @@
   }
 
   .control-label {
-    padding-top: 10px;
-  }
-
-  .form-control {
-    border-radius: 5px;
-    height: 36px;
-    margin-top: 1px;
-  }
-
-  .btn-submit {
-    .btn-dark-blue;
-    border-radius: 3px;
-    font-size: @f-size-base + 2;
-    padding: 4px 34px 3px;
-  }
-
-  .make-call-input {
-    padding-right: 14px;
+    padding-top: 13px;
   }
 }

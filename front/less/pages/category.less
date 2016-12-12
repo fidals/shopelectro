@@ -1,11 +1,5 @@
-// ================================================================
-// IMPORTS
-// ================================================================
 @import "../vendors/bootstrap-select/*";
 
-// ================================================================
-// CATEGORY
-// ================================================================
 .content {
   .dropdown-toggle {
     .text-overflow;
@@ -73,9 +67,7 @@
 }
 
 .category-left {
-  padding-left: 0;
-
-  .block {
+  &-block {
     padding: 12px 10px 0 4px;
   }
 }
@@ -128,7 +120,7 @@
 
 .category-right {
   display: table;
-  padding: 13px 0 0;
+  padding-top: 13px;
 
   &-discount {
     background: url("@{img-path}/icons.png") no-repeat -54px 0;
@@ -185,16 +177,6 @@
   .filter-option {
     font-size: @f-size-base;
     text-align: center !important;
-  }
-
-  .form-btn {
-    .font-anti;
-    height: 38px;
-    font-family: @proxima-cond-bold;
-    font-size: @f-size-base + 2;
-    font-weight: 400;
-    float: right;
-    outline: none;
   }
 
   .popular-product {
@@ -549,35 +531,16 @@
   }
 }
 
-.btn-blue {
-  .font-anti;
-  .transition;
-  background: @c-btn-remove-active;
-  border: 2px solid @c-btn-remove-active;
-  border-radius: 3px;
-  color: @c-white;
-  cursor: pointer;
-  font-family: @proxima-cond-bold;
-  font-size: @f-size-base + 4;
-  font-weight: 400;
-  margin: 5px auto 25px;
-  outline: none;
-  padding: 6px 20px;
-  text-align: center;
-  text-decoration: none;
-
-  &:hover,
-  &:focus {
-    background: @c-tooltip-hovered;
-    border: 2px solid @c-tooltip-hovered;
-    color: @c-white;
+.btn {
+  &-category-buy {
+    height: 38px;
+    font-size: @f-size-base + 2;
+    float: right;
+    line-height: 1.1;
   }
 
-  &:active {
-    box-shadow: none;
-    background: @c-white;
-    border: 2px solid @c-btn-remove-active;
-    color: @c-btn-remove-active;
+  &-load-more {
+    margin: 5px auto 25px;
   }
 }
 

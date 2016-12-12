@@ -12,6 +12,7 @@ Usage:
 
 from itertools import chain
 import os
+from random import randint
 
 from django.conf import settings
 from django.core.files.images import ImageFile
@@ -22,8 +23,8 @@ from images.models import Image
 from pages.models import Page, FlatPage
 from pages.utils import save_custom_pages, init_redirects_app
 
+from shopelectro.models import Product, Category, Order, ProductFeedback
 import shopelectro.tests
-from shopelectro.models import Product, Category, Order
 
 
 class Command(BaseCommand):
@@ -54,6 +55,7 @@ class Command(BaseCommand):
         self.create_products(list(deep_children))
         self.create_page()
         self.create_order()
+        self.create_feedbacks()
         self.save_dump()
 
     def prepare_db(self):
@@ -149,6 +151,23 @@ class Command(BaseCommand):
             name='Test Name',
             phone='88005553535',
         )
+
+    @staticmethod
+    def create_feedbacks():
+        feedbacks_count = 5
+
+        def generate_feedback_data(index):
+            return {
+                'product': Product.objects.get(id=1),
+                'rating': index,
+                'user_name': 'User #{}'.format(index),
+                'dignities': 'Some dignities.',
+                'limitations': 'Some limitations.',
+                'general': 'Some general opinion.'
+            }
+
+        for i in range(feedbacks_count):
+            ProductFeedback.objects.create(**generate_feedback_data(i + 1))
 
     @staticmethod
     def purge_tables():
