@@ -1,7 +1,7 @@
 {% load staticfiles %}
 
 <div class="page-front-cell page-front-cell-01">
-  <div class="stuff-wrapper stuff-wrapper-01">
+  <div class="stuff-wrapper stuff-wrapper-01 teaser-shadow">
     <div class="stuff-title">
       <a class="stuff-title-link" href="{% url 'category' 'akkumuliatory' %}">
         Аккумуляторы
@@ -11,7 +11,7 @@
       <img src="{% static 'images/main/tile-1.jpg' %}" class="img-responsive img-centered" alt="Аккумуляторы">
     </a>
   </div>
-  <ul class="stuff-list stuff-list-01 list-unstyled">
+  <ul class="stuff-list stuff-list-01 list-unstyled teaser-shadow">
     {% for item in category_tile.accumulators %}
       <li class="stuff-item">
         <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
@@ -21,7 +21,7 @@
 </div>
 
 <div class="page-front-cell page-front-cell-02">
-  <div class="stuff-wrapper stuff-wrapper-02">
+  <div class="stuff-wrapper stuff-wrapper-02 teaser-shadow">
     <div class="stuff-title">
       <a class="stuff-title-link" href="{% url 'category' 'avtopreobrazovateli-napriazheniia' %}">
         Автопреобразователи напряжения
@@ -32,7 +32,7 @@
            alt="Автопреобразователи напряжения">
     </a>
   </div>
-  <ul class="stuff-list stuff-list-02 list-unstyled">
+  <ul class="stuff-list stuff-list-02 list-unstyled teaser-shadow">
     {% for item in category_tile.inverter %}
       <li class="stuff-item">
         <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
@@ -41,7 +41,7 @@
   </ul>
 
   <div class="stuff-double">
-    <div class="stuff-double-wrapper">
+    <div class="stuff-double-wrapper teaser-shadow">
       <div class="stuff-title">
         <a class="stuff-title-link" href="{% url 'category' 'batareiki' %}">
           Батарейки
@@ -51,7 +51,7 @@
         <img src="{% static 'images/main/tile-7.jpg' %}" class="img-responsive img-centered" alt="Батарейки">
       </a>
     </div>
-    <ul class="stuff-double-list list-unstyled">
+    <ul class="stuff-double-list list-unstyled teaser-shadow">
       {% for item in category_tile.batteries %}
         <li class="stuff-item stuff-item-double">
           <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
@@ -61,7 +61,7 @@
   </div>
 
   <div class="stuff-double">
-    <div class="stuff-double-wrapper">
+    <div class="stuff-double-wrapper teaser-shadow">
       <div class="stuff-title">
         <a class="stuff-title-link" href="{% url 'category' 'fonari' %}">
           Фонари
@@ -71,7 +71,7 @@
         <img src="{% static 'images/main/tile-6.jpg' %}" class="img-responsive img-centered" alt="Фонари">
       </a>
     </div>
-    <ul class="stuff-double-list list-unstyled">
+    <ul class="stuff-double-list list-unstyled teaser-shadow">
       {% for item in category_tile.lights %}
         <li class="stuff-item stuff-item-double">
           <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
@@ -82,7 +82,7 @@
 </div>
 
 <div class="page-front-cell page-front-cell-03">
-  <div class="stuff-wrapper stuff-wrapper-03">
+  <div class="stuff-wrapper stuff-wrapper-03 teaser-shadow">
     <div class="stuff-title">
       <a class="stuff-title-link" href="{% url 'category' 'zariadnye-ustroistva' %}">
         Зарядные устройства
@@ -93,7 +93,7 @@
       устройства">
     </a>
   </div>
-  <ul class="stuff-list stuff-list-03 list-unstyled">
+  <ul class="stuff-list stuff-list-03 list-unstyled teaser-shadow">
     {% for item in category_tile.chargers %}
       <li class="stuff-item">
         <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
@@ -102,7 +102,7 @@
   </ul>
 
   <div class="stuff-double">
-    <div class="stuff-double-wrapper">
+    <div class="stuff-double-wrapper teaser-shadow">
       <div class="stuff-title">
         <a class="stuff-title-link" href="{% url 'category' 'multimetry-master-professional' %}">
           Мультиметры
@@ -112,7 +112,7 @@
         <img src="{% static 'images/main/tile-5.jpg' %}" class="img-responsive img-centered" alt="Мультиметры">
       </a>
     </div>
-    <ul class="stuff-double-list list-unstyled">
+    <ul class="stuff-double-list list-unstyled teaser-shadow">
       {% for item in category_tile.multimeters %}
         <li class="stuff-item stuff-item-double-small">
           <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
@@ -122,7 +122,7 @@
   </div>
 
   <div class="stuff-double">
-    <div class="stuff-double-wrapper">
+    <div class="stuff-double-wrapper teaser-shadow">
       <div class="stuff-title">
         <a class="stuff-title-link" href="{% url 'category' 'bloki-pitaniia' %}">
           Блоки питания
@@ -133,7 +133,7 @@
         питания">
       </a>
     </div>
-    <ul class="stuff-double-list list-unstyled">
+    <ul class="stuff-double-list list-unstyled teaser-shadow">
       {% for item in category_tile.adapters %}
         <li class="stuff-item stuff-item-double">
           <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>

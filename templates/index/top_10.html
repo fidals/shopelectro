@@ -5,9 +5,10 @@
 
 <div  itemscope itemtype="http://schema.org/Product" class="stuff-top">
   <p class="stuff-top-title text-center">ТОП 10 ТОВАРОВ</p>
+
   {% for product in top_products %}
     <div class="stuff-top-item">
-      <a itemprop="url" class="stuff-top-img js-browse-product" href="{% url 'product' product.id %}">
+      <a href="{{ product.url }}" class="stuff-top-img js-browse-product teaser-shadow" itemprop="url">
         {% include 'index/product_thumbnail.html' with product=product dimensions='x174' only %}
       </a>
 

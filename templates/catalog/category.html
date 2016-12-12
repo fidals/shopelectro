@@ -11,7 +11,7 @@
 {% block content %}
   <div class="container">
     <div class="col-xs-12">
-      <p>{% breadcrumbs page %}</p>
+      {% breadcrumbs_with_siblings page %}
       <h1 class="category-title">{{ page.h1 }}</h1>
     </div>
 
