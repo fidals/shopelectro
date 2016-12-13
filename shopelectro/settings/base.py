@@ -44,7 +44,6 @@ X_FRAME_OPTIONS = 'ALLOWALL'
 # Application definition
 INSTALLED_APPS = [
     # https://docs.djangoproject.com/en/1.9/ref/contrib/admin/#django.contrib.admin.autodiscover
-    'django.contrib.admin.apps.SimpleAdminConfig',
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.messages',
@@ -54,10 +53,11 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'generic_admin',
+    'django.contrib.admin.apps.SimpleAdminConfig',
     'mptt',
     'widget_tweaks',
     'sorl.thumbnail',
-    'generic_admin',
     'images',
     'pages',
     'catalog',
@@ -244,33 +244,31 @@ SHOP = {
 CUSTOM_PAGES = {
     'index': {
         'slug': '',
-        'h1': 'Интернет-магазин элементов питания "ShopElectro"',
-        '_menu_title': 'Главная',
-        '_title': 'Интернет-магазин Элементов питания с доставкой по России',
+        'name': 'Интернет-магазин элементов питания "ShopElectro"',
+        'menu_title': 'Главная',
+        'title': 'Интернет-магазин Элементов питания с доставкой по России',
     },
     'sitemap': {
         'slug': 'sitemap',
         'h1': 'Карта сайта',
+        'name': 'Карта сайта',
     },
     'order': {
         'slug': 'order',
-        'h1': 'Оформление заказа',
-        '_title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
+        'name': 'Оформление заказа',
+        'title': 'Корзина Интернет-магазин shopelectro.ru Санкт-Петербург',
     },
     'search': {
         'slug': 'search',
-        'h1': 'Результаты поиска',
-        '_title': 'Результаты поиска',
+        'name': 'Результаты поиска',
     },
     'catalog': {
         'slug': 'catalog',
-        'h1': 'Каталог товаров',
-        '_menu_title': 'Каталог',
-        '_title': 'Каталог товаров',
+        'name': 'Каталог товаров',
+        'menu_title': 'Каталог',
     },
     'order_success': {
         'slug': 'order-success',
-        'h1': 'Заказ принят',
-        '_title': 'Заказ принят',
+        'name': 'Заказ принят',
     }
 }

@@ -4,10 +4,12 @@ from pages.models import CustomPage, FlatPage
 from generic_admin import models, inlines, sites
 
 from shopelectro.models import CategoryPage, ProductPage, Product, Category
+from shopelectro.views.admin import TableEditor
 
 
-class SEAdminSite(sites.TableEditor):
+class SEAdminSite(sites.SiteWithTableEditor):
     site_header = 'Shopelectro administration'
+    table_editor_view = TableEditor
 
 
 class CategoryInline(inlines.CategoryInline):

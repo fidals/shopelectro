@@ -76,16 +76,6 @@ def time_to_call():
             return time + call
 
 
-@register.filter
-def upload_form(model):
-    """Check if template with current Model should have upload form"""
-    if model:
-        model = model.model if type(model).__name__ == 'Page' else model
-        models_with_upload_form, model_type = (['Category', 'Product'],
-                                               type(model).__name__)
-        return model_type in models_with_upload_form
-
-
 # TODO - move it in pages. Inpired by LP electic
 @register.simple_tag
 def full_url(url_name, *args):
@@ -110,7 +100,10 @@ def get_img_alt(entity: ImageMixin):
     # try one of this attributes to get pages name
     name_attrs = ['h1', 'title', 'name']
     entity_name = next(
-        filter(None, (getattr(entity, attr, None) for attr in name_attrs)))
+        getattr(entity, attr)
+        for attr in name_attrs
+        if getattr(entity, attr)
+    )
     return product_alt.format(entity_name)
 
 

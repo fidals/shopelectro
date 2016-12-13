@@ -43,7 +43,6 @@ class Product(AbstractProduct, SyncPageMixin):
     @property
     def trademark(self):
         """Return value of trademark property if exists."""
-
         try:
             return self.property_set.get(name='Товарный знак').value
         except Property.DoesNotExist:

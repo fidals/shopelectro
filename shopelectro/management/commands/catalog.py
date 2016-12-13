@@ -11,9 +11,8 @@ from django.db import transaction
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from pages.models import Page
-
 from shopelectro.models import Product, Category
+
 
 result_message = str  # Type alias for returning result information
 
@@ -25,19 +24,19 @@ CATEGORY_POSITIONS = {
     104: 10, 111: 11, 140: 12, 63: 13, 6: 1, 2: 2, 3: 3, 4: 4, 5: 5,
 }
 
-CATEGORY_TITLE = '{h1} купить в интернет-магазине - ShopElectro'
-CATEGORY_TITLE_WITH_PRICE = '{h1} купить в интернет-магазине, цена от {price} руб - ShopElectro'
+CATEGORY_TITLE = '{name} купить в интернет-магазине - ShopElectro'
+CATEGORY_TITLE_WITH_PRICE = '{name} купить в интернет-магазине, цена от {price} руб - ShopElectro'
 
 CATEGORY_SEO_TEXT_SUFFIX = '''
     Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у производителя.
 '''
 
 PRODUCT_TITLE = '''
-    {h1} - купить недорого, со скидкой в интернет-магазине ShopElectro, цена - {price} руб
+    {name} - купить недорого, со скидкой в интернет-магазине ShopElectro, цена - {price} руб
 '''
 
 PRODUCT_DESCRIPTION = '''
-    {h1} - Элементы питания, зарядные устройства, ремонт. Купить
+    {name} - Элементы питания, зарядные устройства, ремонт. Купить
     {category_name} в Санкт Петербурге.
 '''
 
@@ -48,10 +47,8 @@ FTP_PASSIVE_MODE = True
 
 def process(procedure_name: str) -> callable:
     """Print information before starting procedure and after it's been finished."""
-
     def inner(procedure: callable) -> callable:
         """Decorator's factory."""
-
         @wraps(procedure)
         def wrapper(*args: tuple, **kwargs: dict) -> None:
             """Print result before function call and after it."""
@@ -67,7 +64,6 @@ def process(procedure_name: str) -> callable:
 @process('Load info to DB')
 def update_and_delete(model_generator_mapping: list) -> result_message:
     """Perform db transaction of updating entity or creating new ones."""
-
     def update_instances(Model, collection) -> list:
         """Save instances from generator into db."""
         saved_entity_ids = []
@@ -107,7 +103,6 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
 
 def update_page_data(catalog_model: typing.Union[Category, Product]):
     """Create meta tags for every product and category"""
-
     def get_min_price(category: Category):
         """Returns min price among given category products"""
         min_product = (
@@ -121,11 +116,11 @@ def update_page_data(catalog_model: typing.Union[Category, Product]):
 
     if isinstance(catalog_model, Category):
         min_price = get_min_price(catalog_model)
-        page._title = (
+        page.title = (
             CATEGORY_TITLE_WITH_PRICE.format(
-                h1=page.h1, price=min_price
+                name=page.name, price=min_price
             ) if min_price
-            else CATEGORY_TITLE.format(h1=page.h1)
+            else CATEGORY_TITLE.format(name=page.name)
         )
         page.position = CATEGORY_POSITIONS.get(catalog_model.id, 0)
         if CATEGORY_SEO_TEXT_SUFFIX not in page.seo_text:
@@ -133,12 +128,11 @@ def update_page_data(catalog_model: typing.Union[Category, Product]):
 
     if isinstance(catalog_model, Product):
         category = catalog_model.category
-        page._title = PRODUCT_TITLE.format(h1=page.h1, price=int(catalog_model.price))
+        page.title = PRODUCT_TITLE.format(name=page.name, price=int(catalog_model.price))
         if not page.description:
             page.description = PRODUCT_DESCRIPTION.format(
-                h1=page.h1, category_name=category.name
+                name=page.name, category_name=category.name
             )
-
     page.save()
 
 
