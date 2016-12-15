@@ -38,7 +38,7 @@ class CategoryPage(catalog.CategoryPage):
         # if there is no view_type specified, default will be tile
         view_type = self.request.session.get('view_type', 'tile')
 
-        products = Product.objects.get_products_by_category(category, ordering=(sorting_option, ))
+        products = Product.objects.get_by_category(category, ordering=(sorting_option, ))
         total_count = products.count()
 
         return {
@@ -95,7 +95,7 @@ def load_more(request, category_slug, offset=0, sorting=0):
     category_page = get_object_or_404(CategoryPageModel, slug=category_slug)
     sorting_option = config.category_sorting(int(sorting))
 
-    products = Product.objects.get_products_by_category(
+    products = Product.objects.get_by_category(
         category_page.model, ordering=(sorting_option, )
     )
     view = request.session.get('view_type', 'tile')
