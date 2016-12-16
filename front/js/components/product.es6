@@ -72,9 +72,6 @@
       .then(() => mediator.publish('onOneClickBuy'));
   }
 
-  /**
-   * Change button disable state.
-   */
   function changeOneClickBtnState() {
     if (DOM.$oneClick.size() > 0) {
       DOM.$oneClick.attr('disabled', !helpers.isPhoneValid(DOM.$phone.val()));
@@ -139,7 +136,7 @@
       rating: DOM.$ratingList.find(`.${DOM.filledRatingIcon}`).size(),
     };
 
-    const fields = ['name', 'dignities', 'limitations', 'general'];
+    const fields = ['user_name', 'dignities', 'limitations', 'general'];
     fields.forEach(item => {
       feedback[item] = getFormFieldValue(item);
     });

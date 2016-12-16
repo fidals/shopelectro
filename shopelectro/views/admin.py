@@ -38,7 +38,8 @@ class GenericTableEditor:
     }
 
     excluded_model_fields = [
-        'category', 'page', 'property', 'property_id', 'page_id', 'category_id', 'id'
+        'category', 'page', 'property', 'property_id', 'page_id',
+        'category_id', 'id', 'product_feedbacks'
     ]
 
     field_controller = admin_views.TableEditorFieldsControlMixin(

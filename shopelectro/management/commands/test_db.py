@@ -166,8 +166,8 @@ class Command(BaseCommand):
                 'general': 'Some general opinion.'
             }
 
-        for i in range(feedbacks_count):
-            ProductFeedback.objects.create(**generate_feedback_data(i + 1))
+        for i in range(1, feedbacks_count + 1):
+            ProductFeedback.objects.create(**generate_feedback_data(i))
 
     @staticmethod
     def purge_tables():

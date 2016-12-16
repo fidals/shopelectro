@@ -76,7 +76,7 @@
           <ul class="list-unstyled">
             {% for item in footer_links.about %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'pages:flat_page' 'navigation' item.slug %} ">{{ item.name }}</a>
+                <a class="footer-list-link" href="{% url 'pages:flat_page' item.type item.slug %} ">{{ item.name }}</a>
               </li>
             {% endfor %}
           </ul>

@@ -373,7 +373,7 @@ class ProductPage(SeleniumTestCase):
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
-            'input-one-click-phone').send_keys('22222222222')
+            'input-one-click-phone').send_keys('222222222222')
         self.one_click.click()
         wait()
 
@@ -436,15 +436,9 @@ class ProductPage(SeleniumTestCase):
 
         wait()
         feedbacks_list = self.browser.find_element_by_id('feedbacks-list')
-        feedbacks_count = feedbacks_list.find_elements_by_class_name('feedbacks-block-content')
+        feedbacks = feedbacks_list.find_elements_by_class_name('feedbacks-block-content')
 
-        def check_all_feedbacks_are_hidden():
-            for feedback in feedbacks_count:
-                if feedback.is_displayed():
-                    return False
-                return True
-
-        self.assertTrue(check_all_feedbacks_are_hidden())
+        self.assertTrue(all(not element.is_displayed() for element in feedbacks))
 
 
 class OrderPage(SeleniumTestCase):

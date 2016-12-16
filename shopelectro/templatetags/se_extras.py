@@ -72,16 +72,6 @@ def time_to_call():
             return time + call
 
 
-@register.filter
-def upload_form(model):
-    """Check if template with current Model should have upload form."""
-    if model:
-        model = model.model if type(model).__name__ == 'Page' else model
-        models_with_upload_form, model_type = (['Category', 'Product'],
-                                               type(model).__name__)
-        return model_type in models_with_upload_form
-
-
 # TODO - move it in pages.
 @register.simple_tag
 def full_url(url_name, *args):
@@ -130,7 +120,7 @@ def icon_stars(rating=0):
     empty_icons = 5 - full_icons - half_icons
 
     return {
-        'full_icons': range(0, full_icons),
-        'half_icons': range(0, half_icons),
-        'empty_icons': range(0, empty_icons),
+        'full_icons': range(full_icons),
+        'half_icons': range(half_icons),
+        'empty_icons': range(empty_icons),
     }

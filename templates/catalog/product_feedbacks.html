@@ -9,9 +9,9 @@
     {% if feedbacks %}
       <div class="feedbacks-block-content">
         <div class="rating-total">
-          <div class="rating-total-num">{{ product.averaged_rating }}</div>
+          <div class="rating-total-num">{{ product.average_rate }}</div>
           <div class="rating-total-rating">
-            {% icon_stars product.averaged_rating %}
+            {% icon_stars product.average_rate %}
             <br> Всего отзывов: {{ product.feedbacks_count }}
           </div>
 
@@ -61,7 +61,7 @@
 
   {% if feedbacks %}
     <div id="feedbacks-list">
-      {% for feedback in feedbacks|dictsortreversed:'date' %}
+      {% for feedback in feedbacks %}
         <div class="feedbacks-block" data-rating="{{ feedback.rating }}">
           <div class="feedbacks-block-content">
             {% if request.user.is_authenticated %}

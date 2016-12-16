@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
@@ -26,9 +27,8 @@ class Product(AbstractProduct, SyncPageMixin):
     Define n:1 relation with SE-Category and 1:n with Property.
     Add wholesale prices.
     """
-
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, default=None,
+        Category, on_delete=models.CASCADE, null=True,
         related_name='products'
     )
 
@@ -52,16 +52,10 @@ class Product(AbstractProduct, SyncPageMixin):
         super(Product, self).save(*args, **kwargs)
 
     @property
-    def averaged_rating(self):
+    def average_rate(self):
         """Return rounded to first decimal averaged rating."""
-        product_feedbacks = self.product_feedbacks.all()
-
-        if product_feedbacks:
-            rating_list = [item.rating for item in product_feedbacks]
-            averaged_rating = sum(rating_list) / len(rating_list)
-            return round(averaged_rating, 1)
-        else:
-            return 0
+        rating = self.product_feedbacks.aggregate(avg=Avg('rating')).get('avg', 0)
+        return round(rating, 1)
 
     @property
     def feedbacks_count(self):
@@ -76,7 +70,7 @@ class ProductFeedback(models.Model):
 
     date = models.DateTimeField(auto_now=True)
     user_name = models.CharField(max_length=255, db_index=True)
-    rating = models.PositiveIntegerField(default=1, db_index=True)
+    rating = models.PositiveSmallIntegerField(default=1, db_index=True)
     dignities = models.TextField(default='', blank=True)
     limitations = models.TextField(default='', blank=True)
     general = models.TextField(default='', blank=True)

@@ -55,16 +55,21 @@ class CategoryPage(catalog.CategoryPage):
 
 @set_csrf_cookie
 class ProductPage(catalog.ProductPage):
-    model = Product
+    queryset = Product.objects.prefetch_related('product_feedbacks')
 
     def get_context_data(self, **kwargs):
         """Inject breadcrumbs into context."""
         context = super(ProductPage, self).get_context_data(**kwargs)
+        feedbacks = (
+            context[self.context_object_name]
+                .product_feedbacks.all()
+                .order_by('-date')
+            )
 
         return {
             **context,
             'price_bounds': PRICE_BOUNDS,
-            'feedbacks': ProductFeedback.objects.all(),
+            'feedbacks': feedbacks
         }
 
 
@@ -114,19 +119,16 @@ def load_more(request, category_slug, offset=0, sorting=0):
 @require_POST
 def save_feedback(request):
     def get_keys_from_post(*args):
-        return tuple(request.POST.get(arg) or '' for arg in args)
+        return tuple(request.POST.get(arg, '') for arg in args)
 
-    fields = ['id', 'rating', 'name', 'dignities', 'limitations', 'general']
-    id, rating, name, dignities, limitations, general = get_keys_from_post(*fields)
+    product_id = request.POST.get('id')
+    product = Product.objects.filter(id=product_id).first()
+    if not (product_id and product):
+        return HttpResponse(status=422)
 
-    feedback_data = {
-        'product': Product.objects.get(id=id),
-        'rating': rating,
-        'user_name': name,
-        'dignities': dignities,
-        'limitations': limitations,
-        'general': general
-    }
+    fields = ['rating', 'user_name', 'dignities', 'limitations', 'general']
+    feedback_data = dict(zip(fields, get_keys_from_post(*fields)))
+    feedback_data.update(product=product)
 
     ProductFeedback.objects.create(**feedback_data)
     return HttpResponse('ok')
@@ -137,8 +139,12 @@ def delete_feedback(request):
     if not request.user.is_authenticated():
         return HttpResponseForbidden('Not today, sly guy...')
 
-    feedback_id = int(request.POST.get('id'))
-    ProductFeedback.objects.get(id=feedback_id).delete()
+    feedback_id = request.POST.get('id')
+    feedback = ProductFeedback.objects.filter(id=feedback_id).first()
+    if not (feedback_id and feedback):
+        return HttpResponse(status=422)
+
+    feedback.delete()
     return HttpResponse('Feedback with id={} was deleted.'.format(feedback_id))
 
 
