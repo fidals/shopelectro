@@ -31,7 +31,9 @@
     <i class="fa fa-arrow-circle-up"></i>
   </div>
 
-  {% include 'layout/back_call_modal.html' %}
+  {% block modals %}
+    {% include 'layout/back_call_modal.html' %}
+  {% endblock %}
 
   {% block jslibs %}
     <script src="{% static 'js/vendors.min.js' %}"></script>
@@ -42,6 +44,5 @@
   {% endblock %}
 
   {% include 'layout/marketing.html' %}
-
 </body>
 </html>

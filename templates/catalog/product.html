@@ -20,86 +20,91 @@
       <link itemprop="availability" href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}">
     </div>
 
-    <div class="container">
-      {% breadcrumbs_with_siblings page %}
-      <h1 class="product-h1" itemprop="name">{{ page.h1 }}</h1>
-      <span class="product-article">Арт. {{ product.id }}</span>
+    {% breadcrumbs_with_siblings page %}
+    <h1 class="product-h1" itemprop="name">{{ page.h1 }}</h1>
+    <span class="product-article">Арт. {{ product.id }}</span>
 
-      <div class="product-top">
-        <div class="product-images" id="product-images">
-          {% include 'catalog/product_images.html' with product=product page=page only %}
-        </div>
-
-        <div class="product-price-wrapper teaser-shadow" id="product-price">
-          <p class="product-label-price-retail">Розничная цена:</p>
-          <p class="product-price active">{{ product.price|humanize_price }} руб / шт</p>
-
-          {% if product.wholesale_small %}
-            <p class="product-label-price-whole">Оптовая цена:</p>
-            <table class="product-table table table-bordered">
-              <thead>
-              <tr>
-                <th>от {{ price_bounds.wholesale_small }} руб</th>
-                <th>от {{ price_bounds.wholesale_medium }} руб</th>
-                <th>от {{ price_bounds.wholesale_large }} руб</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>{{ product.wholesale_small }} руб</td>
-                <td>{{ product.wholesale_medium }} руб</td>
-                <td>{{ product.wholesale_large }} руб</td>
-              </tr>
-              </tbody>
-            </table>
-          {% endif %}
-
-          {% include 'catalog/product_in_stock.html' %}
-
-          <div class="product-price-btn-wrapper">
-            <input class="input-switcher js-touchspin" id="product-count" type="number" min="1" value="1">
-          </div>
-
-          <div class="btn-wrapper-center">
-            <button class="btn btn-to-basket js-to-cart-on-product-page" id="btn-to-basket" data-id="{{ product.id }}">В
-              корзину</button>
-          </div>
-
-          <p class="product-one-click">Купить в один клик</p>
-          <input class="form-control js-masked-phone" id="input-one-click-phone" placeholder="+7 (999) 000 00 00"
-                 type="tel">
-          <button class="btn btn-order" id="btn-one-click-order" type="button" disabled>Заказать</button>
-
-          <p class="pr-additional">
-            Менеджер позвонит, уточнит все детали, проверит
-            наличие товара на складе и оформит заказ на ваше имя.
-          </p>
-          <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,moimir,viber,whatsapp,skype,telegram"></div>
-        </div>
-
-        <div class="pr-chars">
-          <div class="pr-chars-order">
-            {% include 'catalog/order_notice.html' %}
-          </div>
-        </div>
+    <div class="product-top">
+      <div class="product-images" id="product-images">
+        {% include 'catalog/product_images.html' with product=product page=page only %}
       </div>
 
-      <div class="product-bottom">
-        <div class="product-desc">
-          {% if product.page.content %}
-            <h3 class="product-desc-title">Описание</h3>
-            <p class="product-text">
-              {% autoescape off %}
-                {{ product.page.content }}
-              {% endautoescape %}
-            </p>
-          {% endif %}
+      <div class="product-price-wrapper teaser-shadow" id="product-price">
+        <p class="product-label-price-retail">Розничная цена:</p>
+        <p class="product-price active">{{ product.price|humanize_price }} руб / шт</p>
+
+        {% if product.wholesale_small %}
+          <p class="product-label-price-whole">Оптовая цена:</p>
+          <table class="product-table table table-bordered">
+            <thead>
+            <tr>
+              <th>от {{ price_bounds.wholesale_small }} руб</th>
+              <th>от {{ price_bounds.wholesale_medium }} руб</th>
+              <th>от {{ price_bounds.wholesale_large }} руб</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>{{ product.wholesale_small }} руб</td>
+              <td>{{ product.wholesale_medium }} руб</td>
+              <td>{{ product.wholesale_large }} руб</td>
+            </tr>
+            </tbody>
+          </table>
+        {% endif %}
+
+        {% include 'catalog/product_in_stock.html' %}
+
+        <div class="product-price-btn-wrapper">
+          <input class="input-switcher js-touchspin" id="product-count" type="number" min="1" value="1">
         </div>
+
+        <div class="btn-wrapper-center">
+          <button class="btn btn-blue btn-to-basket js-to-cart-on-product-page" id="btn-to-basket"
+                  data-id="{{ product.id }}">В корзину</button>
+        </div>
+
+        <p class="product-one-click">Купить в один клик</p>
+        <input class="form-control js-masked-phone" id="input-one-click-phone" placeholder="+7 (999) 000 00 00"
+               type="tel">
+        <button class="btn btn-order" id="btn-one-click-order" type="button" disabled>Заказать</button>
+
+        <p class="product-additional">
+          Менеджер позвонит, уточнит все детали, проверит
+          наличие товара на складе и оформит заказ на ваше имя.
+        </p>
+
+        <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,moimir,viber,whatsapp,skype,telegram"></div>
       </div>
 
-      {% include 'catalog/product_delivery.html' %}
+      <div class="pr-chars">
+        <div class="pr-chars-order">
+          {% include 'catalog/order_notice.html' %}
+        </div>
+      </div>
     </div>
+
+    <div class="product-bottom">
+      <div class="product-desc">
+        {% if product.page.content %}
+          <h3 class="product-desc-title">Описание</h3>
+          <p class="product-text">
+            {% autoescape off %}
+              {{ product.page.content }}
+            {% endautoescape %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% include 'catalog/product_delivery.html' %}
+    {% include 'catalog/product_feedbacks.html' %}
   </div>
+{% endblock %}
+
+{% block modals %}
+  {{ block.super }}
+  {% include 'catalog/product_feedback_modal.html' %}
 {% endblock %}
 
 {% block jslinks %}

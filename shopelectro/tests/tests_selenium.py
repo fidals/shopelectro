@@ -373,7 +373,7 @@ class ProductPage(SeleniumTestCase):
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
-            'input-one-click-phone').send_keys('22222222222')
+            'input-one-click-phone').send_keys('222222222222')
         self.one_click.click()
         wait()
 
@@ -404,6 +404,41 @@ class ProductPage(SeleniumTestCase):
         cart_size = self.browser.find_element_by_class_name('js-cart-size')
 
         self.assertTrue('42' in cart_size.text)
+
+    def test_new_fivestar_feedback(self):
+        text_of_feedback = 'Five star rating.'
+
+        # create new feedback
+        self.browser.find_element_by_css_selector('.js-open-feedback-modal').click()
+        feedback_modal = self.browser.find_element_by_id('product-feedback-modal')
+        form_fields = feedback_modal.find_elements_by_class_name('form-control')
+
+        for form_field in form_fields:
+            form_field.send_keys(text_of_feedback)
+
+        rating_stars = self.browser.find_element_by_class_name('js-rating')
+        rating_stars.find_element_by_css_selector('.rating-icon-empty:last-child').click()
+        feedback_modal.find_element_by_css_selector('.js-send-feedback').click()
+        wait()
+
+        # check for new feedback on page with `text_of_feedback`
+        self.browser.refresh()
+        feedbacks_list = self.browser.find_element_by_id('feedbacks-list')
+        text = feedbacks_list.find_element_by_class_name('feedbacks-block-content').text
+
+        self.assertIn(text_of_feedback, text)
+
+    def test_feedback_filter(self):
+        stars = self.browser.find_elements_by_class_name('js-filter-trigger')
+
+        for star in stars:
+            star.click()
+
+        wait()
+        feedbacks_list = self.browser.find_element_by_id('feedbacks-list')
+        feedbacks = feedbacks_list.find_elements_by_class_name('feedbacks-block-content')
+
+        self.assertTrue(all(not element.is_displayed() for element in feedbacks))
 
 
 class OrderPage(SeleniumTestCase):

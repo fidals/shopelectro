@@ -2,8 +2,8 @@
   const DOM = {
     $phone: $('#back-call-phone'),
     $callModal: $('#back-call-modal'),
-    $closeModal: $('.js-backcall-close'),
-    $orderButton: $('.js-send-backcall'),
+    $closeModalBtn: $('.js-backcall-close'),
+    $orderBtn: $('.js-send-backcall'),
     $successTag: $('.js-backcall-success'),
     $timeText: $('.js-backcall-time'),
     $timeTag: $('.js-select-time'),
@@ -17,24 +17,24 @@
   function setUpListeners() {
     mediator.subscribe('onBackCallSend', showSuccessModal);
 
-    DOM.$orderButton.on('click', orderCall);
-    DOM.$timeTag.on('change', storeBackcallTime.bind(this));
-    DOM.$callModal.on('hidden.bs.modal', resetErrorClass);
+    DOM.$orderBtn.click(orderCall);
+    DOM.$timeTag.change(storeBackcallTime);
   }
 
   function orderCall() {
     const phone = DOM.$phone.val();
     const time = DOM.$timeToCall.val();
     const url = location.href;
+    const isPhoneValid = helpers.isPhoneValid(phone);
 
-    if (!helpers.isPhoneValid(phone)) {
+    if (!isPhoneValid) {
       DOM.$phone
         .addClass('shake animated')
         .closest('.form-group').addClass('has-error');
       return;
     }
 
-    helpers.disableSubmit(DOM.$orderButton);
+    helpers.setDisabledState(DOM.$orderBtn);
 
     server.sendOrderCall(phone, time, url)
       .then(() => {
@@ -44,22 +44,15 @@
   }
 
   function showSuccessModal() {
-    DOM.$orderButton.addClass('hidden');
-    DOM.$closeModal.removeClass('hidden');
+    DOM.$orderBtn.addClass('hidden');
+    DOM.$closeModalBtn.removeClass('hidden');
     DOM.$successTag
       .removeClass('hidden')
       .siblings().addClass('hidden');
   }
 
-  function resetErrorClass() {
-    DOM.$phone
-      .removeClass('shake animated')
-      .closest('.form-group').removeClass('has-error');
-  }
-
-  function storeBackcallTime(selectedOption) {
-    const selectedTime = $(selectedOption.target).find(':selected').data('time');
-
+  function storeBackcallTime(event) {
+    const selectedTime = $(event.target).find(':selected').data('time');
     localStorage.setItem(configs.labels.callTime, selectedTime);
   }
 

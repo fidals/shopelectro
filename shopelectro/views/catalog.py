@@ -5,7 +5,9 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 from django.conf import settings
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_POST
 
 from catalog.views import catalog
 from pages import views as pages_views
@@ -13,7 +15,7 @@ from pages import views as pages_views
 from shopelectro import config
 from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import (
-    Product, Category, CategoryPage as CategoryPageModel)
+    Product, ProductFeedback, Category, CategoryPage as CategoryPageModel)
 from shopelectro.views.helpers import set_csrf_cookie
 
 
@@ -53,15 +55,21 @@ class CategoryPage(catalog.CategoryPage):
 
 @set_csrf_cookie
 class ProductPage(catalog.ProductPage):
-    model = Product
+    queryset = Product.objects.prefetch_related('product_feedbacks')
 
     def get_context_data(self, **kwargs):
         """Inject breadcrumbs into context."""
         context = super(ProductPage, self).get_context_data(**kwargs)
+        feedbacks = (
+            context[self.context_object_name]
+                .product_feedbacks.all()
+                .order_by('-date')
+            )
 
         return {
             **context,
             'price_bounds': PRICE_BOUNDS,
+            'feedbacks': feedbacks
         }
 
 
@@ -106,6 +114,37 @@ def load_more(request, category_slug, offset=0, sorting=0):
         'view_type': view,
         'prods': CategoryPage.PRODUCTS_ON_PAGE,
     })
+
+
+@require_POST
+def save_feedback(request):
+    def get_keys_from_post(*args):
+        return {arg: request.POST.get(arg, '') for arg in args}
+
+    product_id = request.POST.get('id')
+    product = Product.objects.filter(id=product_id).first()
+    if not (product_id and product):
+        return HttpResponse(status=422)
+
+    fields = ['rating', 'name', 'dignities', 'limitations', 'general']
+    feedback_data = get_keys_from_post(*fields)
+
+    ProductFeedback.objects.create(product=product, **feedback_data)
+    return HttpResponse('ok')
+
+
+@require_POST
+def delete_feedback(request):
+    if not request.user.is_authenticated():
+        return HttpResponseForbidden('Not today, sly guy...')
+
+    feedback_id = request.POST.get('id')
+    feedback = ProductFeedback.objects.filter(id=feedback_id).first()
+    if not (feedback_id and feedback):
+        return HttpResponse(status=422)
+
+    feedback.delete()
+    return HttpResponse('Feedback with id={} was deleted.'.format(feedback_id))
 
 
 class ProductsWithoutImages(catalog.ProductsWithoutImages):

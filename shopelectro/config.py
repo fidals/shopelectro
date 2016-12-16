@@ -115,9 +115,9 @@ FOOTER_LINKS = {
         {'name': 'Доставка по всей России', 'slug': 'delivery'},
     ],
     'about': [
-        {'name': 'Реквизиты', 'slug': 'rekvisity'},
-        {'name': 'Оптовым покупателям', 'slug': 'wholesale'},
-        {'name': 'Гарантии и возврат', 'slug': 'return-goods-instr'},
+        {'name': 'Реквизиты', 'type': 'navigation', 'slug': 'rekvisity'},
+        {'name': 'Оптовым покупателям', 'type': 'articles', 'slug': 'wholesale'},
+        {'name': 'Гарантии и возврат', 'type': 'navigation', 'slug': 'return-goods-instr'},
     ],
 }
 

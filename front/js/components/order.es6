@@ -208,7 +208,7 @@
       return;
     }
 
-    helpers.disableSubmit($(DOM.submit)); // disable button to prevent user's multiple clicks;
+    helpers.setDisabledState($(DOM.submit)); // disable button to prevent user's multiple clicks;
 
     if (isYandex()) {
       server.sendYandexOrder(orderInfo)

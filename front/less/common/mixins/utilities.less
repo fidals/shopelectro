@@ -5,8 +5,7 @@
 
 .font-bold {
   .font-anti;
-  font-family: @proxima-bold;
-  font-weight: normal;
+  font-weight: bold;
 }
 
 .font-light {
@@ -66,34 +65,6 @@
 
 .teaser-shadow {
   box-shadow: 0 1px 2px fadeout(@c-block-link-shadow, 85%);
-}
-
-.btn-dark-blue {
-  .font-anti;
-  .transition;
-  background: @c-blue-dark-focused;
-  border: 2px solid @c-blue-dark-focused;
-  border-radius: 5px;
-  color: @c-white;
-  font-size: @f-size-base + 2;
-  min-width: 150px;
-  text-decoration: none;
-
-  &:hover {
-    background: @c-blue-dark-hovered;
-    border-color: @c-blue-dark-hovered;
-    color: @c-white;
-  }
-
-  &:focus,
-  &:active,
-  &:active:focus {
-    box-shadow: none;
-    background: @c-white;
-    border-color: @c-blue-dark-focused;
-    color: @c-blue-dark-focused;
-    outline: none;
-  }
 }
 
 .btn-grey {

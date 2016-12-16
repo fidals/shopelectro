@@ -1,0 +1,61 @@
+{% load se_extras %}
+
+<div class="modal fade" id="product-feedback-modal" tabindex="-1" role="dialog" aria-labelledby="back-call-modal-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
+          <span aria-hidden="true"></span>
+        </button>
+        <h4 class="modal-title" id="back-call-modal-label">Оставить отзыв о товаре</h4>
+      </div>
+
+      <div class="modal-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label for="feedback-modal-name" class="col-sm-5 control-label">Ваш имя</label>
+            <div class="col-sm-6">
+              <input class="form-control js-modal-field" id="feedback-modal-name" name="name" type="text">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="feedback-modal-goods" class="col-sm-5 control-label">Достоинства товара</label>
+            <div class="col-sm-6">
+              <textarea class="form-control js-modal-field" id="feedback-modal-dignities" name="dignities" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="feedback-modal-limitations" class="col-sm-5 control-label">Недостатки товара</label>
+            <div class="col-sm-6">
+              <textarea class="form-control js-modal-field" id="feedback-modal-limitations" name="limitations" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="feedback-modal-general" class="col-sm-5 control-label">Общее впечатление</label>
+            <div class="col-sm-6">
+              <textarea class="form-control js-modal-field" id="feedback-modal-limitations" name="general" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-5 control-label">Ваша оценка товару</label>
+            <div class="col-sm-6">
+              <div class="modal-rating-wrapper js-rating">
+                {% icon_stars %}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group h4 hidden text-center js-feedback-success">Благодарим вас за отзыв</div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-blue js-send-feedback" disabled>Отправить</button>
+        <button type="button" class="btn btn-blue hidden js-modal-close" data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>

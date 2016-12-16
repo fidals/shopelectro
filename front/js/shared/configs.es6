@@ -4,6 +4,7 @@
  */
 const configs = (() => {
   const DOM = {
+    $modals: $('.modal'),
     scrollWrapper: '#scroll-wrapper',
     touchspin: '.js-touchspin',
     $phoneInputs: $('.js-masked-phone'),
@@ -40,7 +41,14 @@ const configs = (() => {
   const init = () => {
     pluginsInit();
     setupXHR();
+    setupListeners();
   };
+
+  function setupListeners() {
+    DOM.$modals.on('shown.bs.modal', focusFirstField);
+    DOM.$phoneInputs.on('input', storePhoneNumber);
+    DOM.$phoneInputs.focus(phoneFieldFocus);
+  }
 
   /**
   * Set all unsafe ajax requests with csrftoken.
@@ -61,17 +69,9 @@ const configs = (() => {
     initScrollbar();
     initTouchspin();
 
-    DOM.$phoneInputs
-      .mask('+0 (000) 000 00 00', {
-        placeholder: '+7 (999) 000 00 00',
-      })
-      .on('change', event => {
-        localStorage.setItem(labels.phone, $(event.target).val());
-      })
-      .on('click', event => {
-        const $phoneInput = $(event.target);
-        if (!$phoneInput.val()) $phoneInput.val('+7').trigger('change');
-      });
+    DOM.$phoneInputs.mask('+0 (000) 000 00 00', {
+      placeholder: '+7 (999) 000 00 00',
+    });
   }
 
   function initScrollbar() {
@@ -80,6 +80,19 @@ const configs = (() => {
 
   function initTouchspin() {
     $(DOM.touchspin).TouchSpin(plugins.touchspin);
+  }
+
+  function focusFirstField(event) {
+    event.target.querySelector('.form-control').focus();
+  }
+
+  function storePhoneNumber() {
+    localStorage.setItem(labels.phone, $(event.target).val());
+  }
+
+  function phoneFieldFocus() {
+    const $phoneInput = $(event.target);
+    if (!$phoneInput.val()) $phoneInput.val('+7').trigger('change');
   }
 
   init();

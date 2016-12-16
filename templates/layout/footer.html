@@ -74,9 +74,10 @@
             <a class="middle-footer-title-link" href="{% url 'pages:flat_page' 'navigation' 'about' %}">О компании</a>
           </div>
           <ul class="list-unstyled">
+            {# We don't use item.url here because item is not Model instance #}
             {% for item in footer_links.about %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{% url 'pages:flat_page' 'navigation' item.slug %} ">{{ item.name }}</a>
+                <a class="footer-list-link" href="{% url 'pages:flat_page' item.type item.slug %} ">{{ item.name }}</a>
               </li>
             {% endfor %}
           </ul>

@@ -1,0 +1,104 @@
+{% load se_extras %}
+
+<div class="feedbacks">
+  <div class="feedbacks-block">
+    <div class="feedbacks-heading-wrapper font-bold">
+      <h2 class="feedbacks-heading font-bold">Отзывы покупателей</h2>
+    </div>
+
+    {% if feedbacks %}
+      <div class="feedbacks-block-content">
+        <div class="rating-total">
+          <div class="rating-total-num">{{ product.average_rate }}</div>
+          <div class="rating-total-rating">
+            {% icon_stars product.average_rate %}
+            <br> Всего отзывов: {{ product.feedbacks_count }}
+          </div>
+
+          <button type="button" class="btn btn-blue js-open-feedback-modal" data-toggle="modal"
+                  data-target="#product-feedback-modal">Оставить отзыв</button>
+        </div>
+
+        <ul class="rating-filter js-rating-filter">
+          <li>
+            <input type="checkbox" id="rating5" class="checkbox" checked>
+            <label class="js-filter-trigger" data-rating="5" for="rating5"></label>
+            {% icon_stars 5 %}
+          </li>
+
+          <li>
+            <input type="checkbox" id="rating4" class="checkbox" checked>
+            <label class="js-filter-trigger" data-rating="4" for="rating4"></label>
+            {% icon_stars 4 %}
+          </li>
+
+          <li>
+            <input type="checkbox" id="rating3" class="checkbox" checked>
+            <label class="js-filter-trigger" data-rating="3" for="rating3"></label>
+            {% icon_stars 3 %}
+          </li>
+          <li>
+            <input type="checkbox" id="rating2" class="checkbox" checked>
+            <label class="js-filter-trigger" data-rating="2" for="rating2"></label>
+            {% icon_stars 2 %}
+          </li>
+          <li>
+            <input type="checkbox" id="rating1" class="checkbox" checked>
+            <label class="js-filter-trigger" data-rating="1" for="rating1"></label>
+            {% icon_stars 1 %}
+          </li>
+        </ul>
+      </div>
+    {% else %}
+      <div class="feedbacks-block-empty text-center">
+        <h4>У этого товара пока нет отзывов.</h4>
+        <button type="button" class="btn btn-blue" data-toggle="modal"
+                data-target="#product-feedback-modal">Оставить отзыв</button>
+      </div>
+    {% endif %}
+    </div>
+  </div>
+
+  {% if feedbacks %}
+    <div id="feedbacks-list">
+      {% for feedback in feedbacks %}
+        <div class="feedbacks-block" data-rating="{{ feedback.rating }}">
+          <div class="feedbacks-block-content">
+            {% if request.user.is_authenticated %}
+              <i class="feedbacks-remove js-feedback-delete"
+                 data-id="{{ feedback.id }}"title="Удалить отзыв"></i>
+            {% endif %}
+            <div class="rating-review" itemprop="review" itemscope="" itemtype="http://schema.org/Review">
+              <meta itemprop="author" content="{{ feedback.name }}">
+              <meta itemprop="datePublished" content="2016-10-24T17:36:04Z">
+              <div class="rating-review-rating" itemprop="reviewRating" itemscope="" itemtype="http://schema.org/Rating">
+                <meta itemprop="worstRating" content="1">
+                <meta itemprop="ratingValue" content="{{ feedback.rating }}">
+                <meta itemprop="bestRating" content="5">
+                {% icon_stars feedback.rating %}
+                {{ feedback.name }}, {{ feedback.date|date:'d F, Y' }}
+              </div>
+
+              <div itemprop="description">
+                {% if feedback.dignities %}
+                  <p class="rating-review-item font-bold">Достоинства:</p>
+                  <p>{{ feedback.dignities }}</p>
+                {% endif %}
+
+                {% if feedback.limitations %}
+                  <p class="rating-review-item font-bold">Недостатки:</p>
+                  <p>{{ feedback.limitations }}</p>
+                {% endif %}
+
+                {% if feedback.general %}
+                  <p class="rating-review-item font-bold">Общее впечатление:</p>
+                  <p>{{ feedback.general }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
