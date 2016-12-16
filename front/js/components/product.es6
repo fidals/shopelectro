@@ -1,8 +1,5 @@
 {
   const DOM = {
-    field: '.js-modal-field',
-    filledRatingIcon: 'rating-icon-full',
-    emptyRatingIcon: 'rating-icon-empty',
     $imageBig: $('#product-image-big'),
     $imagesToSwitch: $('.js-image-switch'),
     $fancybox: $('.fancybox'),
@@ -10,15 +7,20 @@
     $phone: $('#input-one-click-phone'),
     $oneClick: $('#btn-one-click-order'),
     $counter: $('#product-count'),
+
+    // Feedback DOM elements
+    field: '.js-modal-field',
+    filledRatingIcon: 'rating-icon-full',
+    emptyRatingIcon: 'rating-icon-empty',
+    $closeModalBtn: $('.js-modal-close'),
     $feedbackBtn: $('.js-send-feedback'),
+    $feedbackDelete: $('.js-feedback-delete'),
+    $feedbackList: $('#feedbacks-list'),
     $feedbackModal: $('#product-feedback-modal'),
     $feedbackNameField: $('#feedback-modal-name'),
+    $ratingFilter: $('.js-rating-filter'),
     $ratingList: $('.js-rating'),
     $successModalText: $('.js-feedback-success'),
-    $closeModalBtn: $('.js-modal-close'),
-    $ratingFilter: $('.js-rating-filter'),
-    $feedbacksList: $('#feedbacks-list'),
-    $feedbackDelete: $('.js-feedback-delete'),
   };
 
   const productId = DOM.$addToCart.attr('data-id');
@@ -29,9 +31,11 @@
   };
 
   function setUpListeners() {
+    mediator.subscribe('onOneClickBuy', successOrder);
+
+    // Feedback events
     mediator.subscribe('onFeedbackSave', feedbackSavedResponse);
     mediator.subscribe('onFeedbackDelete', feedbackDeleteResponse);
-    mediator.subscribe('onOneClickBuy', successOrder);
     mediator.subscribe('onRate', changeRateIcons, setBtnActiveState);
 
     DOM.$imageBig.click(fancyBoxStart);
@@ -131,6 +135,8 @@
   }
 
   function getFeedbackData() {
+    const getFormFieldValue = item => DOM.$feedbackModal.find(`${DOM.field}[name="${item}"]`).val();
+
     const feedback = {
       id: productId,
       rating: DOM.$ratingList.find(`.${DOM.filledRatingIcon}`).size(),
@@ -142,10 +148,6 @@
     });
 
     return feedback;
-  }
-
-  function getFormFieldValue(fieldName) {
-    return DOM.$feedbackModal.find(`${DOM.field}[name="${fieldName}"]`).val();
   }
 
   function changeRateIcons(_, event) {
@@ -183,7 +185,7 @@
   function filterByRating() {
     const rating = $(this).data('rating');
 
-    DOM.$feedbacksList
+    DOM.$feedbackList
       .find(`div[data-rating="${rating}"]`)
       .fadeToggle('fast');
   }

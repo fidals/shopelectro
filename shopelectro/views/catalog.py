@@ -119,7 +119,7 @@ def load_more(request, category_slug, offset=0, sorting=0):
 @require_POST
 def save_feedback(request):
     def get_keys_from_post(*args):
-        return tuple(request.POST.get(arg, '') for arg in args)
+        return {arg: request.POST.get(arg, '') for arg in args}
 
     product_id = request.POST.get('id')
     product = Product.objects.filter(id=product_id).first()
@@ -127,10 +127,9 @@ def save_feedback(request):
         return HttpResponse(status=422)
 
     fields = ['rating', 'name', 'dignities', 'limitations', 'general']
-    feedback_data = dict(zip(fields, get_keys_from_post(*fields)))
-    feedback_data.update(product=product)
+    feedback_data = get_keys_from_post(*fields)
 
-    ProductFeedback.objects.create(**feedback_data)
+    ProductFeedback.objects.create(product=product, **feedback_data)
     return HttpResponse('ok')
 
 
