@@ -12,6 +12,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AddField(
+            model_name='order',
+            name='address',
+            field=models.TextField(blank=True, default=''),
+        ),
         migrations.AlterField(
             model_name='product',
             name='in_stock',
