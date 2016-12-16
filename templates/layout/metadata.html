@@ -15,7 +15,7 @@
 <meta name="keywords" content="{{ page.keywords }}">
 <meta name="description" content="{{ page.description }}">
 <meta property="og:title" content="{{ page.title }}">
-<meta property="og:url" content="{{ page.get_absolute_url }}">
+<meta property="og:url" content="{{ page.url }}">
 <meta property="og:article:published_time" content="{{ page.date_published|date:'d.m.Y' }}">
 <meta property="og:name" content="{{ page.title }}">
 <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ page.content|striptags }}{% endif %}">

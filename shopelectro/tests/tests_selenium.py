@@ -79,7 +79,7 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).tearDownClass()
 
 
-@override_settings(DEBUG=True)
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class Header(SeleniumTestCase):
 
     def setUp(self):
@@ -616,7 +616,7 @@ class SitePage(SeleniumTestCase):
         self.assertFalse(accordion_content.is_displayed())
 
 
-@override_settings(DEBUG=True)
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class YandexMetrika(SeleniumTestCase):
 
     def setUp(self):

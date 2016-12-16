@@ -11,6 +11,8 @@ from django.db import transaction
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+from pages.models import Page
+
 from shopelectro.models import Product, Category
 
 
@@ -55,9 +57,7 @@ def process(procedure_name: str) -> callable:
             print('{}...'.format(procedure_name))
             result = procedure(*args, **kwargs)
             print(result or 'Completed: {}'.format(procedure_name))
-
         return wrapper
-
     return inner
 
 
@@ -70,8 +70,6 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
         created_entities = 0
         for entity_id, entity_data in collection:
             entity, is_created = Model.objects.update_or_create(id=entity_id, defaults=entity_data)
-            update_page_data(entity)
-
             saved_entity_ids.append(entity.id)
             if is_created:
                 created_entities += 1
@@ -93,47 +91,63 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
         print('{} {} were deleted'.format(
             count, Model._meta.verbose_name_plural))
 
-    with transaction.atomic():
-        for model_class, generator in model_generator_mapping:
-            updated_ids = update_instances(model_class, generator)
-            delete_instances(model_class, updated_ids)
-
+    for model_class, generator in model_generator_mapping:
+        with transaction.atomic():
+            with Page.objects.disable_mptt_updates():  # https://goo.gl/fbm8PI
+                updated_ids = update_instances(model_class, generator)
+                delete_instances(model_class, updated_ids)
+                update_pages_data(model_class)
+            Page.objects.rebuild()
     return 'Categories and Products were saved to DB.'
 
 
-def update_page_data(catalog_model: typing.Union[Category, Product]):
+@process('Update pages')
+def update_pages_data(catalog_model: typing.Union[Category, Product]):
     """Create meta tags for every product and category"""
-    def get_min_price(category: Category):
-        """Returns min price among given category products"""
-        min_product = (
-            Product.objects
-                   .filter(category=catalog_model)
-                   .order_by('price').first()
-        )
-        return int(min_product.price) if min_product else 0
-
-    page = catalog_model.page
-
-    if isinstance(catalog_model, Category):
-        min_price = get_min_price(catalog_model)
-        page.title = (
-            CATEGORY_TITLE_WITH_PRICE.format(
-                name=page.name, price=min_price
-            ) if min_price
-            else CATEGORY_TITLE.format(name=page.name)
-        )
-        page.position = CATEGORY_POSITIONS.get(catalog_model.id, 0)
-        if CATEGORY_SEO_TEXT_SUFFIX not in page.seo_text:
-            page.seo_text += CATEGORY_SEO_TEXT_SUFFIX
-
-    if isinstance(catalog_model, Product):
-        category = catalog_model.category
-        page.title = PRODUCT_TITLE.format(name=page.name, price=int(catalog_model.price))
-        if not page.description:
-            page.description = PRODUCT_DESCRIPTION.format(
-                name=page.name, category_name=category.name
+    def update_category_pages(categories):
+        def get_min_price(category: Category):
+            """Returns min price among given category products"""
+            min_product = (
+                Product.objects
+                       .filter(category=category)
+                       .order_by('price').first()
             )
-    page.save()
+            return int(min_product.price) if min_product else 0
+
+        for category in categories:
+            page = category.page
+            min_price = get_min_price(category)
+            page.title = (
+                CATEGORY_TITLE_WITH_PRICE.format(
+                    name=page.name, price=min_price
+                ) if min_price
+                else CATEGORY_TITLE.format(name=page.name)
+            )
+            page.position = CATEGORY_POSITIONS.get(category.id, 0)
+            if CATEGORY_SEO_TEXT_SUFFIX not in page.seo_text:
+                page.seo_text += CATEGORY_SEO_TEXT_SUFFIX
+            page.save()
+
+    def update_product_pages(products):
+        for product in products:
+            page = product.page
+
+            category = product.category
+            page.title = PRODUCT_TITLE.format(name=page.name, price=int(product.price))
+            if not page.description:
+                page.description = PRODUCT_DESCRIPTION.format(
+                    name=page.name, category_name=category.name
+                )
+            page.save()
+
+    catalog_model_query = catalog_model.objects.select_related('page').all().iterator()
+
+    if catalog_model is Category:
+        update_category_pages(catalog_model_query)
+        return 'Category pages were updated.'
+    if catalog_model is Product:
+        update_product_pages(catalog_model_query)
+        return 'Product pages were updated.'
 
 
 class Command(BaseCommand):
@@ -181,10 +195,8 @@ class Command(BaseCommand):
 
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
-
         def categories_generator(catalog):
             """Yield Category data."""
-
             def category_id(node):
                 """Return category id."""
                 return int(node.attrib['folder_id'])
@@ -206,10 +218,8 @@ class Command(BaseCommand):
 
     def parse_products(self) -> typing.Generator:
         """Parse XML and return product's generator."""
-
         def products_generator(catalog):
             """Yield Product's data."""
-
             def has_no_category(node):
                 return not node.attrib['parent_id2_1']
 
@@ -225,7 +235,6 @@ class Command(BaseCommand):
     @staticmethod
     def get_product_properties_or_none(node) -> typing.Optional[dict]:
         """Get product's info for given node in XML."""
-
         def stock_or_zero():
             """Return product's stock or zero if it's negative."""
             stock = sum([int(node.attrib[stock])
@@ -269,7 +278,6 @@ class Command(BaseCommand):
     @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
-
         def prepare_connection():
             ftp.set_pasv(FTP_PASSIVE_MODE)  # Set passive mode off
 

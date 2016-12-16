@@ -50,7 +50,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Open template's file and start proceeding it."""
-        sheet = self.sheet
         self.set_collapse_controls()
         self.fill_header()
         self.write_catalog()
@@ -102,7 +101,7 @@ class Command(BaseCommand):
     def write_catalog(self):
         """Writes categories and products to sheet."""
         categories = Category.objects.all().order_by('name').filter(children=None)
-        for category in categories:
+        for category in categories.iterator():
             self.write_category_with_products(category)
 
     def write_category_with_products(self, category):
@@ -118,7 +117,7 @@ class Command(BaseCommand):
             """Write products lines."""
             sheet = self.sheet
             products = Product.objects.filter(category=category)
-            for product in products:
+            for product in products.iterator():
                 product_start = 'A' + self.CURRENT_ROW
                 sheet[product_start] = product.name
                 sheet[product_start].font = Font(color=BLUE)

@@ -56,6 +56,7 @@ class Command(BaseCommand):
         self.create_page()
         self.create_order()
         self.create_feedbacks()
+        self.rebuild_mptt_tree()
         self.save_dump()
 
     def prepare_db(self):
@@ -77,15 +78,15 @@ class Command(BaseCommand):
             output='shopelectro/fixtures/dump.json'
         )
 
-    @staticmethod
-    def create_root(count):
-        get_name = 'Category #{}'.format
-        return [Category.objects.create(name=get_name(i)) for i in range(count)]
-
     @property
     def product_id(self):
         self._product_id += 1
         return self._product_id
+
+    @staticmethod
+    def create_root(count):
+        get_name = 'Category #{}'.format
+        return [Category.objects.create(name=get_name(i)) for i in range(count)]
 
     @staticmethod
     def create_children(count, parents):
@@ -103,8 +104,6 @@ class Command(BaseCommand):
         )
 
     def create_products(self, categories):
-        """Fill given categories with products"""
-
         def create_images(page: Page):
             def create_image(file_path, slug):
                 Image.objects.create(
@@ -168,6 +167,11 @@ class Command(BaseCommand):
 
         for i in range(1, feedbacks_count + 1):
             ProductFeedback.objects.create(**generate_feedback_data(i))
+
+    @staticmethod
+    def rebuild_mptt_tree():
+        Category.objects.rebuild()
+        Page.objects.rebuild()
 
     @staticmethod
     def purge_tables():

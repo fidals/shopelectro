@@ -27,7 +27,7 @@ class GenericTableEditor:
         'page': [
             'content', 'related_model_name', 'date_published', 'shopelectro_category',
             'shopelectro_product', 'parent', 'children', 'images', 'type', 'id', 'slug',
-            'name'
+            'name', 'lft', 'rght', 'tree_id', 'level'
         ],
     }
 
