@@ -136,7 +136,7 @@
       rating: DOM.$ratingList.find(`.${DOM.filledRatingIcon}`).size(),
     };
 
-    const fields = ['user_name', 'dignities', 'limitations', 'general'];
+    const fields = ['name', 'dignities', 'limitations', 'general'];
     fields.forEach(item => {
       feedback[item] = getFormFieldValue(item);
     });

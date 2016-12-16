@@ -69,14 +69,14 @@
                  data-id="{{ feedback.id }}"title="Удалить отзыв"></i>
             {% endif %}
             <div class="rating-review" itemprop="review" itemscope="" itemtype="http://schema.org/Review">
-              <meta itemprop="author" content="{{ feedback.user_name }}">
+              <meta itemprop="author" content="{{ feedback.name }}">
               <meta itemprop="datePublished" content="2016-10-24T17:36:04Z">
               <div class="rating-review-rating" itemprop="reviewRating" itemscope="" itemtype="http://schema.org/Rating">
                 <meta itemprop="worstRating" content="1">
                 <meta itemprop="ratingValue" content="{{ feedback.rating }}">
                 <meta itemprop="bestRating" content="5">
                 {% icon_stars feedback.rating %}
-                {{ feedback.user_name }}, {{ feedback.date|date:'d F, Y' }}
+                {{ feedback.name }}, {{ feedback.date|date:'d F, Y' }}
               </div>
 
               <div itemprop="description">

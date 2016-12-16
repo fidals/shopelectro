@@ -160,7 +160,7 @@ class Command(BaseCommand):
             return {
                 'product': Product.objects.get(id=1),
                 'rating': index,
-                'user_name': 'User #{}'.format(index),
+                'name': 'User #{}'.format(index),
                 'dignities': 'Some dignities.',
                 'limitations': 'Some limitations.',
                 'general': 'Some general opinion.'

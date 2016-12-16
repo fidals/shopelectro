@@ -68,8 +68,8 @@ class ProductFeedback(models.Model):
         related_name='product_feedbacks'
     )
 
-    date = models.DateTimeField(auto_now=True)
-    user_name = models.CharField(max_length=255, db_index=True)
+    date = models.DateTimeField(auto_now=True, db_index=True)
+    name = models.CharField(max_length=255, db_index=True)
     rating = models.PositiveSmallIntegerField(default=1, db_index=True)
     dignities = models.TextField(default='', blank=True)
     limitations = models.TextField(default='', blank=True)

@@ -126,7 +126,7 @@ def save_feedback(request):
     if not (product_id and product):
         return HttpResponse(status=422)
 
-    fields = ['rating', 'user_name', 'dignities', 'limitations', 'general']
+    fields = ['rating', 'name', 'dignities', 'limitations', 'general']
     feedback_data = dict(zip(fields, get_keys_from_post(*fields)))
     feedback_data.update(product=product)
 
