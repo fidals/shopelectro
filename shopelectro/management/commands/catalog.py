@@ -96,13 +96,13 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
             with Page.objects.disable_mptt_updates():  # https://goo.gl/fbm8PI
                 updated_ids = update_instances(model_class, generator)
                 delete_instances(model_class, updated_ids)
-                update_pages_data(model_class)
+                update_pages(model_class)
             Page.objects.rebuild()
     return 'Categories and Products were saved to DB.'
 
 
 @process('Update pages')
-def update_pages_data(catalog_model: typing.Union[Category, Product]):
+def update_pages(catalog_model: typing.Union[Category, Product]):
     """Create meta tags for every product and category"""
     def update_category_pages(categories):
         def get_min_price(category: Category):
@@ -150,6 +150,65 @@ def update_pages_data(catalog_model: typing.Union[Category, Product]):
         return 'Product pages were updated.'
 
 
+def get_product_properties_or_none(node) -> typing.Optional[dict]:
+    """Get product's info for given node in XML."""
+    def stock_or_zero():
+        """Return product's stock or zero if it's negative."""
+        stock = sum([int(node.attrib[stock])
+                     for stock in
+                     ['stock_elizar', 'stock_yunona', 'stock_main']])
+        return stock if stock > 0 else 0
+
+    def category_id():
+        """Get int category id."""
+        return int(node.attrib['parent_id2_1'])
+
+    assertions_data = {
+        'id': int(node.attrib['element_id']),
+        'price': float(node[2][0].attrib['price_cost']),
+    }
+
+    try:
+        assertions_data['category'] = Category.objects.get(id=category_id())
+        assert assertions_data['price']
+    except Category.DoesNotExist:
+        print('Category {} does not exist. Product {} will not be saved'
+              .format(category_id(), assertions_data['id']))
+        return
+    except AssertionError:
+        print('Product with id={} have no price. It\'ll not be saved'
+              .format(assertions_data['id']))
+        return
+
+    product_data = {
+        **assertions_data,
+        'name': node.attrib['element_name'].strip(),
+        'in_stock': stock_or_zero(),
+        'wholesale_small': float(node[2][1].attrib['price_cost']),
+        'wholesale_medium': float(node[2][2].attrib['price_cost']),
+        'wholesale_large': float(node[2][3].attrib['price_cost']),
+        'purchase_price': float(node[2][4].attrib['price_cost']),
+    }
+
+    return product_data
+
+
+@process('Create price lists')
+def generate_prices() -> result_message:
+    """Generate Excel, YM and Price.ru price files."""
+    commands = [
+        ('excel',),
+        ('price',),
+        # to actualize generated files rendering
+        ('collectstatic', '--noinput')
+    ]
+
+    for command in commands:
+        call_command(*command)
+
+    return 'Price lists were created.'
+
+
 class Command(BaseCommand):
     """
     Import catalog command class.
@@ -190,7 +249,7 @@ class Command(BaseCommand):
             (Product, self.parse_products()),
         ])
         self.remove_xml()
-        self.generate_prices()
+        generate_prices()
         return 'Import completed! {0:.1f} seconds elapsed.'.format(time.time() - start_time)
 
     def parse_categories(self) -> typing.Generator:
@@ -226,54 +285,11 @@ class Command(BaseCommand):
             for product in catalog:
                 if has_no_category(product):
                     continue
-                product_properties = self.get_product_properties_or_none(product)
+                product_properties = get_product_properties_or_none(product)
                 if product_properties:
                     yield product_properties.pop('id'), product_properties
 
         return products_generator(self.products_in_xml)
-
-    @staticmethod
-    def get_product_properties_or_none(node) -> typing.Optional[dict]:
-        """Get product's info for given node in XML."""
-        def stock_or_zero():
-            """Return product's stock or zero if it's negative."""
-            stock = sum([int(node.attrib[stock])
-                         for stock in
-                         ['stock_elizar', 'stock_yunona', 'stock_main']])
-            return stock if stock > 0 else 0
-
-        def category_id():
-            """Get int category id."""
-            return int(node.attrib['parent_id2_1'])
-
-        assertions_data = {
-            'id': int(node.attrib['element_id']),
-            'price': float(node[2][0].attrib['price_cost']),
-        }
-
-        try:
-            assertions_data['category'] = Category.objects.get(id=category_id())
-            assert assertions_data['price']
-        except Category.DoesNotExist:
-            print('Category {} does not exist. Product {} will not be saved'
-                  .format(category_id(), assertions_data['id']))
-            return
-        except AssertionError:
-            print('Product with id={} have no price. It\'ll not be saved'
-                  .format(assertions_data['id']))
-            return
-
-        product_data = {
-            **assertions_data,
-            'name': node.attrib['element_name'].strip(),
-            'in_stock': stock_or_zero(),
-            'wholesale_small': float(node[2][1].attrib['price_cost']),
-            'wholesale_medium': float(node[2][2].attrib['price_cost']),
-            'wholesale_large': float(node[2][3].attrib['price_cost']),
-            'purchase_price': float(node[2][4].attrib['price_cost']),
-        }
-
-        return product_data
 
     @process('Download xml files')
     def get_xml_files(self) -> result_message:
@@ -297,19 +313,3 @@ class Command(BaseCommand):
         """Remove downloaded xml files."""
         for xml in self.XML_FILES:
             os.remove(xml)
-
-    @staticmethod
-    @process('Create price lists')
-    def generate_prices() -> result_message:
-        """Generate Excel, YM and Price.ru price files."""
-        commands = [
-            ('excel',),
-            ('price',),
-            # to actualize generated files rendering
-            ('collectstatic', '--noinput')
-        ]
-
-        for command in commands:
-            call_command(*command)
-
-        return 'Price lists were created.'

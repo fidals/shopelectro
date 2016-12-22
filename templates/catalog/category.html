@@ -27,7 +27,7 @@
       {% include 'catalog/category_navigation.html' %}
 
       <p class="products-showed">
-        Показано товаров <span class="font-bold js-products-showed-count">{{ products_with_images|length }}</span> из <span
+        Показано товаров <span class="font-bold js-products-showed-count">{{ product_image_pairs|length }}</span> из <span
           class="font-bold js-total-products">{{ total_products }}</span>.
       </p>
 
@@ -42,7 +42,7 @@
         </button>
         <p class="products-showed-text">
           Показано товаров
-          <span class="js-products-showed-count">{{ products_with_images|length }}</span> из
+          <span class="js-products-showed-count">{{ product_image_pairs|length }}</span> из
           <span class="js-total-products">{{ total_products }}</span>
         </p>
       </div>

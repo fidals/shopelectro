@@ -68,7 +68,7 @@ class IndexPage(pages_views.CustomPageView):
         images = Image.objects.get_main_images_by_pages(product.page for product in top_products)
         categories = Category.objects.get_root_categories_by_products(top_products)
 
-        top_products = [
+        prepared_top_products = [
             (product, images.get(product.page), categories.get(product))
             for product in top_products
         ]
@@ -76,7 +76,7 @@ class IndexPage(pages_views.CustomPageView):
         return {
             **context,
             'category_tile': config.MAIN_PAGE_TILE,
-            'top_products': top_products,
+            'prepared_top_products': prepared_top_products,
         }
 
 
@@ -97,6 +97,7 @@ class CategoryPage(catalog.CategoryPage):
 
         all_products = (
             Product.objects
+                .prefetch_related('page__images')
                 .get_by_category(category, ordering=(sorting_option, ))
                 .select_related('page')
         )
@@ -105,14 +106,14 @@ class CategoryPage(catalog.CategoryPage):
         products = all_products.get_offset(0, self.PRODUCTS_ON_PAGE)
         images = Image.objects.get_main_images_by_pages(product.page for product in products)
 
-        products_with_images = list(
+        product_image_pairs = [
             (product, images.get(product.page))
             for product in products
-        )
+        ]
 
         return {
             **context,
-            'products_with_images': products_with_images,
+            'product_image_pairs': product_image_pairs,
             'total_products': total_count,
             'sorting_options': config.category_sorting(),
             'sort': sorting,
@@ -135,21 +136,22 @@ def load_more(request, category_slug, offset=0, sorting=0):
 
     products = (
         Product.objects
+            .prefetch_related('page__images')
             .get_by_category(category_page.model, ordering=(sorting_option, ))
             .get_offset(int(offset), CategoryPage.PRODUCTS_ON_PAGE)
     )
 
     images = Image.objects.get_main_images_by_pages(product.page for product in products)
 
-    products_with_images = list(
+    product_image_pairs = [
         (product, images.get(product.page))
         for product in products
-    )
+    ]
 
     view = request.session.get('view_type', 'tile')
 
     return render(request, 'catalog/category_products.html', {
-        'products_with_images': products_with_images,
+        'product_image_pairs': product_image_pairs,
         'view_type': view,
         'prods': CategoryPage.PRODUCTS_ON_PAGE,
     })

@@ -17,13 +17,12 @@ register = template.Library()
 
 
 # TODO - move it in catalog. Inspired by lp_electric
-# https://goo.gl/rFKiku
 @register.assignment_tag
 def roots():
     return sorted(
         Category.objects
             .select_related('page')
-            .get_cached_trees(),
+            .get_cached_trees(),  # https://goo.gl/rFKiku
         key=lambda x: x.page.position
     )
 

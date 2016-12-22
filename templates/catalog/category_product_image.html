@@ -3,8 +3,8 @@
 {% load se_extras %}
 
 {% if image %}
-  {% thumbnail image.image '160x160' as cropped_image %}
-    <img src="{{ cropped_image.url }}" class="img-centered img-responsive"
+  {% thumbnail image.image '160x160' as resized_image %}
+    <img src="{{ resized_image.url }}" class="img-centered img-responsive"
          alt="{% get_img_alt product.page %}" itemprop="image">
   {% endthumbnail %}
 {% else %}

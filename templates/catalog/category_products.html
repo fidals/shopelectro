@@ -1,7 +1,7 @@
 {% load staticfiles %}
 {% load se_extras %}
 
-{% for product, image in products_with_images %}
+{% for product, image in product_image_pairs %}
   <div class="product-card col-xs-4" productId="{{ product.id }}"
        itemscope itemtype="http://schema.org/Product">
     <meta property="name" itemprop="name" content="{{ product.name }}">
@@ -42,4 +42,4 @@
     </div>
   </div>
 {% endfor %}
-<div class="hidden js-products-loaded">{{ products_with_images|length }}</div>
+<div class="hidden js-products-loaded">{{ product_image_pairs|length }}</div>

@@ -568,17 +568,19 @@ class SitePage(SeleniumTestCase):
 
     def setUp(self):
         self.page_top = FlatPage.objects.create(
-            title='Navigation',
+            name='Navigation',
             slug='navi',
         )
         self.page_last = FlatPage.objects.create(
-            title='Contacts',
+            name='Contacts',
             slug='contacts',
             parent=self.page_top
         )
-        self.browser.get(self.live_server_url + self.page_last.get_absolute_url())
+
+        self.browser.get(self.live_server_url + self.page_last.url)
         self.browser.execute_script('localStorage.clear();')
-        self.browser.get(self.live_server_url + self.page_last.get_absolute_url())
+        self.browser.get(self.live_server_url + self.page_last.url)
+
         wait()
 
     @property
