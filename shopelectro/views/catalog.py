@@ -10,21 +10,14 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 
 from catalog.views import catalog
-from pages import views as pages_views
 from images.models import Image
+from pages import views as pages_views
 
 from shopelectro import config
 from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import (
     Product, ProductFeedback, Category, CategoryPage as CategoryPageModel)
 from shopelectro.views.helpers import set_csrf_cookie
-
-
-# TODO after union refarm in one app insert it in `catalog` app.
-def get_main_images_by_products(products):
-    return Image.objects.get_main_images_by_pages(
-        list(product.page for product in products)
-    )
 
 
 # CATALOG VIEWS
@@ -72,11 +65,13 @@ class IndexPage(pages_views.CustomPageView):
                 .select_related('page')
         )
 
-        top_products = zip(
-            top_products,
-            get_main_images_by_products(top_products),
-            Category.objects.get_root_categories_for_products(top_products)
-        )
+        images = Image.objects.get_main_images_by_pages(product.page for product in top_products)
+        categories = Category.objects.get_root_categories_by_products(top_products)
+
+        top_products = [
+            (product, images.get(product.page), categories.get(product))
+            for product in top_products
+        ]
 
         return {
             **context,
@@ -108,7 +103,12 @@ class CategoryPage(catalog.CategoryPage):
 
         total_count = all_products.count()
         products = all_products.get_offset(0, self.PRODUCTS_ON_PAGE)
-        products_with_images = tuple(zip(products, get_main_images_by_products(products)))
+        images = Image.objects.get_main_images_by_pages(product.page for product in products)
+
+        products_with_images = list(
+            (product, images.get(product.page))
+            for product in products
+        )
 
         return {
             **context,
@@ -139,9 +139,11 @@ def load_more(request, category_slug, offset=0, sorting=0):
             .get_offset(int(offset), CategoryPage.PRODUCTS_ON_PAGE)
     )
 
-    products_with_images = zip(
-        products,
-        get_main_images_by_products(products),
+    images = Image.objects.get_main_images_by_pages(product.page for product in products)
+
+    products_with_images = list(
+        (product, images.get(product.page))
+        for product in products
     )
 
     view = request.session.get('view_type', 'tile')

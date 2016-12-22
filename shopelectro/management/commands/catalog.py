@@ -106,7 +106,7 @@ def update_pages_data(catalog_model: typing.Union[Category, Product]):
     """Create meta tags for every product and category"""
     def update_category_pages(categories):
         def get_min_price(category: Category):
-            """Returns min price among given category products"""
+            """Return  min price among given category products"""
             min_product = (
                 Product.objects
                        .filter(category=category)
