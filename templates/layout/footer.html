@@ -49,7 +49,7 @@
           <ul class="list-unstyled">
             {% for root in root_categories %}
               <li class="footer-list-item">
-                <a class="footer-list-link" href="{{ root.get_absolute_url }}">{{ root.name }}</a>
+                <a class="footer-list-link" href="{{ root.url }}">{{ root.name }}</a>
               </li>
             {% endfor %}
           </ul>

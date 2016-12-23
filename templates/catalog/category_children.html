@@ -1,5 +1,5 @@
 <div class="category-left-block">
-  {% if category.get_children %}
+  {% if not category.is_leaf_node %}
     <ul class="subcategory-list list-unstyled">
       {% for child in category.get_children_sorted_by_position %}
         <li class="subcategory-list-item">

@@ -2,17 +2,15 @@
 {% load se_extras %}
 {% load thumbnail %}
 
-{% if product.page.main_image %}
-  {% thumbnail product.page.main_image dimensions as image %}
-    <img src="{{ image.url }}"
+{% if image %}
+  {% thumbnail image.image dimensions as resized_image %}
+    <img src="{{ resized_image.url }}"
       class="img-centered img-responsive"
-      alt="{% get_img_alt product.page %}" itemprop="image"
-    >
+      alt="{% get_img_alt product.page %}" itemprop="image">
   {% endthumbnail %}
 {% else %}
   {% placeholder_image_url as image_url %}
     <img src="{{ image_url }}"
         class="img-centered img-responsive"
-        alt="{% get_img_alt product.page %}" itemprop="image"
-    >
+        alt="{% get_img_alt product.page %}" itemprop="image">
 {% endif %}

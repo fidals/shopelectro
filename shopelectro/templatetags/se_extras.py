@@ -19,7 +19,12 @@ register = template.Library()
 # TODO - move it in catalog. Inspired by lp_electric
 @register.assignment_tag
 def roots():
-    return Category.objects.root_nodes().order_by('page__position')
+    return sorted(
+        Category.objects
+            .select_related('page')
+            .get_cached_trees(),  # https://goo.gl/rFKiku
+        key=lambda x: x.page.position
+    )
 
 
 @register.assignment_tag
@@ -90,7 +95,7 @@ def get_img_alt(entity: ImageMixin):
     product_alt = 'Фотография {}'
     logo_alt = 'Логотип компании Shopelectro'
 
-    if not hasattr(entity, 'images') or not entity.images.all():
+    if not isinstance(entity, Page):
         return logo_alt
 
     # try one of this attributes to get pages name

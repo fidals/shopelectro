@@ -11,7 +11,7 @@ from pages.models import Page
 def update_page_names(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     model_pages = apps.get_model(
-        'pages', 'Page').objects.using(db_alias).filter(type=Page.MODEL_TYPE)
+        'pages', 'Page')._default_manager.using(db_alias).filter(type=Page.MODEL_TYPE)
     model_pages.update(name=F('h1'))
     model_pages.update(h1='')
 
@@ -19,7 +19,7 @@ def update_page_names(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopelectro', '0010_auto_20161205_1532'),
+        ('shopelectro', '0010_alter_payment_type'),
         ('pages', '0007_rename_private_field'),
     ]
 

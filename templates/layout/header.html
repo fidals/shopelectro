@@ -116,12 +116,12 @@
         <ul class="nav-category list-unstyled clearfix">
           {% for root in root_categories %}
             <li class="nav-category-item">
-              <a class="nav-category-link" href="{{ root.get_absolute_url }}">{{ root.name }}</a>
+              <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
               {% if root.get_children %}
                 <ul class="list-white nav-menu-dropdown">
                   {% for child in root.get_children %}
                     <li>
-                      <a href="{{ child.get_absolute_url }}" class="list-white-link">
+                      <a href="{{ child.url }}" class="list-white-link">
                         {{ child.name }}
                       </a>
                     </li>

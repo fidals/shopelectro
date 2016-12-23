@@ -11,6 +11,8 @@ from django.db import transaction
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+from pages.models import Page
+
 from shopelectro.models import Product, Category
 
 
@@ -55,9 +57,7 @@ def process(procedure_name: str) -> callable:
             print('{}...'.format(procedure_name))
             result = procedure(*args, **kwargs)
             print(result or 'Completed: {}'.format(procedure_name))
-
         return wrapper
-
     return inner
 
 
@@ -70,8 +70,6 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
         created_entities = 0
         for entity_id, entity_data in collection:
             entity, is_created = Model.objects.update_or_create(id=entity_id, defaults=entity_data)
-            update_page_data(entity)
-
             saved_entity_ids.append(entity.id)
             if is_created:
                 created_entities += 1
@@ -93,47 +91,122 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
         print('{} {} were deleted'.format(
             count, Model._meta.verbose_name_plural))
 
-    with transaction.atomic():
-        for model_class, generator in model_generator_mapping:
-            updated_ids = update_instances(model_class, generator)
-            delete_instances(model_class, updated_ids)
-
+    for model_class, generator in model_generator_mapping:
+        with transaction.atomic():
+            with Page.objects.disable_mptt_updates():  # https://goo.gl/fbm8PI
+                updated_ids = update_instances(model_class, generator)
+                delete_instances(model_class, updated_ids)
+                update_pages(model_class)
+            Page.objects.rebuild()
     return 'Categories and Products were saved to DB.'
 
 
-def update_page_data(catalog_model: typing.Union[Category, Product]):
+@process('Update pages')
+def update_pages(catalog_model: typing.Union[Category, Product]):
     """Create meta tags for every product and category"""
-    def get_min_price(category: Category):
-        """Returns min price among given category products"""
-        min_product = (
-            Product.objects
-                   .filter(category=catalog_model)
-                   .order_by('price').first()
-        )
-        return int(min_product.price) if min_product else 0
-
-    page = catalog_model.page
-
-    if isinstance(catalog_model, Category):
-        min_price = get_min_price(catalog_model)
-        page.title = (
-            CATEGORY_TITLE_WITH_PRICE.format(
-                name=page.name, price=min_price
-            ) if min_price
-            else CATEGORY_TITLE.format(name=page.name)
-        )
-        page.position = CATEGORY_POSITIONS.get(catalog_model.id, 0)
-        if CATEGORY_SEO_TEXT_SUFFIX not in page.seo_text:
-            page.seo_text += CATEGORY_SEO_TEXT_SUFFIX
-
-    if isinstance(catalog_model, Product):
-        category = catalog_model.category
-        page.title = PRODUCT_TITLE.format(name=page.name, price=int(catalog_model.price))
-        if not page.description:
-            page.description = PRODUCT_DESCRIPTION.format(
-                name=page.name, category_name=category.name
+    def update_category_pages(categories):
+        def get_min_price(category: Category):
+            """Return  min price among given category products"""
+            min_product = (
+                Product.objects
+                       .filter(category=category)
+                       .order_by('price').first()
             )
-    page.save()
+            return int(min_product.price) if min_product else 0
+
+        for category in categories:
+            page = category.page
+            min_price = get_min_price(category)
+            page.title = (
+                CATEGORY_TITLE_WITH_PRICE.format(
+                    name=page.name, price=min_price
+                ) if min_price
+                else CATEGORY_TITLE.format(name=page.name)
+            )
+            page.position = CATEGORY_POSITIONS.get(category.id, 0)
+            if CATEGORY_SEO_TEXT_SUFFIX not in page.seo_text:
+                page.seo_text += CATEGORY_SEO_TEXT_SUFFIX
+            page.save()
+
+    def update_product_pages(products):
+        for product in products:
+            page = product.page
+
+            category = product.category
+            page.title = PRODUCT_TITLE.format(name=page.name, price=int(product.price))
+            if not page.description:
+                page.description = PRODUCT_DESCRIPTION.format(
+                    name=page.name, category_name=category.name
+                )
+            page.save()
+
+    catalog_model_query = catalog_model.objects.select_related('page').all().iterator()
+
+    if catalog_model is Category:
+        update_category_pages(catalog_model_query)
+        return 'Category pages were updated.'
+    if catalog_model is Product:
+        update_product_pages(catalog_model_query)
+        return 'Product pages were updated.'
+
+
+def get_product_properties_or_none(node) -> typing.Optional[dict]:
+    """Get product's info for given node in XML."""
+    def stock_or_zero():
+        """Return product's stock or zero if it's negative."""
+        stock = sum([int(node.attrib[stock])
+                     for stock in
+                     ['stock_elizar', 'stock_yunona', 'stock_main']])
+        return stock if stock > 0 else 0
+
+    def category_id():
+        """Get int category id."""
+        return int(node.attrib['parent_id2_1'])
+
+    assertions_data = {
+        'id': int(node.attrib['element_id']),
+        'price': float(node[2][0].attrib['price_cost']),
+    }
+
+    try:
+        assertions_data['category'] = Category.objects.get(id=category_id())
+        assert assertions_data['price']
+    except Category.DoesNotExist:
+        print('Category {} does not exist. Product {} will not be saved'
+              .format(category_id(), assertions_data['id']))
+        return
+    except AssertionError:
+        print('Product with id={} have no price. It\'ll not be saved'
+              .format(assertions_data['id']))
+        return
+
+    product_data = {
+        **assertions_data,
+        'name': node.attrib['element_name'].strip(),
+        'in_stock': stock_or_zero(),
+        'wholesale_small': float(node[2][1].attrib['price_cost']),
+        'wholesale_medium': float(node[2][2].attrib['price_cost']),
+        'wholesale_large': float(node[2][3].attrib['price_cost']),
+        'purchase_price': float(node[2][4].attrib['price_cost']),
+    }
+
+    return product_data
+
+
+@process('Create price lists')
+def generate_prices() -> result_message:
+    """Generate Excel, YM and Price.ru price files."""
+    commands = [
+        ('excel',),
+        ('price',),
+        # to actualize generated files rendering
+        ('collectstatic', '--noinput')
+    ]
+
+    for command in commands:
+        call_command(*command)
+
+    return 'Price lists were created.'
 
 
 class Command(BaseCommand):
@@ -176,15 +249,13 @@ class Command(BaseCommand):
             (Product, self.parse_products()),
         ])
         self.remove_xml()
-        self.generate_prices()
+        generate_prices()
         return 'Import completed! {0:.1f} seconds elapsed.'.format(time.time() - start_time)
 
     def parse_categories(self) -> typing.Generator:
         """Parse XML and return categories's generator."""
-
         def categories_generator(catalog):
             """Yield Category data."""
-
             def category_id(node):
                 """Return category id."""
                 return int(node.attrib['folder_id'])
@@ -206,70 +277,23 @@ class Command(BaseCommand):
 
     def parse_products(self) -> typing.Generator:
         """Parse XML and return product's generator."""
-
         def products_generator(catalog):
             """Yield Product's data."""
-
             def has_no_category(node):
                 return not node.attrib['parent_id2_1']
 
             for product in catalog:
                 if has_no_category(product):
                     continue
-                product_properties = self.get_product_properties_or_none(product)
+                product_properties = get_product_properties_or_none(product)
                 if product_properties:
                     yield product_properties.pop('id'), product_properties
 
         return products_generator(self.products_in_xml)
 
-    @staticmethod
-    def get_product_properties_or_none(node) -> typing.Optional[dict]:
-        """Get product's info for given node in XML."""
-
-        def stock_or_zero():
-            """Return product's stock or zero if it's negative."""
-            stock = sum([int(node.attrib[stock])
-                         for stock in
-                         ['stock_elizar', 'stock_yunona', 'stock_main']])
-            return stock if stock > 0 else 0
-
-        def category_id():
-            """Get int category id."""
-            return int(node.attrib['parent_id2_1'])
-
-        assertions_data = {
-            'id': int(node.attrib['element_id']),
-            'price': float(node[2][0].attrib['price_cost']),
-        }
-
-        try:
-            assertions_data['category'] = Category.objects.get(id=category_id())
-            assert assertions_data['price']
-        except Category.DoesNotExist:
-            print('Category {} does not exist. Product {} will not be saved'
-                  .format(category_id(), assertions_data['id']))
-            return
-        except AssertionError:
-            print('Product with id={} have no price. It\'ll not be saved'
-                  .format(assertions_data['id']))
-            return
-
-        product_data = {
-            **assertions_data,
-            'name': node.attrib['element_name'].strip(),
-            'in_stock': stock_or_zero(),
-            'wholesale_small': float(node[2][1].attrib['price_cost']),
-            'wholesale_medium': float(node[2][2].attrib['price_cost']),
-            'wholesale_large': float(node[2][3].attrib['price_cost']),
-            'purchase_price': float(node[2][4].attrib['price_cost']),
-        }
-
-        return product_data
-
     @process('Download xml files')
     def get_xml_files(self) -> result_message:
         """Downloads xml files from FTP."""
-
         def prepare_connection():
             ftp.set_pasv(FTP_PASSIVE_MODE)  # Set passive mode off
 
@@ -289,19 +313,3 @@ class Command(BaseCommand):
         """Remove downloaded xml files."""
         for xml in self.XML_FILES:
             os.remove(xml)
-
-    @staticmethod
-    @process('Create price lists')
-    def generate_prices() -> result_message:
-        """Generate Excel, YM and Price.ru price files."""
-        commands = [
-            ('excel',),
-            ('price',),
-            # to actualize generated files rendering
-            ('collectstatic', '--noinput')
-        ]
-
-        for command in commands:
-            call_command(*command)
-
-        return 'Price lists were created.'

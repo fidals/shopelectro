@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'generic_admin',
     'django.contrib.admin.apps.SimpleAdminConfig',
+    'debug_toolbar',
     'mptt',
     'widget_tweaks',
     'sorl.thumbnail',
@@ -75,6 +76,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'shopelectro.urls'

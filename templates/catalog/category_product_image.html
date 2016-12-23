@@ -2,9 +2,9 @@
 {% load thumbnail %}
 {% load se_extras %}
 
-{% if product.page.main_image %}
-  {% thumbnail product.page.main_image '160x160' as image %}
-    <img src="{{ image.url }}" class="img-centered img-responsive"
+{% if image %}
+  {% thumbnail image.image '160x160' as resized_image %}
+    <img src="{{ resized_image.url }}" class="img-centered img-responsive"
          alt="{% get_img_alt product.page %}" itemprop="image">
   {% endthumbnail %}
 {% else %}

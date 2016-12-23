@@ -6,10 +6,10 @@
 <div  itemscope itemtype="http://schema.org/Product" class="stuff-top">
   <p class="stuff-top-title text-center">ТОП 10 ТОВАРОВ</p>
 
-  {% for product in top_products %}
+  {% for product, image, root_category in prepared_top_products %}
     <div class="stuff-top-item">
       <a href="{{ product.url }}" class="stuff-top-img js-browse-product teaser-shadow" itemprop="url">
-        {% include 'index/product_thumbnail.html' with product=product dimensions='x174' only %}
+        {% include 'index/product_thumbnail.html' with image=image dimensions='x174' only %}
       </a>
 
       <div class="stuff-top-description">
@@ -19,7 +19,7 @@
             {{ product.name }}
           </a>
         </div>
-        <div class="stuff-top-category">{{ product.get_root_category }}</div>
+        <div class="stuff-top-category">{{ root_category.name }}</div>
         <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="stuff-top-price-new">
           <link itemprop="availability" href="http://schema.org/InStock">
           <meta itemprop="description" content="{{ product.page.description }}">
