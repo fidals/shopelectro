@@ -16,7 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='category',
             managers=[
-                ('_default_manager', django.db.models.manager.Manager()),
             ],
         ),
     ]
