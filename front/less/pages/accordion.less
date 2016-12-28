@@ -1,78 +1,102 @@
-.accordion-link, .js-accordion-title {
-  border: 1px solid transparent;
-  border-top: 1px solid @c-price-border-color;
-  color: @c-tooltip-hovered-link;
-  cursor: pointer;
-  display: block;
-  font-size: 1em;
-  font-weight: bold;
-  padding: 5px 3px;
-  text-decoration: none;
+.accordion {
+  &-item {
+    line-height: 1.2;
+    margin: 0;
 
-  &:hover {
-    background-color: @c-main-stuff-title-bg;
-    border: 1px solid @c-black-lightest;
-    border-radius: 5px;
-    color: @c-black;
+    &:nth-child(odd) {
+      background: @c-accordion-link;
+    }
+
+    &:hover {
+      background: @c-accordion-link-hovered;
+    }
+  }
+
+  &-first-item {
+    margin: 0;
+    padding: 2px 0 5px;
+
+    .fa {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    &:hover .fa {
+      transform: translate(3px, 0);
+    }
+  }
+
+  &-title {
+    border-top: 1px solid @c-price-border-color;
+    color: @c-tooltip-hovered-link;
+    cursor: pointer;
+    border-radius: 2px;
+    display: block;
+    font-size: @f-size-base;
+    padding: 10px 5px;
+    position: relative;
     text-decoration: none;
-  }
-}
-
-.accordion-link:hover, .js-accordion-title:hover {
-  background-color: @c-accordion-link-hovered;
-  border-radius: 5px;
-  color: @c-black;
-  text-decoration: none;
-}
-
-.accordion-link {
-  font-weight: 400;
-}
-
-
-.js-accordion-title {
-  position: relative;
-
-  &:first-child {
-    border-color: transparent;
-  }
-
-  .fa {
-    height: 11px;
-    font-size: 0.75em;
-    position: absolute;
-    right: -2px;
-    transition: transform 0.3s ease-in-out;
-    transform: translate(0, -50%);
-    top: 50%;
-    width: 11px;
-  }
-
-  &.active .fa {
-    transform: rotate(-90deg) translate(60%, -25%);
-  }
-}
-
-.accordion-first-item {
-  .fa {
-    position: relative;
     transition: all 0.3s ease;
+
+    &:hover,
+    &.active {
+      background-color: @c-accordion-link-hovered;
+      color: @c-black;
+      text-decoration: none;
+    }
+
+    &:first-child {
+      border-color: transparent;
+    }
+
+    .fa {
+      font-size: @f-size-base - 4;
+      height: 10px;
+      margin: -5px 0 0;
+      position: absolute;
+      right: 2px;
+      text-align: center;
+      top: 50%;
+      transform-origin: center;
+      transition: all 0.3s;
+      width: 10px;
+    }
+
+    &.active .fa {
+      transform: rotate(-90deg);
+    }
   }
 
-  &:hover .fa {
-    transform: translate(3px, 0);
+  &-link {
+    color: @c-tooltip-hovered-link;
+    cursor: pointer;
+    display: block;
+    padding: 10px 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: @c-black;
+      text-decoration: none;
+    }
+  }
+
+  &-content {
+    background: @c-white;
+  }
+
+  &-link-to-category {
+    color: @c-order-btn-file;
+    display: block;
+    font-size: 0.8em;
+    padding: 5px;
+    transition: all 0.3s;
+
+    .fa {
+      left: 4px;
+      position: relative;
+      top: 1px;
+    }
   }
 }
 
-.accordion-link-to-category {
-  color: @c-order-btn-file;
-  display: block;
-  font-size: 0.8em;
-  padding: 5px 3px;
-
-  .fa {
-    left: 4px;
-    position: relative;
-    top: 1px;
-  }
-}

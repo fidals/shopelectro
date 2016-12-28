@@ -103,10 +103,10 @@ def update_and_delete(model_generator_mapping: list) -> result_message:
 
 @process('Update pages')
 def update_pages(catalog_model: typing.Union[Category, Product]):
-    """Create meta tags for every product and category"""
+    """Create meta tags for every Product and Category"""
     def update_category_pages(categories):
         def get_min_price(category: Category):
-            """Return  min price among given category products"""
+            """Return min price among given Category Products"""
             min_product = (
                 Product.objects
                        .filter(category=category)
