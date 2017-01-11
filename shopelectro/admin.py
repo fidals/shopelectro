@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from pages.models import CustomPage, FlatPage
-from generic_admin import filters, inlines, mixins, models, sites
+from generic_admin import inlines, models, sites
 
 from shopelectro import models as se_models
 from shopelectro.views.admin import TableEditor
@@ -51,14 +51,12 @@ class ProductFeedbackPageAdmin(admin.ModelAdmin):
     list_display = ['rating', 'name', 'dignities', 'limitations', 'general', 'links']
 
     def links(self, obj):
-        product_url = se_models.Product.objects.get(id=obj.product_id).url
-
         return format_html(
             '''
             <a href="{url}" class="field-link" title="Посмотреть на сайте" target="_blank">
               <i class="fa fa-link" aria-hidden="true"></i>
             </a>
-            '''.format(url=product_url))
+            '''.format(url=obj.product.url))
 
     links.short_description = _('Link')
 
