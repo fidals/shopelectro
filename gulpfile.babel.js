@@ -2,8 +2,10 @@
 // IMPORTS
 // ================================================================
 import gulp from 'gulp';
+import del from 'del';
 import lessGlob from 'less-plugin-glob';
 import sequence from 'run-sequence';
+import babelPreset from 'babel-preset-es2015';
 
 const $ = require('gulp-load-plugins')();
 const spawnSync = require('child_process').spawnSync;
@@ -37,8 +39,6 @@ function getAppSrcPaths(appName) {
   return require(appPath + '/front/paths.js');
 }
 
-const adminSrc = getAppSrcPaths('generic_admin');
-
 // ================================================================
 // CONSTS
 // ================================================================
@@ -47,11 +47,14 @@ const env = {
   production: false,
 };
 
+const buildDir = 'front/build';
+const genericAdminPaths = getAppSrcPaths('generic_admin');
+
 const path = {
   src: {
     styles: {
       admin: [
-        adminSrc.css,
+        ...genericAdminPaths.css,
       ],
       main: [
         'front/less/styles.less',
@@ -90,28 +93,39 @@ const path = {
         'front/js/components/staticPages.es6',
       ],
 
-      adminVendors: adminSrc.vendors,
+      adminVendors: [
+        ...genericAdminPaths.vendors,
+      ],
+
       admin: [
-        ...adminSrc.admin,
+        ...genericAdminPaths.admin,
         'front/js/components/admin.es6',
       ],
     },
 
-    images: ['front/images/**/*', adminSrc.img],
+    images: [
+      'front/images/**/*',
+      genericAdminPaths.img,
+    ],
+
     fonts: 'front/fonts/**/*',
   },
 
   build: {
-    styles: 'front/build/css/',
-    js: 'front/build/js/',
-    images: 'front/build/images/',
-    fonts: 'front/build/fonts/',
+    styles: `${buildDir}/css/`,
+    js: `${buildDir}/js/`,
+    images: `${buildDir}/images/`,
+    fonts: `${buildDir}/fonts/`,
   },
+
   watch: {
-    styles: 'front/less/**/*',
+    styles: [
+      'front/less/**/*',
+      genericAdminPaths.watch.css,
+    ],
     js: [
       'front/js/**/*',
-      adminSrc.watch,
+      genericAdminPaths.watch.js,
     ],
     images: 'src/images/**/*',
     fonts: 'src/fonts/**/*',
@@ -122,11 +136,12 @@ const path = {
 // ================================================================
 // BUILD
 // ================================================================
-gulp.task('build', callback => {
+gulp.task('build', () => {
   env.development = false;
   env.production = true;
 
   sequence(
+    'clear',
     'styles-main',
     'styles-admin',
     'js-vendors',
@@ -136,9 +151,13 @@ gulp.task('build', callback => {
     'js-admin',
     'images',
     'fonts',
-    callback
   );
 });
+
+// ================================================================
+// Clear : Clear destination dir before build.
+// ================================================================
+gulp.task('clear', () => del(`${buildDir}/**/*`));
 
 // ================================================================
 // STYLES : Build common stylesheets
@@ -151,12 +170,8 @@ gulp.task('styles-main', () => {
     .pipe($.less({
       plugins: [lessGlob],
     }))
-    .pipe($.if(env.production, $.autoprefixer({
-      browsers: ['last 3 versions'],
-    })))
-    .pipe($.rename({
-      suffix: '.min',
-    }))
+    .pipe($.if(env.production, $.autoprefixer()))
+    .pipe($.rename({ suffix: '.min' }))
     .pipe($.if(env.production, $.cssnano()))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(path.build.styles))
@@ -168,9 +183,7 @@ gulp.task('styles-admin', () => {
     .pipe($.changed(path.build.styles, { extension: '.css' }))
     .pipe($.plumber())
     .pipe($.concat('admin.min.css'))
-    .pipe($.if(env.production, $.autoprefixer({
-      browsers: ['last 3 versions'],
-    })))
+    .pipe($.if(env.production, $.autoprefixer()))
     .pipe($.if(env.production, $.cssnano()))
     .pipe(gulp.dest(path.build.styles))
     .pipe($.livereload());
@@ -183,9 +196,7 @@ gulp.task('js-vendors', () => {
   gulp.src(path.src.js.vendors)
     .pipe($.changed(path.build.js, { extension: '.js' }))
     .pipe($.concat('vendors.js'))
-    .pipe($.rename({
-      suffix: '.min',
-    }))
+    .pipe($.rename({ suffix: '.min' }))
     .pipe($.uglify())
     .pipe(gulp.dest(path.build.js));
 });
@@ -198,14 +209,9 @@ gulp.task('js-main', () => {
     .pipe($.changed(path.build.js, { extension: '.js' }))
     .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
-    .pipe($.babel({
-      presets: ['es2015'],
-      compact: false,
-    }))
+    .pipe($.babel())
     .pipe($.concat('main.js'))
-    .pipe($.rename({
-      suffix: '.min',
-    }))
+    .pipe($.rename({ suffix: '.min' }))
     .pipe($.if(env.production, $.uglify()))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(path.build.js))
@@ -220,14 +226,9 @@ gulp.task('js-pages', () => {
     .pipe($.changed(path.build.js, { extension: '.js' }))
     .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
-    .pipe($.babel({
-      presets: ['es2015'],
-      compact: false,
-    }))
+    .pipe($.babel())
     .pipe($.concat('pages.js'))
-    .pipe($.rename({
-      suffix: '.min',
-    }))
+    .pipe($.rename({ suffix: '.min' }))
     .pipe($.if(env.production, $.uglify()))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(path.build.js));
@@ -240,9 +241,7 @@ gulp.task('js-admin-vendors', () => {
   gulp.src(path.src.js.adminVendors)
     .pipe($.changed(path.build.js, { extension: '.js' }))
     .pipe($.concat('admin-vendors.js'))
-    .pipe($.rename({
-      suffix: '.min',
-    }))
+    .pipe($.rename({ suffix: '.min' }))
     .pipe($.uglify())
     .pipe(gulp.dest(path.build.js));
 });
@@ -256,12 +255,10 @@ gulp.task('js-admin', () => {
     .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
     .pipe($.babel({
-      presets: [require('babel-preset-es2015')],
+      presets: [babelPreset],
     }))
     .pipe($.concat('admin.js'))
-    .pipe($.rename({
-      suffix: '.min',
-    }))
+    .pipe($.rename({ suffix: '.min' }))
     .pipe($.if(env.production, $.uglify()))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(path.build.js));
@@ -290,8 +287,15 @@ gulp.task('fonts', () => {
 // ================================================================
 gulp.task('watch', () => {
   $.livereload.listen();
-  gulp.watch(path.watch.styles, ['styles-main']);
-  gulp.watch(path.watch.js, ['js-main', 'js-pages', 'js-admin']);
+  gulp.watch(path.watch.styles, [
+    'styles-main',
+    'styles-admin',
+  ]);
+  gulp.watch(path.watch.js, [
+    'js-main',
+    'js-pages',
+    'js-admin',
+  ]);
   gulp.watch(path.watch.images, ['images']);
   gulp.watch(path.watch.html, $.livereload.changed);
 });

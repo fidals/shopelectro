@@ -111,7 +111,7 @@ class Order(ecOrder):
 
 
 class CategoryPage(ModelPage):
-    """Create proxy model for Admin"""
+    """Create proxy model for Admin."""
     class Meta(ModelPage.Meta):
         proxy = True
 
@@ -119,7 +119,7 @@ class CategoryPage(ModelPage):
 
 
 class ProductPage(ModelPage):
-    """Create proxy model for Admin"""
+    """Create proxy model for Admin."""
     class Meta(ModelPage.Meta):
         proxy = True
 
