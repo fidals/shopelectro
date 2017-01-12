@@ -46,6 +46,7 @@ class ProductPageAdmin(models.ProductPageAdmin):
 
 
 class ProductFeedbackPageAdmin(admin.ModelAdmin):
+    add = False
     delete = False
     list_filter = ['rating']
     list_display = ['rating', 'name', 'dignities', 'limitations', 'general', 'links']

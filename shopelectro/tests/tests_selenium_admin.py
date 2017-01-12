@@ -237,7 +237,7 @@ class AdminPage(SeleniumTestCase):
         self.assertGreater(len(node_children), 10)
 
     def test_tree_redirect_to_entity_edit_page(self):
-        """Test redirect to edit entity page by click at jstree's item"""
+        """Test redirect to edit entity page by click on jstree's item."""
         self.open_js_tree_nodes()
         expected_h1 = ['Change category page', 'Изменить category page']
 
@@ -335,6 +335,12 @@ class TableEditor(SeleniumTestCase):
     def refresh_table_editor_page(self):
         self.browser.find_element_by_id('admin-editor-link').click()
         wait()
+
+    def trigger_autocomplete(self, selector):
+        """Programmatically trigger jQ autocomplete widget."""
+        self.browser.execute_script(
+            '$("' + selector + '").autocomplete("search");'
+        )
 
     def update_input_value(self, index, new_data):
         """Clear input, pass new data and emulate Return keypress."""
@@ -522,3 +528,43 @@ class TableEditor(SeleniumTestCase):
         popover = self.browser.find_element_by_class_name('webui-popover')
 
         self.assertTrue(popover.is_displayed())
+
+    def test_new_entity_creation(self):
+        new_entity_text = 'A New stuff'
+        prices = [
+            'entity-price', 'entity-wholesale-small',
+            'entity-wholesale-medium', 'entity-wholesale-large'
+        ]
+
+        # Trigger entity creation modal & input data:
+        self.browser.find_element_by_css_selector('button[data-target="#add-entity"]').click()
+        self.browser.find_element_by_id('entity-name').send_keys(new_entity_text)
+        for price in prices:
+            self.browser.find_element_by_id(price).send_keys(123)
+
+        # Check is autocomplete works for category search by manual triggering it:
+        self.browser.find_element_by_id('entity-category').send_keys('Category #0')
+        wait()
+        self.trigger_autocomplete('#entity-category')
+        wait()
+        autocomplete = self.browser.find_element_by_class_name('ui-autocomplete')
+
+        # Choose category from autocomplete dropdown & save new entity:
+        autocomplete.find_element_by_class_name('ui-menu-item-wrapper').click()
+        self.browser.find_element_by_id('entity-save').click()
+        wait()
+
+        # If entity was successfully changed `refresh_btn` should become active:
+        refresh_btn = self.browser.find_element_by_id('refresh-table')
+        self.assertFalse(refresh_btn.get_attribute('disabled'))
+
+        # After click on `refresh_btn` TE should be updated:
+        refresh_btn.click()
+        self.browser.find_element_by_class_name('js-modal-close').click()
+        wait()
+        first_row = self.browser.find_element_by_id('jqGrid').find_element_by_class_name('jqgrow')
+        name_cell = first_row.find_elements_by_tag_name('td')[1]
+        self.assertEqual(name_cell.get_attribute('title'), new_entity_text)
+
+        # We are able to change newly created entity:
+        self.test_edit_product_name()

@@ -4,9 +4,12 @@
     "$": true,
     "admin": true,
     "configs": true,
+    "document": true,
     "Cookies": true,
     "helpers": true,
     "jQgridSettings": true,
+    "location": true,
+    "localStorage": true,
     "mediator": true,
     "popover": true,
     "server": true,
@@ -16,6 +19,9 @@
     "yaCounter20644114": true
   },
   "rules": {
+    "no-console": ["error", {
+      "allow": ["group", "groupEnd", "info", "error", "warn"]
+    }],
     "no-use-before-define": ["error", {
       "functions": false,
       "classes": false

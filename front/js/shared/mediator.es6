@@ -13,9 +13,7 @@ const mediator = {
    * @param handlers
    */
   subscribe: (eventName, ...handlers) => {
-    for (const handler of handlers) {
-      $(mediator.M).bind(eventName, handler);
-    }
+    handlers.map(handler => $(mediator.M).bind(eventName, handler));
   },
 
   /**

@@ -35,7 +35,6 @@ function getAppSrcPaths(appName) {
   if (err) throw Error(err);
 
   const appPath = processData.stdout.toString().trim();
-
   return require(appPath + '/front/paths.js');
 }
 
@@ -142,15 +141,15 @@ gulp.task('build', () => {
 
   sequence(
     'clear',
+    'fonts',
+    'images',
+    'js-admin',
+    'js-admin-vendors',
+    'js-common',
+    'js-common-vendors',
+    'js-pages',
     'styles-main',
     'styles-admin',
-    'js-vendors',
-    'js-main',
-    'js-pages',
-    'js-admin-vendors',
-    'js-admin',
-    'images',
-    'fonts',
   );
 });
 
@@ -190,78 +189,68 @@ gulp.task('styles-admin', () => {
 });
 
 // ================================================================
-// JS : Build common vendors js only
+// JS : Helper functions
 // ================================================================
-gulp.task('js-vendors', () => {
-  gulp.src(path.src.js.vendors)
+function vendorJS(source, destination, fileName) {
+  gulp.src(source)
     .pipe($.changed(path.build.js, { extension: '.js' }))
-    .pipe($.concat('vendors.js'))
+    .pipe($.concat(`${fileName}.js`))
     .pipe($.rename({ suffix: '.min' }))
     .pipe($.uglify())
-    .pipe(gulp.dest(path.build.js));
-});
+    .pipe(gulp.dest(destination));
+}
 
-// ================================================================
-// JS : Build main scripts
-// ================================================================
-gulp.task('js-main', () => {
-  gulp.src(path.src.js.main)
-    .pipe($.changed(path.build.js, { extension: '.js' }))
+function appJS(source, destination, fileName) {
+  gulp.src(source)
+    .pipe($.changed(destination, { extension: '.js' }))
     .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
-    .pipe($.babel())
-    .pipe($.concat('main.js'))
+    .pipe($.concat(`${fileName}.js`))
+    .pipe($.babel({
+      presets: [babelPreset],
+      compact: false,
+    }))
     .pipe($.rename({ suffix: '.min' }))
     .pipe($.if(env.production, $.uglify()))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
-    .pipe(gulp.dest(path.build.js))
+    .pipe(gulp.dest(destination))
     .pipe($.livereload());
+}
+
+// ================================================================
+// JS : Build common js.
+// ================================================================
+gulp.task('js-common', () => {
+  appJS(path.src.js.main, path.build.js, 'main');
+});
+
+// ================================================================
+// JS : Build common vendors js only.
+// ================================================================
+gulp.task('js-common-vendors', () => {
+  vendorJS(path.src.js.vendors, path.build.js, 'main-vendors');
 });
 
 // ================================================================
 // JS : Build all pages scripts
 // ================================================================
 gulp.task('js-pages', () => {
-  gulp.src(path.src.js.pages)
-    .pipe($.changed(path.build.js, { extension: '.js' }))
-    .pipe($.if(env.development, $.sourcemaps.init()))
-    .pipe($.plumber())
-    .pipe($.babel())
-    .pipe($.concat('pages.js'))
-    .pipe($.rename({ suffix: '.min' }))
-    .pipe($.if(env.production, $.uglify()))
-    .pipe($.if(env.development, $.sourcemaps.write('.')))
-    .pipe(gulp.dest(path.build.js));
-});
-
-// ================================================================
-// JS : Build admin vendors js only
-// ================================================================
-gulp.task('js-admin-vendors', () => {
-  gulp.src(path.src.js.adminVendors)
-    .pipe($.changed(path.build.js, { extension: '.js' }))
-    .pipe($.concat('admin-vendors.js'))
-    .pipe($.rename({ suffix: '.min' }))
-    .pipe($.uglify())
-    .pipe(gulp.dest(path.build.js));
+  appJS(path.src.js.pages, path.build.js, 'pages');
 });
 
 // ================================================================
 // JS : Build admin page scripts
 // ================================================================
 gulp.task('js-admin', () => {
-  gulp.src(path.src.js.admin)
-    .pipe($.changed(path.build.js, { extension: '.js' }))
-    .pipe($.if(env.development, $.sourcemaps.init()))
-    .pipe($.plumber())
-    .pipe($.babel({
-      presets: [babelPreset],
-    }))
-    .pipe($.concat('admin.js'))
-    .pipe($.rename({ suffix: '.min' }))
-    .pipe($.if(env.production, $.uglify()))
-    .pipe($.if(env.development, $.sourcemaps.write('.')))
-    .pipe(gulp.dest(path.build.js));
+  appJS(path.src.js.admin, path.build.js, 'admin');
+});
+
+
+// ================================================================
+// JS : Build admin vendors js only
+// ================================================================
+gulp.task('js-admin-vendors', () => {
+  vendorJS(path.src.js.adminVendors, path.build.js, 'admin-vendors');
 });
 
 // ================================================================
