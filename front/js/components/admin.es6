@@ -1,4 +1,4 @@
-const customColumnModels = [
+const customColModels = [
   {
     name: 'wholesale_small',
     label: 'Wholesale small',
@@ -94,25 +94,32 @@ const customColumnModels = [
     },
     sorttype: 'integer',
     width: 50,
-  }
+  },
 ];
 
-class TableEditorSE extends TableEditor {
-  constructor(colModel = TableEditorColumnModel(), dialogBoxes = TableEditorDialogBoxes()) {
-    super(colModel, dialogBoxes);
-  
+class SETableEditor extends TableEditor {
+  constructor(colModel) {
+    super(colModel);
+
     this.filterFields = [
       'name',
       'category_name',
       'price',
       'purchase_price',
     ];
+
+    this.newEntityFields = [
+      'name',
+      'category',
+      'price',
+      'wholesale_small',
+      'wholesale_medium',
+      'wholesale_large',
+    ];
   }
 }
 
-const sidebar = new AdminSideBar();
-const tableEditorDialogBoxes = new TableEditorDialogBoxes();
-const tableEditorFilters = new TableEditorFilters();
-const tableEditorColumnModel = new TableEditorColumnModel(tableEditorFilters, customColumnModels);
-new TableEditorSE(tableEditorColumnModel, tableEditorDialogBoxes);
 new AdminCommonPlugins();
+new AdminSidebar();
+const seColModel = new TableEditorColModel(customColModels);
+new SETableEditor(seColModel);

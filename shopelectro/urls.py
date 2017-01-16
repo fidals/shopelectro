@@ -17,10 +17,10 @@ from pages.models import Page
 from pages.views import robots, SitemapPage
 
 from shopelectro import sitemaps, config, views
-from shopelectro.admin import se_admin_site
+from shopelectro.admin import se_admin
 
 admin_urls = [
-    url(r'^', se_admin_site.urls),
+    url(r'^', se_admin.urls),
     url(r'^autocomplete/$', views.AdminAutocomplete.as_view()),
     url(r'^get-tree-items/$', views.Tree.as_view()),
     url(r'^redirect-to-product/$', views.RedirectToProduct.as_view()),
