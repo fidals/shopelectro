@@ -281,7 +281,7 @@ gulp.task('watch', () => {
     'styles-admin',
   ]);
   gulp.watch(path.watch.js, [
-    'js-main',
+    'js-common',
     'js-pages',
     'js-admin',
   ]);

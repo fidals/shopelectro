@@ -337,7 +337,7 @@ class TableEditor(SeleniumTestCase):
         wait()
 
     def trigger_autocomplete(self, selector):
-        """Programmatically trigger jQ autocomplete widget."""
+        """Trigger jQ autocomplete widget."""
         self.browser.execute_script(
             '$("' + selector + '").autocomplete("search");'
         )

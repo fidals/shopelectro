@@ -108,7 +108,7 @@ class SETableEditor extends TableEditor {
       'purchase_price',
     ];
 
-    this.newEntittyFields = [
+    this.newEntityFields = [
       'name',
       'category',
       'price',
