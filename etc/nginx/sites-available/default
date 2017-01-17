@@ -16,4 +16,9 @@ server {
         access_log off;
         expires 14d;
     }
+    location ~ \.(html)$ {
+        root /opt/shopelectro/app/assets/;
+        access_log off;
+        expires 14d;
+    }
 }
