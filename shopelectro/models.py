@@ -1,9 +1,15 @@
+from functools import reduce
+from itertools import groupby, chain
+from operator import attrgetter, and_
+
 from django.db import models
-from django.db.models import Avg
+from django.db.models import Avg, Q
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from catalog.models import AbstractProduct, AbstractCategory
+from catalog.models import (
+    AbstractProduct, AbstractCategory, ProductManager, ProductQuerySet
+)
 from ecommerce.models import Order as ecOrder
 from pages.models import ModelPage, SyncPageMixin, CustomPage
 
@@ -22,14 +28,52 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
+class SEProductQuerySet(ProductQuerySet):
+
+    def get_pages(self):
+        """Get pages related with products."""
+        return [product.page for product in self.select_related('page')]
+
+    def get_tags(self):
+        """Get unique tags related with products."""
+        return set(chain.from_iterable(
+            product.tags.all() for product in self.prefetch_related('tags')
+        ))
+
+    def get_by_tags(self, tags: [models.Model or int]) -> models.QuerySet:
+        query = reduce(and_, (Q(tags=tag) for tag in tags))
+        return self.filter(query)
+
+
+class SEProductManager(ProductManager):
+
+    def get_queryset(self):
+        return SEProductQuerySet(self.model, using=self._db)
+
+    def get_tags(self):
+        return self.get_queryset().get_tags()
+
+    def get_pages(self):
+        return self.get_queryset().get_pages()
+
+    def get_by_tags(self, tags: [models.Model]) -> models.QuerySet:
+        return self.get_queryset().get_by_tags(tags)
+
+
 class Product(AbstractProduct, SyncPageMixin):
     """
     Define n:1 relation with SE-Category and 1:n with Property.
     Add wholesale prices.
     """
+
+    objects = SEProductManager()
+
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, null=True,
-        related_name='products'
+        Category, on_delete=models.CASCADE, null=True, related_name='products',
+    )
+
+    tags = models.ManyToManyField(
+        'Tag', related_name='products',
     )
 
     purchase_price = models.FloatField(default=0)
@@ -39,14 +83,6 @@ class Product(AbstractProduct, SyncPageMixin):
 
     def get_absolute_url(self):
         return reverse('product', args=(self.id,))
-
-    @property
-    def trademark(self):
-        """Return value of trademark property if exists."""
-        try:
-            return self.property_set.get(name='Товарный знак').value
-        except Property.DoesNotExist:
-            return
 
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
@@ -74,17 +110,6 @@ class ProductFeedback(models.Model):
     dignities = models.TextField(default='', blank=True)
     limitations = models.TextField(default='', blank=True)
     general = models.TextField(default='', blank=True)
-
-
-class Property(models.Model):
-    """Property of a Product."""
-    name = models.CharField(max_length=255, db_index=True)
-    is_numeric = models.SmallIntegerField(default=0)
-    value = models.CharField(max_length=255)
-    product = models.ForeignKey(Product, db_index=True)
-
-    def __str__(self):
-        return self.name
 
 
 def _default_payment():
@@ -124,3 +149,52 @@ class ProductPage(ModelPage):
         proxy = True
 
     objects = ModelPage.create_model_page_managers(Product)
+
+
+class TagGroup(models.Model):
+
+    name = models.CharField(max_length=100, db_index=True)
+    position = models.PositiveSmallIntegerField(default=0, blank=True, db_index=True)
+
+    def __str__(self):
+        return self.name
+
+
+class TagQuerySet(models.QuerySet):
+
+    def get_group_tags_pairs(self, tags=None):
+        if tags:
+            unique_tags = set(tags)
+        else:
+            unique_tags = self.all().select_related('group')
+
+        group_tags_pair = (
+            (group, list(sorted(tags_, key=attrgetter('position'))))
+            for group, tags_ in groupby(unique_tags, key=attrgetter('group'))
+        )
+
+        return sorted(group_tags_pair, key=lambda x: x[0].position)
+
+
+class TagManager(models.Manager):
+
+    def get_queryset(self):
+        return TagQuerySet(self.model, using=self._db)
+
+    def get_group_tags_pairs(self, tags=None):
+        return self.get_queryset().get_group_tags_pairs(tags)
+
+
+class Tag(models.Model):
+
+    name = models.CharField(max_length=100, db_index=True)
+    position = models.PositiveSmallIntegerField(default=0, blank=True, db_index=True)
+
+    objects = TagManager()
+
+    group = models.ForeignKey(
+        TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
+    )
+
+    def __str__(self):
+        return self.name

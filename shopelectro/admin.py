@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django.contrib.redirects.models import Redirect
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.core.urlresolvers import reverse
+from django.db import models as django_models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from pages.models import CustomPage, FlatPage
-from generic_admin import inlines, models, sites
+from generic_admin import inlines, models, sites, filters
 
 from shopelectro import models as se_models
 from shopelectro.views.admin import TableEditor
@@ -15,19 +18,53 @@ class SEAdminSite(sites.SiteWithTableEditor):
     table_editor_view = TableEditor
 
 
+class HasTags(admin.SimpleListFilter):
+    product_model = se_models.Product
+    title = _('has tags')
+    parameter_name = 'has_tags'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', _('Has tags')),
+            ('no', _('Has not tags')),
+        )
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return
+
+        query = '{}__tags__isnull'.format(self.product_model._meta.db_table)
+
+        return queryset.filter(**{query: not self.value() == 'yes'})
+
+
+
+class TagInline(admin.StackedInline):
+    model = se_models.Tag
+    extra = 0
+
+
 class CategoryInline(inlines.CategoryInline):
     model = se_models.Category
 
 
 class ProductInline(inlines.ProductInline):
     model = se_models.Product
+
+    formfield_overrides = {
+        django_models.ManyToManyField: {
+            'widget': FilteredSelectMultiple(verbose_name='Tags', is_stacked=False)
+        },
+    }
+
     fieldsets = ((None, {
         'classes': ('primary-chars', ),
         'fields': (
             ('name', 'id'),
             ('category', 'correct_category_id'),
             ('price', 'in_stock', 'is_popular'),
-            ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large')
+            ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large'),
+            'tags',
         )
     }),)
 
@@ -42,6 +79,7 @@ class ProductPageAdmin(models.ProductPageAdmin):
     add = False
     delete = False
     category_page_model = se_models.CategoryPage
+    list_filter = [*models.ProductPageAdmin.list_filter, HasTags]
     inlines = [ProductInline, inlines.ImageInline]
 
 
@@ -61,10 +99,47 @@ class ProductFeedbackPageAdmin(admin.ModelAdmin):
 
     links.short_description = _('Link')
 
+
+class TagGroupAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'position','count_tag']
+    list_display_links = ['name']
+
+    inlines = [TagInline]
+
+    def get_queryset(self, request):
+        return super(TagGroupAdmin, self).get_queryset(request).prefetch_related('tags')
+
+    def count_tag(self, obj):
+        return obj.tags.count()
+
+
+class TagAdmin(admin.ModelAdmin):
+    search_fields = ['id', 'name']
+    list_display = ['id', 'name', 'position','custom_group']
+    list_display_links = ['name']
+
+    def get_queryset(self, request):
+        return super(TagAdmin, self).get_queryset(request).prefetch_related('group')
+
+    def custom_group(self, obj):
+        group = obj.group
+
+        return format_html(
+            '<a href="{url}">{group}</a>',
+            group=group,
+            url=reverse('admin:shopelectro_taggroup_change', args=(group.id, ))
+        )
+
+    custom_group.admin_order_field = 'group'
+    custom_group.short_description = _('Group')
+
+
 se_admin = SEAdminSite(name='se_admin')
 se_admin.register(CustomPage, models.CustomPageAdmin)
 se_admin.register(FlatPage, models.FlatPageAdmin)
 se_admin.register(se_models.CategoryPage, CategoryPageAdmin)
 se_admin.register(se_models.ProductPage, ProductPageAdmin)
 se_admin.register(se_models.ProductFeedback, ProductFeedbackPageAdmin)
+se_admin.register(se_models.TagGroup, TagGroupAdmin)
+se_admin.register(se_models.Tag, TagAdmin)
 se_admin.register(Redirect)
