@@ -41,7 +41,7 @@ class Command(BaseCommand):
     def __init__(self):
         super(BaseCommand, self).__init__()
         self._product_id = 0
-        self.group_names = ['Напряжение тока', 'Сила тока', 'Мощность тока']
+        self.group_names = ['Напряжение', 'Сила тока', 'Мощность']
         self.tag_names = [
             ['6 В', '24 В'],
             ['1.2 А', '10 А'],
@@ -106,10 +106,11 @@ class Command(BaseCommand):
         def get_name(number, parent=None):
             return name.format(number, parent)
 
-        return list(chain.from_iterable(
-            [create_categories(get_name(i, parent), parent) for i in range(count)]
+        return list(
+            create_categories(get_name(i, parent), parent)
+            for i in range(count)
             for parent in parents
-        ))
+        )
 
     def create_products(self, categories, tags):
         def create_images(page: Page):
@@ -145,9 +146,9 @@ class Command(BaseCommand):
                 for i in range(1, count + 1):
                     create_product(category, tags_, price_factor=i)
 
-        zipped_tags = iter(zip(*tags))
-        fill_with_products(to_fill=categories[4:], tags_=next(zipped_tags), count=25)
-        fill_with_products(to_fill=categories[:4], tags_=next(zipped_tags),count=50)
+        zipped_tags = list(zip(*tags))
+        fill_with_products(to_fill=categories[4:], tags_=zipped_tags[0], count=25)
+        fill_with_products(to_fill=categories[:4], tags_=zipped_tags[1], count=50)
 
     def create_tag_groups(self):
         for i, name in enumerate(self.group_names, start=1):
@@ -166,7 +167,6 @@ class Command(BaseCommand):
 
         for group, names in zip(groups, self.tag_names):
             yield list(map(partial(create_tag, group), *zip(*enumerate(names, start=1))))
-
 
     @staticmethod
     def create_page():

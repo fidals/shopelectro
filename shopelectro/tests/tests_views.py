@@ -24,7 +24,7 @@ from shopelectro.models import CategoryPage, ProductPage, Category, Product, Tag
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 
-# TODO: removed override_settings after dev-828.
+# TODO: remove override_settings after dev-828.
 @override_settings(DEBUG=True)
 class CatalogPage(TestCase):
 

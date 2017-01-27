@@ -1,24 +1,26 @@
 from django.contrib import admin
-from django.contrib.redirects.models import Redirect
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.redirects.models import Redirect
 from django.core.urlresolvers import reverse
 from django.db import models as django_models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from pages.models import CustomPage, FlatPage
-from generic_admin import inlines, models, sites, filters
+from generic_admin import inlines, models, sites
 
 from shopelectro import models as se_models
 from shopelectro.views.admin import TableEditor
 
 
 class SEAdminSite(sites.SiteWithTableEditor):
+
     site_header = 'Shopelectro administration'
     table_editor_view = TableEditor
 
 
 class HasTags(admin.SimpleListFilter):
+
     product_model = se_models.Product
     title = _('has tags')
     parameter_name = 'has_tags'
@@ -26,7 +28,7 @@ class HasTags(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('yes', _('Has tags')),
-            ('no', _('Has not tags')),
+            ('no', _('Has no tags')),
         )
 
     def queryset(self, request, queryset):
@@ -35,20 +37,23 @@ class HasTags(admin.SimpleListFilter):
 
         query = '{}__tags__isnull'.format(self.product_model._meta.db_table)
 
-        return queryset.filter(**{query: not self.value() == 'yes'})
-
+        # Use brackets, because `Explicit is better than implicit`.
+        return queryset.filter(**{query: not (self.value() == 'yes')})
 
 
 class TagInline(admin.StackedInline):
+
     model = se_models.Tag
     extra = 0
 
 
 class CategoryInline(inlines.CategoryInline):
+
     model = se_models.Category
 
 
 class ProductInline(inlines.ProductInline):
+
     model = se_models.Product
 
     formfield_overrides = {
@@ -70,20 +75,38 @@ class ProductInline(inlines.ProductInline):
 
 
 class CategoryPageAdmin(models.CategoryPageAdmin):
+
     add = False
     delete = False
     inlines = [CategoryInline, inlines.ImageInline]
 
+    def get_queryset(self, request):
+        return (
+            super(CategoryPageAdmin, self)
+                .get_queryset(request)
+                .select_related('shopelectro_category')
+        )
+
+
 
 class ProductPageAdmin(models.ProductPageAdmin):
+
     add = False
     delete = False
     category_page_model = se_models.CategoryPage
     list_filter = [*models.ProductPageAdmin.list_filter, HasTags]
     inlines = [ProductInline, inlines.ImageInline]
 
+    def get_queryset(self, request):
+        return (
+            super(ProductPageAdmin, self)
+                .get_queryset(request)
+                .select_related('shopelectro_product')
+        )
+
 
 class ProductFeedbackPageAdmin(admin.ModelAdmin):
+
     add = False
     delete = False
     list_filter = ['rating']
@@ -99,9 +122,17 @@ class ProductFeedbackPageAdmin(admin.ModelAdmin):
 
     links.short_description = _('Link')
 
+    def get_queryset(self, request):
+        return (
+            super(ProductFeedbackPageAdmin, self)
+                .get_queryset(request)
+                .select_related('product')
+        )
+
 
 class TagGroupAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'position','count_tag']
+
+    list_display = ['id', 'name', 'position','count_tags']
     list_display_links = ['name']
 
     inlines = [TagInline]
@@ -109,11 +140,12 @@ class TagGroupAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super(TagGroupAdmin, self).get_queryset(request).prefetch_related('tags')
 
-    def count_tag(self, obj):
+    def count_tags(self, obj):
         return obj.tags.count()
 
 
 class TagAdmin(admin.ModelAdmin):
+
     search_fields = ['id', 'name']
     list_display = ['id', 'name', 'position','custom_group']
     list_display_links = ['name']

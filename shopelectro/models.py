@@ -31,11 +31,11 @@ class Category(AbstractCategory, SyncPageMixin):
 class SEProductQuerySet(ProductQuerySet):
 
     def get_pages(self):
-        """Get pages related with products."""
+        """Get pages related to products."""
         return [product.page for product in self.select_related('page')]
 
     def get_tags(self):
-        """Get unique tags related with products."""
+        """Get unique tags related to products."""
         return set(chain.from_iterable(
             product.tags.all() for product in self.prefetch_related('tags')
         ))
