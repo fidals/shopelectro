@@ -16,7 +16,8 @@ from pages import views as pages_views
 from shopelectro import config
 from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import (
-    Product, ProductFeedback, Category, CategoryPage as CategoryPageModel)
+    Product, ProductFeedback, Category, CategoryPage as CategoryPageModel, Tag
+)
 from shopelectro.views.helpers import set_csrf_cookie
 
 
@@ -65,7 +66,7 @@ class IndexPage(pages_views.CustomPageView):
                 .select_related('page')
         )
 
-        images = Image.objects.get_main_images_by_pages(product.page for product in top_products)
+        images = Image.objects.get_main_images_by_pages(top_products.get_pages())
         categories = Category.objects.get_root_categories_by_products(top_products)
 
         prepared_top_products = [
@@ -87,24 +88,31 @@ class CategoryPage(catalog.CategoryPage):
     def get_context_data(self, **kwargs):
         """Extended method. Add sorting options and view_types."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
+
+        # if there is no view_type specified, default will be tile
+        view_type = self.request.session.get('view_type', 'tile')
+
         category = context['category']
 
         sorting = int(self.kwargs.get('sorting', 0))
         sorting_option = config.category_sorting(sorting)
 
-        # if there is no view_type specified, default will be tile
-        view_type = self.request.session.get('view_type', 'tile')
-
         all_products = (
             Product.objects
-                .prefetch_related('page__images')
-                .get_by_category(category, ordering=(sorting_option, ))
+                .prefetch_related('page__images', 'tags', 'tags__group')
                 .select_related('page')
+                .get_by_category(category, ordering=(sorting_option, ))
         )
+
+        tags_options = self.request.GET.getlist('tags')
+        if tags_options:
+            all_products = all_products.get_by_tags(tags_options)
 
         total_count = all_products.count()
         products = all_products.get_offset(0, self.PRODUCTS_ON_PAGE)
-        images = Image.objects.get_main_images_by_pages(product.page for product in products)
+        images = Image.objects.get_main_images_by_pages(products.get_pages())
+
+        group_tags_pairs = Tag.objects.get_group_tags_pairs(products.get_tags())
 
         product_image_pairs = [
             (product, images.get(product.page))
@@ -114,6 +122,7 @@ class CategoryPage(catalog.CategoryPage):
         return {
             **context,
             'product_image_pairs': product_image_pairs,
+            'group_tags_pairs': group_tags_pairs,
             'total_products': total_count,
             'sorting_options': config.category_sorting(),
             'sort': sorting,
@@ -141,7 +150,7 @@ def load_more(request, category_slug, offset=0, sorting=0):
             .get_offset(int(offset), CategoryPage.PRODUCTS_ON_PAGE)
     )
 
-    images = Image.objects.get_main_images_by_pages(product.page for product in products)
+    images = Image.objects.get_main_images_by_pages(products.get_pages())
 
     product_image_pairs = [
         (product, images.get(product.page))

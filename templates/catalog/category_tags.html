@@ -1,0 +1,7 @@
+{% for group, tags in group_tags_pairs %}
+  <ul>{{ group.name }}
+    {% for tag in tags %}
+      <li data-tag-id="{{ tag.id }}">{{ tag.name }}</li>
+    {% endfor %}
+  </ul>
+{% endfor %}

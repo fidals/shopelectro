@@ -6,18 +6,62 @@ They all should be using Django's TestClient.
 
 All Selenium-tests should live in tests_selenium.
 """
-from xml.etree import ElementTree as ET
 from functools import partial
+from itertools import chain
+from operator import attrgetter
+from xml.etree import ElementTree as ET
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.db.models import Q
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from pages.models import FlatPage
 
-from shopelectro.models import CategoryPage, ProductPage
+from shopelectro.models import CategoryPage, ProductPage, Category, Product, Tag
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
+
+
+# TODO: remove override_settings after dev-828.
+@override_settings(DEBUG=True)
+class CatalogPage(TestCase):
+
+    fixtures = ['dump.json']
+
+    def setUp(self):
+        self.category = Category.objects.root_nodes().first()
+
+    def test_category_page_contains_all_tags(self):
+        """Category contains all product's tags."""
+        response = self.client.get(reverse(
+            'category', args=(self.category.page.slug, ))
+        )
+
+        tags = set(chain.from_iterable(map(
+            lambda x: x.tags.all(), Product.objects.get_by_category(self.category)
+        )))
+
+        tag_names = list(map(attrgetter('name'), tags))
+
+        for tag_name in tag_names:
+            self.assertContains(response, tag_name)
+
+    def test_product_by_certain_tags(self):
+        """Category page contains product's related by certain tags."""
+        fst_tag, lst_tag = Tag.objects.all().first(), Tag.objects.last()
+        response = self.client.get(
+            reverse('category', args=(self.category.page.slug, )),
+            {'tags': [fst_tag.id, lst_tag.id]}
+        )
+
+        products_count = len(list(filter(
+            lambda x: x.category.is_descendant_of(self.category),
+            Product.objects.filter(Q(tags=fst_tag) & Q(tags=lst_tag))
+        )))
+
+        self.assertContains(response, products_count)
 
 
 class SitemapXML(TestCase):
@@ -91,7 +135,7 @@ class AdminPage(TestCase):
             'page': ['Position', 'Content', 'title', 'Keywords', 'Description', 'Is active',
                      'Seo text', 'h1', 'Name'],
             'product': ['Name', 'Category', 'Price', 'ID', 'Purchase price', 'Wholesale large',
-                        'Wholesale medium', 'Wholesale small', 'In stock', 'Is popular', ],
+                        'Wholesale medium', 'Wholesale small', 'In stock', 'Is popular', 'Tags'],
             'category': ['Name', 'Parent', 'Position', 'ID', ],
         }
 

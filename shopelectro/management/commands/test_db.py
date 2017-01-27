@@ -9,10 +9,9 @@ Usage:
 - launch this command
 - now you have json file, that'll be used by our TDD tests
 """
-
+from functools import partial
 from itertools import chain
 import os
-from random import randint
 
 from django.conf import settings
 from django.core.files.images import ImageFile
@@ -23,7 +22,7 @@ from images.models import Image
 from pages.models import Page, FlatPage
 from pages.utils import save_custom_pages, init_redirects_app
 
-from shopelectro.models import Product, Category, Order, ProductFeedback
+from shopelectro.models import Product, Category, Order, ProductFeedback, TagGroup, Tag
 import shopelectro.tests
 
 
@@ -42,6 +41,12 @@ class Command(BaseCommand):
     def __init__(self):
         super(BaseCommand, self).__init__()
         self._product_id = 0
+        self.group_names = ['Напряжение', 'Сила тока', 'Мощность']
+        self.tag_names = [
+            ['6 В', '24 В'],
+            ['1.2 А', '10 А'],
+            ['7.2 Вт', '240 Вт']
+        ]
 
     def handle(self, *args, **options):
         self.prepare_db()
@@ -52,7 +57,10 @@ class Command(BaseCommand):
         children = self.create_children(2, roots)
         deep_children = self.create_children(2, children)
 
-        self.create_products(list(deep_children))
+        groups = self.create_tag_groups()
+        tags = self.create_tags(groups)
+
+        self.create_products(deep_children, tags)
         self.create_page()
         self.create_order()
         self.create_feedbacks()
@@ -98,12 +106,13 @@ class Command(BaseCommand):
         def get_name(number, parent=None):
             return name.format(number, parent)
 
-        return chain.from_iterable(
-            [create_categories(get_name(i, parent), parent) for i in range(count)]
+        return list(
+            create_categories(get_name(i, parent), parent)
+            for i in range(count)
             for parent in parents
         )
 
-    def create_products(self, categories):
+    def create_products(self, categories, tags):
         def create_images(page: Page):
             def create_image(file_path, slug):
                 Image.objects.create(
@@ -115,7 +124,7 @@ class Command(BaseCommand):
             create_image(file_path=self.FIRST_IMAGE, slug='deer')
             create_image(file_path=self.SECOND_IMAGE, slug='gold')
 
-        def create_product(parent: Category, price_factor):
+        def create_product(parent: Category, tags_, price_factor):
             product = Product.objects.create(
                 id=self.product_id,
                 name='Product #{} of {}'.format(price_factor, parent),
@@ -125,16 +134,39 @@ class Command(BaseCommand):
                 wholesale_medium=price_factor * 50,
                 wholesale_large=price_factor * 25
             )
+
+            for tag in tags_:
+                product.tags.add(tag)
+
             if product.id == self.PRODUCT_WITH_IMAGE:
                 create_images(product.page)
 
-        def fill_with_products(to_fill, count):
+        def fill_with_products(to_fill, tags_, count):
             for category in to_fill:
                 for i in range(1, count + 1):
-                    create_product(category, price_factor=i)
+                    create_product(category, tags_, price_factor=i)
 
-        fill_with_products(to_fill=categories[4:], count=25)
-        fill_with_products(to_fill=categories[:4], count=50)
+        zipped_tags = list(zip(*tags))
+        fill_with_products(to_fill=categories[4:], tags_=zipped_tags[0], count=25)
+        fill_with_products(to_fill=categories[:4], tags_=zipped_tags[1], count=50)
+
+    def create_tag_groups(self):
+        for i, name in enumerate(self.group_names, start=1):
+            yield TagGroup.objects.create(
+                name=name,
+                position=i,
+            )
+
+    def create_tags(self, groups):
+        def create_tag(group_, position, name):
+            return Tag.objects.create(
+                    group=group_,
+                    name=name,
+                    position=position,
+                )
+
+        for group, names in zip(groups, self.tag_names):
+            yield list(map(partial(create_tag, group), *zip(*enumerate(names, start=1))))
 
     @staticmethod
     def create_page():

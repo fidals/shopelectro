@@ -1,43 +1,35 @@
-"""Defines tests for models in Shopelectro app."""
-
-import os
-
 from django.test import TestCase
 
-from shopelectro.models import Product, Category, Property
+from shopelectro.models import Product, Tag
 
 
-class ModelsTests(TestCase):
-    """Test suite for models."""
+class ProductModel(TestCase):
+
+    fixtures = ['dump.json']
 
     def setUp(self):
-        self.category, _ = Category.objects.get_or_create(
-            name='Test category'
-        )
+        self.products = Product.objects.all()
 
-        self.product, _ = Product.objects.get_or_create(
-            id=1,
-            name='Common product',
-            wholesale_small=10,
-            wholesale_medium=10,
-            wholesale_large=10,
-            category=self.category
-        )
+    def test_get_pages(self):
+        """Get product's pages."""
+        pages = self.products.get_pages()
 
-        self.trademark, _ = Property.objects.get_or_create(
-            name='Товарный знак',
-            is_numeric=False,
-            value='TM',
-            product=self.product
-        )
+        self.assertEqual(len(self.products), len(pages))
+        self.assertTrue(all((product.page in pages for product in self.products)))
 
-        self.main_image = os.path.normpath(
-            'products/{}/main.jpg'.format(self.product.id))
+    def test_get_tags(self):
+        """Get product's tags."""
+        tags = self.products.get_tags()
 
-    def test_get_trademark(self):
-        """
-        Trademark property of Product object should return
-        value of respective Property object.
-        """
+        self.assertTrue(all(
+            all(tag in tags for tag in product.tags.all()) for product in self.products
+        ))
 
-        self.assertEqual(self.product.trademark, self.trademark.value)
+    def test_get_products_by_tags(self):
+        """Get products, that related with all given tags."""
+        first_tag, second_tag = Tag.objects.first(), Tag.objects.last()
+        products = Product.objects.get_by_tags([first_tag.id, second_tag.id])
+        test_products = first_tag.products.all() & second_tag.products.all()
+
+        self.assertEqual(products.count(), len(test_products))
+        self.assertTrue(all(map(lambda x: x in products, test_products)))
