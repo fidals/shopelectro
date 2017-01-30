@@ -2,6 +2,7 @@
 Config storage for shopelectro.ru.
 Every config-like option which doesn't belong to settings should be here.
 """
+from datetime import timedelta
 
 
 def category_sorting(sorting_index=None):
@@ -46,12 +47,9 @@ def category_sorting(sorting_index=None):
     return options
 
 
-def cached_time() -> int:
-    """Returns value of days for caching in seconds."""
-    one_day_in_seconds = 86400
-    days_to_cache = 60
-
-    return one_day_in_seconds * days_to_cache
+def cached_time(*args, **kwargs) -> int:
+    """Returns value of time for caching in seconds."""
+    return int(timedelta(*args, **kwargs).total_seconds())
 
 # Tile on main page
 MAIN_PAGE_TILE = {

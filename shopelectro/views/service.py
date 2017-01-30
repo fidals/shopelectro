@@ -113,12 +113,15 @@ def yandex_aviso(request):
             extra_context={
                 'paid': paid,
                 'profit': profit,
-                'commission': commission
+                'commission': commission,
             })
 
     def send_mail_to_customer(order):
         mailer.send_order(
-            subject=settings.EMAIL_SUBJECTS['yandex_order'], order=order, to_shop=False)
+            subject=settings.EMAIL_SUBJECTS['yandex_order'],
+            order=order,
+            to_shop=False,
+        )
 
     if not has_correct_md5(request.POST):
         return render(

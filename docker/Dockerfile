@@ -9,6 +9,7 @@ FROM ubuntu:16.04
 
 # Installing Linux packages and global python packages (like gunicorn and circus).
 RUN export DEBIAN_FRONTEND=noninteractive \
+    && locale-gen en_US.UTF-8 \
     && sed -i 's,http://archive.ubuntu.com/ubuntu/,mirror://mirrors.ubuntu.com/mirrors.txt,' /etc/apt/sources.list \
     # for nodejs
     && apt-get update -qq && apt-get upgrade -qq \
@@ -27,6 +28,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
         git \
         python-imaging libjpeg62 libjpeg62-dev \
         nano \
+        emacs-nox \
+        wget \
 
     && BUILD_DEPS='build-essential python3-dev' \
     && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
@@ -42,6 +45,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y ${BUILD_DEPS} \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Set locales
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 # Installing application dependencies from requirements.txt
 COPY requirements.txt /opt/shopelectro/app/
@@ -61,5 +66,4 @@ ENV MEDIA_ROOT=/opt/shopelectro/app/media
 RUN nginx -t \
     && npm install -g gulp && npm install && gulp build \
     && python3 -c 'import compileall, os; compileall.compile_dir(os.curdir, force=1)' > /dev/null \
-    && python3 ./manage.py collectstatic --settings=shopelectro.settings.prod --no-input -v0
-CMD ["circusd", "/etc/circus/web.ini"]
+    && python3 ./manage.py collectstatic --settings=shopelectro.settings.prod --no-input -v0 \

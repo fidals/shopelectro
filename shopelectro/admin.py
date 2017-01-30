@@ -19,7 +19,7 @@ class SEAdminSite(sites.SiteWithTableEditor):
     table_editor_view = TableEditor
 
 
-class HasTags(admin.SimpleListFilter):
+class HasTagsFilter(admin.SimpleListFilter):
 
     product_model = se_models.Product
     title = _('has tags')
@@ -36,6 +36,28 @@ class HasTags(admin.SimpleListFilter):
             return
 
         query = '{}__tags__isnull'.format(self.product_model._meta.db_table)
+
+        # Use brackets, because `Explicit is better than implicit`.
+        return queryset.filter(**{query: not (self.value() == 'yes')})
+
+
+class HasCategoryFilter(admin.SimpleListFilter):
+
+    product_model = se_models.Product
+    title = _('has category')
+    parameter_name = 'has_category'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', _('Has category')),
+            ('no', _('Has no category')),
+        )
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return
+
+        query = '{}__category__isnull'.format(self.product_model._meta.db_table)
 
         # Use brackets, because `Explicit is better than implicit`.
         return queryset.filter(**{query: not (self.value() == 'yes')})
@@ -95,7 +117,7 @@ class ProductPageAdmin(models.ProductPageAdmin):
     add = False
     delete = False
     category_page_model = se_models.CategoryPage
-    list_filter = [*models.ProductPageAdmin.list_filter, HasTags]
+    list_filter = [*models.ProductPageAdmin.list_filter, HasTagsFilter, HasCategoryFilter]
     inlines = [ProductInline, inlines.ImageInline]
 
     def get_queryset(self, request):

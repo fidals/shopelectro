@@ -166,6 +166,11 @@ DATABASES = {
     )
 }
 
+USE_CELERY = True
+
+# https://docs.djangoproject.com/en/1.10/topics/http/sessions/#using-cached-sessions
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 SITE_CREATED = datetime(2013, 1, 1)
 
 LOCALHOST = 'http://127.0.0.1:8000/'
@@ -219,6 +224,11 @@ EMAIL_PORT = 587
 EMAIL_SENDER = 'info@shopelectro.ru'
 EMAIL_RECIPIENT = 'info@shopelectro.ru'
 SHOP_EMAIL = 'info@shopelectro.ru'
+
+# FTP configs
+FTP_USER = os.environ.get('FTP_USER', 'user')
+FTP_PASS = os.environ.get('FTP_PASS', 'pass')
+FTP_IP = os.environ.get('FTP_IP', '0.0.0.0')
 
 # Used in admin image uploads
 MODEL_TYPES = {

@@ -49,7 +49,7 @@
             <a class="middle-footer-title-link" href="/catalog/">Каталог товаров</a>
           </div>
           <ul class="list-unstyled">
-            {% for root in root_categories %}
+            {% for root in root_categories|slice:":3" %}
               <li class="footer-list-item">
                 <a class="footer-list-link" href="{{ root.url }}">{{ root.name }}</a>
               </li>

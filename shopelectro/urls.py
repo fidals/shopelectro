@@ -19,6 +19,24 @@ from pages.views import robots, SitemapPage
 from shopelectro import sitemaps, config, views
 from shopelectro.admin import se_admin
 
+# Orders sitemaps instances
+sitemaps = OrderedDict([
+    ('index', sitemaps.IndexSitemap),
+    ('category', sitemaps.CategorySitemap),
+    ('products', sitemaps.ProductSitemap),
+    ('site', sitemaps.PagesSitemap)
+])
+
+# disable cache
+if settings.DEBUG:
+    def cache_page(arg):
+        if callable(arg):
+            return arg
+        return cache_page
+
+cached_60d = cache_page(config.cached_time(days=60))
+cached_2h = cache_page(config.cached_time(hours=2))
+
 admin_urls = [
     url(r'^', se_admin.urls),
     url(r'^autocomplete/$', views.AdminAutocomplete.as_view()),
@@ -29,7 +47,7 @@ admin_urls = [
 
 catalog_urls = [
     url(r'^categories/(?P<slug>[\w-]+)/$',
-        views.CategoryPage.as_view(), name='category'),
+        cached_2h(views.CategoryPage.as_view()), name='category'),
     url(r'^categories/(?P<slug>[\w-]+)/(?P<sorting>[0-9]*)/$',
         views.CategoryPage.as_view(), name='category'),
     url(r'categories/(?P<category_slug>[\w-]+)/load-more/'
@@ -42,16 +60,6 @@ catalog_urls = [
     url(r'^products/(?P<product_id>[0-9]+)/$',
         views.ProductPage.as_view(), name='product'),
 ]
-
-# Orders sitemaps instances
-sitemaps = OrderedDict([
-    ('index', sitemaps.IndexSitemap),
-    ('category', sitemaps.CategorySitemap),
-    ('products', sitemaps.ProductSitemap),
-    ('site', sitemaps.PagesSitemap)
-])
-
-cached_view = cache_page(config.cached_time())
 
 service_urls = [
     url(r'^ya-kassa/aviso/$', views.yandex_aviso, name='yandex_aviso'),
@@ -79,9 +87,9 @@ ecommerce_urls = [
 
 url_name = Page.CUSTOM_PAGES_URL_NAME
 custom_pages = [
-    url(r'^(?P<page>)$', views.IndexPage.as_view(), name=url_name),
+    url(r'^(?P<page>)$', cached_2h(views.IndexPage.as_view()), name=url_name),
     url(r'^(?P<page>search)/$', views.Search.as_view(), name=url_name),
-    url(r'^(?P<page>catalog)/$', views.CategoryTree.as_view(), name=url_name),
+    url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view()), name=url_name),
     url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view(), name=url_name),
     url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view(), name=url_name),
     url(r'^(?P<page>sitemap)/$', SitemapPage.as_view(), name=url_name),
@@ -99,7 +107,7 @@ urlpatterns = [
     url(r'^shop/', include(ecommerce_urls)),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
-    url(r'^sitemap\.xml$', cached_view(sitemap), {'sitemaps': sitemaps}, name='sitemap'),
+    url(r'^sitemap\.xml$', cached_60d(sitemap), {'sitemaps': sitemaps}, name='sitemap'),
 ]
 
 if settings.DEBUG:

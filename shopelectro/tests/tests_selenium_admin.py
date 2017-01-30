@@ -13,7 +13,7 @@ from seleniumrequests import Chrome  # We use this instead of standard selenium
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.test import LiveServerTestCase
+from django.test import LiveServerTestCase, override_settings
 
 from shopelectro.models import Category, Product
 
@@ -78,6 +78,7 @@ class AdminPage(SeleniumTestCase):
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
+        self.browser.delete_all_cookies()
         self.root_category_id = str(Category.objects.filter(parent=None).first().id)
         self.children_category_id = str(Category.objects.filter(
             parent_id=self.root_category_id).first().id)
@@ -295,6 +296,7 @@ class AdminPage(SeleniumTestCase):
 
         self.assertTrue('collapsed' in body_classes)
 
+    @override_settings(USE_CELERY=False)
     def test_yandex_feedback_request(self):
         """Send mail with request for leaving feedback on Ya.Market."""
         self.browser.find_element_by_class_name('js-toggle-sidebar').click()
@@ -320,6 +322,7 @@ class TableEditor(SeleniumTestCase):
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
+        self.browser.delete_all_cookies()
         self.browser.get(self.admin_page)
         login_field = self.browser.find_element_by_id('id_username')
         login_field.clear()
@@ -390,7 +393,9 @@ class TableEditor(SeleniumTestCase):
 
         for index, item in enumerate(filters):
             filter_text = item.text.lower()
-            table_header_text = self.browser.find_elements_by_class_name('ui-th-div')[index + 1].text.lower()
+            table_header_text = (
+                self.browser.find_elements_by_class_name('ui-th-div')[index + 1].text.lower()
+            )
 
             self.assertIn(table_header_text, filter_text)
 
