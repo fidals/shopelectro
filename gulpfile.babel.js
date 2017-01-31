@@ -86,6 +86,7 @@ const path = {
         'front/js/vendors/jquery.fancybox.min.js',
         'front/js/shared/helpers.es6',
         'front/js/components/category.es6',
+        'front/js/components/category_filters.es6',
         'front/js/components/product.es6',
         'front/js/components/order.es6',
         'front/js/components/accordion.es6',

@@ -311,16 +311,16 @@
 }
 
 .sprite(@sprite) {
-	.sprite-position(@sprite);
-	.sprite-width(@sprite);
-	.sprite-height(@sprite);
+  .sprite-position(@sprite);
+  .sprite-width(@sprite);
+  .sprite-height(@sprite);
 }
 
 .sprites(@sprites, @i: 1) when (@i <= length(@sprites)) {
-	@sprite: extract(@sprites, @i);
-	@sprite-name: extract(@sprite, 10);
-	.@{sprite-name} {
-		.sprite(@sprite);
-	}
-	.sprites(@sprites, @i + 1);
+  @sprite: extract(@sprites, @i);
+  @sprite-name: extract(@sprite, 10);
+  .@{sprite-name} {
+    .sprite(@sprite);
+  }
+  .sprites(@sprites, @i + 1);
 }

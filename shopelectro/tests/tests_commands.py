@@ -8,8 +8,8 @@ import types
 
 from xml.etree import ElementTree
 
-from django.core.management import call_command
 from django.conf import settings
+from django.core.management import call_command
 from django.test import TestCase
 
 from shopelectro.models import Product, Category
@@ -181,7 +181,9 @@ class ImportTest(TestCase):
         product = Product.objects.get(id=self.test_product_id)
 
         product_fields = [
-            'category', 'price', 'wholesale_small', 'wholesale_medium', 'wholesale_large']
+            'category', 'price', 'wholesale_small',
+            'wholesale_medium', 'wholesale_large',
+        ]
         for field in product_fields:
             self.assertNotEqual(
                 getattr(product, field), getattr(self.product_for_update, field))

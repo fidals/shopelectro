@@ -40,10 +40,10 @@ const server = (() => {
   const deleteFeedback = id => $.post(config.deleteFeedback, { id });
 
   /**
-   * Load products set from server.
+   * Load Products from server.
    * @param {string} url
    */
-  const fetchProducts = url => $.post(url);
+  const loadProducts = url => $.post(url);
 
   /**
    * Send viewType to store user's default view type.
@@ -63,7 +63,7 @@ const server = (() => {
       {
         product: productId,
         quantity,
-      }
+      },
     );
   }
 
@@ -99,23 +99,23 @@ const server = (() => {
       {
         product: productId,
         quantity,
-      }
+      },
     );
   }
 
   const sendYandexOrder = data => $.post(config.yandexOrderUrl, data);
 
   return {
-    sendOrderCall,
-    fetchProducts,
-    sendViewType,
     addToCart,
+    changeInCart,
+    deleteFeedback,
+    loadProducts,
     flushCart,
     oneClickBuy,
     removeFromCart,
-    changeInCart,
-    sendYandexOrder,
     sendFeedback,
-    deleteFeedback,
+    sendOrderCall,
+    sendYandexOrder,
+    sendViewType,
   };
 })();

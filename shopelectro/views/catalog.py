@@ -20,6 +20,8 @@ from shopelectro.models import (
 )
 from shopelectro.views.helpers import set_csrf_cookie
 
+PRODUCTS_ON_PAGE = 48
+
 
 # CATALOG VIEWS
 class CategoryTree(catalog.CategoryTree):
@@ -81,15 +83,23 @@ class IndexPage(pages_views.CustomPageView):
         }
 
 
+def merge_products_and_images(products):
+    images = Image.objects.get_main_images_by_pages(products.get_pages())
+
+    return [
+        (product, images.get(product.page))
+        for product in products
+    ]
+
+
 @set_csrf_cookie
 class CategoryPage(catalog.CategoryPage):
-    PRODUCTS_ON_PAGE = 48
 
     def get_context_data(self, **kwargs):
-        """Extended method. Add sorting options and view_types."""
+        """Add sorting options and view_types in context."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
 
-        # if there is no view_type specified, default will be tile
+        # tile is default view_type
         view_type = self.request.session.get('view_type', 'tile')
 
         category = context['category']
@@ -104,28 +114,22 @@ class CategoryPage(catalog.CategoryPage):
                 .get_by_category(category, ordering=(sorting_option, ))
         )
 
-        tags_options = self.request.GET.getlist('tags')
-        if tags_options:
-            all_products = all_products.get_by_tags(tags_options)
+        group_tags_pairs = Tag.objects.get_group_tags_pairs(all_products.get_tags())
 
-        total_count = all_products.count()
-        products = all_products.get_offset(0, self.PRODUCTS_ON_PAGE)
-        images = Image.objects.get_main_images_by_pages(products.get_pages())
+        tags = self.request.GET.get('tags')
+        if tags:
+            all_products = all_products.get_by_tags(tags.split(','))
 
-        group_tags_pairs = Tag.objects.get_group_tags_pairs(products.get_tags())
-
-        product_image_pairs = [
-            (product, images.get(product.page))
-            for product in products
-        ]
+        products = all_products.get_offset(0, PRODUCTS_ON_PAGE)
 
         return {
             **context,
-            'product_image_pairs': product_image_pairs,
+            'product_image_pairs': merge_products_and_images(products),
             'group_tags_pairs': group_tags_pairs,
-            'total_products': total_count,
+            'total_products': all_products.count(),
             'sorting_options': config.category_sorting(),
             'sort': sorting,
+            'tags': tags,
             'view_type': view_type,
         }
 
@@ -140,29 +144,27 @@ def load_more(request, category_slug, offset=0, sorting=0):
     :param offset: used for slicing QuerySet.
     :return:
     """
-    category_page = get_object_or_404(CategoryPageModel, slug=category_slug)
+    category_page_model = get_object_or_404(CategoryPageModel, slug=category_slug).model
     sorting_option = config.category_sorting(int(sorting))
 
     products = (
         Product.objects
             .prefetch_related('page__images')
-            .get_by_category(category_page.model, ordering=(sorting_option, ))
-            .get_offset(int(offset), CategoryPage.PRODUCTS_ON_PAGE)
+            .select_related('page')
+            .get_by_category(category_page_model, ordering=(sorting_option,))
     )
 
-    images = Image.objects.get_main_images_by_pages(products.get_pages())
+    tags = request.GET.get('tags')
+    if tags:
+        products = products.get_by_tags(tags.split(','))
 
-    product_image_pairs = [
-        (product, images.get(product.page))
-        for product in products
-    ]
-
+    products = products.get_offset(int(offset), PRODUCTS_ON_PAGE)
     view = request.session.get('view_type', 'tile')
 
     return render(request, 'catalog/category_products.html', {
-        'product_image_pairs': product_image_pairs,
+        'product_image_pairs': merge_products_and_images(products),
         'view_type': view,
-        'prods': CategoryPage.PRODUCTS_ON_PAGE,
+        'prods': PRODUCTS_ON_PAGE,
     })
 
 

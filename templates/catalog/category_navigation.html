@@ -1,29 +1,26 @@
 <div class="sorting-nav">
-  <div class="row-fluid">
-    <div class="topline-content">
-      <div class="sort-label">Сортировать по:</div>
-      <div class="sort">
-        <label class="select select-sort">
-          <select class="selectpicker">
-            {% for option in sorting_options %}
-              <option {% if forloop.counter0 == sort %}selected{% endif %}
-                      value="{{ forloop.counter0 }}"
-                      data-path="{% url 'category' category.page.slug forloop.counter0 %}">
-                {{ option.label }}
-              </option>
-            {% endfor %}
-          </select>
-        </label>
-      </div>
+  <span class="sort-label">Сортировать по:</span>
+  <div class="sort">
+    <label class="select select-sort">
+      <select class="selectpicker">
+        {% for option in sorting_options %}
+          <option
+            {% if forloop.counter0 == sort %}selected{% endif %}
+            value="{{ forloop.counter0 }}"
+            data-path="
+              {% url 'category' category.page.slug forloop.counter0 %}{% if tags %}?tags={{ tags }}{% endif %}
+            ">
+            {{ option.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
 
-      <div class="display-mode">
-        <div
-            class="{% if view_type == 'tile' %}active {% endif %}icon-mode-switch icon-thumbs js-icon-mode-switch js-icon-mode-tile"
-            title="Плитка"></div>
-        <div
-            class="{% if view_type == 'list' %}active {% endif %}icon-mode-switch icon-list js-icon-mode-switch js-icon-mode-list"
-            title="Список"></div>
-      </div>
-    </div>
+  <div class="display-mode">
+    <div class="{% if view_type == 'tile' %}active {% endif %}
+        icon-mode-switch icon-thumbs js-icon-mode-switch js-icon-mode-tile" title="Плитка"></div>
+    <div class="{% if view_type == 'list' %}active {% endif %}
+        icon-mode-switch icon-list js-icon-mode-switch js-icon-mode-list" title="Список"></div>
   </div>
 </div>

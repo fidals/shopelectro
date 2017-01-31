@@ -10,7 +10,6 @@ Usage:
 - now you have json file, that'll be used by our TDD tests
 """
 from functools import partial
-from itertools import chain
 import os
 
 from django.conf import settings

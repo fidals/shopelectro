@@ -1,0 +1,67 @@
+.input-number {
+  border: 1px solid @input-border;
+  border-radius: 3px !important; // Need to override bootstrap rule;
+  height: 44px;
+  font-family: @proxima;
+  font-size: @f-size-base;
+  outline: none;
+  padding: 0;
+  text-align: center;
+}
+
+.input-group-btn-vertical {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  width: 22px;
+  z-index: 2;
+
+  .glyphicon {
+    font-size: @f-size-base - 5;
+    left: 0;
+    position: relative;
+    top: 0;
+
+    &-plus {
+      left: 1px;
+    }
+  }
+
+  > .btn {
+    box-shadow: none;
+    display: block;
+    float: none;
+    max-width: 100%;
+    padding: 0;
+    position: relative;
+    width: 100%;
+  }
+}
+
+.bootstrap-touchspin-up,
+.bootstrap-touchspin-down {
+  background-color: @c-btn-increase;
+  border: none;
+  color: @c-white;
+  height: 22px;
+}
+
+.bootstrap-touchspin-up {
+  border-radius: 0 2px 0 0;
+
+  &:hover {
+    background-color: @c-product-pop-label;
+    color: @c-white;
+  }
+}
+
+.bootstrap-touchspin-down {
+  border-radius: 0 0 2px 0;
+  border-top: 1px solid @c-white;
+
+  &:hover {
+    background-color: @c-btn-decrease-active;
+    border-color: @c-white;
+    color: @c-white;
+  }
+}

@@ -1,6 +1,6 @@
 from functools import reduce
 from itertools import groupby, chain
-from operator import attrgetter, and_
+from operator import attrgetter, or_
 
 from django.db import models
 from django.db.models import Avg, Q
@@ -41,7 +41,7 @@ class SEProductQuerySet(ProductQuerySet):
         ))
 
     def get_by_tags(self, tags: [models.Model or int]) -> models.QuerySet:
-        query = reduce(and_, (Q(tags=tag) for tag in tags))
+        query = reduce(or_, (Q(tags=tag) for tag in tags))
         return self.filter(query)
 
 
@@ -73,7 +73,7 @@ class Product(AbstractProduct, SyncPageMixin):
     )
 
     tags = models.ManyToManyField(
-        'Tag', related_name='products',
+        'Tag', related_name='products', blank=True
     )
 
     purchase_price = models.FloatField(default=0)
@@ -163,17 +163,19 @@ class TagGroup(models.Model):
 class TagQuerySet(models.QuerySet):
 
     def get_group_tags_pairs(self, tags=None):
-        if tags:
+        if tags is not None:
             unique_tags = set(tags)
         else:
             unique_tags = self.all().select_related('group')
 
+        sorted_by_group_unique_tags = sorted(unique_tags, key=lambda x: x.group.name)
+
         group_tags_pair = (
             (group, list(sorted(tags_, key=attrgetter('position'))))
-            for group, tags_ in groupby(unique_tags, key=attrgetter('group'))
+            for group, tags_ in groupby(sorted_by_group_unique_tags, key=attrgetter('group'))
         )
 
-        return sorted(group_tags_pair, key=lambda x: x[0].position)
+        return list(sorted(group_tags_pair, key=lambda x: x[0].position))
 
 
 class TagManager(models.Manager):

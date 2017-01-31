@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-  <div itemscope itemtype="http://schema.org/Product" class="page-product custom-input-checkbox">
+  <div itemscope itemtype="http://schema.org/Product" class="page-product custom-checkbox">
     <meta property="description" itemprop="description" content="{{ product.page.description }}" />
     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
       <span itemprop="price">{{ product.price|humanize_price }}</span>
@@ -56,7 +56,8 @@
         {% include 'catalog/product_in_stock.html' %}
 
         <div class="product-price-btn-wrapper">
-          <input class="input-switcher js-touchspin" id="product-count" type="number" min="1" value="1">
+          <input class="input-switcher input-number js-touchspin" id="product-count"
+                 type="number" min="1" value="1">
         </div>
 
         <div class="btn-wrapper-center">
@@ -67,7 +68,7 @@
         <p class="product-one-click">Купить в один клик</p>
         <input class="form-control js-masked-phone" id="input-one-click-phone" placeholder="+7 (999) 000 00 00"
                type="tel">
-        <button class="btn btn-order" id="btn-one-click-order" type="button" disabled>Заказать</button>
+        <button class="btn btn-grey btn-order" id="btn-one-click-order" type="button" disabled>Заказать</button>
 
         <p class="product-additional">
           Менеджер позвонит, уточнит все детали, проверит
@@ -84,18 +85,18 @@
       </div>
     </div>
 
-    <div class="product-bottom">
-      <div class="product-desc">
-        {% if product.page.content %}
-          <h3 class="product-desc-title">Описание</h3>
-          <p class="product-text">
-            {% autoescape off %}
-              {{ product.page.content }}
-            {% endautoescape %}
-          </p>
-        {% endif %}
+    {% if product.page.content %}
+      <div class="product-bottom">
+        <div class="product-desc">
+            <h3 class="product-desc-title">Описание</h3>
+            <p class="product-text">
+              {% autoescape off %}
+                {{ product.page.content }}
+              {% endautoescape %}
+            </p>
+        </div>
       </div>
-    </div>
+    {% endif %}
 
     {% include 'catalog/product_delivery.html' %}
     {% include 'catalog/product_feedbacks.html' %}

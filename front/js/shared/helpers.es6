@@ -28,8 +28,8 @@ const helpers = (() => {
   }
 
   return {
-    setDisabledState,
     isPhoneValid,
     isEmailValid,
+    setDisabledState,
   };
 })();

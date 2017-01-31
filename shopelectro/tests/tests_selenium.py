@@ -153,6 +153,8 @@ class CategoryPage(SeleniumTestCase):
         self.children_category = self.testing_url(children_category.page.slug)
         self.deep_children_category = self.testing_url(
             category_with_product_less_then_LOAD_LIMIT.page.slug)
+        self.apply_btn = 'js-apply-filter'
+        self.filter_tag = 'label[for="tag-1"]'
 
     @property
     def load_more_button(self):
@@ -247,25 +249,24 @@ class CategoryPage(SeleniumTestCase):
                         products_view.get_attribute('class'))
 
     def test_default_sorting_is_by_cheapest(self):
-        """By default, sorting should be by cheapest goods."""
+        """Sorting should be by cheapest by default."""
         self.browser.get(self.children_category)
-        cheapest_sort_option = self.browser.find_element_by_xpath(
-            '//*[@id="category-right"]/'
-            'div[1]/div/div/div[2]/label/div/select/option[1]')
+        cheapest_sort_option = self.browser.find_element_by_css_selector(
+            '.selectpicker option:checked'
+        )
 
         self.assertTrue(cheapest_sort_option.is_selected())
 
     def test_change_sorting(self):
-        """We can change sorting option"""
+        """We able to change sorting option."""
         self.browser.get(self.children_category)
-        expensive_sort_option = self.browser.find_element_by_xpath(
-            '//*[@id="category-right"]/'
-            'div[1]/div/div/div[2]/label/div/select/option[3]'
-        )
+        expensive_sort_option = self.browser.find_elements_by_css_selector(
+            '.selectpicker option'
+        )[1]
+
         expensive_sort_option.click()
-        expensive_sort_option = self.browser.find_element_by_xpath(
-            '//*[@id="category-right"]/'
-            'div[1]/div/div/div[2]/label/div/select/option[3]'
+        expensive_sort_option = self.browser.find_element_by_css_selector(
+            '.selectpicker option:checked'
         )
 
         self.assertTrue(expensive_sort_option.is_selected())
@@ -289,7 +290,7 @@ class CategoryPage(SeleniumTestCase):
         self.browser.get(self.root_category)
         self.browser.refresh()
         wait()
-        self.load_more_button.click()  # Let's load another 30 products.
+        self.load_more_button.click()  # Let's load another PRODUCTS_TO_LOAD products.
         wait(15)
         recently_loaded_product = self.browser.find_elements_by_class_name(
             'js-product-to-cart')[self.PRODUCTS_TO_LOAD + 1]
@@ -299,6 +300,73 @@ class CategoryPage(SeleniumTestCase):
             'js-cart-is-empty')
 
         self.assertFalse(cart_is_empty.is_displayed())
+
+    def test_apply_filter_state(self):
+        """Apply filters btn should be disabled with no checked tags."""
+        self.browser.get(self.root_category)
+
+        attribute = self.browser.find_element_by_class_name(self.apply_btn).get_attribute('disabled')
+        self.assertTrue(attribute, True)
+
+        self.browser.find_element_by_css_selector(self.filter_tag).click()
+        attribute = self.browser.find_element_by_class_name(self.apply_btn).get_attribute('disabled')
+        self.assertEqual(attribute, None)
+
+    def test_filter_products_by_tag(self):
+        """Products should be filterable by tag."""
+        total_class = 'js-total-products'
+        self.browser.get(self.root_category)
+
+        before_products_count = self.browser.find_element_by_class_name(total_class).text
+        self.browser.find_element_by_css_selector(self.filter_tag).click()
+        self.browser.find_element_by_class_name(self.apply_btn).click()
+        after_products_count = self.browser.find_element_by_class_name(total_class).text
+        self.assertTrue(int(before_products_count) > int(after_products_count))
+
+        self.browser.find_element_by_class_name('js-clear-tag-filter').click()
+        after_products_count = self.browser.find_element_by_class_name(total_class).text
+        self.assertTrue(int(before_products_count) == int(after_products_count))
+
+    def test_filter_toggle_sections(self):
+        """Filter sections should be toggleable."""
+        self.browser.get(self.root_category)
+
+        section_toggler = self.browser.find_element_by_class_name('js-toggle-tag-section')
+        self.assertNotIn('opened', section_toggler.get_attribute('class'))
+
+        section_toggler.click()
+        self.assertIn('opened', section_toggler.get_attribute('class'))
+
+    def test_filter_and_sorting(self):
+        """Sorting should work after filtering."""
+        self.browser.get(self.root_category)
+
+        self.browser.find_element_by_css_selector(self.filter_tag).click()
+        self.browser.find_element_by_class_name(self.apply_btn).click()
+        product_card = self.browser.find_element_by_class_name('product-card')
+        old_price = product_card.find_element_by_class_name('price').text
+
+        expensive_sort_option = self.browser.find_elements_by_css_selector(
+            '.selectpicker option'
+        )[1]
+        expensive_sort_option.click()
+        product_card = self.browser.find_element_by_class_name('product-card')
+        new_price = product_card.find_element_by_class_name('price').text
+
+        self.assertTrue(old_price < new_price)
+
+    def test_load_more_after_filtering(self):
+        """Sorting should work after filtering."""
+        self.browser.get(self.root_category)
+
+        self.browser.find_element_by_css_selector(self.filter_tag).click()
+        self.browser.find_element_by_class_name(self.apply_btn).click()
+
+        self.load_more_button.click()
+        wait()
+        new_product_cards = len(self.browser.find_elements_by_class_name('product-card'))
+
+        self.assertEqual(new_product_cards, 50)
 
 
 class ProductPage(SeleniumTestCase):

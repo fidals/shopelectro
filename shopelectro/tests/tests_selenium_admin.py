@@ -265,7 +265,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue(len(test_search_value) > 0)
 
     def test_tree_redirect_to_entity_site_page(self):
-        """Test redirect to entity's site page by right bottom click at tree's item"""
+        """Test redirect to entity's site page from jsTree context menu."""
         self.open_js_tree_nodes()
         tree_item = (self.browser.find_element_by_id(self.root_category_id)
                      .find_element_by_tag_name('a'))
@@ -275,6 +275,7 @@ class AdminPage(SeleniumTestCase):
         context_click(self.browser, tree_item)
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[1].click()
         wait()
+        self.browser.switch_to.window(window_name=self.browser.window_handles[1])
         test_h1 = self.browser.find_element_by_tag_name('h1').text
 
         self.assertEqual(test_h1, category_h1)

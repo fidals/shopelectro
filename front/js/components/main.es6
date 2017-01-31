@@ -6,6 +6,7 @@
     $phoneInputs: $('.js-masked-phone'),
     $searchExampleText: $('#search-example-text'),
     $searchInput: $('.js-search-input'),
+    $menuItem: $('.js-menu-item'),
   };
 
   const init = () => {
@@ -32,6 +33,7 @@
     $(window).scroll(toggleToTopBtn);
     DOM.$searchExampleText.click(pasteSearchExampleText);
     DOM.$btnScrollTop.click(() => $('html, body').animate({ scrollTop: 0 }, 300));
+    DOM.$menuItem.hover(menuMouseOver, menuMouseLeave);
   }
 
   const enableScrollToTop = () => {
@@ -56,6 +58,25 @@
     const searchExampleText = DOM.$searchExampleText.text().trim();
 
     $(DOM.$searchInput).val(searchExampleText).focus();
+  }
+
+  /**
+   * Show\hide navigation list on hover with user friendly delay.
+   */
+  let menuDelay = false;
+  function menuMouseOver() {
+    const $this = $(this);
+    if (menuDelay) clearTimeout(menuDelay);
+
+    menuDelay = setTimeout(() => {
+      DOM.$menuItem.removeClass('hovered');
+      $this.addClass('hovered');
+    }, 200);
+  }
+
+  function menuMouseLeave() {
+    if (menuDelay) clearTimeout(menuDelay);
+    menuDelay = setTimeout(() => DOM.$menuItem.removeClass('hovered'), 200);
   }
 
   init();

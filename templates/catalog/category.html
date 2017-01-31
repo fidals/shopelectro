@@ -14,9 +14,15 @@
 
   <div class="row">
     <div class="col-xs-3 category-left-block">
-      {% include 'catalog/category_children.html' %}
-      {% if debug %}
-        {% include 'catalog/category_tags.html' %}
+      {% include 'catalog/category_children.html' with category=category tags=tags only %}
+
+      {% include 'catalog/category_tags.html' with group_tags_pairs=group_tags_pairs only %}
+
+      {% if group_tags_pairs %}
+        <div class="tags-btns">
+          <button class="btn btn-blue js-apply-filter" disabled>Применить</button>
+          <button class="btn btn-pink js-clear-tag-filter">Сбросить</button>
+        </div>
       {% endif %}
     </div>
 
@@ -30,19 +36,19 @@
       {% include 'catalog/category_navigation.html' %}
 
       <p class="products-showed">
-        Показано товаров <span class="font-bold js-products-showed-count">{{ product_image_pairs|length }}</span> из <span
-          class="font-bold js-total-products">{{ total_products }}</span>.
+        Показано товаров
+        <span class="font-bold js-products-showed-count"> {{ product_image_pairs|length }} </span>
+        из <span class="font-bold js-total-products">{{ total_products }}</span>.
       </p>
 
-      <div class="product-card-wrapper clearfix" id="products-wrapper" data-sorting-index=""
+      <div class="product-card-wrapper clearfix" id="products-wrapper"
            data-category-id="{{ category.id }}">
         {% include 'catalog/category_products.html' %}
       </div>
 
       <div class="text-center">
-        <button class="btn btn-blue btn-load-more" data-url="{{ category.url }}"
-                id="btn-load-products" type="button">Загрузить ещё
-        </button>
+        <button class="btn btn-blue btn-load-more" id="btn-load-products"
+                data-url="{{ category.url }}" type="button">Загрузить ещё</button>
         <p class="products-showed-text">
           Показано товаров
           <span class="js-products-showed-count">{{ product_image_pairs|length }}</span> из
