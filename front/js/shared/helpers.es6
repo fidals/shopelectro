@@ -40,7 +40,7 @@ const helpers = (() => {
    * @param {string} param
    */
   function removeQueryParam(param) {
-    const regex = new RegExp(`(\\?|&)${param}=(\\d|,)*`);
+    const regex = new RegExp(`\\?${param}=[^&#]*(?!.)|\\&${param}=[^&#]*|${param}=[^&#]*(?=.)\\&`);
     return window.location.href.replace(regex, '');
   }
 

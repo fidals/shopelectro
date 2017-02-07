@@ -115,8 +115,7 @@
 
   /**
    * Clear all checked filters.
-   * Reset tags query parameters.
-   * Reload page.
+   * Reload page without `tags` query parameters.
    */
   function clearFilters() {
     $.each(
