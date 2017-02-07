@@ -1,5 +1,5 @@
-{% load se_extras %}
 {% load pages_extras %}
+{% load se_extras %}
 {% load staticfiles %}
 {% roots as root_categories %}
 
@@ -9,8 +9,8 @@
     <div class="top-header">
       <div class="row">
         <div class="col-xs-3 header-logo-wrapper" itemscope itemtype="http://schema.org/Organization">
-          <a href="/" title="На главную" itemprop="logo">
-            <img class="header-logo" src="{% static 'images/common/logo.svg' %}" alt="ShopElectro">
+          <a class="header-logo" href="/" title="На главную" itemprop="logo">
+            {% include 'layout/logo.html' %}
           </a>
         </div>
 
@@ -115,7 +115,7 @@
       <div class="nav-category-wrapper">
         <ul class="nav-category list-unstyled clearfix">
           {% for root in root_categories %}
-            <li class="nav-category-item">
+            <li class="nav-category-item js-menu-item">
               <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
               {% if root.get_children %}
                 <ul class="list-white nav-menu-dropdown">
@@ -131,7 +131,7 @@
             </li>
           {% endfor %}
 
-          <li class="nav-category-item">
+          <li class="nav-category-item js-menu-item">
             <a class="nav-category-link" href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
           </li>
         </ul>

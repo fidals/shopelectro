@@ -1,12 +1,9 @@
-/**
- * Category Page module defines logic, operations and DOM for CategoryPage.
- */
 {
   const DOM = {
-    $loadedProducts: $('.js-products-showed-count'),
+    $productsOnPage: $('.js-products-showed-count'),
     $productsList: $('#products-wrapper'),
     $viewType: $('#category-right'),
-    $loadMore: $('#btn-load-products'),
+    $loadMoreBtn: $('#btn-load-products'),
     addToCart: '.js-product-to-cart',
     tileView: {
       $: $('.js-icon-mode-tile'),
@@ -20,13 +17,13 @@
   };
 
   const config = {
-    productsToFetch: 48,
+    productsToLoad: 48,
     totalProductsCount: parseInt($('.js-total-products').first().text(), 10),
   };
 
   const init = () => {
     setUpListeners();
-    updateButtonState();
+    updateLoadMoreBtnState();
   };
 
   /**
@@ -35,27 +32,41 @@
   function setUpListeners() {
     mediator.subscribe('onViewTypeChange', updateViewType, server.sendViewType);
     mediator.subscribe('onProductsLoad', updateProductsList, updateLoadedCount,
-      updateButtonState, configs.initTouchspin);
+      updateLoadMoreBtnState, configs.initTouchspin);
     DOM.tileView.$.click(() => mediator.publish('onViewTypeChange', DOM.tileView.mode));
     DOM.listView.$.click(() => mediator.publish('onViewTypeChange', DOM.listView.mode));
 
-    DOM.$loadMore.click(loadProducts);
-    DOM.$sorting.change(changeSort);
+    DOM.$loadMoreBtn.click(loadProducts);
+    DOM.$sorting.change(reloadPageWithSorting);
     $(document).on('click', DOM.addToCart, buyProduct);
   }
 
+  const getSelectedSortingOption = () => DOM.$sorting.find(':selected');
+
   /**
-   * Change sorting option and re-renders the whole screen.
+   * Get number of already loaded products
+   *
+   * @returns {int} - number of products which are presented in DOM
    */
-  function changeSort() {
-    location.href = sortingOption().attr('data-path');
+  const productsOnPage = () => parseInt(DOM.$productsOnPage.first().text(), 10);
+
+  /**
+   * Number of products remain un-loaded from server.
+   * Formula:
+   * productsLeft = total products on server - already loaded products on front
+   *
+   * @returns {Number} - number of products left to load
+   */
+  const productsLeft = () => parseInt(config.totalProductsCount - productsOnPage(), 10);
+
+  function reloadPageWithSorting() {
+    location.href = getSelectedSortingOption().attr('data-path');
   }
 
   /**
-   * Update Products List DOM via appending html-list of loaded products
-   * to wrapper.
+   * Append loaded Products from server in DOM.
    *
-   * @param {string} products - HTML string of fetched product's list
+   * @param {string} products
    */
   function updateProductsList(_, products) {
     DOM.$productsList.append(products);
@@ -63,29 +74,27 @@
 
   /**
    * Update loaded products counter by a simple logic:
-   * 1) if we have less products left than we can fetch at a time, it means we have loaded them all,
+   * 1) if we have less products left than we can load at a time, it means we have loaded them all,
    *    so we should set loaded count a value of total products
-   * 2) otherwise, we simply add PRODUCTS_TO_FETCH to counter.
+   * 2) otherwise, we simply add `config.productsToLoad` to counter.
    */
   function updateLoadedCount() {
-    DOM.$loadedProducts.text(
-      loadedProductsCount() + Math.min(productsLeft(), config.productsToFetch)
+    DOM.$productsOnPage.text(
+      productsOnPage() + Math.min(productsLeft(), config.productsToLoad),
     );
   }
 
   /**
-   * Add 'hidden' class to button if there are no more products to load.
+   * Add 'hidden' class to button if there are no more Products to load.
    */
-  function updateButtonState() {
-    if (productsLeft() === 0) {
-      DOM.$loadMore.addClass('hidden');
-    }
+  function updateLoadMoreBtnState() {
+    if (productsLeft() !== 0) return;
+    DOM.$loadMoreBtn.addClass('hidden');
   }
 
   /**
-   * Update view of a product's list.
-   *
-   * Removes old classes and adds new one depends on what view type was selected.
+   * Update Product list view.
+   * Toggles classes depends on what view type was selected.
    * @param {string} viewType: list|tile
    */
   function updateViewType(_, viewType) {
@@ -103,40 +112,25 @@
   }
 
   /**
-   * Return selected sorting option.
-   */
-  const sortingOption = () => DOM.$sorting.find(':selected');
-
-  /**
-   * Get number of already loaded products
-   *
-   * @returns {int} - number of products which are loaded and presented in DOM
-   */
-  const loadedProductsCount = () => parseInt(DOM.$loadedProducts.first().text(), 10);
-
-  /**
-   * Number of products remained un-fetched from back-end.
-   * Calculates due to a simple formula:
-   * left products = total products - already loaded products
-   *
-   * @returns {Number} - number of products left to fetch
-   */
-  const productsLeft = () => parseInt(config.totalProductsCount - loadedProductsCount(), 10);
-
-  /**
-   * Load products from back-end using promise-like fetch object fetchProducts.
-   * After products successfully loaded - publishes 'onProductLoad' event.
+   * Load Products from server.
+   * Publish 'onProductLoad' event on success.
    */
   function loadProducts() {
-    const categoryUrl = DOM.$loadMore.attr('data-url');
-    const offset = loadedProductsCount();
-    const sorting = sortingOption().val();
-    const url = `${categoryUrl}load-more/${offset}/${sorting}/`;
+    const path = DOM.$loadMoreBtn.data('url');
+    const offset = productsOnPage();
+    const sorting = getSelectedSortingOption().val();
+    const filterParams = helpers.getUrlParam('tags');
+    let url = `${path}load-more/${offset}/${sorting}/`;
 
-    server.fetchProducts(url)
+    if (filterParams) url += `?tags=${filterParams}`;
+    server.loadProducts(url)
       .then(products => mediator.publish('onProductsLoad', products));
   }
 
+  /**
+   * Send Product's id and quantity on server.
+   * Publish 'onCartUpdate' event on success.
+   */
   function buyProduct(event) {
     const buyInfo = () => {
       const product = $(event.target);
@@ -155,4 +149,4 @@
   }
 
   init();
-};
+}

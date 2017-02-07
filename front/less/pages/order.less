@@ -32,21 +32,18 @@
       float: right;
       margin: 10px 0 0;
       width: 280px;
+    }
 
-      .btn {
-        min-width: 220px;
-      }
+    .btn {
+      min-width: 220px;
     }
   }
 
   &-contain {
     .stock {
-      float: left;
-      margin: 7px 9px 0 0;
-    }
-
-    .input-group {
-      overflow: hidden;
+      position: absolute;
+      top: 50%;
+      transform: translate(0, -50%);
     }
   }
 
@@ -59,11 +56,10 @@
     }
 
     .form-control {
-      border: 1px solid @c-table-header-bg;
       width: 220px;
 
       &:focus {
-        border-color: darken(@c-table-header-bg, 10%);
+        border-color: darken(@input-border, 5%);
       }
     }
 
@@ -78,7 +74,7 @@
       display: block;
       margin-bottom: 10px;
 
-      &:last_child(2n) {
+      &:last-child(2n) {
         margin-bottom: 0;
       }
     }
@@ -88,18 +84,9 @@
     }
   }
 
-  &-contain input[type=number] {
-    appearance: none;
-    background-color: transparent;
-    border: 1px solid @c-btn-increase;
-    border-radius: 3px !important; // Need to override bootstrap rule;
-    font-size: @f-size-base + 2;
-    font-family: @proxima;
-    height: 41px;
-    outline: none;
-    padding: 0;
-    text-align: center;
-    width: 67px;
+  &-contain .input-group {
+    left: 23px;
+    width: 84px;
   }
 }
 
@@ -129,25 +116,13 @@
     padding: 10px !important;
   }
 
-  .prod-count {
-    height: auto;
-    width: 50px;
-  }
-
-  td.photo
-  td.price,
-  td.order-sum,
-  td.order-count {
-    text-align: center;
-  }
-
-  td.order-total {
-    text-align: right;
-  }
-
   .btn-cart {
     cursor: pointer;
   }
+}
+
+.order-count {
+  width: 13%;
 }
 
 div.info {
@@ -185,5 +160,14 @@ div.info {
       padding: 20px 0 0 10px;
       width: 616px;
     }
+  }
+}
+
+.page-info-message {
+  font-size: @f-size-base + 10;
+
+  a {
+    color: @c-btn-price-bg-active;
+    text-decoration: underline;
   }
 }

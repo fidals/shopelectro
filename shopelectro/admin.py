@@ -67,8 +67,10 @@ class ProductInline(inlines.ProductInline):
         'fields': (
             ('name', 'id'),
             ('category', 'correct_category_id'),
-            ('price', 'in_stock', 'is_popular'),
-            ('purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large'),
+            ('price', 'in_stock'),
+            'is_popular',
+            ('purchase_price', 'wholesale_small'),
+            ('wholesale_medium', 'wholesale_large'),
             'tags',
         )
     }),)
@@ -86,7 +88,6 @@ class CategoryPageAdmin(models.CategoryPageAdmin):
                 .get_queryset(request)
                 .select_related('shopelectro_category')
         )
-
 
 
 class ProductPageAdmin(models.ProductPageAdmin):
@@ -147,7 +148,7 @@ class TagGroupAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
 
     search_fields = ['id', 'name']
-    list_display = ['id', 'name', 'position','custom_group']
+    list_display = ['id', 'name', 'position', 'custom_group']
     list_display_links = ['name']
 
     def get_queryset(self, request):

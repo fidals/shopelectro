@@ -9,13 +9,14 @@
 {% endblock %}
 
 {% block content %}
-  <div class="article-content">
+  {% breadcrumbs page %}
+
+  <div class="row">
     <div class="p-article-sidebar col-xs-3">
       {% accordion %}
     </div>
 
     <div class="col-xs-9 right-col">
-      {% breadcrumbs page %}
       <h1>{{ page.h1 }}</h1>
       {% if page.type != 'navigation' and page.date_published %}
         <p class="date-pub-article">
@@ -33,7 +34,6 @@
     </div>
   </div>
 {% endblock %}
-
 
 {% block jslinks %}
   {{ block.super }}

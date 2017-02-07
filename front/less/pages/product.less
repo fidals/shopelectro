@@ -18,8 +18,8 @@
   }
 
   &-article {
-    border-radius: 3px;
     background: @c-grey-text-main;
+    border-radius: 3px;
     color: @c-white;
     display: inline-block;
     font-size: @f-size-base;
@@ -27,7 +27,7 @@
     font-family: @font-family-base;
     padding: 4px 10px 3px;
     position: relative;
-    top: 2px;
+    top: 3px;
     vertical-align: top;
   }
 
@@ -166,13 +166,9 @@
     z-index: 0;
 
     .input-switcher {
-      #product-price& {
-        .input-number;
-        height: 41px;
-        margin-top: 0;
+      div& {
         margin-left: 0;
-        padding: 6px 0 6px 6px;
-        width: 100%;
+        padding: 0;
       }
     }
 
@@ -233,7 +229,11 @@
       height: 43px;
       float: left;
       padding: 0 0 0 18px;
-      width: 102px;
+      width: 101px;
+
+      .input-group {
+        width: 90px;
+      }
     }
   }
 
@@ -400,33 +400,6 @@
     color: @c-text-muted;
     font-size: @f-size-base - 2;
     padding: 20px 20px 0;
-  }
-}
-
-.bootstrap-touchspin-up,
-.bootstrap-touchspin-down {
-  height: 21px;
-  background-color: @c-btn-increase;
-  border: none;
-  color: @c-white;
-}
-
-.bootstrap-touchspin-up {
-  height: 22px;
-
-  &:hover {
-    background-color: @c-product-pop-label;
-    color: @c-white;
-  }
-}
-
-.bootstrap-touchspin-down {
-  border-top: 1px solid @c-white;
-
-  &:hover {
-    background-color: @c-btn-decrease-active;
-    border-color: @c-white;
-    color: @c-white;
   }
 }
 
@@ -621,7 +594,7 @@
         padding: 0 0 0 20px;
 
         li {
-          padding: 5px 0;
+          padding: 0 0 10px;
         }
       }
     }
@@ -647,15 +620,13 @@
 
 .btn-to-basket {
   margin: 0 0 20px;
-  padding: 4px 40px;
   width: 208px;
 }
 
 .btn-order {
-  .btn-grey;
   font-size: @f-size-base + 1;
   padding: 6px 0;
-  width: 143px;
+  width: 142px;
 }
 
 .modal-delivery-link {

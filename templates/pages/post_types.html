@@ -13,17 +13,18 @@
     <div class="p-article-sidebar col-xs-3">
       {% include 'pages/accordion.html' %}
     </div>
+
     <div class="col-xs-9 right-col">
       <h1>Статьи Shopelectro</h1>
-      <p>
-      <ul>
-        {% if not post_types %}There is no posts yet{% endif %}
+      <div>
+        <ul>
+          {% if not post_types %}There is no posts yet{% endif %}
 
-        {% for item in post_types %}
-          <li><a href="{{ item.slug }}">{{ item.name }}</a></li>
-        {% endfor %}
-      </ul>
-      </p>
+          {% for item in post_types %}
+            <li><a href="{{ item.slug }}">{{ item.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
 {% endblock %}

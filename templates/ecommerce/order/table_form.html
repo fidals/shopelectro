@@ -38,7 +38,7 @@
         <td>
           <a class="js-product-link" href="{{ position.url }}">{{ position.name }}</a>
         </td>
-        <td class="count">
+        <td class="order-count">
           <div class="stock">
             {% if position.in_stock > 0 %}
               <i class="fa fa-circle in-stock" title="В наличии"></i>
@@ -46,25 +46,26 @@
               <i class="fa fa-circle out-stock" title="Под заказ"></i>
             {% endif %}
           </div>
-          <input class="js-prod-count prod-count js-touchspin" value="{{ position.quantity }}" type="number" name="prod-count"
-                 productId="{{ id }}">
+          <input class="prod-count input-number js-prod-count js-touchspin"
+                 value="{{ position.quantity }}" type="number"
+                 name="prod-count" productId="{{ id }}">
         </td>
-        <td class="price js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб.</td>
-        <td class="product-delete">
+        <td class="text-center js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб.</td>
+        <td class="text-center">
           <img class="btn-cart js-remove" productId="{{ id }}" src="{% static 'images/btn-close-icon.png' %}"
                alt="Убрать из корзины" title="Убрать из заказа">
         </td>
       </tr>
     {% endfor %}
     <tr>
-      <td class="order-total" colspan="3">
-        <b>Итого:</b>
+      <td class="text-right" colspan="3">
+        <strong>Итого:</strong>
       </td>
-      <td class="order-count">
-        <b id="cart-page-prods-count">{{ cart.total_quantity }} шт.</b>
+      <td class="text-center">
+        <strong id="cart-page-prods-count">{{ cart.total_quantity }} шт.</strong>
       </td>
-      <td class="order-sum" colspan="2">
-        <b id="cart-page-sum">{{ cart.total_price|humanize_price }} руб.</b>
+      <td class="text-center" colspan="2">
+        <strong id="cart-page-sum">{{ cart.total_price|humanize_price }} руб.</strong>
       </td>
     </tr>
   </table>
@@ -137,8 +138,9 @@
             </tr>
             <tr>
               <td class="form-order form-submit-wrapper text-right">
-                <button id="submit-order" class="btn btn-pink"
-                        type="submit">Продолжить</button>
+                <button id="submit-order" class="btn btn-pink" type="submit">
+                  Продолжить
+                </button>
               </td>
             </tr>
           </table>

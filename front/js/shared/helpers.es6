@@ -27,9 +27,28 @@ const helpers = (() => {
       .val(loadingText);
   }
 
+  function getUrlParam(name) {
+    const paramName = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
+    const results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }
+
+  /**
+   * Remove only given url query param.
+   *
+   * @param {string} param
+   */
+  function removeQueryParam(param) {
+    const regex = new RegExp(`\\?${param}=[^&#]*(?!.)|\\&${param}=[^&#]*|${param}=[^&#]*(?=.)\\&`);
+    return window.location.href.replace(regex, '');
+  }
+
   return {
-    setDisabledState,
+    getUrlParam,
     isPhoneValid,
     isEmailValid,
+    removeQueryParam,
+    setDisabledState,
   };
 })();

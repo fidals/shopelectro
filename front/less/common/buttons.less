@@ -1,0 +1,148 @@
+.btn-grey {
+  .font-anti;
+  .transition;
+  background: @c-grey-text-main;
+  border: 1px solid @c-grey-text-main;
+  border-radius: 3px;
+  color: @c-white;
+  font-size: @f-size-base;
+  letter-spacing: -0.015em;
+  padding: 10px 28px;
+  text-decoration: none;
+
+  &:hover {
+    background: @c-btn-remove-hovered;
+    border-color: @c-btn-remove-hovered;
+    color: @c-white;
+  }
+
+  &:focus,
+  &:active,
+  &:active:focus {
+    box-shadow: none;
+    background: @c-product-pop-label;
+    border-color: @c-product-pop-label;
+    color: @c-white;
+    outline: none;
+  }
+}
+
+.btn-wrapper-center {
+  text-align: center;
+}
+
+.btn-scroll-to-top {
+  .font-anti;
+  background: @c-white;
+  box-shadow: 0 0 0 2px @c-white;
+  border-radius: 50%;
+  bottom: 130px;
+  color: @c-btn-remove-active;
+  cursor: pointer;
+  height: 42px;
+  font-size: @f-size-base + 34;
+  opacity: 0;
+  position: fixed;
+  right: 5px;
+  transition: all 0.3s ease;
+  z-index: 10;
+  width: 43px;
+
+  &:hover,
+  &:focus {
+    color: @c-tooltip-hovered;
+  }
+
+  &.active {
+    opacity: 1;
+  }
+
+  .fa {
+    position: relative;
+    top: -4px;
+  }
+}
+
+.btn-blue {
+  .font-anti;
+  .transition;
+  background: @c-btn-remove-active;
+  border: 1px solid @c-btn-remove-active;
+  border-radius: 3px;
+  color: @c-white;
+  font-size: @f-size-base + 4;
+  outline: none;
+  padding: 6px 20px;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    background: @c-tooltip-hovered;
+    border-color: @c-tooltip-hovered;
+    color: @c-white;
+  }
+
+  &:active {
+    background: @c-white;
+    border-color: @c-btn-remove-active;
+    box-shadow: none;
+    color: @c-btn-remove-active;
+  }
+
+  &:disabled,
+  &:disabled:hover {
+    background: @c-btn-disabled;
+    border-color: @c-btn-disabled;
+    color: @c-white;
+  }
+}
+
+.btn-feedback {
+  border-bottom: 1px dotted;
+  cursor: pointer;
+
+  &:hover,
+  &:active {
+    border-color: transparent;
+  }
+}
+
+.btn-pink {
+  .font-anti;
+  background-color: @c-btn-red;
+  border: 1px solid @c-btn-red;
+  border-radius: 3px;
+  color: @c-white;
+  font-size: @f-size-base + 4;
+  font-weight: 400;
+  min-height: 37px;
+  padding: 4px 12px 5px;
+
+  &:hover {
+    background: @c-btn-red-hover;
+    border-color: @c-btn-red-hover;
+    color: @c-white;
+  }
+
+  &:focus,
+  &:active,
+  &:active:focus {
+    box-shadow: none;
+    background: @c-white;
+    border-color: @c-btn-red-focused;
+    color: @c-text-red;
+    outline: none;
+    text-shadow: none;
+  }
+
+  &.btn-to-order {
+    margin-bottom: 20px;
+  }
+}
+
+.btn-search {
+  height: 32px;
+  font-size: @f-size-base - 2;
+  padding: 0;
+  width: 36px;
+}

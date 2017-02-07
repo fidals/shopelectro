@@ -1,48 +1,5 @@
 @import "../vendors/bootstrap-select/*";
 
-.content {
-  .dropdown-toggle {
-    .text-overflow;
-    appearance: none;
-    box-shadow: none;
-    border: 1px solid @c-black-lightest;
-    border-radius: 20px;
-    line-height: 1;
-    height: 30px;
-    padding: 0 7px;
-    text-indent: -13px;
-  }
-
-  .select {
-    position: relative;
-
-    &:after {
-      .rotate(0);
-      color: @gray-light;
-      content: "\f078";
-      font-family: "FontAwesome";
-      font-size: @font-size-smallest;
-      padding: 0 0 2px;
-      pointer-events: none;
-      position: absolute;
-      right: 8px;
-      top: 10px;
-      z-index: 2;
-    }
-
-    &:before {
-      content: "";
-      display: block;
-      font-size: @font-size-smallest;
-      height: 20px;
-      pointer-events: none;
-      position: absolute;
-      right: 15px;
-      width: 20px;
-    }
-  }
-}
-
 .category {
   &-image-wrapper {
     background-color: @c-white;
@@ -62,7 +19,7 @@
   &-title {
     font-size: @f-size-base + 10;
     font-weight: 600;
-    margin: 0;
+    margin: 0 0 10px;
   }
 }
 
@@ -73,6 +30,10 @@
 }
 
 .subcategory-list {
+  background: @c-blue-table-fill;
+  padding: 15px;
+  margin: 0 0 30px;
+
   &-item {
     float: none;
     display: block;
@@ -103,10 +64,6 @@
       border-bottom: 1px solid transparent;
     }
   }
-}
-
-.topline-content {
-  white-space: nowrap;
 }
 
 .category-text {
@@ -163,15 +120,16 @@
     padding: 8px 7px 7px;
   }
 
-  .sort,
-  .show-text,
-  .sort-label {
-    display: inline;
-  }
-
   .sort {
+    display: inline;
     margin: 0 2px 0 0;
     width: 190px;
+
+    &-label {
+      margin: 0 5px 0 0;
+      position: relative;
+      top: 1px;
+    }
   }
 
   .filter-option {
@@ -209,10 +167,11 @@
   background-color: @c-middle-head-bg;
   border-radius: 3px;
   clear: both;
-  height: 47px;
+  height: 50px;
   margin-bottom: 13px;
   overflow: visible;
-  padding: 8px 7px 7px;
+  padding: 8px 16px;
+  white-space: nowrap;
   z-index: 1;
 
   &:last-child {
@@ -223,7 +182,6 @@
 }
 
 .product-card {
-  display: block;
   height: auto;
   margin: 0 10px 22px 0;
   position: relative;
@@ -247,6 +205,10 @@
     position: relative;
     z-index: 2;
     padding: 10px;
+
+    .input-group {
+      width: 90px;
+    }
   }
 
   &-desc {
@@ -285,15 +247,6 @@
     text-decoration: none;
   }
 
-  .bootstrap-touchspin {
-    display: block;
-  }
-
-  .bootstrap-touchspin-up,
-  .bootstrap-touchspin-down {
-    height: 20px;
-  }
-
   .bootstrap-touchspin-down {
     &:hover {
       background-color: @c-btn-decrease-active;
@@ -307,49 +260,6 @@
       background-color: @c-btn-increase-active;
       border-color: @c-btn-increase-active;
     }
-
-    i {
-      margin-top: -1px;
-    }
-  }
-
-  .input-group-btn-vertical {
-    display: block;
-    position: absolute;
-    left: 51px;
-    z-index: 999;
-  }
-
-  .pkg-toggle {
-    padding-left: 8px;
-
-    div {
-      position: absolute;
-
-      &:first-child {
-        top: -2px;
-      }
-
-      &:last-child {
-        top: 18px;
-      }
-    }
-  }
-}
-
-#category-right {
-  input[type=number] {
-    appearance: none;
-    background-color: transparent;
-    border: 1px solid @c-btn-increase;
-    border-radius: 3px;
-    font-size: @f-size-base + 2;
-    font-family: @proxima;
-    height: 38px;
-    outline: none;
-    padding: 0;
-    text-align: center;
-    width: 70px;
   }
 }
 
@@ -365,9 +275,8 @@
 
 .display-mode {
   float: right;
-  left: -10px;
   position: relative;
-  top: 8px;
+  top: 9px;
 
   a {
     text-decoration: none;
@@ -534,10 +443,9 @@
 
 .btn {
   &-category-buy {
-    height: 38px;
-    font-size: @f-size-base + 2;
+    height: 44px;
     float: right;
-    line-height: 1.1;
+    font-size: @f-size-base + 3;
   }
 
   &-load-more {
@@ -546,19 +454,92 @@
 }
 
 // ================================================================
+// TAGS
+// ================================================================
+.tags-list {
+  background: @c-blue-table-fill;
+  margin: 0 0 10px;
+  padding: 15px 15px 5px;
+
+  &-title {
+    cursor: pointer;
+    font-weight: 600;
+    margin: 0;
+    padding: 0 0 7px;
+  }
+
+  .fa {
+    .transition;
+    float: right;
+    position: relative;
+    top: 0;
+  }
+
+  &-title.opened .fa {
+    transform: rotate(180deg);
+  }
+}
+
+.tags-btns {
+  .btn-blue,
+  .btn-pink {
+    display: inline-block;
+    font-size: @f-size-base + 1;
+    line-height: inherit;
+    min-height: inherit;
+    padding: 6px 13px;
+    vertical-align: top;
+  }
+
+  .btn-pink {
+    float: right;
+  }
+}
+
+// ================================================================
 // FOR BOOTSTRAP-SELECT
 // ================================================================
 .bootstrap-select {
-  width: 208px !important;
+  .select & {
+    position: relative;
+    width: 240px !important; // to override lib styles
+
+    &:after {
+      color: @gray-light;
+      content: "\f078";
+      font-family: @font-awesome;
+      font-size: @font-size-smallest;
+      padding: 0 0 2px;
+      pointer-events: none;
+      position: absolute;
+      right: 11px;
+      top: 11px;
+      z-index: 2;
+    }
+
+    &:before {
+      content: "";
+      display: block;
+      font-size: @font-size-smallest;
+      height: 20px;
+      pointer-events: none;
+      position: absolute;
+      right: 15px;
+      width: 20px;
+    }
+  }
 
   .btn {
-    box-shadow: none;
+    .text-overflow;
+    border-color: @c-black-lightest;
     border-radius: 20px;
-    background-color: @c-white;
+    height: 34px;
+    padding: 0 7px;
     outline: none;
+    text-shadow: none;
 
     &:focus {
-      outline: none;
+      outline: none !important;
     }
   }
 
@@ -570,7 +551,7 @@
     outline: none !important;
 
     &:hover {
-      background-color: @c-middle-head-bg !important;
+      background-color: @c-main-stuff-title-bg !important;
     }
   }
 

@@ -1,7 +1,16 @@
 {% for group, tags in group_tags_pairs %}
-  <ul>{{ group.name }}
-    {% for tag in tags %}
-      <li data-tag-id="{{ tag.id }}">{{ tag.name }}</li>
-    {% endfor %}
-  </ul>
+  <div class="tags-list custom-checkbox-radio">
+    <p class="tags-list-title js-toggle-tag-group" data-tag-group="{{ group.id }}">
+      {{ group.name }} <i class="fa fa-chevron-down"></i>
+    </p>
+
+    <div class="tags-inputs js-tags-inputs">
+      {% for tag in tags %}
+        <p class="checkbox">
+          <input type="checkbox" id="tag-{{ tag.id }}" data-tag-id="{{ tag.id }}">
+          <label for="tag-{{ tag.id }}">{{ tag.name }}</label>
+        </p>
+      {% endfor %}
+    </div>
+  </div>
 {% endfor %}
