@@ -56,7 +56,7 @@ class CatalogPage(TestCase):
 
         products_count = len(list(filter(
             lambda x: x.category.is_descendant_of(self.category),
-            Product.objects.filter(Q(tags=first_tag) & Q(tags=last_tag))
+            Product.objects.filter(Q(tags=first_tag) | Q(tags=last_tag))
         )))
 
         self.assertContains(response, products_count)

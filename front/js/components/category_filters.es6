@@ -2,22 +2,22 @@
   const DOM = {
     $loadMoreBtn: $('#btn-load-products'),
     $filtersApplyBtn: $('.js-apply-filter'),
-    $filterTitle: $('.js-toggle-tag-section'),
+    $filterTitle: $('.js-toggle-tag-group'),
     $filtersWrapper: $('.js-tags-inputs'),
     $filtersClearBtn: $('.js-clear-tag-filter'),
   };
 
-  const filtersStorageKey = 'hiddenFilters';
+  const filtersStorageKey = 'hiddenFilterGroupIds';
 
   const config = {
-    hiddenFilters: getHiddenFilters(),
+    hiddenFilterGroupIds: getHiddenFilterGroupIds(),
     filterGroup: 'data-tag-group',
   };
 
   const init = () => {
     setUpListeners();
     setUpFilters();
-    setUpFiltersSections();
+    setUpFilterGroups();
   };
 
   /**
@@ -25,31 +25,24 @@
    */
   function setUpListeners() {
     DOM.$filtersApplyBtn.click(loadFilteredProducts);
-    DOM.$filterTitle.click(toggleFilterSection);
+    DOM.$filterTitle.click(toggleFilterGroup);
     DOM.$filtersClearBtn.click(clearFilters);
     DOM.$filtersWrapper.on('click', 'input', toggleApplyBtnState);
   }
 
-  function getHiddenFilters() {
+  function getHiddenFilterGroupIds() {
     const str = localStorage.getItem(filtersStorageKey);
     return str ? str.split(',') : [];
   }
-
-  const getFilterQueryParam = () => window.location.search.split('tags=')[1];
 
   /**
    * Reloads current page with `tags` query parameter.
    */
   function loadFilteredProducts() {
-    const tags = [];
-
-    DOM.$filtersWrapper.map((_, item) => {
-      const $checkedItems = $(item).find('input:checked');
-
-      $checkedItems.map((_, checkedItem) => {
-        tags.push($(checkedItem).data('tag-id'));
-      });
-    });
+    const $tagsObject = DOM.$filtersWrapper
+      .find('input:checked')
+      .map((_, checkedItem) => $(checkedItem).data('tag-id'));
+    const tags = Array.from($tagsObject);
 
     window.location.href = `${DOM.$loadMoreBtn.data('url')}?tags=${tags}`;
   }
@@ -59,41 +52,41 @@
    * checked\unchecked checkboxes.
    */
   function toggleApplyBtnState() {
-    const inputsArr = Array.from(DOM.$filtersWrapper.find('input'));
-    const isSomeChecked = inputsArr.some(item => item.checked === true);
+    const checkboxesArr = Array.from(DOM.$filtersWrapper.find('input'));
+    const isSomeChecked = checkboxesArr.some(item => item.checked === true);
 
     DOM.$filtersApplyBtn.attr('disabled', !isSomeChecked);
   }
 
   /**
-   * Store filter sections state set by user.
+   * Store filter groups state set by user.
    */
-  function storeFilterSectionState(index) {
-    if (config.hiddenFilters.includes(index)) {
-      const removeIndex = config.hiddenFilters.indexOf(index);
-      config.hiddenFilters.splice(removeIndex, 1);
+  function storeFilterGroupState(index) {
+    if (config.hiddenFilterGroupIds.includes(index)) {
+      const removeIndex = config.hiddenFilterGroupIds.indexOf(index);
+      config.hiddenFilterGroupIds.splice(removeIndex, 1);
     } else {
-      config.hiddenFilters.push(index);
+      config.hiddenFilterGroupIds.push(index);
     }
 
-    localStorage.setItem(filtersStorageKey, config.hiddenFilters);
+    localStorage.setItem(filtersStorageKey, config.hiddenFilterGroupIds);
   }
 
   /**
-   * Toggle filter sections.
+   * Toggle filter groups.
    */
-  function toggleFilterSection() {
-    const $this = $(this);
+  function toggleFilterGroup() {
+    const $group = $(this);
     const targetClass = 'opened';
 
-    if ($this.hasClass(targetClass)) {
-      $this.removeClass(targetClass);
+    if ($group.hasClass(targetClass)) {
+      $group.removeClass(targetClass);
     } else {
-      $this.addClass(targetClass);
+      $group.addClass(targetClass);
     }
 
-    $this.next().slideToggle();
-    storeFilterSectionState($this.attr(`${config.filterGroup}`));
+    $group.next().slideToggle();
+    storeFilterGroupState($group.attr(`${config.filterGroup}`));
   }
 
   /**
@@ -103,25 +96,27 @@
     if (!window.location.search) return;
 
     // /?tags=3,4 => ['3', '4']
-    const activeFilterIds = getFilterQueryParam().split(',');
+    const activeFilterIds = helpers.getUrlParam('tags').split(',');
 
     activeFilterIds.map(item => $(`#tag-${item}`).attr('checked', true));
     toggleApplyBtnState();
   }
 
   /**
-   * Set up filter sections toggle state based on localStorage.
+   * Set up filter group toggle state based on localStorage.
    */
-  function setUpFiltersSections() {
-    if (!config.hiddenFilters.length) return;
+  function setUpFilterGroups() {
+    if (!config.hiddenFilterGroupIds.length) return;
 
-    config.hiddenFilters.forEach((index) => {
+    config.hiddenFilterGroupIds.forEach((index) => {
       DOM.$filterTitle.filter(`[${config.filterGroup}=${index}]`).next().slideUp();
     });
   }
 
   /**
    * Clear all checked filters.
+   * Reset tags query parameters.
+   * Reload page.
    */
   function clearFilters() {
     $.each(
@@ -129,7 +124,7 @@
       (_, input) => $(input).attr('checked', false),
     );
 
-    window.location.href = DOM.$loadMoreBtn.data('url');
+    window.location.href = helpers.removeQueryParam('tags');
   }
 
   init();

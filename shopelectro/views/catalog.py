@@ -144,14 +144,14 @@ def load_more(request, category_slug, offset=0, sorting=0):
     :param offset: used for slicing QuerySet.
     :return:
     """
-    category_page_model = get_object_or_404(CategoryPageModel, slug=category_slug).model
+    category = get_object_or_404(CategoryPageModel, slug=category_slug).model
     sorting_option = config.category_sorting(int(sorting))
 
     products = (
         Product.objects
             .prefetch_related('page__images')
             .select_related('page')
-            .get_by_category(category_page_model, ordering=(sorting_option,))
+            .get_by_category(category, ordering=(sorting_option,))
     )
 
     tags = request.GET.get('tags')

@@ -59,8 +59,6 @@
    */
   const productsLeft = () => parseInt(config.totalProductsCount - productsOnPage(), 10);
 
-  const getFilterQueryParam = () => window.location.search.split('tags=')[1];
-
   function reloadPageWithSorting() {
     location.href = getSelectedSortingOption().attr('data-path');
   }
@@ -121,7 +119,7 @@
     const path = DOM.$loadMoreBtn.data('url');
     const offset = productsOnPage();
     const sorting = getSelectedSortingOption().val();
-    const filterParams = getFilterQueryParam();
+    const filterParams = helpers.getUrlParam('tags');
     let url = `${path}load-more/${offset}/${sorting}/`;
 
     if (filterParams) url += `?tags=${filterParams}`;

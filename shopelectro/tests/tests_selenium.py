@@ -331,7 +331,7 @@ class CategoryPage(SeleniumTestCase):
         """Filter sections should be toggleable."""
         self.browser.get(self.root_category)
 
-        section_toggler = self.browser.find_element_by_class_name('js-toggle-tag-section')
+        section_toggler = self.browser.find_element_by_class_name('js-toggle-tag-group')
         self.assertNotIn('opened', section_toggler.get_attribute('class'))
 
         section_toggler.click()

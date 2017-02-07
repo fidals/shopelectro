@@ -63,20 +63,20 @@
   /**
    * Show\hide navigation list on hover with user friendly delay.
    */
-  let menuDelay = false;
+  let menuDelayTimeoutId;
   function menuMouseOver() {
     const $this = $(this);
-    if (menuDelay) clearTimeout(menuDelay);
+    if (menuDelayTimeoutId) clearTimeout(menuDelayTimeoutId);
 
-    menuDelay = setTimeout(() => {
+    menuDelayTimeoutId = setTimeout(() => {
       DOM.$menuItem.removeClass('hovered');
       $this.addClass('hovered');
     }, 200);
   }
 
   function menuMouseLeave() {
-    if (menuDelay) clearTimeout(menuDelay);
-    menuDelay = setTimeout(() => DOM.$menuItem.removeClass('hovered'), 200);
+    if (menuDelayTimeoutId) clearTimeout(menuDelayTimeoutId);
+    menuDelayTimeoutId = setTimeout(() => DOM.$menuItem.removeClass('hovered'), 200);
   }
 
   init();
