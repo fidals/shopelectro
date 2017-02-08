@@ -5,6 +5,7 @@
     $viewType: $('#category-right'),
     $loadMoreBtn: $('#btn-load-products'),
     addToCart: '.js-product-to-cart',
+    totalProducts: '.js-total-products',
     tileView: {
       $: $('.js-icon-mode-tile'),
       mode: 'tile',
@@ -14,11 +15,6 @@
       mode: 'list',
     },
     $sorting: $('.selectpicker'),
-  };
-
-  const config = {
-    productsToLoad: 48,
-    totalProductsCount: parseInt($('.js-total-products').first().text(), 10),
   };
 
   const init = () => {
@@ -48,16 +44,29 @@
    *
    * @returns {int} - number of products which are presented in DOM
    */
-  const productsOnPage = () => parseInt(DOM.$productsOnPage.first().text(), 10);
+  const getProductsOnPageCount = () => parseInt(DOM.$productsOnPage.first().text(), 10);
 
   /**
-   * Number of products remain un-loaded from server.
+   * Get number of already loaded products
+   *
+   * @param {string} products
+   * @returns {number}
+   */
+  function getLoadedProductsCount(products) {
+    return (products.match(new RegExp('js-product-to-cart', 'g')) || []).length;
+  }
+
+  /**
+   * Number of Products remain un-loaded from server.
    * Formula:
    * productsLeft = total products on server - already loaded products on front
    *
    * @returns {Number} - number of products left to load
    */
-  const productsLeft = () => parseInt(config.totalProductsCount - productsOnPage(), 10);
+  function productsLeft() {
+    const totalProductsCount = parseInt($(DOM.totalProducts).first().text(), 10);
+    return totalProductsCount - getProductsOnPageCount();
+  }
 
   function reloadPageWithSorting() {
     location.href = getSelectedSortingOption().attr('data-path');
@@ -73,14 +82,12 @@
   }
 
   /**
-   * Update loaded products counter by a simple logic:
-   * 1) if we have less products left than we can load at a time, it means we have loaded them all,
-   *    so we should set loaded count a value of total products
-   * 2) otherwise, we simply add `config.productsToLoad` to counter.
+   * Update loaded Products counter.
    */
-  function updateLoadedCount() {
+  function updateLoadedCount(_, products) {
+    // Aggregate `js-products-showed-count` by `getLoadedProductsCount()`.
     DOM.$productsOnPage.text(
-      productsOnPage() + Math.min(productsLeft(), config.productsToLoad),
+      getProductsOnPageCount() + getLoadedProductsCount(products),
     );
   }
 
@@ -117,7 +124,7 @@
    */
   function loadProducts() {
     const path = DOM.$loadMoreBtn.data('url');
-    const offset = productsOnPage();
+    const offset = getProductsOnPageCount();
     const sorting = getSelectedSortingOption().val();
     const filterParams = helpers.getUrlParam('tags');
     let url = `${path}load-more/${offset}/${sorting}/`;

@@ -1,159 +1,154 @@
 // ================================================================
 // VARIABLES
 // ================================================================
+@input-height: 40px;
+@logo-width: 190px;
+@border-radius: 2px;
+
 // Images path:
-@img-path                  : "../images";
-@sp-main                   : url("@{img-path}/sp-png.png");
-// @mount                  : url("@{img-path}/common/mount.jpg"); Uncomment for year
+@img-path: "../images";
+@sp-main: url("@{img-path}/sp-png.png");
 
-// Bootstrap colors:
-@body-bg                   : #E5EAEE;
-@text-color                : #262626;
+// Mediaqueries:
+@xs: 480;
+@sm: 768;
+@md: 992;
+@lg: 1200;
 
-// Theme colors:
-@c-accordion-link          : #FAFAFA;
-@c-accordion-link-hovered  : #F5F5F5;
-@c-article-img-border      : #CBD1D7;
-@c-article-img-shadow      : #BEC3C6;
-@c-article-text            : #0D0D0D;
-@c-article-link            : #A7A7A7;
+// Colors:
+@c-basket-fill: #f5f5f5;
+@c-black: #000000;
+@c-black-lighter: #161616;
+@c-black-lighter-x: #171717;
+@c-block-link-hover: #f0f4f7;
+@c-block-link-shadow: #232D32;
+@c-blue-dark: #083959;
+@c-blue-darkest: #072d46;
+@c-body-bg: #e5eaee;
+@c-checkbox-bg: #dddddd;
+@c-checkbox-border: #bbbbbb;
+@c-grey-body-main: #e5eaee;
+@c-grey-border: #cecece;
+@c-grey-head-cart: #606163;
+@c-grey-lightest: #999999;
+@c-grey-lighten-text-delivery: #474d52;
+@c-grey-underline: #cacfd2;
+@c-input-radio-inner: #073755;
+@c-input-radio-border: #8f99A3;
+@c-light-grey-plate-bg: #f6f8f9;
+@c-menu-dropdown-border: #9da9b5;
 
-@c-basket-border           : #99A3AB;
-@c-basket-fill             : #F5F5F5;
-@c-basket-item             : #E5E9ED;
-@c-black                   : #000000;
-@c-black-darker            : #131313;
-@c-black-darkest           : #111111;
-@c-black-lighter           : #161616;
-@c-black-lighter-x         : #171717;
-@c-black-lightest          : #999999;
-@c-block-link-hover        : #F0F4F7;
-@c-block-link-shadow       : #232D32;
-@c-blue-dark               : #093856;
-@c-blue-dark-hovered       : #1D5D87;
-@c-blue-dark-focused       : #073755;
-@c-blue-darkest            : #031622;
-@c-blue-table-fill         : #f6f8f9;
-@c-blue-cats-bg            : #083959;
-@c-blue-cats-bg-hovered    : #06263B;
-@c-border-delivery-img     : #C9D3D9;
-@c-breadcrumbs             : #6D6D6D;
-@c-btn-disabled            : #cecece;
-@c-btn-price-bg            : #F4F5F7;
-@c-btn-price-bg-active     : #FA4451;
-@c-btn-price-footer        : #F69A9F;
-@c-btn-increase            : #8E9AA4;
-@c-btn-decrease-active     : #F94351;
-@c-btn-increase-active     : #6DC578;
-@c-btn-red                 : #F94451;
-@c-btn-red-hover           : #FF717B;
-@c-btn-red-focused         : #F94351;
-@c-btn-remove-hovered      : #BBBFC3;
-@c-btn-remove-active       : #073755;
+// Text colors
+@c-text-blue: #1d5d87;
+@c-text-grey-dark: #262626;
+@c-text-grey-light: #8F99A3;
+@c-text-muted: #8f9aa4;
+@c-text-red: #f94451;
 
-@c-checkbox-border         : #A2ABB7;
+// Button colors
+@c-btn-blue-bg: #2b6988;
+@c-btn-blue-bg-hovered: #347fb2;
+@c-btn-blue-border: @c-btn-blue-bg;
+@c-btn-blue-border-hovered: @c-btn-blue-bg-hovered;
 
-@c-head-nav-link-border    : #AAAFB3;
-@c-head-menu-link          : #272727;
-@c-head-mail               : #252525;
-@c-head-mail-border        : #C0C5C8;
+@c-btn-disabled: #cecece;
 
-@c-grey-body-main          : #E5EAEE;
-@c-grey-text-main          : #8F99A3;
-@c-grey-text-delivery      : #6C757D;
-@c-grey-head-cart          : #606163;
-@c-grey-underline          : #CACFD2;
-@c-grey-underline-darker   : #BEC2C5;
-@c-grey-trademark-tabs     : #C3C3C3;
+@c-btn-green-bg: #6dc577;
+@c-btn-green-border: @c-btn-green-bg;
+@c-btn-grey-bg: #8f99a3;
+@c-btn-grey-bg-hovered: #bbbfc3;
+@c-btn-grey-border: @c-btn-grey-bg;
+@c-btn-grey-border-hovered: @c-btn-grey-bg-hovered;
 
-@c-main-stuff-sold         : #6F6F6F;
-@c-main-stuff-title-bg     : #F0F3F6;
-@c-main-list-item          : #9AA4AC;
-@c-main-sold               : #525252;
-@c-main-carousel-img       : #BEC2C6;
-@c-main-carousel-item      : #C6CCD1;
-@c-menu-dropdown           : #9AA4AD;
-@c-menu-dropdown-border    : #9DA9B5;
-@c-main-list-item          : #9AA4AC;
-@c-middle-footer-link      : #C9D2D7;
-@c-middle-footer-border    : #395F76;
-@c-middle-footer-after     : #6a7e95;
-@c-middle-head-bg          : #d3d9de;
-@c-middle-footer-title     : #5F7B90;
+@c-btn-red-bg: #f94451;
+@c-btn-red-bg-hover: #ff717b;
+@c-btn-red-border: @c-btn-red-bg;
+@c-btn-red-border-hover: @c-btn-red-bg-hover;
 
-@c-order-link              : #595B5C;
-@c-order-success           : #6DC578;
-@c-order-blue-text         : #083856;
-@c-order-success-hovered   : #81CC8B;
-@c-order-error             : #F94451;
-@c-order-btn-file          : #8F99A3;
-@c-order-btn-file-hovered  : #CBD1D7;
-@c-order-btn-file-active   : #073755;
-@c-order-table-header-bg   : #EFEFEF;
-@c-order-radio-text        : #0D0D0D;
+@c-btn-to-top: #2b6988;
+@c-btn-to-top-hovered: #1d5d87;
+@c-btn-touchspin-bg: #8e9aa4;
+@c-btn-touchspin-border: @c-btn-touchspin-bg;
+@c-btn-touchspin-minus-bg: #6dc578;
+@c-btn-touchspin-plus-bg: #f94351;
 
-@c-payments-list           : #808080;
-@c-phone-code              : #626262;
-@c-phone-hours             : #5F6062;
-@c-price-border-color      : #DDDDDD;
-@c-product-pop-label       : #6DC577;
-@c-product-pop-label-after : #468C4D;
+// Mobile colors
+@c-mobile-cart-bg: #4a91b5;
+@c-mobile-catalog-bg: #4a91b5;
+@c-mobile-header-bg: #4a91b5;
 
-@c-search-area             : #616161;
-@c-stuff-link-border       : #BEC3C8;
-@c-stock-in                : #54BF5F;
-@c-stock-out               : #FFD180;
-@c-subway-station          : #C0C5C8;
+// Header colors
+@c-head-bg: #d3d9de;
+@c-head-nav-link-border: #aaafb3;
+@c-head-menu-bg: #2b6988;
+@c-head-menu-bg-hover: darken(@c-head-menu-bg, 5%);
+@c-phone-code: #626262;
 
-@c-table-header-bg         : #cecece;
-@c-text-muted              : #8F9AA4;
-@c-tooltip                 : #8F9AA4;
-@c-tooltip-hovered         : #1D5D87;
-@c-tooltip-hovered-link    : #083856;
-@c-tooltip-img-border      : #8F8F8F;
-@c-text-red                : #FA4451;
-@c-text-red-404            : #EB1F20;
+// Footer colors
+@c-footer-link: #C9D2D7;
+@c-footer-light-border: #395F76;
+@c-price-border: #f69a9f;
 
-@c-white                   : #fff;
+// Index page colors
+@c-main-list-item: #9aa4aC;
+
+// Inner page colors
+@c-accordion-link-bg: #fafafa;
+@c-accordion-link-bg-hovered: #f5f5f5;
+@c-article-img-border: #cbd1d7;
+@c-article-img-shadow: #bec3c6;
+
+// Other colors
+@c-price-border-color: #dddddd;
+
+@c-search-area: #616161;
+@c-stock-in: #54bf5f;
+@c-stock-out: #ffd180;
+@c-stuff-link-border: #BEC3C8;
+@c-sub-plate-bg: #f0f4f7;
+@c-subway-red-station: #e50100;
+@c-subway-green-station: #049f5c;
+
+@c-table-border: #dddddd;
+@c-table-even-cell-bg: #f9fafb;
+@c-tooltip: #8F9AA4;
+@c-tooltip-hovered: #1D5D87;
+@c-tooltip-hovered-link: #083856;
+
+@c-white: #fff;
 
 // Fonts:
-@font-awesome      : "FontAwesome";
-@proxima-cond-bold : "proxima_nova_cn_rgbold";
-@proxima-light     : "proxima_nova_ltlight";
-@proxima           : "proxima_nova_rgregular";
-@f-size-base       : 16px;
-@font-size-base    : 16px;
-@font-family-base  : "proxima_nova_rgregular", sans-serif;
+@font-awesome: "FontAwesome";
+@f-size-base: 16px;
+@font-size-base: 16px;
+@font-family-base: "proxima_nova_rgregular", sans-serif;
+@proxima: "proxima_nova_rgregular";
+@proxima-light: "proxima_nova_ltlight";
 
 // Bootstrap variables override:
-@table-cell-padding                 : 5px; // Padding for `<th>`s and `<td>`s.
-@grid-gutter-width                  : 8px;
-@navbar-height                      : 20px;
-@navbar-default-bg                  : transparent;
-@input-bg                           : #f9fafb;
-@input-border                       : #cecece;
-@navbar-default-toggle-border-color : transparent;
-@navbar-default-border              : transparent;
-@navbar-inverse-border              : transparent;
-@breadcrumb-separator               : '→';
-
-// ================================================================
-// FROM CATEGORY LESS FILE VARIABLES
-// ================================================================
-@font-size-base: 16px;
-@font-size-smallest: 12px;
-@font-size-small: 14px;
-@font-size-big: 18px;
-@font-size-biggest: 20px;
-@font-size-large: 26px;
-@grid-gutter-width: 8px;
+@body-bg: #e5eaee;
+@border-radius-large: 2px;
+@breadcrumb-separator: '→';
+@btn-border-radius-base: 2px;
+@input-bg: #f9fafb;
+@input-border: #cecece;
+@input-border-radius: 3px;
+@input-color: @c-text-grey-dark;
+@input-height-base: @input-height;
+@modal-inner-padding: 25px 15px 15px;
+@modal-header-border-color: #1d5d87;
 @navbar-height: 20px;
 @navbar-default-bg: transparent;
+@navbar-default-border: transparent;
+@navbar-default-toggle-border-color: transparent;
+@navbar-inverse-border: transparent;
+@table-cell-padding: 5px; // Padding for `<th>`s and `<td>`s.
+@text-color: @c-text-grey-dark;
 
-// for bootstrap-select:
-@color-red-error: #b94a48;
+// Bootstrap-select:
 @color-grey-arrow: fade(#ccc, 20%);
+@color-red-error: #b94a48;
+@height-product-block-mob: 300px;
+@height-product-block-pc: 440px;
 @width-default: 220px; // 3 960px-grid columns
 @zindex-select-dropdown: 1035; // must be lower than a modal background (1040) but higher than the fixed navbar (1030)
-@height-product-block: 440px; //height of .products-price-wrapper and .products-image-big
-@line-height-body: 1.1; //line-height off all pages except StaticPage

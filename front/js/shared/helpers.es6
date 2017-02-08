@@ -44,7 +44,22 @@ const helpers = (() => {
     return window.location.href.replace(regex, '');
   }
 
+  /**
+   * Delays `fn` execution for better UI and AJAX request performance.
+   *
+   * @param {function} fn
+   * @param {number} delay
+   */
+  function debounce(fn, delay) {
+    let timerId;
+    return function delayed(...args) {
+      clearTimeout(timerId);
+      timerId = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
   return {
+    debounce,
     getUrlParam,
     isPhoneValid,
     isEmailValid,

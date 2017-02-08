@@ -1,12 +1,6 @@
-{# TODO: inner_page.html template should be realized. #}
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
 
 {% load staticfiles %}
-
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
 
 {% block content %}
   <div class="order-contain js-order-contain">
@@ -14,8 +8,7 @@
   </div>
 {% endblock %}
 
-{% block jslinks %}
+{% block jslibs %}
   {{ block.super }}
   <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=ru"></script>
-  <script src="{% static 'js/pages.min.js' %}"></script>
 {% endblock %}

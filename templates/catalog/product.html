@@ -1,15 +1,7 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
 
 {% load pages_extras %}
-{% load staticfiles %}
 {% load se_extras %}
-{% load thumbnail %}
-{% load images %}
-
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
 
 {% block content %}
   <div itemscope itemtype="http://schema.org/Product" class="page-product custom-checkbox">
@@ -25,14 +17,14 @@
 
     {% breadcrumbs_with_siblings page %}
     <h1 class="product-h1" itemprop="name">{{ page.h1 }}</h1>
-    <span class="product-article">Арт. {{ product.id }}</span>
+    <span class="hidden-xs hidden-sm product-article">Арт. {{ product.id }}</span>
 
     <div class="product-top">
-      <div class="product-images" id="product-images">
+      <div class="product-images clearfix" id="product-images">
         {% include 'catalog/product_images.html' with product=product page=page only %}
       </div>
 
-      <div class="product-price-wrapper teaser-shadow" id="product-price">
+      <div class="product-price-wrapper" id="product-price">
         <p class="product-label-price-retail">Розничная цена:</p>
         <p class="product-price active">{{ product.price|humanize_price }} руб / шт</p>
 
@@ -63,14 +55,12 @@
                  type="number" min="1" value="1">
         </div>
 
-        <div class="btn-wrapper-center">
-          <button class="btn btn-blue btn-to-basket js-to-cart-on-product-page" id="btn-to-basket"
-                  data-id="{{ product.id }}">В корзину</button>
-        </div>
+        <button class="btn btn-blue btn-to-basket js-to-cart-on-product-page" id="btn-to-basket"
+                data-id="{{ product.id }}">В корзину</button>
 
         <p class="product-one-click">Купить в один клик</p>
-        <input class="form-control js-masked-phone" id="input-one-click-phone" placeholder="+7 (999) 000 00 00"
-               type="tel">
+        <input class="form-control product-one-click-phone js-masked-phone" id="input-one-click-phone"
+               placeholder="+7 (999) 000 00 00" type="tel">
         <button class="btn btn-grey btn-order" id="btn-one-click-order" type="button" disabled>Заказать</button>
 
         <p class="product-additional">
@@ -109,9 +99,4 @@
 {% block modals %}
   {{ block.super }}
   {% include 'catalog/product_feedback_modal.html' %}
-{% endblock %}
-
-{% block jslinks %}
-  {{ block.super }}
-  <script src="{% static "js/pages.min.js" %}"></script>
 {% endblock %}

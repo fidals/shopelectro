@@ -1,18 +1,25 @@
-.btn-grey {
-  .font-anti;
+@import "../common/variables";
+@import "../common/mixins/utilities";
+
+.btn {
   .transition;
-  background: @c-grey-text-main;
-  border: 1px solid @c-grey-text-main;
-  border-radius: 3px;
-  color: @c-white;
-  font-size: @f-size-base;
-  letter-spacing: -0.015em;
-  padding: 10px 28px;
+  .text-shadow;
+  box-shadow: 0 1px 2px fadeout(@c-block-link-shadow, 75%);
+  cursor: pointer;
+  font-family: @proxima-light, sans-serif;
   text-decoration: none;
+}
+
+.btn-grey {
+  background: @c-btn-grey-bg;
+  border: 1px solid @c-btn-grey-border;
+  color: @c-white;
+  font-size: @f-size-base + 4;
+  padding: 5px;
 
   &:hover {
-    background: @c-btn-remove-hovered;
-    border-color: @c-btn-remove-hovered;
+    background: @c-btn-grey-bg-hovered;
+    border-color: @c-btn-grey-border-hovered;
     color: @c-white;
   }
 
@@ -20,37 +27,36 @@
   &:active,
   &:active:focus {
     box-shadow: none;
-    background: @c-product-pop-label;
-    border-color: @c-product-pop-label;
+    background: @c-btn-green-bg;
+    border-color: @c-btn-green-border;
     color: @c-white;
     outline: none;
   }
 }
 
-.btn-wrapper-center {
-  text-align: center;
-}
-
 .btn-scroll-to-top {
-  .font-anti;
+  .transition;
   background: @c-white;
-  box-shadow: 0 0 0 2px @c-white;
   border-radius: 50%;
-  bottom: 130px;
-  color: @c-btn-remove-active;
+  bottom: 60px;
+  box-shadow: 0 0 0 2px @c-white;
+  color: @c-btn-to-top;
   cursor: pointer;
   height: 42px;
   font-size: @f-size-base + 34;
   opacity: 0;
   position: fixed;
   right: 5px;
-  transition: all 0.3s ease;
   z-index: 10;
   width: 43px;
 
+  .Q(@sm; {
+    bottom: 130px;
+  });
+
   &:hover,
   &:focus {
-    color: @c-tooltip-hovered;
+    color: @c-btn-to-top-hovered;
   }
 
   &.active {
@@ -59,34 +65,30 @@
 
   .fa {
     position: relative;
-    top: -4px;
+    top: -11px;
   }
 }
 
 .btn-blue {
-  .font-anti;
-  .transition;
-  background: @c-btn-remove-active;
-  border: 1px solid @c-btn-remove-active;
-  border-radius: 3px;
+  background: @c-btn-blue-bg;
+  border: 1px solid @c-btn-blue-border;
   color: @c-white;
-  font-size: @f-size-base + 4;
+  font-size: @f-size-base + 5;
   outline: none;
   padding: 6px 20px;
-  text-decoration: none;
 
   &:hover,
   &:focus {
-    background: @c-tooltip-hovered;
-    border-color: @c-tooltip-hovered;
+    background: @c-btn-blue-bg-hovered;
+    border-color: @c-btn-blue-border-hovered;
     color: @c-white;
   }
 
   &:active {
     background: @c-white;
-    border-color: @c-btn-remove-active;
+    border-color: @c-btn-blue-border;
     box-shadow: none;
-    color: @c-btn-remove-active;
+    color: @c-btn-blue-bg;
   }
 
   &:disabled,
@@ -108,10 +110,8 @@
 }
 
 .btn-pink {
-  .font-anti;
-  background-color: @c-btn-red;
-  border: 1px solid @c-btn-red;
-  border-radius: 3px;
+  background-color: @c-btn-red-bg;
+  border: 1px solid @c-btn-red-border;
   color: @c-white;
   font-size: @f-size-base + 4;
   font-weight: 400;
@@ -119,8 +119,8 @@
   padding: 4px 12px 5px;
 
   &:hover {
-    background: @c-btn-red-hover;
-    border-color: @c-btn-red-hover;
+    background: @c-btn-red-bg-hover;
+    border-color: @c-btn-red-border-hover;
     color: @c-white;
   }
 
@@ -129,20 +129,19 @@
   &:active:focus {
     box-shadow: none;
     background: @c-white;
-    border-color: @c-btn-red-focused;
+    border-color: @c-text-red;
     color: @c-text-red;
     outline: none;
     text-shadow: none;
-  }
-
-  &.btn-to-order {
-    margin-bottom: 20px;
   }
 }
 
 .btn-search {
   height: 32px;
+  font-family: @font-awesome;
   font-size: @f-size-base - 2;
+  left: -20px;
   padding: 0;
+  position: relative;
   width: 36px;
 }

@@ -1,4 +1,4 @@
-(() => {
+{
   const DOM = {
     $cart: $('.js-cart-header'),
     orderTable: '#js-order-list',
@@ -14,7 +14,7 @@
   function setUpListeners() {
     mediator.subscribe('onCartUpdate', render, configs.initScrollbar, showCart);
 
-    // Since product's list in cart dropdown is dynamic, we bind events on static parent
+    // Since product's list in Cart dropdown is dynamic, we bind events on static parent
     DOM.$cart.on('click', DOM.resetCart, clear);
     DOM.$cart.on('click', DOM.removeFromCart, remove);
   }
@@ -56,7 +56,7 @@
   }
 
   /**
-   * Render new cart's html.
+   * Render new Cart's html.
    * @param data
    */
   function render(_, data) {
@@ -64,4 +64,4 @@
   }
 
   init();
-})();
+}

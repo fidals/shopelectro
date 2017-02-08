@@ -1,0 +1,75 @@
+@import "../common/variables";
+@import "../common/mixins/utilities";
+@import "../common/mixins/sp-png";
+
+.modal {
+  &-dialog {
+    max-width: 500px;
+  }
+
+  &-content {
+    border-color: transparent;
+  }
+
+  &-header {
+    border-width: 2px;
+    padding: 15px 30px;
+    position: relative;
+    text-align: center;
+
+    .Q(@sm; {
+      padding: 15px;
+    });
+  }
+
+  &-title {
+    color: @c-blue-dark;
+    font-size: @f-size-base + 6;
+
+    &-after {
+      padding-bottom: 11px;
+      padding-top: 18px;
+    }
+  }
+
+  &-subtitle {
+    line-height: 120%;
+    font-size: @f-size-base - 2;
+    margin-bottom: 24px;
+    width: 230px;
+  }
+
+  &-text-after {
+    padding-bottom: 11px;
+  }
+
+  &-footer {
+    border: none;
+    padding: 0 0 25px;
+    text-align: center;
+  }
+
+  .close {
+    background: @sp-main;
+    .sprite(@05);
+    margin: -8px 0 0;
+    opacity: 1;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+
+    .Q(@sm; {
+      right: 15px;
+    });
+
+    &:hover {
+      .sprite(@06);
+    }
+  }
+}
+
+.control-label {
+  .Q(@sm; {
+    padding-top: 13px;
+  });
+}

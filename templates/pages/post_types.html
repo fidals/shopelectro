@@ -1,20 +1,15 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
 
 {% load staticfiles %}
 {% load pages_extras %}
 
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
-
 {% block content %}
   <div class="article-content">
-    <div class="p-article-sidebar col-xs-3">
+    <div class="col-sm-3 p-article-sidebar">
       {% include 'pages/accordion.html' %}
     </div>
 
-    <div class="col-xs-9 right-col">
+    <div class="col-sm-9 right-col">
       <h1>Статьи Shopelectro</h1>
       <div>
         <ul>
@@ -27,9 +22,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block jslinks %}
-  {{ block.super }}
-  <script src="{% static 'js/pages.min.js' %}"></script>
 {% endblock %}

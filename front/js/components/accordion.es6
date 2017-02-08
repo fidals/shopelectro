@@ -1,4 +1,4 @@
-(() => {
+{
   const itemKey = 'activeItem';
 
   const DOM = {
@@ -18,6 +18,16 @@
     DOM.titles.click(event => switchItem($(event.target)));
   }
 
+  const saveItem = ($item) => {
+    localStorage.setItem(itemKey, $item.attr('id'));
+  };
+
+  const removeItem = () => {
+    localStorage.removeItem(itemKey);
+  };
+
+  const accordionOnPage = () => DOM.$accordion.size();
+
   /**
    * Case accordion item:
    *  -- active   - slide down it, make inactive
@@ -36,18 +46,16 @@
     }
   }
 
-  const accordionOnPage = () => DOM.$accordion.size();
-
-  const openItem = $clickedItem => {
+  function openItem($clickedItem) {
     collapseAccordion();
     $clickedItem
       .addClass('active')
       .next()
       .stop()
       .slideDown(100);
-  };
+  }
 
-  const collapseItem = $clickedItem => {
+  function collapseItem($clickedItem) {
     $clickedItem
       .removeClass('active')
       .next()
@@ -55,20 +63,12 @@
       .slideUp(200);
 
     removeItem();
-  };
+  }
 
-  const saveItem = $item => {
-    localStorage.setItem(itemKey, $item.attr('id'));
-  };
-
-  const removeItem = () => {
-    localStorage.removeItem(itemKey);
-  };
-
-  const collapseAccordion = () => {
+  function collapseAccordion() {
     DOM.titles.removeClass('active');
     DOM.panels.stop().slideUp();
-  };
+  }
 
   init();
-})();
+}

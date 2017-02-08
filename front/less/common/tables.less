@@ -1,0 +1,38 @@
+.table {
+  position: relative;
+
+  > thead > tr > th {
+    border-bottom: 1px solid @c-tooltip;
+    color: @c-text-grey-light;
+  }
+
+  > tbody > tr > td {
+    background: fadeout(@c-white, 40%);
+    border-bottom: 1px solid @c-tooltip;
+    padding: 28px 12px 26px;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  // Cells
+  > thead,
+  > tfoot {
+    > tr {
+      background: transparent;
+
+      > th,
+      > td {
+        padding: @table-cell-padding @table-cell-padding + 8px @table-cell-padding - 3px;
+
+        &:first-child {
+          padding-left: 0;
+        }
+      }
+    }
+  }
+}
+
+.table-hover > tbody > tr:hover,
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background: transparent;
+}

@@ -143,7 +143,7 @@
     };
 
     const fields = ['name', 'dignities', 'limitations', 'general'];
-    fields.forEach(item => {
+    fields.forEach((item) => {
       feedback[item] = getFormFieldValue(item);
     });
 

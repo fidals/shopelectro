@@ -344,14 +344,14 @@ class CategoryPage(SeleniumTestCase):
         self.browser.find_element_by_css_selector(self.filter_tag).click()
         self.browser.find_element_by_class_name(self.apply_btn).click()
         product_card = self.browser.find_element_by_class_name('product-card')
-        old_price = product_card.find_element_by_class_name('price').text
+        old_price = product_card.find_element_by_class_name('product-card-price').text
 
         expensive_sort_option = self.browser.find_elements_by_css_selector(
             '.selectpicker option'
         )[1]
         expensive_sort_option.click()
         product_card = self.browser.find_element_by_class_name('product-card')
-        new_price = product_card.find_element_by_class_name('price').text
+        new_price = product_card.find_element_by_class_name('product-card-price').text
 
         self.assertTrue(old_price < new_price)
 
@@ -521,7 +521,7 @@ class OrderPage(SeleniumTestCase):
             'price': 5,
             'remove': 6,
         }
-        product_row = '//*[@id="js-order-list"]/tbody/tr[{pos}]/td[{col}]'
+        product_row = '//*[@id="js-order-list"]/div[2]/div[{pos}]/div[{col}]'
 
         return product_row.format(pos=pos, col=COLS[col])
 
@@ -529,7 +529,7 @@ class OrderPage(SeleniumTestCase):
         self.order_page = CustomPage.objects.get(slug='order')
         self.cart_dropdown = 'basket-parent'
         self.first_product_id = '405'
-        self.remove_product = self.get_cell(pos=4, col='remove') + '/img'
+        self.remove_product = self.get_cell(pos=4, col='remove') + '/div'
         self.product_count = self.get_cell(pos=4, col='count') + '/div[2]/input'
         self.add_product = self.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
         self.category = reverse('category', args=(Category.objects.first().page.slug,))

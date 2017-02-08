@@ -1,19 +1,17 @@
 {% load se_extras %}
 {% load pages_extras %}
 
-<div class="col-xs-8 col-xs-offset-4">
-  <div class="js-header-cart header-cart">
-    <span class="basket-products-count js-cart-size">{{ cart.total_quantity }}</span>
-    {% if cart.total_price == 0 %}
-      <span class="cart-is-empty js-cart-is-empty" id="cart-is-empty">Корзина пуста</span>
-    {% else %}
-      <span class="cart-is-empty js-cart-is-empty hidden" id="cart-is-empty">Корзина пуста</span>
-      <a class="price-in-cart js-go-to-cart" href="{% custom_url 'order' %}">
-        {{ cart.total_price|humanize_price }} руб.
-      </a>
-    {% endif %}
-    <span class="opener"><i class="fa fa-chevron-down"></i></span>
-  </div>
+<div class="header-cart js-header-cart">
+  <span class="basket-products-count js-cart-size">{{ cart.total_quantity }}</span>
+  {% if cart.total_price == 0 %}
+    <span class="cart-is-empty js-cart-is-empty">Корзина пуста</span>
+  {% else %}
+    <span class="cart-is-empty js-cart-is-empty hidden">Корзина пуста</span>
+    <a class="price-in-cart js-go-to-cart" href="{% custom_url 'order' %}">
+      {{ cart.total_price|humanize_price }} руб.
+    </a>
+  {% endif %}
+  <span class="opener"><i class="fa fa-chevron-down"></i></span>
 </div>
 
 <div class="basket-wrapper js-cart-wrapper">
@@ -41,7 +39,7 @@
             <span class="basket-count js-basket-count">{{ position.quantity }} шт.</span> =
             <span class="basket-sum js-basket-sum">{{ position.total_price|humanize_price }} руб.</span>
           </div>
-          <div class="basket-remove js-cart-remove" data-id="{{ id }}" title="Удалить товар"></div>
+          <i class="basket-remove js-cart-remove fa fa-close" data-id="{{ id }}" title="Удалить товар"></i>
         </li>
       {% endfor %}
     </ul>
@@ -69,7 +67,9 @@
       <a href="{% custom_url 'order' %}"
          class="btn btn-pink btn-to-order js-go-to-cart">Оформить заказ сейчас</a>
       <p>
-        <span class="basket-reset js-reset-cart">Очистить корзину</span>
+        <span class="basket-reset js-reset-cart">
+          <i class="fa fa-close"></i> <span>Очистить корзину</span>
+        </span>
       </p>
     {% endif %}
   </div>

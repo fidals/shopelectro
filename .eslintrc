@@ -3,7 +3,9 @@
   "globals": {
     "$": true,
     "admin": true,
+    "autocomplete": true,
     "configs": true,
+    "event": true,
     "document": true,
     "Cookies": true,
     "helpers": true,

@@ -1,12 +1,16 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
+
+{% load staticfiles %}
 
 {% block content %}
   <h1>Результаты поиска</h1>
 
   {% for category in categories %}
-    <div class="par-header">
-      <a href="{{ category.url }}">{{ category.name }}</a>
-      <p class="search-type-res">Категория</p>
+    <div class="search-result-item">
+      <a class="search-result-link" href="{{ category.url }}">
+        {{ category.name }}
+      </a>
+      <p class="search-result-type">Категория</p>
     </div>
   {% endfor %}
 

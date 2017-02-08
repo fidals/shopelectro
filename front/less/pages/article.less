@@ -1,69 +1,15 @@
+@import "../common/variables";
+@import "../common/mixins/utilities";
+
 .p-article {
   &-sidebar {
-    padding-top: 29px;
-  }
-
-  &-list-item {
-    margin-bottom: 22px;
-  }
-
-  &-list-title a {
-    .link-style;
-    color: @c-article-text;
-    font-size: @font-size-base;
-    line-height: 125%;
-    position: relative;
-    text-decoration: none;
-
-    &:hover,
-    &:visited {
-      color: @c-article-text;
-      text-decoration: none;
-    }
-
-    &.active {
-      &:after {
-        .sprite(@04);
-        position: absolute;
-        right: 12px;
-        top: 2px;
-      }
-    }
-  }
-
-  &-list-inner-item {
-    margin-bottom: 15px;
-  }
-
-  &-list-inner {
-    font-size: @font-size-base - 2;
-    letter-spacing: -0.01em;
-    padding: 7px 0 0 14px;
-  }
-
-  &-sidebar-link {
-    border-bottom: 1px solid @c-stuff-link-border;
-    color: @c-black-lighter;
-    display: inline;
-    line-height: 120%;
-    text-decoration: none !important;
-
-    &:hover {
-      color: @c-article-text;
-      border: none;
-    }
-
-    &:visited {
-      color: @c-article-text;
-    }
+    .Q(@sm; {
+      padding-top: 18px;
+    });
   }
 }
 
 .article {
-  color: @c-article-text;
-  line-height: 145%;
-  padding: 20px 4px 75px;
-
   img,
   &-img-title {
     border: 1px solid @c-article-img-border;
@@ -95,7 +41,7 @@
     position: relative;
 
     &:before {
-      background: @c-grey-text-main;
+      background: @c-text-grey-light;
       content: "";
       height: 8px;
       left: 0;
@@ -151,6 +97,8 @@ td.contacts {
     float: left;
     height: 32px;
     margin-right: 15px;
+    position: relative;
+    top: -3px;
     width: 32px;
   }
 
@@ -173,9 +121,7 @@ td.contacts {
   }
 
   &-list {
-    color: @c-payments-list;
     font-size: @font-size-base + 2;
-    padding-bottom: 10px;
 
     li {
       list-style-type: square;

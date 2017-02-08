@@ -1,144 +1,146 @@
 {% load staticfiles %}
 
-<div class="page-front-cell page-front-cell-01">
-  <div class="stuff-wrapper stuff-wrapper-01 teaser-shadow">
-    <div class="stuff-title">
-      <a class="stuff-title-link" href="{% url 'category' 'akkumuliatory' %}">
-        Аккумуляторы
-      </a>
-    </div>
-    <a class="stuff-img stuff-img-01" href="{% url 'category' 'akkumuliatory' %}">
-      <img src="{% static 'images/main/tile-1.jpg' %}" class="img-responsive img-centered" alt="Аккумуляторы">
-    </a>
-  </div>
-  <ul class="stuff-list stuff-list-01 list-unstyled teaser-shadow">
-    {% for item in category_tile.accumulators %}
-      <li class="stuff-item">
-        <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-</div>
-
-<div class="page-front-cell page-front-cell-02">
-  <div class="stuff-wrapper stuff-wrapper-02 teaser-shadow">
-    <div class="stuff-title">
-      <a class="stuff-title-link" href="{% url 'category' 'avtopreobrazovateli-napriazheniia' %}">
-        Автопреобразователи напряжения
-      </a>
-    </div>
-    <a class="stuff-img stuff-img-02" href="{% url 'category' 'avtopreobrazovateli-napriazheniia' %}">
-      <img src="{% static 'images/main/tile-2.jpg' %}" class="img-responsive img-centered"
-           alt="Автопреобразователи напряжения">
-    </a>
-  </div>
-  <ul class="stuff-list stuff-list-02 list-unstyled teaser-shadow">
-    {% for item in category_tile.inverter %}
-      <li class="stuff-item">
-        <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-
-  <div class="stuff-double">
-    <div class="stuff-double-wrapper teaser-shadow">
+<div class="page-front-cells-wrapper">
+  <div class="page-front-cell page-front-cell-01">
+    <div class="stuff-wrapper stuff-wrapper-01">
       <div class="stuff-title">
-        <a class="stuff-title-link" href="{% url 'category' 'batareiki' %}">
-          Батарейки
+        <a class="stuff-title-link" href="{% url 'category' 'akkumuliatory' %}">
+          Аккумуляторы
         </a>
       </div>
-      <a class="stuff-img stuff-img-03" href="{% url 'category' 'batareiki' %}">
-        <img src="{% static 'images/main/tile-7.jpg' %}" class="img-responsive img-centered" alt="Батарейки">
+      <a class="stuff-img stuff-img-01" href="{% url 'category' 'akkumuliatory' %}">
+        <img src="{% static 'images/main/tile-1.jpg' %}" class="img-responsive img-centered" alt="Аккумуляторы">
       </a>
     </div>
-    <ul class="stuff-double-list list-unstyled teaser-shadow">
-      {% for item in category_tile.batteries %}
-        <li class="stuff-item stuff-item-double">
+    <ul class="stuff-list stuff-list-01 list-unstyled">
+      {% for item in category_tile.accumulators %}
+        <li class="stuff-item">
           <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
         </li>
       {% endfor %}
     </ul>
   </div>
 
-  <div class="stuff-double">
-    <div class="stuff-double-wrapper teaser-shadow">
+  <div class="page-front-cell page-front-cell-02">
+    <div class="stuff-wrapper stuff-wrapper-02">
       <div class="stuff-title">
-        <a class="stuff-title-link" href="{% url 'category' 'fonari' %}">
-          Фонари
+        <a class="stuff-title-link" href="{% url 'category' 'avtopreobrazovateli-napriazheniia' %}">
+          Автопреобразователи напряжения
         </a>
       </div>
-      <a class="stuff-img stuff-img-03" href="{% url 'category' 'fonari' %}">
-        <img src="{% static 'images/main/tile-6.jpg' %}" class="img-responsive img-centered" alt="Фонари">
+      <a class="stuff-img stuff-img-02" href="{% url 'category' 'avtopreobrazovateli-napriazheniia' %}">
+        <img src="{% static 'images/main/tile-2.jpg' %}" class="img-responsive img-centered"
+             alt="Автопреобразователи напряжения">
       </a>
     </div>
-    <ul class="stuff-double-list list-unstyled teaser-shadow">
-      {% for item in category_tile.lights %}
-        <li class="stuff-item stuff-item-double">
+    <ul class="stuff-list stuff-list-02 list-unstyled">
+      {% for item in category_tile.inverter %}
+        <li class="stuff-item">
           <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
         </li>
       {% endfor %}
     </ul>
-  </div>
-</div>
 
-<div class="page-front-cell page-front-cell-03">
-  <div class="stuff-wrapper stuff-wrapper-03 teaser-shadow">
-    <div class="stuff-title">
-      <a class="stuff-title-link" href="{% url 'category' 'zariadnye-ustroistva' %}">
-        Зарядные устройства
-      </a>
-    </div>
-    <a class="stuff-img stuff-img-02" href="{% url 'category' 'zariadnye-ustroistva' %}">
-      <img src="{% static 'images/main/tile-3.jpg' %}" class="img-responsive img-centered" alt="Зарядные
-      устройства">
-    </a>
-  </div>
-  <ul class="stuff-list stuff-list-03 list-unstyled teaser-shadow">
-    {% for item in category_tile.chargers %}
-      <li class="stuff-item">
-        <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-
-  <div class="stuff-double">
-    <div class="stuff-double-wrapper teaser-shadow">
-      <div class="stuff-title">
-        <a class="stuff-title-link" href="{% url 'category' 'multimetry-master-professional' %}">
-          Мультиметры
+    <div class="stuff-double">
+      <div class="stuff-double-wrapper">
+        <div class="stuff-title">
+          <a class="stuff-title-link" href="{% url 'category' 'batareiki' %}">
+            Батарейки
+          </a>
+        </div>
+        <a class="stuff-img stuff-img-03" href="{% url 'category' 'batareiki' %}">
+          <img src="{% static 'images/main/tile-7.jpg' %}" class="img-responsive img-centered" alt="Батарейки">
         </a>
       </div>
-      <a class="stuff-img stuff-img-03" href="{% url 'category' 'multimetry-master-professional' %}">
-        <img src="{% static 'images/main/tile-5.jpg' %}" class="img-responsive img-centered" alt="Мультиметры">
+      <ul class="stuff-double-list list-unstyled">
+        {% for item in category_tile.batteries %}
+          <li class="stuff-item stuff-item-double">
+            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="stuff-double">
+      <div class="stuff-double-wrapper">
+        <div class="stuff-title">
+          <a class="stuff-title-link" href="{% url 'category' 'fonari' %}">
+            Фонари
+          </a>
+        </div>
+        <a class="stuff-img stuff-img-03" href="{% url 'category' 'fonari' %}">
+          <img src="{% static 'images/main/tile-6.jpg' %}" class="img-responsive img-centered" alt="Фонари">
+        </a>
+      </div>
+      <ul class="stuff-double-list list-unstyled">
+        {% for item in category_tile.lights %}
+          <li class="stuff-item stuff-item-double">
+            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-front-cell page-front-cell-03">
+    <div class="stuff-wrapper stuff-wrapper-03">
+      <div class="stuff-title">
+        <a class="stuff-title-link" href="{% url 'category' 'zariadnye-ustroistva' %}">
+          Зарядные устройства
+        </a>
+      </div>
+      <a class="stuff-img stuff-img-02" href="{% url 'category' 'zariadnye-ustroistva' %}">
+        <img src="{% static 'images/main/tile-3.jpg' %}" class="img-responsive img-centered" alt="Зарядные
+        устройства">
       </a>
     </div>
-    <ul class="stuff-double-list list-unstyled teaser-shadow">
-      {% for item in category_tile.multimeters %}
-        <li class="stuff-item stuff-item-double-small">
+    <ul class="stuff-list stuff-list-03 list-unstyled">
+      {% for item in category_tile.chargers %}
+        <li class="stuff-item">
           <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
         </li>
       {% endfor %}
     </ul>
-  </div>
 
-  <div class="stuff-double">
-    <div class="stuff-double-wrapper teaser-shadow">
-      <div class="stuff-title">
-        <a class="stuff-title-link" href="{% url 'category' 'bloki-pitaniia' %}">
-          Блоки питания
+    <div class="stuff-double">
+      <div class="stuff-double-wrapper">
+        <div class="stuff-title">
+          <a class="stuff-title-link" href="{% url 'category' 'multimetry-master-professional' %}">
+            Мультиметры
+          </a>
+        </div>
+        <a class="stuff-img stuff-img-03" href="{% url 'category' 'multimetry-master-professional' %}">
+          <img src="{% static 'images/main/tile-5.jpg' %}" class="img-responsive img-centered" alt="Мультиметры">
         </a>
       </div>
-      <a class="stuff-img stuff-img-03" href="{% url 'category' 'bloki-pitaniia' %}">
-        <img src="{% static 'images/main/tile-4.jpg' %}" class="img-responsive img-centered" alt="Блоки
-        питания">
-      </a>
+      <ul class="stuff-double-list list-unstyled">
+        {% for item in category_tile.multimeters %}
+          <li class="stuff-item stuff-item-double-small">
+            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
-    <ul class="stuff-double-list list-unstyled teaser-shadow">
-      {% for item in category_tile.adapters %}
-        <li class="stuff-item stuff-item-double">
-          <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
-        </li>
-      {% endfor %}
-    </ul>
+
+    <div class="stuff-double">
+      <div class="stuff-double-wrapper">
+        <div class="stuff-title">
+          <a class="stuff-title-link" href="{% url 'category' 'bloki-pitaniia' %}">
+            Блоки питания
+          </a>
+        </div>
+        <a class="stuff-img stuff-img-03" href="{% url 'category' 'bloki-pitaniia' %}">
+          <img src="{% static 'images/main/tile-4.jpg' %}" class="img-responsive img-centered" alt="Блоки
+          питания">
+        </a>
+      </div>
+      <ul class="stuff-double-list list-unstyled">
+        {% for item in category_tile.adapters %}
+          <li class="stuff-item stuff-item-double">
+            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 </div>

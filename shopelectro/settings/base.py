@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_user_agents',
     'generic_admin',
     'django.contrib.admin.apps.SimpleAdminConfig',
     'debug_toolbar',
@@ -76,8 +77,13 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+# Name of cache backend to cache user agents. If it not specified default
+# cache alias will be used. Set to `None` to disable caching.
+# USER_AGENTS_CACHE = context_processors.request'default'
 
 ROOT_URLCONF = 'shopelectro.urls'
 
@@ -89,13 +95,13 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
                 'django.template.context_processors.media',
+                'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ecommerce.context_processors.cart',
-                'shopelectro.context_processors.shop'
+                'shopelectro.context_processors.shop',
             ],
         },
     },
@@ -163,7 +169,7 @@ SITE_CREATED = datetime(2013, 1, 1)
 LOCALHOST = 'http://127.0.0.1:8000/'
 BASE_URL = 'https://www.shopelectro.ru'
 
-PLACEHOLDER_IMAGE = 'images/common/logo.svg'
+PLACEHOLDER_IMAGE = 'images/logo.png'
 PLACEHOLDER_ALT = 'Логотип компании Shopelectro'
 
 # Autocomplete and search settings

@@ -1,6 +1,6 @@
 <div class="sorting-nav">
-  <span class="sort-label">Сортировать по:</span>
-  <div class="sort">
+  <span class="sorting-nav-label">Сортировать по:</span>
+  <div class="sorting-nav-select">
     <label class="select select-sort">
       <select class="selectpicker">
         {% for option in sorting_options %}
@@ -17,7 +17,7 @@
     </label>
   </div>
 
-  <div class="display-mode">
+  <div class="hidden-xs hidden-sm display-mode">
     <div class="{% if view_type == 'tile' %}active {% endif %}
         icon-mode-switch icon-thumbs js-icon-mode-switch js-icon-mode-tile" title="Плитка"></div>
     <div class="{% if view_type == 'list' %}active {% endif %}

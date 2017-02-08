@@ -1,4 +1,6 @@
 Django==1.9.5
+django-debug-toolbar
+django-user-agents==0.3.0
 django-widget-tweaks
 tblib
 pillow
@@ -9,5 +11,6 @@ openpyxl
 unidecode
 dj-database-url==0.4.1
 sorl-thumbnail==12.4a1
-django-debug-toolbar
+ua-parser==0.7.3
+user-agents==1.0.1
 -e git+https://github.com/fidals/refarm-site.git#egg=refarm-site
