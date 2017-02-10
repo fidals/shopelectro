@@ -38,7 +38,7 @@ PRODUCT_TITLE = '''
 '''
 
 PRODUCT_DESCRIPTION = '''
-    {name} - Элементы питания, зарядные устройства, ремонт. Купить
+    {name} - Купить.
     {category_name} в Санкт Петербурге.
 '''
 
