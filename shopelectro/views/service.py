@@ -113,7 +113,7 @@ def yandex_aviso(request):
             extra_context={
                 'paid': paid,
                 'profit': profit,
-                'comission': commission
+                'commission': commission
             })
 
     def send_mail_to_customer(order):

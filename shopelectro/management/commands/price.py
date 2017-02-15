@@ -66,11 +66,10 @@ class Command(BaseCommand):
             return product
 
         def filter_categories():
-            new_year_lights = Category.objects.get(name='Новогодние гирлянды').get_descendants(include_self=True)
             others = (
-                Category.objects.get(name='Прочее')
-                                .get_descendants(include_self=True)
-                                .exclude(pk__in=new_year_lights)
+                Category.objects
+                .get(name='Прочее')
+                .get_descendants(include_self=True)
             )
 
             return Category.objects.exclude(pk__in=others)

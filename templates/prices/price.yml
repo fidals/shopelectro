@@ -23,7 +23,9 @@
     <cpa>0</cpa>
     <offers>
       {% for product in products %}
-        <offer id="{{ product.id }}" available="{{ product.in_stock|yesno:'true,false' }}">
+        {# Uncomment it, when Fenich will learn about stock organization #}
+        {# <offer id="{{ product.id }}" available="{{ product.in_stock|yesno:'true,false' }}"> #}
+        <offer id="{{ product.id }}" available="false">
           <url>{{ product.utm_url }}</url>
           <price>{{ product.price }}</price>
           {% if utm != 'priceru' %}<purchase_price>{{ product.purchase_price }}</purchase_price>{% endif %}
