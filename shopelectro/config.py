@@ -116,7 +116,7 @@ FOOTER_LINKS = {
     ],
     'about': [
         {'name': 'Реквизиты', 'type': 'navigation', 'slug': 'rekvisity'},
-        {'name': 'Оптовым покупателям', 'type': 'articles', 'slug': 'wholesale'},
+        {'name': 'Купить оптом', 'type': 'articles', 'slug': 'wholesale'},
         {'name': 'Гарантии и возврат', 'type': 'navigation', 'slug': 'return-goods-instr'},
     ],
 }

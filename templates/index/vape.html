@@ -1,0 +1,51 @@
+{% load staticfiles %}
+
+<div class="vape-wrapper">
+  <div class="vape-item">
+    <div class="stuff-wrapper teaser-shadow">
+      <div class="vape-item-title">
+        <div class="vape-item-link-wrapper">
+          <a class="vape-item-link" href="{% url 'product' '5246' %}">
+            LG Li-Ion LGDBHE41865, 2500 мАч, 35 А
+          </a>
+        </div>
+      </div>
+      <a class="vape-img-wrapper" href="{% url 'product' '5246' %}">
+        <img src="{% static 'images/main/vape-1.jpg' %}"
+             class="img-responsive img-centered" alt="LG Li-Ion LGDBHE41865, 2500 мАч, 35 А">
+      </a>
+    </div>
+  </div>
+
+  <div class="vape-item">
+    <div class="stuff-wrapper teaser-shadow">
+      <div class="vape-item-title">
+        <div class="vape-item-link-wrapper">
+          <a class="vape-item-link" href="{% url 'product' '5111' %}">
+            Robiton LGC 18650, 2500 мАч, 20 A
+          </a>
+        </div>
+      </div>
+      <a class="vape-img-wrapper" href="{% url 'product' '5111' %}">
+        <img src="{% static 'images/main/vape-2.jpg' %}"
+             class="img-responsive img-centered" alt="Robiton LGC 18650, 2500 мАч, 20 A">
+      </a>
+    </div>
+  </div>
+
+  <div class="vape-item">
+    <div class="stuff-wrapper teaser-shadow">
+      <div class="vape-item-title">
+        <div class="vape-item-link-wrapper">
+          <a class="vape-item-link" href="{% url 'product' '6070' %}">
+            Samsung Li-Ion ICR18650-22P, 2200 мАч, 10 А
+          </a>
+        </div>
+      </div>
+      <a class="vape-img-wrapper" href="{% url 'product' '6070' %}">
+        <img src="{% static 'images/main/vape-3.jpg' %}"
+             class="img-responsive img-centered" alt="Samsung Li-Ion ICR18650-22P, 2200 мАч, 10 А">
+      </a>
+    </div>
+  </div>
+</div>

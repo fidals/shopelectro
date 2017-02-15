@@ -88,10 +88,8 @@ def order_call(request):
 
 class YandexOrder(OrderPage):
     def post(self, request):
-        request.POST = request.POST.dict()
-
         cart = self.cart(request.session)
-        form = self.order_form(request.POST)
+        form = self.order_form(request.POST.dict())
 
         if not form.is_valid():
             return render(request, self.template, {'cart': cart, 'form': form})
