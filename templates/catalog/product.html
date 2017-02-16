@@ -17,7 +17,10 @@
     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
       <span itemprop="price">{{ product.price|humanize_price }}</span>
       <span itemprop="priceCurrency">RUB</span>
-      <link itemprop="availability" href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}">
+      {# Uncomment it, when Fenich will learn about stock organization #}
+      {# <link itemprop="availability" href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}"> #}
+
+      <link itemprop="availability" href="http://schema.org/PreOrder">
     </div>
 
     {% breadcrumbs_with_siblings page %}
@@ -75,7 +78,7 @@
           наличие товара на складе и оформит заказ на ваше имя.
         </p>
 
-        <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,moimir,viber,whatsapp,skype,telegram"></div>
+        <div class="ya-share2" data-services="vkontakte,facebook,whatsapp,telegram,viber"></div>
       </div>
 
       <div class="pr-chars">
