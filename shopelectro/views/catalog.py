@@ -8,6 +8,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
+from django_user_agents.utils import get_user_agent
 
 from catalog.views import catalog
 from images.models import Image
@@ -20,7 +21,14 @@ from shopelectro.models import (
 )
 from shopelectro.views.helpers import set_csrf_cookie
 
-PRODUCTS_ON_PAGE = 48
+PRODUCTS_ON_PAGE_PC = 48
+PRODUCTS_ON_PAGE_MOB = 10
+
+
+def get_products_count(request):
+    """Get Products count for response context depends on the `user_agent`."""
+    mobile_view = get_user_agent(request).is_mobile
+    return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
 
 
 # CATALOG VIEWS
@@ -60,6 +68,7 @@ class IndexPage(pages_views.CustomPageView):
     def get_context_data(self, **kwargs):
         """Extended method. Add product's images to context."""
         context = super(IndexPage, self).get_context_data(**kwargs)
+        mobile_view = get_user_agent(self.request).is_mobile
 
         top_products = (
             Product.objects
@@ -71,10 +80,12 @@ class IndexPage(pages_views.CustomPageView):
         images = Image.objects.get_main_images_by_pages(top_products.get_pages())
         categories = Category.objects.get_root_categories_by_products(top_products)
 
-        prepared_top_products = [
-            (product, images.get(product.page), categories.get(product))
-            for product in top_products
-        ]
+        prepared_top_products = []
+        if not mobile_view:
+            prepared_top_products = [
+                (product, images.get(product.page), categories.get(product))
+                for product in top_products
+            ]
 
         return {
             **context,
@@ -98,6 +109,7 @@ class CategoryPage(catalog.CategoryPage):
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
+        products_on_page = get_products_count(self.request)
 
         # tile is default view_type
         view_type = self.request.session.get('view_type', 'tile')
@@ -120,7 +132,7 @@ class CategoryPage(catalog.CategoryPage):
         if tags:
             all_products = all_products.get_by_tags(tags.split(','))
 
-        products = all_products.get_offset(0, PRODUCTS_ON_PAGE)
+        products = all_products.get_offset(0, products_on_page)
 
         return {
             **context,
@@ -144,6 +156,8 @@ def load_more(request, category_slug, offset=0, sorting=0):
     :param offset: used for slicing QuerySet.
     :return:
     """
+    products_on_page = get_products_count(request)
+
     category = get_object_or_404(CategoryPageModel, slug=category_slug).model
     sorting_option = config.category_sorting(int(sorting))
 
@@ -158,13 +172,13 @@ def load_more(request, category_slug, offset=0, sorting=0):
     if tags:
         products = products.get_by_tags(tags.split(','))
 
-    products = products.get_offset(int(offset), PRODUCTS_ON_PAGE)
+    products = products.get_offset(int(offset), products_on_page)
     view = request.session.get('view_type', 'tile')
 
     return render(request, 'catalog/category_products.html', {
         'product_image_pairs': merge_products_and_images(products),
         'view_type': view,
-        'prods': PRODUCTS_ON_PAGE,
+        'prods': products_on_page,
     })
 
 

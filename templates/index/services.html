@@ -1,34 +1,46 @@
 {% load staticfiles %}
+{% load user_agents %}
+
 <div class="page-front-news">
   <a href="{% url 'pages:flat_page' 'delivery' %}" class="page-front-news-item">
-    <div class="page-front-news-img">
-      <img src="{% static 'images/main/services-01.jpg' %}" class="page-front-news-img-inner"
-           alt="Доставка по всей России">
-    </div>
+    {% if not request|is_mobile %}
+      <div class="page-front-news-img">
+        <img src="{% static 'images/main/services-01.jpg' %}" class="page-front-news-img-inner"
+             alt="Доставка по всей России">
+      </div>
+    {% endif %}
     <div class="page-front-news-title">Доставка по всей России</div>
     <div class="page-front-news-text">
-      Работаем с DPD, PickPoint, DHL, Почтой России, Деловыми линиями
+      Работаем с DPD, PickPoint, DHL,  <br>
+      Почтой России, Деловыми линиями
     </div>
   </a>
 
   <a href="{% url 'pages:flat_page' 'soldering' %}" class="page-front-news-item">
-    <div class="page-front-news-img">
-      <img src="{% static 'images/main/services-02.jpg' %}" class="page-front-news-img-inner" alt="Пайка на заказ">
-    </div>
+    {% if not request|is_mobile %}
+      <div class="page-front-news-img">
+        <img src="{% static 'images/main/services-02.jpg' %}" class="page-front-news-img-inner" alt="Пайка на заказ">
+      </div>
+    {% endif %}
     <div class="page-front-news-title">Аккумуляторные сборки</div>
     <div class="page-front-news-text">
-      Делаем аккумуляторы и батареи любой формы и ёмкости
+      Делаем аккумуляторы и батареи любой  <br>
+      формы и ёмкости
     </div>
   </a>
 
   <a href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" class="page-front-news-item">
-    <div class="page-front-news-img">
-      <img src="{% static 'images/main/services-03.jpg' %}" class="page-front-news-img-inner"
-           alt="Ремонт аккумуляторов">
-    </div>
+    {% if not request|is_mobile %}
+      <div class="page-front-news-img">
+        <img src="{% static 'images/main/services-03.jpg' %}" class="page-front-news-img-inner"
+             alt="Ремонт аккумуляторов">
+      </div>
+    {% endif %}
     <div class="page-front-news-title">Ремонт аккумуляторов</div>
     <div class="page-front-news-text">
-      Ремонтируем аккумуляторы для пылесосов, дрелей, шуруповертов, раций, видеокамер и т.д.
+      Ремонтируем аккумуляторы для <br>
+      пылесосов, дрелей, шуруповертов, <br>
+      раций, видеокамер и т.д.
     </div>
   </a>
 </div>

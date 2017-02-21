@@ -1,11 +1,136 @@
+@import "../common/variables";
+@import "../common/mixins/utilities";
+@import "../common/mixins/sp-png";
+
+.cart-input {
+  background: transparent;
+  border: 1px solid @c-btn-touchspin-border;
+  border-radius: 3px;
+  color: @c-black;
+  display: inline-block;
+  padding: 4px 15px 1px;
+  text-align: center;
+  width: 66px;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.form-control {
+  box-shadow: none;
+  max-width: 100%;
+  padding: 6px 9px;
+
+  &::-moz-placeholder {
+    color: @c-text-grey-light;
+  }
+
+  &::-webkit-input-placeholder {
+    color: @c-text-grey-light;
+  }
+}
+
+.radio,
+.checkbox {
+  margin-top: 0;
+}
+
+// ================================================================
+// Checkboxes & radiobuttons
+// ================================================================
+.custom-checkbox-radio {
+  // Base for label styling:
+  .checkbox label {
+    padding-left: 25px;
+  }
+
+  [type="radio"],
+  [type="checkbox"] {
+    left: -9999px;
+    position: absolute;
+  }
+
+  [type="radio"] + label,
+  [type="checkbox"] + label {
+    cursor: pointer;
+    position: relative;
+  }
+
+  // Checkbox aspect:
+  [type="checkbox"] + label:before {
+    border-radius: @border-radius;
+    border: 1px solid @c-checkbox-border;
+    content: "";
+    height: 17px;
+    left: 0;
+    position: absolute;
+    top: 2px;
+    width: 17px;
+  }
+
+  [type="radio"] + label:before {
+    border-radius: 50%;
+    border: 1px solid @c-input-radio-border;
+    content: "";
+    height: 14px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 14px;
+  }
+
+  // Checked mark aspect:
+  [type="checkbox"] + label:after {
+    .transition;
+    background: @sp-main;
+    .sprite(@10);
+    content: "";
+    left: 3px;
+    position: absolute;
+    top: 1px;
+  }
+
+  [type="radio"] + label:after {
+    .transition;
+    background: @c-input-radio-inner;
+    border-radius: 50%;
+    content: "";
+    height: 8px;
+    left: 3px;
+    position: absolute;
+    top: 3px;
+    width: 8px;
+  }
+
+  // Checked mark aspect changes:
+  [type="radio"] + label:after,
+  [type="checkbox"] + label:after {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  [type="radio"]:checked + label:after,
+  [type="checkbox"]:checked + label:after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  // Disabled checkbox:
+  [type="checkbox"]:disabled + label:before {
+    background-color: @c-checkbox-bg;
+    border-color: @c-checkbox-border;
+    box-shadow: none;
+  }
+}
+
 .input-number {
   border: 1px solid @input-border;
-  border-radius: 3px !important; // Need to override bootstrap rule;
-  height: 44px;
+  border-radius: @border-radius !important; // Override library styles;
+  height: @input-height-base + 4;
   font-family: @proxima;
   font-size: @f-size-base;
   outline: none;
-  padding: 0;
   text-align: center;
 }
 
@@ -14,7 +139,7 @@
   position: absolute;
   right: 0;
   width: 22px;
-  z-index: 2;
+  z-index: 3;
 
   .glyphicon {
     font-size: @f-size-base - 5;
@@ -40,27 +165,27 @@
 
 .bootstrap-touchspin-up,
 .bootstrap-touchspin-down {
-  background-color: @c-btn-increase;
+  background: @c-btn-touchspin-bg;
   border: none;
   color: @c-white;
   height: 22px;
 }
 
 .bootstrap-touchspin-up {
-  border-radius: 0 2px 0 0;
+  border-radius: 0 @border-radius 0 0;
 
   &:hover {
-    background-color: @c-product-pop-label;
+    background: @c-btn-touchspin-minus-bg;
     color: @c-white;
   }
 }
 
 .bootstrap-touchspin-down {
-  border-radius: 0 0 2px 0;
+  border-radius: 0 0 @border-radius 0;
   border-top: 1px solid @c-white;
 
   &:hover {
-    background-color: @c-btn-decrease-active;
+    background: @c-btn-touchspin-plus-bg;
     border-color: @c-white;
     color: @c-white;
   }

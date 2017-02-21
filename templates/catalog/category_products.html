@@ -1,24 +1,26 @@
 {% load staticfiles %}
 {% load se_extras %}
+{% load user_agents %}
 
 {% for product, image in product_image_pairs %}
-  <div class="product-card col-xs-4" productId="{{ product.id }}"
+  <div class="product-card col-xs-6 col-md-4" productId="{{ product.id }}"
        itemscope itemtype="http://schema.org/Product">
     <meta property="name" itemprop="name" content="{{ product.name }}">
-    <div class="category-image-wrapper teaser-shadow">
-      <a class="js-browse-product" target="_blank" href="{{ product.url }}">
+    <div class="category-image-wrapper">
+      <a class="category-product-link js-browse-product" target="_blank" href="{{ product.url }}">
         {% include 'catalog/category_product_image.html' with image=image product=product only%}
       </a>
     </div>
 
-    <div class="product-card-text teaser-shadow" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-      <div class="articul">Артикул: {{ product.id }}</div>
-      <div class="desc">
-        <a class="product-card-desc js-browse-product" target="_blank" href="{{ product.url }}">
+    <div class="product-card-text" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+      <div class="product-card-articul">Артикул: {{ product.id }}</div>
+      <div class="product-card-desc-wrapper">
+        <a class="product-card-desc js-browse-product" href="{{ product.url }}"
+           {% if not request|is_mobile %}target="_blank"{% endif %}>
           {{ product.name }}
         </a>
       </div>
-      <div class="price">{{ product.price|humanize_price }} руб / шт</div>
+      <div class="product-card-price">{{ product.price|humanize_price }} руб / шт</div>
       <meta property="description" itemprop="description" content="{{ product.page.description }}">
       <meta property="price" itemprop="price" content="{{ product.price }}">
       <meta property="priceCurrency" itemprop="priceCurrency" content="RUB">

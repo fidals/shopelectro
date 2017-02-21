@@ -1,24 +1,29 @@
+@import "../common/variables";
+@import "../common/mixins/utilities";
+
 .accordion {
+  .white-plate;
+
   &-item {
     line-height: 1.2;
     margin: 0;
 
     &:nth-child(odd) {
-      background: @c-accordion-link;
+      background: @c-accordion-link-bg;
     }
 
     &:hover {
-      background: @c-accordion-link-hovered;
+      background: @c-accordion-link-bg-hovered;
     }
   }
 
   &-first-item {
     margin: 0;
-    padding: 2px 0 5px;
+    padding: 5px 10px;
 
     .fa {
+      .transition;
       position: relative;
-      transition: all 0.3s ease;
     }
 
     &:hover .fa {
@@ -27,20 +32,20 @@
   }
 
   &-title {
+    .transition;
+    border-radius: @border-radius @border-radius 0 0;
     border-top: 1px solid @c-price-border-color;
     color: @c-tooltip-hovered-link;
     cursor: pointer;
-    border-radius: 2px;
     display: block;
     font-size: @f-size-base;
-    padding: 10px 5px;
+    padding: 10px;
     position: relative;
     text-decoration: none;
-    transition: all 0.3s ease;
 
     &:hover,
     &.active {
-      background-color: @c-accordion-link-hovered;
+      background: @c-accordion-link-bg-hovered;
       color: @c-black;
       text-decoration: none;
     }
@@ -50,30 +55,31 @@
     }
 
     .fa {
-      font-size: @f-size-base - 4;
+      .transition;
+      font-size: @f-size-base - 2;
       height: 10px;
       margin: -5px 0 0;
       position: absolute;
-      right: 2px;
+      right: 10px;
       text-align: center;
       top: 50%;
+      transform: translate(-5px, -1px);
       transform-origin: center;
-      transition: all 0.3s;
       width: 10px;
     }
 
     &.active .fa {
-      transform: rotate(-90deg);
+      transform: rotate(-90deg) translate(0, -5px);
     }
   }
 
   &-link {
+    .transition;
     color: @c-tooltip-hovered-link;
     cursor: pointer;
     display: block;
-    padding: 10px 5px;
+    padding: 10px;
     text-decoration: none;
-    transition: all 0.3s ease;
 
     &:hover {
       color: @c-black;
@@ -81,16 +87,11 @@
     }
   }
 
-  &-content {
-    background: @c-white;
-  }
-
   &-link-to-category {
-    color: @c-order-btn-file;
+    .transition;
+    color: @c-text-grey-light;
     display: block;
-    font-size: 0.8em;
-    padding: 5px;
-    transition: all 0.3s;
+    font-size: @f-size-base - 2;
 
     .fa {
       left: 4px;
@@ -99,4 +100,3 @@
     }
   }
 }
-

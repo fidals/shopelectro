@@ -1,0 +1,30 @@
+@import "../common/variables";
+@import "../common/mixins/utilities";
+
+.search-result {
+  margin: 0 0 20px;
+  display: inline-block;
+
+  &-link {
+    .link-style;
+  }
+
+  &-item {
+    padding: 10px;
+
+    p {
+      margin: 0 0 5px;
+    }
+  }
+
+  &-type {
+    color: @c-text-grey-light;
+    padding: 5px 0 0;
+
+    .Q(@sm; {
+      display: inline;
+      float: right;
+      padding: 0;
+    });
+  }
+}

@@ -1,0 +1,21 @@
+{% load pages_extras %}
+
+<div class="hidden-xs hidden-sm breadcrumbs-wrapper"
+     itemscope itemtype="http://schema.org/BreadcrumbList">
+  {% for name, slug in crumbs_list %}
+    <span class="breadcrumbs-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+      {% if slug %}
+        <a href="{{ slug }}" itemscope itemtype="http://schema.org/Thing" itemprop="item"
+           class="breadcrumbs-link">
+          <span itemprop="name">{{ name }}</span>
+        </a>
+      {% else %}
+        <span itemprop="name">{{ name }}</span>
+      {% endif %}
+      <meta itemprop="position" content="{{ forloop.counter }}">
+      {% if not forloop.last %}
+        <span class="breadcrumbs-separator">{{ separator }}</span>
+      {% endif %}
+    </span>
+  {% endfor %}
+</div>

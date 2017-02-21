@@ -1,22 +1,28 @@
 {% load pages_extras %}
 {% load se_extras %}
 {% load staticfiles %}
+{% load user_agents %}
 {% roots as root_categories %}
 
 <div class="header">
-  {# Remove .new-year-background after new year #}
-  <div class="new-year-background container">
-    <div class="top-header">
+  <div class="top-header">
+    <div class="container">
       <div class="row">
-        <div class="col-xs-3 header-logo-wrapper" itemscope itemtype="http://schema.org/Organization">
-          <a class="header-logo" href="/" title="На главную" itemprop="logo">
-            {% include 'layout/logo.html' %}
-          </a>
+        <a href="#mobile-menu" class="header-toggle-menu js-mobile-menu-toggler">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </a>
+        <div class="col-sm-4 col-sm-offset-2 col-md-offset-0 col-md-3 header-logo-wrapper"
+             itemscope itemtype="http://schema.org/Organization">
+          <a class="header-logo" href="/" title="На главную" itemprop="logo"></a>
         </div>
 
-        <div class="col-xs-5 header-info">
+        <div class="col-sm-4 col-md-4 header-info">
           <div class="header-phone js-copy-phone">
             <a class="header-phone-link substitute-phone-link" href="tel:+78124163200">
+              <i class="fa fa-phone"></i>
               <span class="header-phone-code header-phone-precode">+7</span>
               <span class="header-phone-code">812</span>
               <span class="header-phone-body substitute-phone">416-32-00</span>
@@ -25,15 +31,16 @@
 
           <div class="header-email">
             <p class="header-mail-wrapper js-copy-mail">
+              <i class="fa fa-envelope"></i>
               <a href="mailto:info@shopelectro.ru" class="header-mail">info@shopelectro.ru</a>
             </p>
-            <p class="header-time">
+            <p class="hidden-xs hidden-sm header-time">
               пн-чт с 10 до 18, пт до 17
             </p>
           </div>
         </div>
 
-        <div class="col-xs-4 header-navigation-wrapper">
+        <div class="hidden-xs hidden-sm col-sm-5 col-md-5 header-navigation-wrapper">
           <ul class="list-unstyled header-navigation">
             <li class="header-navigation-item">
               <a class="header-navigation-link" href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">
@@ -71,71 +78,96 @@
       </div>
     </div>
 
-    <div class="middle-header">
+    {% if not request|is_mobile %}
       <div class="container">
-        <div class="middle-header-inner">
-          <div class="row">
-            <div class="col-xs-8">
-              <form class="search-form js-search-form" action="{% custom_url 'search' %}" method="get">
-                <div class="row">
-                  <div class="col-xs-11">
-                    <div class="header-search-area">
-                      <div class="row">
-                        <div class="col-xs-7">
-                          <input class="form-control js-search-input" type="text" name="term"
-                                 placeholder="Поиск по названию, артикулу, производителю" value="{{ term }}">
-                        </div>
-                        <div class="col-xs-5">
-                          <div class="example">
-                            например,
-                            <span class="search-example-text" id="search-example-text">
-                              Батарейка MINAMOTO 3R12, 4.5 В
-                            </span>
-                          </div>
-                        </div>
+        <div class="middle-header hidden-xs hidden-sm">
+          <div class="middle-header-inner">
+            <div class="row">
+              <div class="col-md-9">
+                <form class="search-form js-search-form" action="{% custom_url 'search' %}" method="get">
+                  <div class="row">
+                    <div class="col-md-11 header-search-area">
+                      <input class="form-control js-search-input" type="text" name="term"
+                             placeholder="Поиск по названию, артикулу, производителю" value="{{ term }}">
+                      <div class="header-search-example">
+                        например,
+                        <span class="search-example-text" id="search-example-text">
+                          Батарейка MINAMOTO 3R12, 4.5 В
+                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="col-xs-1">
-                    <button type="submit" class="btn btn-blue btn-search fa fa-search" id="search-submit"></button>
+                    <div class="col-md-1">
+                      <button type="submit" class="btn btn-blue btn-search fa fa-search" id="search-submit"></button>
+                    </div>
                   </div>
-                </div>
-              </form>
-            </div>
-            <div class="basket-parent js-cart-header col-xs-4">
-              {% include 'ecommerce/header_cart.html' %}
+                </form>
+              </div>
+
+              <div class="col-md-3 basket-parent js-cart-header">
+                {% include 'ecommerce/header_cart.html' %}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="container">
-      <div class="nav-category-wrapper">
-        <ul class="nav-category list-unstyled clearfix">
-          {% for root in root_categories %}
+        <div class="nav-category-wrapper hidden-xs hidden-sm">
+          <ul class="nav-category list-unstyled clearfix">
+            {% for root in root_categories %}
+              <li class="nav-category-item js-menu-item">
+                <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
+                {% if root.get_children %}
+                  <ul class="list-white nav-menu-dropdown">
+                    {% for child in root.get_children %}
+                      <li>
+                        <a href="{{ child.url }}" class="list-white-link">
+                          {{ child.name }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+
             <li class="nav-category-item js-menu-item">
-              <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
-              {% if root.get_children %}
-                <ul class="list-white nav-menu-dropdown">
-                  {% for child in root.get_children %}
-                    <li>
-                      <a href="{{ child.url }}" class="list-white-link">
-                        {{ child.name }}
-                      </a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
+              <a class="nav-category-link" href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
             </li>
-          {% endfor %}
-
-          <li class="nav-category-item js-menu-item">
-            <a class="nav-category-link" href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
-          </li>
-        </ul>
+          </ul>
+        </div>
       </div>
+    {% endif %}
+  </div>
+
+  <div class="mobile-catalog hidden-md hidden-lg">
+    <div class="container">
+      <button class="btn btn-blue mobile-catalog-btn js-mobile-catalog-btn">
+        Каталог товаров
+        <i class="fa fa-chevron-down" aria-hidden="true"></i>
+      </button>
+
+      <ul class="list-unstyled mobile-catalog-wrapper-list" style="display: none;">
+        {% for root in root_categories %}
+          <li class="mobile-catalog-list-item js-mobile-menu-item">
+            <a class="mobile-catalog-link" href="{{ root.url }}">
+              {{ root.name }}
+              <i class="fa fa-chevron-down mobile-catalog-link-icon js-mobile-link-arrow"
+                 aria-hidden="true"></i>
+            </a>
+            {% if root.get_children %}
+              <ul class="mobile-catalog-sub-list list-unstyled" style="display: none">
+                {% for child in root.get_children %}
+                  <li>
+                    <a class="mobile-catalog-sub-link" href="{{ child.url }}">
+                      {{ child.name }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>

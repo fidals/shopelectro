@@ -1,0 +1,32 @@
+{% load pages_extras %}
+
+<nav id="mobile-menu">
+  <ul>
+    <li>
+      <a href="/">Главная</a>
+    </li>
+    <li>
+      <a href="{% custom_url 'catalog' %}">Каталог</a>
+    </li>
+    <li>
+      <a href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">
+        Доставка
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'pages:flat_page' 'navigation' 'pay' %}">
+        Оплата
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'pages:flat_page' 'navigation' 'return-goods-instr' %}">
+        Возврат
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'pages:flat_page' 'navigation' 'contacts' %}">
+        Контакты
+      </a>
+    </li>
+  </ul>
+</nav>

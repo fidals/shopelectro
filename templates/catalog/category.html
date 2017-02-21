@@ -1,19 +1,14 @@
-{% extends 'layout/base.html' %}
-{% load staticfiles %}
+{% extends 'layout/inner_page.html' %}
+
 {% load pages_extras %}
 {% load se_extras %}
-
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
 
 {% block content %}
   {% breadcrumbs_with_siblings page %}
   <h1 class="category-title">{{ page.h1 }}</h1>
 
   <div class="row">
-    <div class="col-xs-3 category-left-block">
+    <div class="col-md-3 category-left-block">
       {% include 'catalog/category_children.html' with category=category tags=tags only %}
 
       {% include 'catalog/category_tags.html' with group_tags_pairs=group_tags_pairs only %}
@@ -26,10 +21,10 @@
       {% endif %}
     </div>
 
-    <div class="col-xs-9 category-right view-mode-{{ view_type }}" id="category-right">
+    <div class="col-md-9 category-right view-mode-{{ view_type }}" id="category-right">
       {% if page.seo_text %}
         {% autoescape off %}
-          <div class="category-text" id="category-text">{{ page.seo_text }}</div>
+          <div class="hidden-xs hidden-sm category-text" id="category-text">{{ page.seo_text }}</div>
         {% endautoescape %}
       {% endif %}
 
@@ -41,7 +36,7 @@
         из <span class="font-bold js-total-products">{{ total_products }}</span>.
       </p>
 
-      <div class="product-card-wrapper clearfix" id="products-wrapper"
+      <div class="row product-card-wrapper" id="products-wrapper"
            data-category-id="{{ category.id }}">
         {% include 'catalog/category_products.html' %}
       </div>
@@ -57,9 +52,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block jslinks %}
-  {{ block.super }}
-  <script src="{% static 'js/pages.min.js' %}"></script>
 {% endblock %}

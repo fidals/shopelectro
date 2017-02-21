@@ -44,7 +44,7 @@
   function setUpListeners() {
     mediator.subscribe(
       'onCartUpdate', renderTable, fillSavedInputs,
-      touchSpinReinit, restoreSelectedPayment, cityAutocomplete
+      touchSpinReinit, restoreSelectedPayment, cityAutocomplete,
     );
     $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
 
@@ -52,15 +52,15 @@
      * Bind events to parent's elements, because of dynamic elements.
      */
     DOM.$order.on('click', DOM.submit, submitOrder);
-    DOM.$order.on('click', DOM.remove, () => removeProduct(getElAttr(event, 'productId')));
-    DOM.$order.on('change', DOM.productCount, event => changeProductCount(event));
+    DOM.$order.on('click', DOM.remove, event => removeProduct(getElAttr(event, 'productId')));
+    DOM.$order.on('change', DOM.productCount, helpers.debounce(changeProductCount, 250));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
   }
 
   /**
-   * Return element's attribute value by value name.
+   * Return element's attribute value by attr name.
    */
-  const getElAttr = (event, attributeName) => event.target.getAttribute(attributeName);
+  const getElAttr = (event, attrName) => event.currentTarget.getAttribute(attrName);
 
   /**
    * Init google cities autocomplete.
@@ -120,40 +120,35 @@
   }
 
   /**
-   * Remove product from cart's table
+   * Remove Product from Cart.
    */
   function removeProduct(productId) {
     server.removeFromCart(productId)
-      .then(data => {
+      .then((data) => {
         mediator.publish('onCartUpdate', data);
       });
   }
 
   /**
-   * Event handler for changing product's count in Cart.
-   * We wait at least 100ms every time the user pressed the button.
+   * Handle Product's count change in Cart with delay.
    */
   function changeProductCount(event) {
     const productID = getElAttr(event, 'productId');
-    const newCount = event.target.value;
-
-    setTimeout(
-      () => server.changeInCart(productID, newCount)
-        .then(data => mediator.publish('onCartUpdate', data)), 100
-    );
+    server.changeInCart(productID, event.target.value)
+        .then(data => mediator.publish('onCartUpdate', data));
   }
 
   /**
    * Return name (which is value) of a selected payment option.
    */
-  const getSelectedPaymentName = () => $(`${DOM.paymentOptions}:checked`).val();
+  const getSelectedPayment = () => $(`${DOM.paymentOptions}:checked`).val();
 
   /**
    * Return hash with customer's info from form.
    */
   const getOrderInfo = () => {
     const orderInfo = {
-      payment_type: getSelectedPaymentName(),
+      payment_type: getSelectedPayment(),
     };
 
     $.each(DOM.orderForm, (name, field) => {
@@ -171,9 +166,9 @@
            helpers.isEmailValid(customerInfo.email);
   }
 
-  const isYandex = () => !config.sePayments.includes(getSelectedPaymentName());
+  const isYandex = () => !config.sePayments.includes(getSelectedPayment());
 
-  const renderYandexForm = formData => {
+  const renderYandexForm = (formData) => {
     const formHtml = `
       <form action="${formData['yandex_kassa_link']}" method="POST" id="yandex-form">
         <input type="text" name="shopId" value="${formData['shopId']}">
@@ -212,7 +207,7 @@
 
     if (isYandex()) {
       server.sendYandexOrder(orderInfo)
-        .then(formData => {
+        .then((formData) => {
           renderYandexForm(formData);
           $(DOM.yandexForm).submit();
         });
@@ -224,7 +219,7 @@
   /**
    * Store inputted value into LocalStorage.
    */
-  const storeInput = target => {
+  const storeInput = (target) => {
     localStorage.setItem(target.attr('name'), target.val());
   };
 

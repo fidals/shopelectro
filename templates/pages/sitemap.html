@@ -1,12 +1,7 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
 
 {% load staticfiles %}
 {% load pages_extras %}
-
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
 
 {% block content %}
   <div class="container">
@@ -48,9 +43,4 @@
       <p>Страница {{ paginator_pages.number }} из {{ paginator_pages.paginator.num_pages }}</p>
     </div>
   </div>
-{% endblock %}
-
-{% block jslinks %}
-  {{ block.super }}
-  <script src="{% static 'js/pages.min.js' %}"></script>
 {% endblock %}

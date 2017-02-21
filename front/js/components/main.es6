@@ -1,12 +1,11 @@
-(() => {
+{
   const DOM = {
     $btnScrollTop: $('#btn-scroll-to-top'),
-    $touchspin: $('.js-touchspin'),
-    $timeTag: $('.js-select-time'),
-    $phoneInputs: $('.js-masked-phone'),
+    $menuItem: $('.js-menu-item'),
+    $phoneInput: $('.js-masked-phone'),
     $searchExampleText: $('#search-example-text'),
     $searchInput: $('.js-search-input'),
-    $menuItem: $('.js-menu-item'),
+    $timeTag: $('.js-select-time'),
   };
 
   const init = () => {
@@ -18,11 +17,11 @@
   };
 
   /**
-   * Fill in user stored data in inputs.
+   * Fill inputs by user's stored data.
    */
   function fillInUserData(data) {
     if (data.phone) {
-      $.each(DOM.$phoneInputs, (_, item) => $(item).val(data.phone));
+      $.each(DOM.$phoneInput, (_, item) => $(item).val(data.phone));
     }
     if (data.time) {
       DOM.$timeTag.find(`[data-time=${data.time}]`).attr('selected', true);
@@ -32,23 +31,26 @@
   function setUpListeners() {
     $(window).scroll(toggleToTopBtn);
     DOM.$searchExampleText.click(pasteSearchExampleText);
-    DOM.$btnScrollTop.click(() => $('html, body').animate({ scrollTop: 0 }, 300));
-    DOM.$menuItem.hover(menuMouseOver, menuMouseLeave);
+    DOM.$btnScrollTop.click(scrollToTop);
+    DOM.$menuItem.hover(
+      helpers.debounce(toggleSubmenu(true), 200),
+      toggleSubmenu(false),
+    );
   }
 
-  const enableScrollToTop = () => {
-    DOM.$btnScrollTop.addClass('active');
-  };
-
-  const disableScrollToTop = () => {
-    DOM.$btnScrollTop.removeClass('active');
-  };
+  const scrollToTop = () => $('html, body').animate({ scrollTop: 0 }, 300);
+  const enableScrollToTop = () => DOM.$btnScrollTop.addClass('active');
+  const disableScrollToTop = () => DOM.$btnScrollTop.removeClass('active');
 
   /**
-   * Show\hide to top button.
+   * Show\hide `To top` button.
    */
   function toggleToTopBtn() {
-    ($(window).scrollTop() > 300) ? enableScrollToTop() : disableScrollToTop();
+    if ($(window).scrollTop() > 300) {
+      enableScrollToTop();
+    } else {
+      disableScrollToTop();
+    }
   }
 
   /**
@@ -56,28 +58,20 @@
    */
   function pasteSearchExampleText() {
     const searchExampleText = DOM.$searchExampleText.text().trim();
-
     $(DOM.$searchInput).val(searchExampleText).focus();
   }
 
   /**
    * Show\hide navigation list on hover with user friendly delay.
    */
-  let menuDelayTimeoutId;
-  function menuMouseOver() {
-    const $this = $(this);
-    if (menuDelayTimeoutId) clearTimeout(menuDelayTimeoutId);
-
-    menuDelayTimeoutId = setTimeout(() => {
-      DOM.$menuItem.removeClass('hovered');
-      $this.addClass('hovered');
-    }, 200);
-  }
-
-  function menuMouseLeave() {
-    if (menuDelayTimeoutId) clearTimeout(menuDelayTimeoutId);
-    menuDelayTimeoutId = setTimeout(() => DOM.$menuItem.removeClass('hovered'), 200);
+  function toggleSubmenu(show) {
+    return function toggler() {
+      const $el = $(this);
+      const isHovered = $el.is(':hover');
+      const action = show && isHovered ? 'addClass' : 'removeClass';
+      $el[action]('hovered');
+    };
   }
 
   init();
-})();
+}

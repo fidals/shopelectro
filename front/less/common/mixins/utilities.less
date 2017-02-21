@@ -1,27 +1,42 @@
-.font-anti (@val: antialiased) {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: @val;
+@import "../variables";
+
+// Media queries mixin
+// Live example: https://goo.gl/xJblcx
+.Q(@breaks; @rules;) {
+  // If there's only one breakpoint:
+  & when (length(@breaks) = 1) {
+    @query: ~"(min-width: @{breaks}px)";
+    @media screen and @query {@rules();};
+  }
+
+  // If there's two breakpoints:
+  & when (length(@breaks) = 2) {
+    @min: extract(@breaks, 1);
+    @max: extract(@breaks, 2);
+
+    // If first breakpoint is not number, we build just a max-width query:
+    & when not (isnumber(@min)) {
+      @maxWidth: (@max - 1);
+      @query: ~"(max-width: @{maxWidth}px)";
+      @media screen and @query {@rules();};
+    }
+
+    // If the two breakpoints are specified,
+    // then we build a min-width AND max-width:
+    & when (isnumber(@min)) {
+      @query: ~"(min-width: @{min}px) and (max-width: @{max}px)";
+      @media screen and @query {@rules();};
+    }
+  }
 }
 
 .font-bold {
-  .font-anti;
   font-weight: 600;
 }
 
 .font-light {
-  .font-anti;
   font-family: @proxima-light;
   font-weight: normal;
-}
-
-.image-plate (
-  @border-radius : 4px,
-  @background    : @c-white,
-  @border-color  : @c-stuff-link-border
-) {
-  background: @background;
-  border: 1px solid @border-color;
-  border-radius: @border-radius;
 }
 
 .transition (
@@ -32,14 +47,18 @@
   transition: @property @duration @style;
 }
 
+.text-shadow {
+  text-shadow: 1px 1px 2px fade(@c-black, 30%);
+}
+
 .link-dotted {
-  border-bottom: 1px dotted @c-grey-text-main;
-  color: @c-grey-text-main;
+  border-bottom: 1px dotted @c-text-grey-light;
+  color: @c-text-grey-light;
   cursor: pointer;
   text-decoration: none !important; // Prevent double lines;
 
   &:visited {
-    color: @c-grey-text-main;
+    color: @c-text-grey-light;
   }
 
   &:hover,
@@ -49,7 +68,7 @@
 }
 
 .link-style {
-  border-bottom: 1px solid @c-head-mail-border;
+  border-bottom: 1px solid @c-grey-border;
   color: @c-black-lighter-x;
   display: inline;
   text-decoration: none !important; // Prevent double lines;
@@ -65,4 +84,27 @@
 
 .teaser-shadow {
   box-shadow: 0 1px 2px fadeout(@c-block-link-shadow, 85%);
+}
+
+.white-plate {
+  .teaser-shadow;
+  background: @c-white;
+  border-radius: 2px;
+}
+
+.sub-plate {
+  .teaser-shadow;
+  background: @c-sub-plate-bg;
+  border-radius: 0 0 2px 2px;
+}
+
+.img-centered {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  max-height: 100%;
+  padding: 10px;
+  right: 0;
+  text-align: center;
+  top: 0;
 }

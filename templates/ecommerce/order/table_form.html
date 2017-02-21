@@ -5,148 +5,137 @@
 
 {% if cart|length %}
   <h1>Оформление заказа</h1>
-  <table id="js-order-list" class="table table-bordered order-list">
-    <colgroup>
-      <col style="width: 5%;">
-      <col style="width: 5%;">
-      <col style="width: 50%;">
-      <col style="width: 5%;">
-      <col style="width: 10%;">
-      <col style="width: 3%;">
-    </colgroup>
-    <tr>
-      <th>Код</th>
-      <th>Фото</th>
-      <th>Наименование</th>
-      <th>Количество</th>
-      <th>Цена</th>
-      <th></th>
-    </tr>
-    {% for id, position in cart %}
-      <tr data-table-id="{{ id }}">
-        <td>{{ id }}</td>
-        <td class="photo text-center">
-          {% if 'logo' in position.image %} {# position has image #}
-            <img src="{% static 'images/camera-icon.png' %}" alt="{% get_img_alt position %}">
-          {% else %}
-            <a class="fancybox" rel="product-cart-gallery" href="{% static position.image %}"
-               title="{{ position.name }}">
-              <img src="{% static 'images/camera-icon-clr.png' %}" alt="{% get_img_alt position %}">
-            </a>
-          {% endif %}
-        </td>
-        <td>
-          <a class="js-product-link" href="{{ position.url }}">{{ position.name }}</a>
-        </td>
-        <td class="order-count">
-          <div class="stock">
-            {% if position.in_stock > 0 %}
-              <i class="fa fa-circle in-stock" title="В наличии"></i>
+
+  <div id="js-order-list" class="div-table order-list">
+    <div class="hidden-xs div-table-heading">
+      <div class="div-table-head order-th-code">Код</div>
+      <div class="div-table-head order-th-photo">Фото</div>
+      <div class="div-table-head order-th-product">Наименование</div>
+      <div class="div-table-head order-th-count">Количество</div>
+      <div class="div-table-head order-th-price">Цена</div>
+      <div class="hidden-xs div-table-head order-table-remove"></div>
+    </div>
+
+    <div class="div-table-body">
+      {% for id, position in cart %}
+        <div class="div-table-row" data-table-id="{{ id }}">
+          <div class="div-table-cell order-table-product-id">{{ id }}</div>
+          <div class="div-table-cell order-table-product-photo text-center">
+            {% if 'logo' in position.image %} {# position has no image #}
+              <img src="{% static 'images/camera-icon.png' %}" alt="{% get_img_alt position %}">
             {% else %}
-              <i class="fa fa-circle out-stock" title="Под заказ"></i>
+              <a class="fancybox" rel="product-cart-gallery" href="{% static position.image %}"
+                 title="{{ position.name }}">
+                <img src="{% static 'images/camera-icon-clr.png' %}" alt="{% get_img_alt position %}">
+              </a>
             {% endif %}
           </div>
-          <input class="prod-count input-number js-prod-count js-touchspin"
-                 value="{{ position.quantity }}" type="number"
-                 name="prod-count" productId="{{ id }}">
-        </td>
-        <td class="text-center js-product-price" productId="{{ id }}">{{ position.price|humanize_price }} руб.</td>
-        <td class="text-center">
-          <img class="btn-cart js-remove" productId="{{ id }}" src="{% static 'images/btn-close-icon.png' %}"
-               alt="Убрать из корзины" title="Убрать из заказа">
-        </td>
-      </tr>
-    {% endfor %}
-    <tr>
-      <td class="text-right" colspan="3">
-        <strong>Итого:</strong>
-      </td>
-      <td class="text-center">
-        <strong id="cart-page-prods-count">{{ cart.total_quantity }} шт.</strong>
-      </td>
-      <td class="text-center" colspan="2">
-        <strong id="cart-page-sum">{{ cart.total_price|humanize_price }} руб.</strong>
-      </td>
-    </tr>
-  </table>
+          <div class="div-table-cell">
+            <a class="js-product-link" href="{{ position.url }}">{{ position.name }}</a>
+          </div>
+          <div class="div-table-cell order-table-product-count">
+            <div class="stock">
+              {% if position.in_stock > 0 %}
+                <i class="fa fa-circle in-stock" title="В наличии"></i>
+              {% else %}
+                <i class="fa fa-circle out-stock" title="Под заказ"></i>
+              {% endif %}
+            </div>
+            <input class="prod-count input-number js-prod-count js-touchspin"
+                   value="{{ position.quantity }}" type="number"
+                   name="prod-count" productId="{{ id }}">
+          </div>
+          <div class="div-table-cell order-table-product-price text-center js-product-price"
+               productId="{{ id }}">
+            {{ position.price|humanize_price }} руб.
+          </div>
+          <div class="div-table-cell text-center">
+            <div class="order-list-remove-item js-remove" productId="{{ id }}" title="Убрать из заказа">
+              <i class="fa fa-close"></i>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
 
-  <form class="order-form" id="order-form-full" method="post">{% csrf_token %}
-    <table class="order-info">
-      <tr>
-        <td>
-          <div class="order-info-header text-center">
-            <b style="color:red">*</b> СПОСОБЫ ОПЛАТЫ
-          </div>
-        </td>
-        <td>
-          <div class="order-info-header text-center">
-            ФОРМА ЗАКАЗА
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td class="payment-types-form">
+    <div class="div-table-footer">
+      <div class="hidden-xs div-table-cell"></div>
+      <div class="hidden-xs div-table-cell"></div>
+      <div class="div-table-cell order-table-sum-text">
+        <strong>Итого:</strong>
+      </div>
+      <div class="div-table-cell order-table-sum-count text-center">
+        <strong id="cart-page-prods-count">{{ cart.total_quantity }} шт.</strong>
+      </div>
+      <div class="div-table-cell order-table-sum-cash text-center">
+        <strong id="cart-page-sum">{{ cart.total_price|humanize_price }} руб.</strong>
+      </div>
+      <div class="hidden-xs div-table-cell"></div>
+    </div>
+  </div>
+
+  <form class="order-form" id="order-form-full" method="post">
+    {% csrf_token %}
+    <div class="order-info">
+      <div class="order-payment-types">
+        <div class="order-info-header text-center">СПОСОБЫ ОПЛАТЫ</div>
+        <div class="payment-types-form">
           {% include 'ecommerce/order/payment_types.html' %}
-        </td>
-        <td>
-          {% csrf_token %}
-          <p class="error-msg hidden js-form-error-text">Введите ваш телефон и почтовый адрес</p>
-          <table class="order-form-right form-horizontal">
-            <tr>
-              <td class="form-order title">
-                <label class="control-label" for="{{ form.name.id_for_label }}">Ваше имя:</label>
-              </td>
-              <td class="form-order data">
-                {{ form.name }}
-              </td>
-            </tr>
-            <tr>
-              <td class="form-order title">
-                <b class="table-required-icon">*</b>
-                <label class="control-label" for="{{ form.phone.id_for_label }}">Контактный телефон: </label>
-              </td>
-              <td class="form-order data">
-                {{ form.phone.errors }}
-                {{ form.phone|add_class:'js-masked-phone' }}
-              </td>
-            </tr>
-            <tr>
-              <td class="form-order title">
-                <b class="table-required-icon">*</b>
-                <label class="control-label" for="{{ form.email.id_for_label }}">Электронная почта:</label>
-              </td>
-              <td class="form-order data">
-                {{ form.email.errors }}
-                {{ form.email }}
-              </td>
-            </tr>
-            <tr>
-              <td class="form-order title">
-                <label class="control-label" for="{{ form.city.id_for_label }}">Город:</label>
-              </td>
-              <td class="form-order data">
-                {{ form.city }}
-              </td>
-            </tr>
-            <tr>
-              <td class="form-order title">
-                <label class="control-label" for="{{ form.address.id_for_label }}">Адрес, Комментарий:</label>
-              </td>
-              <td class="form-order data">
-                {{ form.address }}
-              </td>
-            </tr>
-            <tr>
-              <td class="form-order form-submit-wrapper text-right">
-                <button id="submit-order" class="btn btn-pink" type="submit">
-                  Продолжить
-                </button>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
+        </div>
+      </div>
+
+      <div class="order-user-info">
+        <div class="order-info-header text-center">ФОРМА ЗАКАЗА</div>
+        <p class="error-msg hidden js-form-error-text">Введите ваш телефон и почтовый адрес</p>
+
+        <div class="order-form-right form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-5 control-label" for="{{ form.name.id_for_label }}">Ваше имя:</label>
+            <div class="col-sm-7">{{ form.name }}</div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-5 control-label" for="{{ form.phone.id_for_label }}">
+              Контактный телефон: <strong class="table-required-icon">*</strong>
+            </label>
+            <div class="col-sm-7">
+              {{ form.phone.errors }}
+              {{ form.phone|add_class:'js-masked-phone' }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-5 control-label" for="{{ form.email.id_for_label }}">
+              Электронная почта: <strong class="table-required-icon">*</strong>
+            </label>
+            <div class="col-sm-7">
+              {{ form.email.errors }}
+              {{ form.email }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-5 control-label" for="{{ form.city.id_for_label }}">Город:</label>
+            <div class="col-sm-7">
+              {{ form.city }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-5 control-label" for="{{ form.address.id_for_label }}">Адрес, Комментарий:</label>
+            <div class="col-sm-7">
+              {{ form.address }}
+            </div>
+          </div>
+
+          <div class="order-submit-wrapper">
+            <button id="submit-order" class="btn btn-pink" type="submit">
+              Продолжить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
   <div class="hidden" id="yandex-form-wrapper"></div>
 {% else %}

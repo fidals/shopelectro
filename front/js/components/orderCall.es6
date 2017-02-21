@@ -1,4 +1,4 @@
-(() => {
+{
   const DOM = {
     $phone: $('#back-call-phone'),
     $callModal: $('#back-call-modal'),
@@ -57,4 +57,4 @@
   }
 
   init();
-})();
+}

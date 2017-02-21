@@ -1,22 +1,17 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
 
 {% load staticfiles %}
 {% load pages_extras %}
-
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
 
 {% block content %}
   {% breadcrumbs page %}
 
   <div class="row">
-    <div class="p-article-sidebar col-xs-3">
+    <div class="col-sm-3 p-article-sidebar">
       {% accordion %}
     </div>
 
-    <div class="col-xs-9 right-col">
+    <div class="col-sm-9 right-col">
       <h1>{{ page.h1 }}</h1>
       {% if page.type != 'navigation' and page.date_published %}
         <p class="date-pub-article">
@@ -33,9 +28,4 @@
       {% endif %}
     </div>
   </div>
-{% endblock %}
-
-{% block jslinks %}
-  {{ block.super }}
-  <script src="{% static 'js/pages.min.js' %}"></script>
 {% endblock %}

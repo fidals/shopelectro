@@ -1,29 +1,22 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
+
 {% load mptt_tags %}
 {% load pages_extras %}
-{% load staticfiles %}
-
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
 
 {% block content %}
-  <div class="container">
-    {% breadcrumbs_with_siblings page %}
-    <h1>{{ page.h1 }}</h1>
+  {% breadcrumbs_with_siblings page %}
+  <h1>{{ page.h1 }}</h1>
 
-    <ul class="catalog-list">
-      {% recursetree nodes %}
-        <li class="catalog-list-item">
-          <a href="{{ node.url }}" class="catalog-list-item">{{ node.name }}</a>
-          {% if not node.is_leaf_node %}
-            <ul class="catalog-list-children">
-              {{ children }}
-            </ul>
-          {% endif %}
-        </li>
-      {% endrecursetree %}
-    </ul>
-  </div>
+  <ul class="catalog-list">
+    {% recursetree nodes %}
+      <li class="catalog-list-item">
+        <a href="{{ node.url }}" class="catalog-list-item">{{ node.name }}</a>
+        {% if not node.is_leaf_node %}
+          <ul class="catalog-list-children">
+            {{ children }}
+          </ul>
+        {% endif %}
+      </li>
+    {% endrecursetree %}
+  </ul>
 {% endblock %}

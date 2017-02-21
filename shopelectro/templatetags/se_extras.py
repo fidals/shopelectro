@@ -57,10 +57,7 @@ def time_to_call():
 
     def is_closed(t):
         current_time = (t.hour, t.minute)
-        if is_friday(t):
-            closing_time = (16, 30)
-        else:
-            closing_time = (17, 30)
+        closing_time = (16, 30) if is_friday(t) else (17, 30)
         return current_time > closing_time
 
     when_we_call = {
@@ -114,7 +111,7 @@ def main_image_or_logo(page: Page):
     if page.main_image:
         return page.main_image.url
     else:
-        return settings.STATIC_URL + 'images/common/logo.png'
+        return settings.STATIC_URL + 'images/logo.png'
 
 
 @register.inclusion_tag('catalog/product_feedbacks_icons.html')

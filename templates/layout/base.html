@@ -1,4 +1,7 @@
+{% load se_extras %}
 {% load staticfiles %}
+{% load pages_extras %}
+
 <!DOCTYPE html>
 <html prefix="ya: http://webmaster.yandex.ru/vocabularies/ og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" lang="ru">
 
@@ -14,17 +17,41 @@
 <body>
   {% include 'layout/google_tag_manager.html' with DEBUG=DEBUG is_body_tag=True %}
 
-  {% block header %}
-    {% include 'layout/header.html' %}
-  {% endblock %}
+  <div id="desktop-wrapper">
+    {% block header %}
+      {% include 'layout/header.html' %}
+    {% endblock %}
 
-  {# Remove after new year #}
-  <div class="content new-year-background container">
-    {% block content %}{% endblock %}
+    <div class="container content">
+      {% block content %}{% endblock %}
+    </div>
+
+    {% block footer %}
+      {% include 'layout/footer.html' %}
+    {% endblock %}
+
+    <div class="mobile-cart js-header-cart">
+      <span>Товаров:</span>
+      <span class="mobile-cart-count js-cart-size">
+        <span>
+          {{ cart.total_quantity }}
+        </span> шт.
+      </span>
+      <br>
+      <span>На сумму:</span>
+      <span class="mobile-cart-price">
+        <span class="js-mobile-cart-price">
+          {{ cart.total_price|humanize_price }}
+        </span> руб.
+      </span>
+
+      <a class="btn btn-pink mobile-cart-link js-go-to-cart"
+         href="{% custom_url 'order' %}">Корзина</a>
+    </div>
   </div>
 
-  {% block footer %}
-    {% include 'layout/footer.html' %}
+  {% block mobile_nav %}
+    {% include 'layout/mobile_nav.html' %}
   {% endblock %}
 
   <div class="btn-scroll-to-top" id="btn-scroll-to-top">

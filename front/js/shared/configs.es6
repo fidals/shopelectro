@@ -4,16 +4,19 @@
  */
 const configs = (() => {
   const DOM = {
-    $modals: $('.modal'),
+    $mobileMenu: $('#mobile-menu'),
+    $modal: $('.modal'),
+    $phoneInput: $('.js-masked-phone'),
     scrollWrapper: '#scroll-wrapper',
     touchspin: '.js-touchspin',
-    $phoneInputs: $('.js-masked-phone'),
   };
 
   const labels = {
     callTime: 'callTime',
     phone: 'phone',
   };
+
+  let $menu;
 
   const plugins = {
     scrollbar: {
@@ -45,14 +48,14 @@ const configs = (() => {
   };
 
   function setupListeners() {
-    DOM.$modals.on('shown.bs.modal', focusFirstField);
-    DOM.$phoneInputs.on('input', storePhoneNumber);
-    DOM.$phoneInputs.focus(phoneFieldFocus);
+    DOM.$modal.on('shown.bs.modal', focusFirstField);
+    DOM.$phoneInput.on('input', storePhoneNumber);
+    DOM.$phoneInput.focus(phoneFieldFocus);
   }
 
   /**
-  * Set all unsafe ajax requests with csrftoken.
-  */
+   * Set all unsafe ajax requests with csrftoken.
+   */
   function setupXHR() {
     const csrfUnsafeMethod = method => !(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 
@@ -68,8 +71,9 @@ const configs = (() => {
   function pluginsInit() {
     initScrollbar();
     initTouchspin();
+    initMmenu();
 
-    DOM.$phoneInputs.mask('+0 (000) 000 00 00', {
+    DOM.$phoneInput.mask('+0 (000) 000 00 00', {
       placeholder: '+7 (999) 000 00 00',
     });
   }
@@ -80,6 +84,30 @@ const configs = (() => {
 
   function initTouchspin() {
     $(DOM.touchspin).TouchSpin(plugins.touchspin);
+  }
+
+  function initMmenu() {
+    $menu = DOM.$mobileMenu.mmenu({
+      screenReader: true,
+      navbar: {
+        title: 'Меню',
+      },
+      navbars: [
+        {
+          position: 'top',
+          content: ['searchfield'],
+        },
+      ],
+      searchfield: {
+        add: true,
+        placeholder: 'Поиск по каталогу',
+        search: false,
+      },
+    }, {
+      offCanvas: {
+        pageSelector: '#desktop-wrapper',
+      },
+    });
   }
 
   function focusFirstField(event) {
@@ -98,6 +126,7 @@ const configs = (() => {
   init();
 
   return {
+    $menu,
     plugins,
     labels,
     initScrollbar,

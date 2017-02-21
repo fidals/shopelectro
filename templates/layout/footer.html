@@ -7,13 +7,14 @@
   <div class="top-footer">
     <div class="container">
       <div class="row">
-        <div class="col-xs-4">
+        <div class="col-xs-12 col-sm-6 col-md-4">
           <a class="btn btn-pink footer-download js-download-price-footer"
              href="{% static 'pricelist.xlsx' %}" title="Скачать прайс">
             <span>Скачать прайс</span>
           </a>
         </div>
-        <div class="col-xs-4">
+
+        <div class="col-xs-12 col-sm-6 col-md-4">
           <div class="top-footer-persent">
             <span class="symbol">%</span>
             <div class="top-footer-persent-text">
@@ -22,7 +23,8 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-4">
+
+        <div class="col-xs-12 col-md-4">
           <div class="delivery-text">
             <a class="sub-footer-link" href="{% url 'pages:flat_page' 'navigation' 'delivery' %}">
               <span>Самовывоз со склада</span>
@@ -42,7 +44,7 @@
   <div class="middle-footer">
     <div class="container">
       <div class="row middle-footer-row">
-        <div class="col-xs-4 middle-footer-col">
+        <div class="col-sm-4 middle-footer-col">
           <div class="middle-footer-title">
             <a class="middle-footer-title-link" href="/catalog/">Каталог товаров</a>
           </div>
@@ -55,7 +57,7 @@
           </ul>
         </div>
 
-        <div class="col-xs-4 middle-footer-col">
+        <div class="col-sm-4 middle-footer-col">
           <div class="middle-footer-title">Услуги</div>
           <ul class="list-unstyled">
             {% for item in footer_links.services %}
@@ -69,7 +71,7 @@
           </ul>
         </div>
 
-        <div class="col-xs-4 middle-footer-col">
+        <div class="col-sm-4 middle-footer-col">
           <div class="middle-footer-title">
             <a class="middle-footer-title-link" href="{% url 'pages:flat_page' 'navigation' 'about' %}">О компании</a>
           </div>
@@ -87,10 +89,9 @@
   </div>
 
   <div class="btm-footer">
-    {# Remove after new year #}
-    <div class="container new-year-background">
+    <div class="container">
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-sm-3">
           <a href="//clck.yandex.ru/redir/dtype=stred/pid=47/cid=2508/*http://market.yandex.ru/shop/103499/reviews">
             <img
                 src="//clck.yandex.ru/redir/dtype=stred/pid=47/cid=2507/*https://grade.market.yandex.ru/?id=103499&action=image&size=2"
@@ -98,25 +99,30 @@
           </a>
         </div>
 
-        <div class="col-xs-3">
+        <div class="col-sm-6 col-md-3">
           <div class="footer-contacts">
             <span>Санкт-Петербург</span>
             <div class="footer-contact">
-              <span title="м. Автово"><img src="{% static 'images/metro_red.png' %}" alt="м. Автово">
-                <a class="subway-contact-link" href="{% url 'pages:flat_page' 'contacts' %}"> Ярмарка «Юнона», пав. 660, 662</a></span>
+              <span title="м. Автово">
+                <a class="subway-link subway-link-red" href="{% url 'pages:flat_page' 'contacts' %}">
+                  Ярмарка «Юнона», пав. 660, 662
+                </a>
+              </span>
               <span>пн-вс 10:00-18:00</span>
             </div>
             <div class="footer-contact">
-              <span title="м. Елизаровская"><img src="{% static 'images/metro_green.png' %}" alt="м.
-              Елизаровская">
-                <a class="subway-contact-link"
-                   href="{% url 'pages:flat_page' 'contacts' %}"> пр-т Елизарова 38А, офис 312</a></span>
+              <span title="м. Елизаровская">
+                <a class="subway-link subway-link-green"
+                   href="{% url 'pages:flat_page' 'contacts' %}">
+                  пр-т Елизарова 38А, офис 312
+                </a>
+              </span>
               <span>пн-чт 10:00-18:00, пт 10:00-17:00</span>
             </div>
           </div>
         </div>
 
-        <div class="col-xs-3">
+        <div class="col-sm-3">
           <div class="footer-phone">
             <div class="footer-number">
               <span class="footer-cifre js-copy-phone">
@@ -131,11 +137,9 @@
           </div>
         </div>
 
-        <div class="col-xs-3">
-          <div class="footer-logo-wrapper text-right">
-            <a class="footer-logo footer-logo-img" href="/">
-              {% include 'layout/logo.html' %}
-            </a>
+        <div class="col-sm-12 col-md-3 col-last">
+          <div class="footer-logo-wrapper">
+            <a class="footer-logo footer-logo-img" href="/"></a>
           </div>
         </div>
       </div>
