@@ -1,7 +1,4 @@
-/**
- * Yandex Metrika module.
- */
-{
+(() => {
   const DOM = {
     $copyPhoneTag: $('.js-copy-phone'),
     $copyEmailTag: $('.js-copy-mail'),
@@ -97,4 +94,4 @@
   }
 
   init();
-}
+})();

@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     $imageBig: $('#product-image-big'),
     $imagesToSwitch: $('.js-image-switch'),
@@ -191,4 +191,4 @@
   }
 
   init();
-}
+})();

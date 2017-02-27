@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     $btnScrollTop: $('#btn-scroll-to-top'),
     $menuItem: $('.js-menu-item'),
@@ -74,4 +74,4 @@
   }
 
   init();
-}
+})();

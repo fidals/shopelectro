@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     $fancybox: $('.fancybox'),
     $formErrorText: $('.js-form-error-text'),
@@ -230,4 +230,4 @@
   const renderTable = (event, data) => DOM.$order.html(data.table);
 
   init();
-}
+})();
