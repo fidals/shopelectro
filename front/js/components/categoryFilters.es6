@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     $loadMoreBtn: $('#btn-load-products'),
     $filtersApplyBtn: $('.js-apply-filter'),
@@ -127,4 +127,4 @@
   }
 
   init();
-}
+})();

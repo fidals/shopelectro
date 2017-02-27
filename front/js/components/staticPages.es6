@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     $fancybox: $('.fancybox'),
   };
@@ -14,4 +14,4 @@
   }
 
   init();
-}
+})();

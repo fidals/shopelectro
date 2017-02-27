@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     $mobCatalogBtn: $('.js-mobile-catalog-btn'),
     $mobLinkArrow: $('.js-mobile-link-arrow'),
@@ -57,4 +57,4 @@
   }
 
   init();
-}
+})();

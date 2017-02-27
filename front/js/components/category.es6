@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     $productsOnPage: $('.js-products-showed-count'),
     $productsList: $('#products-wrapper'),
@@ -156,4 +156,4 @@
   }
 
   init();
-}
+})();

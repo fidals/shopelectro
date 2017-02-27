@@ -1,4 +1,4 @@
-{
+(() => {
   const DOM = {
     cartQuantity: '.js-cart-size',
     cartPrice: '.js-mobile-cart-price',
@@ -21,4 +21,4 @@
   }
 
   init();
-}
+})();
