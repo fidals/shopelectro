@@ -9,8 +9,8 @@ import time
 
 from selenium import webdriver
 
-from django.core.urlresolvers import reverse
 from django.test import LiveServerTestCase
+from django.urls import reverse
 
 from shopelectro.models import Product
 

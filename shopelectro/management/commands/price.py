@@ -8,8 +8,8 @@ import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
+from django.urls import reverse
 
 from shopelectro.models import Product, Category
 

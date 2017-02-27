@@ -201,7 +201,7 @@ def save_feedback(request):
 
 @require_POST
 def delete_feedback(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponseForbidden('Not today, sly guy...')
 
     feedback_id = request.POST.get('id')

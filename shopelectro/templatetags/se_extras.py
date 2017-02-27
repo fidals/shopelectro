@@ -4,8 +4,8 @@ import math
 from django import template
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
+from django.urls import reverse
 
 from images.models import ImageMixin
 from pages.models import Page
@@ -17,7 +17,7 @@ register = template.Library()
 
 
 # TODO - move it in catalog. Inspired by lp_electric
-@register.assignment_tag
+@register.simple_tag
 def roots():
     return sorted(
         Category.objects
@@ -27,7 +27,7 @@ def roots():
     )
 
 
-@register.assignment_tag
+@register.simple_tag
 def footer_links():
     return config.FOOTER_LINKS
 

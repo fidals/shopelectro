@@ -21,7 +21,7 @@ services:
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
     entrypoint:
       - circusd
-      - /etc/circus/web.ini
+      - /etc/circus/se_prod.ini
     ports:
       - "8010:80"
     links:
@@ -48,12 +48,11 @@ services:
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
     entrypoint:
       - circusd
-      - /etc/circus/web.ini
+      - /etc/circus/se_dev.ini
     ports:
       - "8011:80"
     links:
       - se_db_dev
-      - se_rabbitmq
     depends_on:  # can't be inherited
       - se_db_dev
     volumes:  # TODO - divide volumes on dev/ and prod/

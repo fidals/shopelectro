@@ -41,7 +41,7 @@ def download_catalog(destination):
         )
     )
 
-    subprocess.run(wget_command, shell=True)
+    subprocess.run(wget_command, shell=True, check=True)
     print('Download catalog - completed...')
 
     try:
