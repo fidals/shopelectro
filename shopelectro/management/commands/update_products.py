@@ -34,7 +34,7 @@ def generate_price_files() -> None:
 
     commands = [
         ('excel',),
-        ('price',),
+        ('price', '--parallel'),
         # to actualize generated files rendering
         ('collectstatic', '--noinput')
     ]
@@ -183,7 +183,7 @@ class Command(BaseCommand):
         with download_catalog(destination=settings.ASSETS_DIR):
 
             cleaned_product_data = self.clean_data(self.get_product_data())
-            self.delete(list(cleaned_product_data.keys()))
+            self.delete(cleaned_product_data)
             updated_products = self.update(cleaned_product_data)
             created_products = self.create(cleaned_product_data, updated_products)
 
@@ -244,8 +244,8 @@ class Command(BaseCommand):
             ))
 
     @transaction.atomic
-    def delete(self, product_uuids: List[ProductUUID]):
-        products = Product.objects.exclude(uuid__in=product_uuids)
+    def delete(self, data: Dict[ProductUUID, ProductData]):
+        products = Product.objects.exclude(uuid__in=data)
         page_count, _ = ProductPage.objects.filter(shopelectro_product__in=products).delete()
         product_count, _ = products.delete()
         print('{} products  and {} pages were deleted.'.format(product_count, page_count))

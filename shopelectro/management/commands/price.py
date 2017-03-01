@@ -6,6 +6,7 @@ Generate price files.
 
 import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from multiprocessing import cpu_count
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -36,18 +37,31 @@ class Command(BaseCommand):
         'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
     ]
 
-    def create_prices(self):
-        with ProcessPoolExecutor() as executor:
-            futures = [
-                executor.submit(self.generate_yml, *target)
-                for target in self.TARGETS.items()
-            ]
+    def create_prices(self, parallel=None):
+        if not parallel:
+            for x,y in self.TARGETS.items():
+                self.generate_yml(x, y)
+        else:
+            with ProcessPoolExecutor(parallel or cpu_count()) as executor:
+                futures = [
+                    executor.submit(self.generate_yml, *target)
+                    for target in self.TARGETS.items()
+                ]
 
-            for future in as_completed(futures):
-                print(future.result())
+                for future in as_completed(futures):
+                    print(future.result())
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--parallel',
+            nargs='*',
+            default=None,
+            type=int,
+        )
 
     def handle(self, *args, **options):
-        close_old_connections()  # Set transaction isolation level
+        if options['parallel']:
+            close_old_connections()  # Set transaction isolation level
         self.create_prices()
 
     @classmethod
