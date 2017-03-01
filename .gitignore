@@ -16,3 +16,4 @@ pricelist.xlsx
 priceru.xml
 yandex.yml
 docker/.env
+celerybeat-schedule

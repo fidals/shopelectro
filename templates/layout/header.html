@@ -112,7 +112,7 @@
         </div>
 
         <div class="nav-category-wrapper hidden-xs hidden-sm">
-          <ul class="nav-category list-unstyled clearfix">
+          <ul class="nav-category list-unstyled">
             {% for root in root_categories %}
               <li class="nav-category-item js-menu-item">
                 <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
@@ -129,7 +129,6 @@
                 {% endif %}
               </li>
             {% endfor %}
-
             <li class="nav-category-item js-menu-item">
               <a class="nav-category-link" href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
             </li>

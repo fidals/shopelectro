@@ -24,14 +24,12 @@ from shopelectro.models import CategoryPage, ProductPage, Category, Product, Tag
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 
-# TODO: remove override_settings after dev-828.
-@override_settings(DEBUG=True)
 class CatalogPage(TestCase):
 
     fixtures = ['dump.json']
 
     def setUp(self):
-        self.category = Category.objects.root_nodes().first()
+        self.category = Category.objects.root_nodes().select_related('page').first()
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""

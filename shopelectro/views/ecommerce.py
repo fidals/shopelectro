@@ -68,7 +68,8 @@ def one_click_buy(request):
     ec_views.save_order_to_session(request.session, order)
     mailer.send_order(
         subject=settings.EMAIL_SUBJECTS['order'],
-        order=order, to_customer=False
+        order=order,
+        to_customer=False,
     )
     return HttpResponse('ok')
 
@@ -80,13 +81,16 @@ def order_call(request):
 
     mailer.send_backcall(
         subject=settings.EMAIL_SUBJECTS['call'],
-        phone=phone, time=time, url=url
+        phone=phone,
+        time=time,
+        url=url,
     )
 
     return HttpResponse('ok')
 
 
 class YandexOrder(OrderPage):
+
     def post(self, request):
         cart = self.cart(request.session)
         form = self.order_form(request.POST.dict())

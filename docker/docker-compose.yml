@@ -2,45 +2,97 @@ version: "2"
 
 services:
   se_prod:
-    extends:
-      file: common-services.yml
-      service: webapp
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: fidals/se
     restart: always
     container_name: se_prod
     environment:
-      DJANGO_SETTINGS_MODULE: shopelectro.settings.prod
-      DATABASE_URL: postgres://postgres:$DB_PASS@se_db_prod/se_prod
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.prod
+      - DATABASE_URL=postgres://postgres:$DB_PASS@se_db_prod/se_prod
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se_rabbitmq:5672/
+      - MEMCACHED_LOCATION=se_memcached:11211
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    entrypoint:
+      - circusd
+      - /etc/circus/web.ini
     ports:
       - "8010:80"
+    links:
+      - se_db_prod
+      - se_rabbitmq
+      - se_memcached
     depends_on:  # can't be inherited
       - se_db_prod
+    volumes:  # TODO - divide volumes on dev/ and prod/
+      - /opt/media/shopelectro:/opt/shopelectro/app/media
+
+  se_dev:
+    image: fidals/se
+    container_name: se_dev
+    environment:
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
+      - DATABASE_URL=postgres://postgres:$DB_PASS@se_db_dev/se_dev
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se_rabbitmq:5672/
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    entrypoint:
+      - circusd
+      - /etc/circus/web.ini
+    ports:
+      - "8011:80"
+    links:
+      - se_db_dev
+      - se_rabbitmq
+    depends_on:  # can't be inherited
+      - se_db_dev
+    volumes:  # TODO - divide volumes on dev/ and prod/
+      - /opt/media/shopelectro:/opt/shopelectro/app/media
 
   se_db_prod:
-    extends:
-      file: common-services.yml
-      service: db
+    image: postgres:9.5
     container_name: se_db_prod
     restart: always
     environment:
+      POSTGRES_PASSWORD: "$DB_PASS"
       POSTGRES_DB: "se_prod"
-
-  se_dev:
-    extends:
-      file: common-services.yml
-      service: webapp
-    container_name: se_dev
-    environment:
-      DJANGO_SETTINGS_MODULE: shopelectro.settings.dev
-      DATABASE_URL: postgres://postgres:$DB_PASS@se_db_dev/se_dev
-    ports:
-      - "8011:80"
-    depends_on:  # can't be inherited
-      - se_db_dev
+    volumes:
+      - /var/lib/postgresql/data
 
   se_db_dev:
-    extends:
-      file: common-services.yml
-      service: db
+    image: postgres:9.5
     container_name: se_db_dev
+    restart: always
     environment:
       POSTGRES_DB: "se_dev"
+      POSTGRES_PASSWORD: "$DB_PASS"
+    volumes:
+      - /var/lib/postgresql/data
+
+  se_memcached:
+    image: memcached:alpine
+    container_name: se_memcached
+    restart: always
+    ports:
+      - "11212:11211"
+
+  se_rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: se_rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: $RABBITMQ_DEFAULT_USER
+      RABBITMQ_DEFAULT_PASS: $RABBITMQ_DEFAULT_PASS
+    ports:
+      - "5673:5672"
+      - "15673:15672"

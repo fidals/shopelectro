@@ -5,3 +5,5 @@ media/
 !static/assets/  # TODO - move assets to another folder
 *.sqlite*
 *.log
+./celerybeat.pid
+./celerybeat-schedule

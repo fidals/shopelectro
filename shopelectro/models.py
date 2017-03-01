@@ -1,6 +1,7 @@
 from functools import reduce
 from itertools import groupby, chain
 from operator import attrgetter, or_
+from uuid import uuid4
 
 from django.db import models
 from django.db.models import Avg, Q
@@ -15,6 +16,9 @@ from pages.models import ModelPage, SyncPageMixin, CustomPage
 
 
 class Category(AbstractCategory, SyncPageMixin):
+
+    uuid = models.UUIDField(default=uuid4, editable=False)
+
     @classmethod
     def get_default_parent(cls):
         return CustomPage.objects.filter(slug='catalog').first()
@@ -69,17 +73,18 @@ class Product(AbstractProduct, SyncPageMixin):
     objects = SEProductManager()
 
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, null=True, related_name='products',
+        Category, on_delete=models.CASCADE, null=True, related_name='products'
     )
 
     tags = models.ManyToManyField(
         'Tag', related_name='products', blank=True
     )
 
+    uuid = models.UUIDField(default=uuid4, editable=False)
     purchase_price = models.FloatField(default=0)
-    wholesale_small = models.FloatField()
-    wholesale_medium = models.FloatField()
-    wholesale_large = models.FloatField()
+    wholesale_small = models.FloatField(default=0)
+    wholesale_medium = models.FloatField(default=0)
+    wholesale_large = models.FloatField(default=0)
 
     def get_absolute_url(self):
         return reverse('product', args=(self.id,))
@@ -155,6 +160,7 @@ class TagGroup(models.Model):
 
     name = models.CharField(max_length=100, db_index=True)
     position = models.PositiveSmallIntegerField(default=0, blank=True, db_index=True)
+    uuid = models.UUIDField(default=uuid4, editable=False)
 
     def __str__(self):
         return self.name
@@ -191,6 +197,7 @@ class Tag(models.Model):
 
     name = models.CharField(max_length=100, db_index=True)
     position = models.PositiveSmallIntegerField(default=0, blank=True, db_index=True)
+    uuid = models.UUIDField(default=uuid4, editable=False)
 
     objects = TagManager()
 

@@ -79,7 +79,7 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).tearDownClass()
 
 
-@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple(), USE_CELERY=False)
 class Header(SeleniumTestCase):
 
     def setUp(self):
@@ -140,6 +140,7 @@ class CategoryPage(SeleniumTestCase):
     PRODUCTS_TO_LOAD = 48
 
     def setUp(self):
+        self.browser.delete_all_cookies()
         server = self.live_server_url
         self.testing_url = lambda slug: server + reverse('category', args=(slug,))
 
@@ -438,6 +439,7 @@ class ProductPage(SeleniumTestCase):
 
         self.assertTrue(self.one_click.get_attribute('disabled'))
 
+    @override_settings(USE_CELERY=False)
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
@@ -509,12 +511,13 @@ class ProductPage(SeleniumTestCase):
         self.assertTrue(all(not element.is_displayed() for element in feedbacks))
 
 
+@override_settings(USE_CELERY=False)
 class OrderPage(SeleniumTestCase):
 
     @staticmethod
     def get_cell(pos, col):
         # table columns mapping: http://prntscr.com/bsv5hp
-        COLS = {
+        cols = {
             'id': 1,
             'name': 3,
             'count': 4,
@@ -523,9 +526,10 @@ class OrderPage(SeleniumTestCase):
         }
         product_row = '//*[@id="js-order-list"]/div[2]/div[{pos}]/div[{col}]'
 
-        return product_row.format(pos=pos, col=COLS[col])
+        return product_row.format(pos=pos, col=cols[col])
 
     def setUp(self):
+        self.browser.delete_all_cookies()
         self.order_page = CustomPage.objects.get(slug='order')
         self.cart_dropdown = 'basket-parent'
         self.first_product_id = '405'
@@ -582,12 +586,15 @@ class OrderPage(SeleniumTestCase):
 
     def test_table_and_dropdown_are_synchronized(self):
         def get_counts():
-            table_count = (self.browser
-                           .find_element_by_id('cart-page-prods-count').text)
-            header_count = (self.browser
-                            .find_element_by_class_name('js-cart-size').text)
+            table_count_ = (
+                self.browser.find_element_by_id('cart-page-prods-count').text
+            )
 
-            return table_count, header_count
+            header_count = (
+                self.browser.find_element_by_class_name('js-cart-size').text
+            )
+
+            return table_count_, header_count
 
         self.browser.refresh()
         table_count, dropdown_count = get_counts()
@@ -686,7 +693,7 @@ class SitePage(SeleniumTestCase):
         self.assertFalse(accordion_content.is_displayed())
 
 
-@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple(), USE_CELERY=False)
 class YandexMetrika(SeleniumTestCase):
 
     def setUp(self):
