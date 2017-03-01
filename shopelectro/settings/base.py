@@ -141,8 +141,6 @@ FORMAT_MODULE_PATH = [
     'shopelectro.formats',
 ]
 
-USE_CELERY = False
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 STATIC_URL = '/static/'
@@ -162,14 +160,11 @@ DATABASE_URL = 'postgres://user:pass@db_name/table'
 DATABASES = {
     'default': dj_database_url.config(
         env='DATABASE_URL',
-        default=DATABASE_URL
+        default=DATABASE_URL,
     )
 }
 
 USE_CELERY = True
-
-# https://docs.djangoproject.com/en/1.10/topics/http/sessions/#using-cached-sessions
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 SITE_CREATED = datetime(2013, 1, 1)
 
@@ -247,7 +242,7 @@ INTERNAL_IPS = (
     '127.0.0.1',
 )
 
-TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3642, 3884, 3959]
+TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3884, 3959, 2764]
 
 SHOP = {
     'id': '69886',

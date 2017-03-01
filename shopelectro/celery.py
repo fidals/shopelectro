@@ -35,15 +35,15 @@ task_queues = (
 
 # http://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html
 beat_schedule = {
-    'update-products': {
-        'task': 'shopelectro.tasks.update_products',
+    'update-catalog': {
+        'task': 'shopelectro.tasks.update_catalog',
         'schedule': timedelta(hours=2),
     },
 }
 
 # http://docs.celeryproject.org/en/master/userguide/routing.html
 task_routes = {
-    'shopelectro.tasks.update_products': {
+    'shopelectro.tasks.update_catalog': {
         'queue': 'command',
         'routing_key': 'utils.command',
         'priority': 30,

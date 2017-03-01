@@ -12,7 +12,7 @@ services:
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.prod
       - DATABASE_URL=postgres://postgres:$DB_PASS@se_db_prod/se_prod
       - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se_rabbitmq:5672/
-      - MEMCACHED_LOCATION=se_memcached:11211
+      - REDIS_LOCATION=redis://se_redis:6379/1
       - FTP_USER=$FTP_USER
       - FTP_PASS=$FTP_PASS
       - FTP_IP=$FTP_IP
@@ -27,7 +27,7 @@ services:
     links:
       - se_db_prod
       - se_rabbitmq
-      - se_memcached
+      - se_redis
     depends_on:  # can't be inherited
       - se_db_prod
     volumes:  # TODO - divide volumes on dev/ and prod/
@@ -79,12 +79,12 @@ services:
     volumes:
       - /var/lib/postgresql/data
 
-  se_memcached:
-    image: memcached:alpine
-    container_name: se_memcached
+  se_redis:
+    image: redis:alpine
+    container_name: se_redis
     restart: always
     ports:
-      - "11212:11211"
+      - "6380:6379"
 
   se_rabbitmq:
     image: rabbitmq:management-alpine

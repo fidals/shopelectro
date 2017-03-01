@@ -2,12 +2,12 @@ celery
 Django==1.9.5
 dj-database-url==0.4.1
 django-debug-toolbar
+django-redis
 django-user-agents==0.3.0
 django-widget-tweaks
 ipython
 openpyxl
 pillow
-python-memcached
 psycopg2
 selenium
 selenium-requests
