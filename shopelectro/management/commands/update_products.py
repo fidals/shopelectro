@@ -6,8 +6,7 @@ from itertools import chain
 import os
 import shutil
 import subprocess
-from typing import Iterator, List, Dict
-import time
+from typing import Iterator, Dict
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
@@ -17,7 +16,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
-from django.core.management import call_command
 from django.template.loader import render_to_string
 
 from shopelectro.models import Product, ProductPage
@@ -28,23 +26,6 @@ ProductData = Dict[str, str]
 NAMESPACE = '{urn:1C.ru:commerceml_2}'
 
 
-def generate_price_files() -> None:
-    """Generate Excel, YM and Price.ru price files."""
-    print('Generate Excel, YM and Price.ru...')
-
-    commands = [
-        ('excel',),
-        ('price', '--parallel'),
-        # to actualize generated files rendering
-        ('collectstatic', '--noinput')
-    ]
-
-    for command in commands:
-        call_command(*command)
-
-    print('Generate Excel, YM and Price.ru complete.')
-
-
 @contextmanager
 def download_catalog(destination):
     """
@@ -52,7 +33,7 @@ def download_catalog(destination):
     """
     wget_command = (
         'wget -r -P {} ftp://{}:{}@{}/webdata'
-        ' 2>&1 | grep "%\|time\|Downloaded"'.format(
+        ' 2>&1 | grep "time\|Downloaded"'.format(
             destination,
             settings.FTP_USER,
             settings.FTP_PASS,
@@ -179,9 +160,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        start = time.time()
         with download_catalog(destination=settings.ASSETS_DIR):
-
             cleaned_product_data = self.clean_data(self.get_product_data())
             self.delete(cleaned_product_data)
             updated_products = self.update(cleaned_product_data)
@@ -189,10 +168,6 @@ class Command(BaseCommand):
 
             if created_products.exists():
                 self.report(kwargs['recipients'])
-
-        generate_price_files()
-
-        print('Import completed! {0:.1f} seconds elapsed.'.format(time.time() - start))
 
     @staticmethod
     def get_product_data() -> Dict[ProductUUID, ProductData]:

@@ -11,7 +11,7 @@ from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from shopelectro.models import Category, Product, ProductPage, CategoryPage
 from shopelectro.management.commands import update_products, price
@@ -23,12 +23,6 @@ class UpdateProducts(TestCase):
     def setUpTestData(cls):
         call_command('update_products', '--recipients', 'username@example.com')
         super(UpdateProducts, cls).setUpTestData()
-
-    @classmethod
-    def tearDownClass(cls):
-        for file_name in price.Command.TARGETS.values():
-            os.remove(os.path.join(settings.ASSETS_DIR, file_name))
-        super(UpdateProducts, cls).tearDownClass()
 
     def setUp(self):
         self.command = update_products.Command()
@@ -45,12 +39,6 @@ class UpdateProducts(TestCase):
         self.assertIsNotNone(product.wholesale_small)
         self.assertIsNotNone(product.wholesale_medium)
         self.assertIsNotNone(product.wholesale_large)
-
-    def test_prices_is_generated(self):
-        prices_dir = [file.name for file in os.scandir(settings.ASSETS_DIR)]
-
-        for price_file in price.Command.TARGETS.values():
-            self.assertIn(price_file, prices_dir)
 
     def test_delete_xml(self):
         """Delete XML files after process"""

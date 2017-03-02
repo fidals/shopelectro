@@ -5,13 +5,10 @@ Generate price files.
 """
 
 import os
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from multiprocessing import cpu_count
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
-from django.db import close_old_connections
 from django.template.loader import render_to_string
 
 from shopelectro.models import Product, Category
@@ -37,37 +34,16 @@ class Command(BaseCommand):
         'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
     ]
 
-    def create_prices(self, parallel=None):
-        if not parallel:
-            for x,y in self.TARGETS.items():
-                self.generate_yml(x, y)
-        else:
-            with ProcessPoolExecutor(parallel or cpu_count()) as executor:
-                futures = [
-                    executor.submit(self.generate_yml, *target)
-                    for target in self.TARGETS.items()
-                ]
-
-                for future in as_completed(futures):
-                    print(future.result())
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            '--parallel',
-            nargs='*',
-            default=None,
-            type=int,
-        )
+    def create_prices(self):
+        for target in self.TARGETS.items():
+            self.generate_yml(*target)
 
     def handle(self, *args, **options):
-        if options['parallel']:
-            close_old_connections()  # Set transaction isolation level
         self.create_prices()
 
     @classmethod
     def get_context_for_yml(cls, utm):
         """Create context dictionary for rendering files."""
-
         def put_utm(product):
             """Put UTM attribute to product."""
             utm_marks = [
@@ -76,6 +52,7 @@ class Command(BaseCommand):
                 ('utm_content', product.get_root_category().page.slug),
                 ('utm_term', str(product.id)),
             ]
+
             url = reverse('product', args=(product.id,))
             utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
             product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
@@ -111,7 +88,7 @@ class Command(BaseCommand):
 
             result_products = [
                 put_crumbs(put_utm(product))
-                for product in products_except_others.iterator()
+                for product in products_except_others
             ]
 
             return result_products
@@ -121,10 +98,12 @@ class Command(BaseCommand):
             else Category.objects.all()
         )
 
+        products = prepare_products(categories)
+
         return {
             'base_url': settings.BASE_URL,
             'categories': categories,
-            'products': prepare_products(categories),
+            'products': products,
             'shop': settings.SHOP,
             'utm': utm,
         }
