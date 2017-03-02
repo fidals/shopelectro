@@ -162,6 +162,10 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         with download_catalog(destination=settings.ASSETS_DIR):
             cleaned_product_data = self.clean_data(self.get_product_data())
+
+            if not cleaned_product_data:
+                raise Exception('Problem with uploaded files.')
+
             self.delete(cleaned_product_data)
             updated_products = self.update(cleaned_product_data)
             created_products = self.create(cleaned_product_data, updated_products)
