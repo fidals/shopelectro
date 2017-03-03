@@ -5,7 +5,7 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 from django.conf import settings
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from pages.models import Page
 from catalog.views import search

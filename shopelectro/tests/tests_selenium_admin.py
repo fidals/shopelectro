@@ -12,8 +12,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Chrome  # We use this instead of standard selenium
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.test import LiveServerTestCase, override_settings
+from django.urls import reverse
 
 from shopelectro.models import Category, Product
 

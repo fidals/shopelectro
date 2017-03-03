@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 from datetime import datetime
+
 import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -67,7 +68,7 @@ INSTALLED_APPS = [
     'shopelectro',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,13 +78,9 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'django_user_agents.middleware.UserAgentMiddleware',
+    'shopelectro.middleware.PatchedUserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
-
-# Name of cache backend to cache user agents. If it not specified default
-# cache alias will be used. Set to `None` to disable caching.
-# USER_AGENTS_CACHE = context_processors.request'default'
 
 ROOT_URLCONF = 'shopelectro.urls'
 
@@ -163,8 +160,6 @@ DATABASES = {
         default=DATABASE_URL,
     )
 }
-
-USE_CELERY = True
 
 SITE_CREATED = datetime(2013, 1, 1)
 

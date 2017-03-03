@@ -10,6 +10,8 @@ os.environ['HTTPS'] = 'on'
 
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
+USE_CELERY = True
+
 # Memcached settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
@@ -23,3 +25,7 @@ CACHES = {
         }
     }
 }
+
+# Name of cache backend to cache user agents. If it not specified default
+# cache alias will be used. Set to `None` to disable caching.
+USER_AGENTS_CACHE = 'default'

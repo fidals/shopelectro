@@ -1,10 +1,11 @@
 celery
-Django==1.9.5
 dj-database-url==0.4.1
+Django==1.10
 django-debug-toolbar
 django-redis
-django-user-agents==0.3.0
+django-mptt==0.8.7
 django-widget-tweaks
+django-user-agents==0.3.0
 ipython
 openpyxl
 pillow

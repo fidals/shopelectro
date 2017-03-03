@@ -13,10 +13,10 @@ from xml.etree import ElementTree as ET
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.urls import reverse
 
 from pages.models import FlatPage
 

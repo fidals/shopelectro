@@ -5,8 +5,8 @@ from uuid import uuid4
 
 from django.db import models
 from django.db.models import Avg, Q
-from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.urls import reverse
 
 from catalog.models import (
     AbstractProduct, AbstractCategory, ProductManager, ProductQuerySet

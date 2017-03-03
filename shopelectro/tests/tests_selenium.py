@@ -11,9 +11,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Chrome  # We use this instead of standard selenium
 
-from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.test import LiveServerTestCase, override_settings
+from django.urls import reverse
 
 from pages.models import FlatPage, CustomPage, Page
 
