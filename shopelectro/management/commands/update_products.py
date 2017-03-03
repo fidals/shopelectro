@@ -33,7 +33,7 @@ def download_catalog(destination):
     """
     wget_command = (
         'wget -r -P {} ftp://{}:{}@{}/webdata'
-        ' 2>&1 | grep "time\|Downloaded"'.format(
+        ' 2>&1 | grep "время\|time\|Downloaded"'.format(
             destination,
             settings.FTP_USER,
             settings.FTP_PASS,
