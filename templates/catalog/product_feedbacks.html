@@ -15,8 +15,8 @@
             <br> Всего отзывов: {{ product.feedbacks_count }}
           </div>
 
-          <button type="button" class="btn btn-blue js-open-feedback-modal" data-toggle="modal"
-                  data-target="#product-feedback-modal">Оставить отзыв</button>
+          <button class="btn btn-blue js-open-feedback-modal" data-toggle="modal"
+                  data-target="#product-feedback-modal" type="button">Оставить отзыв</button>
         </div>
 
         <ul class="rating-filter custom-checkbox-radio js-rating-filter">
@@ -37,11 +37,13 @@
             <label class="js-filter-trigger" data-rating="3" for="rating3"></label>
             {% icon_stars 3 %}
           </li>
+
           <li>
             <input type="checkbox" id="rating2" class="checkbox" checked>
             <label class="js-filter-trigger" data-rating="2" for="rating2"></label>
             {% icon_stars 2 %}
           </li>
+
           <li>
             <input type="checkbox" id="rating1" class="checkbox" checked>
             <label class="js-filter-trigger" data-rating="1" for="rating1"></label>
@@ -56,7 +58,6 @@
                 data-target="#product-feedback-modal">Оставить отзыв</button>
       </div>
     {% endif %}
-    </div>
   </div>
 
   {% if feedbacks %}

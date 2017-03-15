@@ -1,0 +1,25 @@
+{% load catalog_extras %}
+{% load pages_extras %}
+
+{% if cart.total_quantity == 0 %}
+<div class="mobile-cart js-mobile-cart hidden">
+{% else %}
+<div class="mobile-cart js-mobile-cart">
+{% endif %}
+  <span>Товаров:</span>
+  <span class="mobile-cart-count">
+    <span class="js-cart-size">
+      {{ cart.total_quantity }}
+    </span> шт.
+  </span>
+  <br>
+  <span>На сумму:</span>
+  <span class="mobile-cart-price">
+    <span class="js-mobile-cart-price">
+      {{ cart.total_price|humanize_price }}
+    </span> руб.
+  </span>
+
+  <a class="btn btn-pink mobile-cart-link js-go-to-cart"
+     href="{% custom_url 'order' %}">Корзина</a>
+</div>

@@ -1,6 +1,6 @@
+{% load pages_extras %}
 {% load se_extras %}
 {% load staticfiles %}
-{% load pages_extras %}
 
 <!DOCTYPE html>
 <html prefix="ya: http://webmaster.yandex.ru/vocabularies/ og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" lang="ru">
@@ -13,6 +13,10 @@
   {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
   {% endblock %}
+
+  <!--[if lt IE 10 ]>
+    <link rel="stylesheet" href="{% static 'css/ie.min.css' %}">
+  <![endif]-->
 </head>
 <body>
   {% include 'layout/google_tag_manager.html' with DEBUG=DEBUG is_body_tag=True %}
@@ -30,24 +34,9 @@
       {% include 'layout/footer.html' %}
     {% endblock %}
 
-    <div class="mobile-cart js-header-cart">
-      <span>Товаров:</span>
-      <span class="mobile-cart-count js-cart-size">
-        <span>
-          {{ cart.total_quantity }}
-        </span> шт.
-      </span>
-      <br>
-      <span>На сумму:</span>
-      <span class="mobile-cart-price">
-        <span class="js-mobile-cart-price">
-          {{ cart.total_price|humanize_price }}
-        </span> руб.
-      </span>
-
-      <a class="btn btn-pink mobile-cart-link js-go-to-cart"
-         href="{% custom_url 'order' %}">Корзина</a>
-    </div>
+    {% block mobile_cart %}
+      {% include 'layout/mobile_cart.html' %}
+    {% endblock %}
   </div>
 
   {% block mobile_nav %}
@@ -64,6 +53,9 @@
 
   {% block jslibs %}
     <script src="{% static 'js/main-vendors.min.js' %}"></script>
+    <!--[if lt IE 10]>
+      <script src="{% static 'js/ie-vendors.min.js' %}"></script>
+    <![endif]-->
   {% endblock %}
 
   {% block jslinks %}

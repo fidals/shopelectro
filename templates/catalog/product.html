@@ -81,12 +81,12 @@
     {% if product.page.content %}
       <div class="product-bottom">
         <div class="product-desc">
-            <h3 class="product-desc-title">Описание</h3>
-            <p class="product-text">
-              {% autoescape off %}
-                {{ product.page.content }}
-              {% endautoescape %}
-            </p>
+          <h3 class="product-desc-title">Описание</h3>
+          <p class="product-text">
+            {% autoescape off %}
+              {{ product.page.content }}
+            {% endautoescape %}
+          </p>
         </div>
       </div>
     {% endif %}

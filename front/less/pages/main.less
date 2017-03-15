@@ -1,5 +1,5 @@
 @import "../common/variables";
-@import "../common/mixins/utilities";
+@import "../common/utilities/mixins";
 
 .page-front {
   margin: -20px 0 0;
@@ -21,13 +21,13 @@
       width: 36%;
     });
 
-    &-01 {
+    &.page-front-cell-01 {
       .Q(@md; {
         width: 26%;
       });
     }
 
-    &-03 {
+    &.page-front-cell-03 {
       .Q(@md; {
         margin-right: 0;
       });
@@ -378,16 +378,20 @@
   }
 
   &-item {
-    float: left;
     margin: 0 auto;
     width: 290px;
+
+    .Q(600; {
+      float: left;
+      width: 48%;
+    });
 
     .Q(@sm; {
       width: 32%;
     });
 
     &:not(:last-child) {
-      .Q(@sm; {
+      .Q(600; {
         margin: 0 2% 0 0;
       });
     }
@@ -416,7 +420,10 @@
 
   &-img-wrapper {
     display: block;
-    height: 285px;
     position: relative;
+
+    .Q(@md; {
+      height: 285px;
+    });
   }
 }

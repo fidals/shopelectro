@@ -1,6 +1,6 @@
 @import "../common/variables";
-@import "../common/mixins/utilities";
-@import "../common/mixins/sp-png";
+@import "../common/utilities/mixins";
+@import "../common/utilities/sprite-main";
 
 .cart-input {
   background: transparent;
@@ -83,8 +83,7 @@
   // Checked mark aspect:
   [type="checkbox"] + label:after {
     .transition;
-    background: @sp-main;
-    .sprite(@10);
+    .sprite(@i-checkbox-active);
     content: "";
     left: 3px;
     position: absolute;

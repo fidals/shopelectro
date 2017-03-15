@@ -1,0 +1,220 @@
+/*
+LESS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: @icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+@icon-home: x y offset_x offset_y width height total_width total_height image_path name;
+
+At the bottom of this section, we provide information about the spritesheet itself
+@spritesheet: width height image @spritesheet-sprites;
+*/
+@i-basket-name: 'i-basket';
+@i-basket-x: 0px;
+@i-basket-y: 0px;
+@i-basket-offset-x: 0px;
+@i-basket-offset-y: 0px;
+@i-basket-width: 36px;
+@i-basket-height: 32px;
+@i-basket-total-width: 107px;
+@i-basket-total-height: 75px;
+@i-basket-image: '../images/sprite-main.png';
+@i-basket: 0px 0px 0px 0px 36px 32px 107px 75px '../images/sprite-main.png' 'i-basket';
+@i-checkbox-active-name: 'i-checkbox-active';
+@i-checkbox-active-x: 91px;
+@i-checkbox-active-y: 0px;
+@i-checkbox-active-offset-x: -91px;
+@i-checkbox-active-offset-y: 0px;
+@i-checkbox-active-width: 16px;
+@i-checkbox-active-height: 15px;
+@i-checkbox-active-total-width: 107px;
+@i-checkbox-active-total-height: 75px;
+@i-checkbox-active-image: '../images/sprite-main.png';
+@i-checkbox-active: 91px 0px -91px 0px 16px 15px 107px 75px '../images/sprite-main.png' 'i-checkbox-active';
+@i-close-active-name: 'i-close-active';
+@i-close-active-x: 58px;
+@i-close-active-y: 58px;
+@i-close-active-offset-x: -58px;
+@i-close-active-offset-y: -58px;
+@i-close-active-width: 16px;
+@i-close-active-height: 16px;
+@i-close-active-total-width: 107px;
+@i-close-active-total-height: 75px;
+@i-close-active-image: '../images/sprite-main.png';
+@i-close-active: 58px 58px -58px -58px 16px 16px 107px 75px '../images/sprite-main.png' 'i-close-active';
+@i-close-name: 'i-close';
+@i-close-x: 40px;
+@i-close-y: 58px;
+@i-close-offset-x: -40px;
+@i-close-offset-y: -58px;
+@i-close-width: 16px;
+@i-close-height: 16px;
+@i-close-total-width: 107px;
+@i-close-total-height: 75px;
+@i-close-image: '../images/sprite-main.png';
+@i-close: 40px 58px -40px -58px 16px 16px 107px 75px '../images/sprite-main.png' 'i-close';
+@i-download-active-name: 'i-download-active';
+@i-download-active-x: 38px;
+@i-download-active-y: 0px;
+@i-download-active-offset-x: -38px;
+@i-download-active-offset-y: 0px;
+@i-download-active-width: 29px;
+@i-download-active-height: 23px;
+@i-download-active-total-width: 107px;
+@i-download-active-total-height: 75px;
+@i-download-active-image: '../images/sprite-main.png';
+@i-download-active: 38px 0px -38px 0px 29px 23px 107px 75px '../images/sprite-main.png' 'i-download-active';
+@i-download-name: 'i-download';
+@i-download-x: 0px;
+@i-download-y: 34px;
+@i-download-offset-x: 0px;
+@i-download-offset-y: -34px;
+@i-download-width: 29px;
+@i-download-height: 22px;
+@i-download-total-width: 107px;
+@i-download-total-height: 75px;
+@i-download-image: '../images/sprite-main.png';
+@i-download: 0px 34px 0px -34px 29px 22px 107px 75px '../images/sprite-main.png' 'i-download';
+@i-view-list-active-name: 'i-view-list-active';
+@i-view-list-active-x: 69px;
+@i-view-list-active-y: 0px;
+@i-view-list-active-offset-x: -69px;
+@i-view-list-active-offset-y: 0px;
+@i-view-list-active-width: 20px;
+@i-view-list-active-height: 17px;
+@i-view-list-active-total-width: 107px;
+@i-view-list-active-total-height: 75px;
+@i-view-list-active-image: '../images/sprite-main.png';
+@i-view-list-active: 69px 0px -69px 0px 20px 17px 107px 75px '../images/sprite-main.png' 'i-view-list-active';
+@i-view-list-hovered-name: 'i-view-list-hovered';
+@i-view-list-hovered-x: 31px;
+@i-view-list-hovered-y: 34px;
+@i-view-list-hovered-offset-x: -31px;
+@i-view-list-hovered-offset-y: -34px;
+@i-view-list-hovered-width: 20px;
+@i-view-list-hovered-height: 17px;
+@i-view-list-hovered-total-width: 107px;
+@i-view-list-hovered-total-height: 75px;
+@i-view-list-hovered-image: '../images/sprite-main.png';
+@i-view-list-hovered: 31px 34px -31px -34px 20px 17px 107px 75px '../images/sprite-main.png' 'i-view-list-hovered';
+@i-view-list-name: 'i-view-list';
+@i-view-list-x: 69px;
+@i-view-list-y: 19px;
+@i-view-list-offset-x: -69px;
+@i-view-list-offset-y: -19px;
+@i-view-list-width: 20px;
+@i-view-list-height: 17px;
+@i-view-list-total-width: 107px;
+@i-view-list-total-height: 75px;
+@i-view-list-image: '../images/sprite-main.png';
+@i-view-list: 69px 19px -69px -19px 20px 17px 107px 75px '../images/sprite-main.png' 'i-view-list';
+@i-view-tile-active-name: 'i-view-tile-active';
+@i-view-tile-active-x: 69px;
+@i-view-tile-active-y: 38px;
+@i-view-tile-active-offset-x: -69px;
+@i-view-tile-active-offset-y: -38px;
+@i-view-tile-active-width: 18px;
+@i-view-tile-active-height: 17px;
+@i-view-tile-active-total-width: 107px;
+@i-view-tile-active-total-height: 75px;
+@i-view-tile-active-image: '../images/sprite-main.png';
+@i-view-tile-active: 69px 38px -69px -38px 18px 17px 107px 75px '../images/sprite-main.png' 'i-view-tile-active';
+@i-view-tile-hovered-name: 'i-view-tile-hovered';
+@i-view-tile-hovered-x: 0px;
+@i-view-tile-hovered-y: 58px;
+@i-view-tile-hovered-offset-x: 0px;
+@i-view-tile-hovered-offset-y: -58px;
+@i-view-tile-hovered-width: 18px;
+@i-view-tile-hovered-height: 17px;
+@i-view-tile-hovered-total-width: 107px;
+@i-view-tile-hovered-total-height: 75px;
+@i-view-tile-hovered-image: '../images/sprite-main.png';
+@i-view-tile-hovered: 0px 58px 0px -58px 18px 17px 107px 75px '../images/sprite-main.png' 'i-view-tile-hovered';
+@i-view-tile-name: 'i-view-tile';
+@i-view-tile-x: 20px;
+@i-view-tile-y: 58px;
+@i-view-tile-offset-x: -20px;
+@i-view-tile-offset-y: -58px;
+@i-view-tile-width: 18px;
+@i-view-tile-height: 17px;
+@i-view-tile-total-width: 107px;
+@i-view-tile-total-height: 75px;
+@i-view-tile-image: '../images/sprite-main.png';
+@i-view-tile: 20px 58px -20px -58px 18px 17px 107px 75px '../images/sprite-main.png' 'i-view-tile';
+@spritesheet-width: 107px;
+@spritesheet-height: 75px;
+@spritesheet-image: '../images/sprite-main.png';
+@spritesheet-sprites: @i-basket @i-checkbox-active @i-close-active @i-close @i-download-active @i-download @i-view-list-active @i-view-list-hovered @i-view-list @i-view-tile-active @i-view-tile-hovered @i-view-tile;
+@spritesheet: 107px 75px '../images/sprite-main.png' @spritesheet-sprites;
+
+/*
+The provided classes are intended to be used with the array-like variables
+
+.icon-home {
+  .sprite-width(@icon-home);
+}
+.icon-email {
+  .sprite(@icon-email);
+}
+
+Example usage in HTML:
+
+`display: block` sprite:
+<div class="icon-home"></div>
+
+To change `display` (e.g. `display: inline-block;`), we suggest using a common CSS class:
+
+// CSS
+.icon {
+  display: inline-block;
+}
+
+// HTML
+<i class="icon icon-home"></i>
+*/
+.sprite-width(@sprite) {
+  width: extract(@sprite, 5);
+}
+
+.sprite-height(@sprite) {
+  height: extract(@sprite, 6);
+}
+
+.sprite-position(@sprite) {
+  @sprite-offset-x: extract(@sprite, 3);
+  @sprite-offset-y: extract(@sprite, 4);
+  background-position: @sprite-offset-x @sprite-offset-y;
+}
+
+.sprite-image(@sprite) {
+  @sprite-image: extract(@sprite, 9);
+  @sprite-image-bare: ~`"@{sprite-image}".slice(1, -1)`;
+  background-image: url(@sprite-image-bare);
+}
+
+.sprite(@sprite) {
+  .sprite-image(@sprite);
+  .sprite-position(@sprite);
+  .sprite-width(@sprite);
+  .sprite-height(@sprite);
+}
+
+/*
+The `.sprites` mixin generates identical output to the CSS template
+  but can be overridden inside of LESS
+
+This must be run when you have at least 2 sprites.
+  If run with a single sprite, then there will be reference errors.
+
+.sprites(@spritesheet-sprites);
+*/
+.sprites(@sprites, @i: 1) when (@i <= length(@sprites)) {
+  @sprite: extract(@sprites, @i);
+  @sprite-name: e(extract(@sprite, 10));
+  .@{sprite-name} {
+    .sprite(@sprite);
+  }
+  .sprites(@sprites, @i + 1);
+}
