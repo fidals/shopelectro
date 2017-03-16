@@ -1,6 +1,6 @@
 @import "../vendors/bootstrap-select/*";
-@import "../common/mixins/sp-png";
-@import "../common/mixins/utilities";
+@import "../common/utilities/sprite-main";
+@import "../common/utilities/mixins";
 @import "../common/variables";
 
 .category {
@@ -214,31 +214,30 @@
 }
 
 .icon-mode-switch {
-  background: @sp-main;
-  .sprite(@21);
+  .sprite(@i-view-tile);
   cursor: pointer;
   display: inline-block;
 }
 
 .icon-thumbs {
   &:hover {
-    .sprite(@22);
+    .sprite-position(@i-view-tile-hovered);
   }
 
   &.active {
-    .sprite(@23);
+    .sprite-position(@i-view-tile-active);
   }
 }
 
 .icon-list {
-  .sprite(@24);
+  .sprite(@i-view-list);
 
   &:hover {
-    .sprite(@25);
+    .sprite-position(@i-view-tile-hovered);
   }
 
   &.active {
-    .sprite(@26);
+    .sprite-position(@i-view-tile-active);
   }
 }
 

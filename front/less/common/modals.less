@@ -1,6 +1,6 @@
 @import "../common/variables";
-@import "../common/mixins/utilities";
-@import "../common/mixins/sp-png";
+@import "../common/utilities/mixins";
+@import "../common/utilities/sprite-main";
 
 .modal {
   &-dialog {
@@ -50,8 +50,7 @@
   }
 
   .close {
-    background: @sp-main;
-    .sprite(@05);
+    .sprite(@i-close);
     margin: -8px 0 0;
     opacity: 1;
     position: absolute;
@@ -63,7 +62,7 @@
     });
 
     &:hover {
-      .sprite(@06);
+      .sprite-position(@i-close-active);
     }
   }
 }

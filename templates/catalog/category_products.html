@@ -7,7 +7,8 @@
        itemscope itemtype="http://schema.org/Product">
     <meta property="name" itemprop="name" content="{{ product.name }}">
     <div class="category-image-wrapper">
-      <a class="category-product-link js-browse-product" target="_blank" href="{{ product.url }}">
+      <a class="category-product-link js-browse-product" href="{{ product.url }}"
+         {% if not request|is_mobile %}target="_blank"{% endif %}>
         {% include 'catalog/category_product_image.html' with image=image product=product only%}
       </a>
     </div>

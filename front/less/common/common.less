@@ -1,5 +1,6 @@
 @import "variables";
-@import "mixins/utilities";
+@import "utilities/mixins";
+@import "utilities/sprite-main";
 
 html,
 body {
@@ -26,7 +27,8 @@ a:focus {
   border: 0;
 }
 
-a, a:visited {
+a, a:visited,
+a:focus, a:active {
   text-decoration: underline;
 }
 
@@ -34,8 +36,13 @@ a:hover {
   text-decoration: none;
 }
 
-a:focus, a:active {
-  text-decoration: underline;
+// To prevent this https://goo.gl/Cgg4bq
+#carrotquest-messenger-collapsed.carrotquest-messenger-left_bottom {
+  padding: 0 0 55px 15px;
+
+  .Q(@md; {
+    padding: 0 0 15px 15px;
+  });
 }
 
 h1,
@@ -91,7 +98,6 @@ h3,
     display: block;
     font-size: @f-size-base + 3;
     margin: 0 auto;
-    max-width: 300px;
     width: 100%;
 
     .fa-chevron-down {
@@ -230,7 +236,7 @@ h3,
   width: 100%;
   z-index: 1;
 
-  .Q(@sm; {
+  .Q(@md; {
     display: none;
   });
 
@@ -627,13 +633,11 @@ div.autocomplete-suggestions {
   padding: 2px 15px 0 53px;
 
   &:after {
-    background: url("@{img-path}/i-basket.png") no-repeat;
+    .sprite(@i-basket);
     content: "";
-    height: 32px;
     left: 0;
     position: absolute;
     top: 0;
-    width: 36px;
     z-index: 1;
   }
 
@@ -815,17 +819,15 @@ div.autocomplete-suggestions {
     });
 
     &:after {
-      background: url("@{img-path}/download-ico.png") no-repeat left -23px;
+      .sprite(@i-download);
       content: "";
-      height: 23px;
       left: 12px;
       position: absolute;
       top: 8px;
-      width: 29px;
     }
 
     &:active:after {
-      background-position: 0;
+      .sprite-position(@i-download-active);
     }
 
     span {

@@ -64,9 +64,6 @@ class Mobile(SeleniumTestCase):
         catalog = self.browser.find_element_by_class_name('js-mobile-catalog-btn')
         self.assertTrue(catalog.is_displayed())
 
-        cart = self.browser.find_element_by_class_name('js-header-cart')
-        self.assertTrue(cart.is_displayed())
-
         toggler.click()
         search_input = self.browser.find_element_by_class_name('js-search-input')
         self.assertTrue(search_input.is_displayed())

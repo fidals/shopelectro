@@ -15,7 +15,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.test import TestCase
-from django.test.utils import override_settings
 from django.urls import reverse
 
 from pages.models import FlatPage
@@ -98,7 +97,7 @@ class SitemapPage(TestCase):
         self.response = self.client.get('/sitemap/')
 
     def test_pagination_on_page(self):
-        paginator_pages = self.response.context['paginator_pages']
+        paginator_pages = list(self.response.context['paginator_pages'])
         paginator_links = self.response.context['paginator_links']
 
         self.assertTrue(len(paginator_pages) == 50)

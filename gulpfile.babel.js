@@ -1,19 +1,19 @@
-// ================================================================
-// IMPORTS
-// ================================================================
-import gulp from 'gulp';
-import del from 'del';
-import lessGlob from 'less-plugin-glob';
-import sequence from 'run-sequence';
+import autoprefixer from 'autoprefixer';
 import babelPreset from 'babel-preset-es2015';
+import csso from 'postcss-csso';
+import del from 'del';
+import gulp from 'gulp';
+import lessGlob from 'less-plugin-glob';
+import mqpacker from 'css-mqpacker';
+import sequence from 'run-sequence';
 
 const $ = require('gulp-load-plugins')();
+const flexibility = require('postcss-flexibility')();
 const spawnSync = require('child_process').spawnSync;
 
 // ================================================================
 // Utils
 // ================================================================
-
 /**
  * Get src paths from given appName.
  * Usage:
@@ -46,11 +46,24 @@ const env = {
   production: false,
 };
 
+const plugins = [
+  autoprefixer(),
+  csso(),
+  mqpacker({
+    sort: true,
+  }),
+];
+
 const buildDir = 'front/build';
+const ecommercePaths = getAppSrcPaths('ecommerce');
 const genericAdminPaths = getAppSrcPaths('generic_admin');
 
 const path = {
   src: {
+    sprites: {
+      main: 'front/images/spriteSrc/main/*.png',
+    },
+
     styles: {
       admin: [
         ...genericAdminPaths.css,
@@ -103,6 +116,11 @@ const path = {
         ...genericAdminPaths.admin,
         'front/js/components/admin.es6',
       ],
+
+      vendorsIE: [
+        'front/js/vendors/html5shiv.min.js',
+        'front/js/vendors/flexibility.js',
+      ],
     },
 
     images: [
@@ -114,6 +132,13 @@ const path = {
   },
 
   build: {
+    sprites: {
+      pathInCss: '../images',
+      less: {
+        main: 'front/less/common/utilities',
+      },
+      images: 'front/images/',
+    },
     styles: `${buildDir}/css/`,
     js: `${buildDir}/js/`,
     images: `${buildDir}/images/`,
@@ -127,6 +152,7 @@ const path = {
     ],
     js: [
       'front/js/**/*',
+      ecommercePaths.watch,
       genericAdminPaths.watch.js,
     ],
     images: 'src/images/**/*',
@@ -143,38 +169,38 @@ gulp.task('build', () => {
   env.production = true;
 
   sequence(
-    'clear',
-    'fonts',
+    'clear', [
+      'fonts',
+      'js-admin',
+      'js-admin-vendors',
+      'js-common',
+      'js-common-vendors',
+      'js-pages',
+      'js-ie-vendors',
+      'styles-main',
+      'styles-admin',
+      'styles-ie',
+    ],
     'images',
-    'js-admin',
-    'js-admin-vendors',
-    'js-common',
-    'js-common-vendors',
-    'js-pages',
-    'styles-main',
-    'styles-admin',
   );
 });
 
 // ================================================================
-// Clear : Clear destination dir before build.
+// Clear : Clear destination directory.
 // ================================================================
 gulp.task('clear', () => del(`${buildDir}/**/*`));
 
 // ================================================================
-// STYLES : Build common stylesheets
+// STYLES
 // ================================================================
 gulp.task('styles-main', () => {
   gulp.src(path.src.styles.main)
     .pipe($.changed(path.build.styles, { extension: '.css' }))
     .pipe($.if(env.development, $.sourcemaps.init()))
     .pipe($.plumber())
-    .pipe($.less({
-      plugins: [lessGlob],
-    }))
-    .pipe($.if(env.production, $.autoprefixer()))
+    .pipe($.less({ plugins: [lessGlob] }))
+    .pipe($.if(env.production, $.postcss(plugins)))
     .pipe($.rename({ suffix: '.min' }))
-    .pipe($.if(env.production, $.cssnano()))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(path.build.styles))
     .pipe($.livereload());
@@ -185,14 +211,21 @@ gulp.task('styles-admin', () => {
     .pipe($.changed(path.build.styles, { extension: '.css' }))
     .pipe($.plumber())
     .pipe($.concat('admin.min.css'))
-    .pipe($.if(env.production, $.autoprefixer()))
-    .pipe($.if(env.production, $.cssnano()))
+    .pipe($.if(env.production, $.postcss(plugins)))
     .pipe(gulp.dest(path.build.styles))
     .pipe($.livereload());
 });
 
+gulp.task('styles-ie', () => {
+  gulp.src(path.src.styles.main)
+    .pipe($.less({ plugins: [lessGlob] }))
+    .pipe($.concat('ie.min.css'))
+    .pipe($.postcss([...plugins, flexibility]))
+    .pipe(gulp.dest(path.build.styles));
+});
+
 // ================================================================
-// JS : Helper functions
+// JS : Helper functions.
 // ================================================================
 function vendorJS(source, destination, fileName) {
   gulp.src(source)
@@ -235,14 +268,14 @@ gulp.task('js-common-vendors', () => {
 });
 
 // ================================================================
-// JS : Build all pages scripts
+// JS : Build all pages js.
 // ================================================================
 gulp.task('js-pages', () => {
   appJS(path.src.js.pages, path.build.js, 'pages');
 });
 
 // ================================================================
-// JS : Build admin page scripts
+// JS : Build admin page js only.
 // ================================================================
 gulp.task('js-admin', () => {
   appJS(path.src.js.admin, path.build.js, 'admin');
@@ -250,23 +283,54 @@ gulp.task('js-admin', () => {
 
 
 // ================================================================
-// JS : Build admin vendors js only
+// JS : Build admin vendors js only.
 // ================================================================
 gulp.task('js-admin-vendors', () => {
   vendorJS(path.src.js.adminVendors, path.build.js, 'admin-vendors');
 });
 
 // ================================================================
-// Images : Copy images
+// JS : Build vendors js for IE.
+// ================================================================
+gulp.task('js-ie-vendors', () => {
+  vendorJS(path.src.js.vendorsIE, path.build.js, 'ie-vendors');
+});
+
+// ================================================================
+// Images: Sprites.
+// ================================================================
+gulp.task('sprites', () => {
+  sequence(
+    'generate-sprites',
+    'images',
+  );
+});
+
+gulp.task('generate-sprites', () => {
+  const spriteData = gulp.src(path.src.sprites.main)
+    .pipe($.spritesmith({
+      imgName: 'sprite-main.png',
+      cssName: 'sprite-main.less',
+      imgPath: `${path.build.sprites.pathInCss}/sprite-main.png`,
+      padding: 2,
+    }));
+  spriteData.img.pipe(gulp.dest(path.build.sprites.images));
+  spriteData.css
+    .pipe(gulp.dest(path.build.sprites.less.main));
+});
+
+// ================================================================
+// Images : Optimize and copy images.
 // ================================================================
 gulp.task('images', () => {
   gulp.src(path.src.images)
     .pipe($.changed(path.build.images))
+    .pipe($.imagemin())
     .pipe(gulp.dest(path.build.images));
 });
 
 // ================================================================
-// Fonts : Copy fonts
+// Fonts : Copy fonts.
 // ================================================================
 gulp.task('fonts', () => {
   gulp.src(path.src.fonts)

@@ -88,6 +88,10 @@ const configs = (() => {
 
   function initMmenu() {
     $menu = DOM.$mobileMenu.mmenu({
+      extensions: [
+        'border-offset', 'shadow-page',
+        'shadow-panels', 'effect-menu-slide',
+      ],
       screenReader: true,
       navbar: {
         title: 'Меню',
