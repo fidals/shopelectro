@@ -1,7 +1,7 @@
 const customColModels = [
   {
     name: 'wholesale_small',
-    label: 'мелкий опт.',
+    label: 'мелкий опт',
     editable: true,
     editoptions: {
       type: 'number',
@@ -25,7 +25,7 @@ const customColModels = [
   },
   {
     name: 'wholesale_medium',
-    label: 'средний опт.',
+    label: 'средний опт',
     editable: true,
     editoptions: {
       type: 'number',
@@ -49,7 +49,7 @@ const customColModels = [
   },
   {
     name: 'wholesale_large',
-    label: 'крупный опт.',
+    label: 'крупный опт',
     editable: true,
     editoptions: {
       type: 'number',

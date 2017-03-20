@@ -49,13 +49,11 @@ msgid "Group"
 msgstr "Группа тегов"
 
 #: shopelectro/models.py:81
-#, fuzzy
 #| msgid "Category"
 msgid "category"
 msgstr "категория"
 
 #: shopelectro/models.py:88
-#, fuzzy
 #| msgid "has tags"
 msgid "tags"
 msgstr "теги"
@@ -66,15 +64,15 @@ msgstr "закупочная цена"
 
 #: shopelectro/models.py:93
 msgid "wholesale_small"
-msgstr "мелкий опт."
+msgstr "мелкий опт"
 
 #: shopelectro/models.py:94
 msgid "wholesale_medium"
-msgstr "средний опт."
+msgstr "средний опт"
 
 #: shopelectro/models.py:95
 msgid "wholesale_large"
-msgstr "крупный опт."
+msgstr "крупный опт"
 
 #: shopelectro/models.py:120
 msgid "date"
