@@ -42,14 +42,15 @@ def download_catalog(destination):
         )
     )
 
-    subprocess.run(wget_command, shell=True, check=True)
+    subprocess.run(wget_command, shell=True)
+    assert os.path.exists(os.path.join(destination, settings.FTP_IP)), 'Files do not downloaded...'
     print('Download catalog - completed...')
 
-    try:
-        yield
-    finally:
-        # remove downloaded data
-        shutil.rmtree(os.path.join(destination, settings.FTP_IP))
+    # try:
+    yield
+    # finally:
+    #     # remove downloaded data
+    #     shutil.rmtree(os.path.join(destination, settings.FTP_IP))
 
 
 def get_xpath_queries(namespace: str, queries: Dict[str, str]) -> Dict[str, str]:
@@ -91,6 +92,10 @@ def fetch_price(root: Element, xpath_queries: Dict[str, str], **kwargs) -> Itera
 
         yield product_uuid, prices
 
+
+def fetch_tags():
+    pass
+
 PRODUCT_NAME_CONFIG = {
     'fetch_callback': fetch_name,
     'xml_path_pattern': os.path.join(
@@ -121,6 +126,26 @@ PRODUCT_PRICE_CONFIG = {
             'product_prices': './/{}Предложения/',
             'product_uuid': '.{}Ид',
             'prices': '.{}Цены/',
+            'price': '.{}ЦенаЗаЕдиницу',
+        }),
+    'price_types': [
+        'purchase_price', 'wholesale_large', 'wholesale_medium',
+        'wholesale_small', 'price',
+    ],
+}
+
+TAGS_CONFIG = {
+    'fetch_callback': fetch_tags,
+    'xml_path_pattern': os.path.join(
+        settings.ASSETS_DIR,
+        '**/webdata/**/properties/**/import*.xml',
+    ),
+    'xpath_queries': get_xpath_queries(
+        NAMESPACE,
+        {
+            'tag_groups': './/{}Свойства/',
+            'tag_group_uuid': '.{}Ид',
+            'tag_group_name': '.{}Наименование/',
             'price': '.{}ЦенаЗаЕдиницу',
         }),
     'price_types': [
