@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'shopelectro.middleware.PatchedUserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
@@ -134,6 +135,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'shopelectro/locale')]
 FORMAT_MODULE_PATH = [
     'shopelectro.formats',
 ]
@@ -143,6 +145,8 @@ FORMAT_MODULE_PATH = [
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'front/build'),

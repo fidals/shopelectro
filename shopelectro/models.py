@@ -6,6 +6,7 @@ from uuid import uuid4
 from django.db import models
 from django.db.models import Avg, Q
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
 from catalog.models import (
@@ -73,18 +74,25 @@ class Product(AbstractProduct, SyncPageMixin):
     objects = SEProductManager()
 
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, null=True, related_name='products'
+        Category,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='products',
+        verbose_name=_('category'),
     )
 
     tags = models.ManyToManyField(
-        'Tag', related_name='products', blank=True
+        'Tag',
+        related_name='products',
+        blank=True,
+        verbose_name=_('tags'),
     )
 
     uuid = models.UUIDField(default=uuid4, editable=False)
-    purchase_price = models.FloatField(default=0)
-    wholesale_small = models.FloatField(default=0)
-    wholesale_medium = models.FloatField(default=0)
-    wholesale_large = models.FloatField(default=0)
+    purchase_price = models.FloatField(default=0, verbose_name=_('purchase_price'))
+    wholesale_small = models.FloatField(default=0, verbose_name=_('wholesale_small'))
+    wholesale_medium = models.FloatField(default=0, verbose_name=_('wholesale_medium'))
+    wholesale_large = models.FloatField(default=0, verbose_name=_('wholesale_large'))
 
     def get_absolute_url(self):
         return reverse('product', args=(self.id,))
@@ -109,12 +117,12 @@ class ProductFeedback(models.Model):
         related_name='product_feedbacks'
     )
 
-    date = models.DateTimeField(auto_now=True, db_index=True)
-    name = models.CharField(max_length=255, db_index=True)
-    rating = models.PositiveSmallIntegerField(default=1, db_index=True)
-    dignities = models.TextField(default='', blank=True)
-    limitations = models.TextField(default='', blank=True)
-    general = models.TextField(default='', blank=True)
+    date = models.DateTimeField(auto_now=True, db_index=True, verbose_name=_('date'))
+    name = models.CharField(max_length=255, db_index=True, verbose_name=_('name'))
+    rating = models.PositiveSmallIntegerField(default=1, db_index=True, verbose_name=_('rating'))
+    dignities = models.TextField(default='', blank=True, verbose_name=_('dignities'))
+    limitations = models.TextField(default='', blank=True, verbose_name=_('limitations'))
+    general = models.TextField(default='', blank=True, verbose_name=_('limitations'))
 
 
 def _default_payment():
@@ -158,8 +166,10 @@ class ProductPage(ModelPage):
 
 class TagGroup(models.Model):
 
-    name = models.CharField(max_length=100, db_index=True)
-    position = models.PositiveSmallIntegerField(default=0, blank=True, db_index=True)
+    name = models.CharField(max_length=100, db_index=True, verbose_name=_('name'))
+    position = models.PositiveSmallIntegerField(
+        default=0, blank=True, db_index=True, verbose_name=_('position'),
+    )
     uuid = models.UUIDField(default=uuid4, editable=False)
 
     def __str__(self):
@@ -195,8 +205,10 @@ class TagManager(models.Manager):
 
 class Tag(models.Model):
 
-    name = models.CharField(max_length=100, db_index=True)
-    position = models.PositiveSmallIntegerField(default=0, blank=True, db_index=True)
+    name = models.CharField(max_length=100, db_index=True, verbose_name=_('name'))
+    position = models.PositiveSmallIntegerField(
+        default=0, blank=True, db_index=True, verbose_name=_('position'),
+    )
     uuid = models.UUIDField(default=uuid4, editable=False)
 
     objects = TagManager()

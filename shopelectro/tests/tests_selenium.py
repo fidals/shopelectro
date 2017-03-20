@@ -18,6 +18,7 @@ from django.urls import reverse
 from pages.models import FlatPage, CustomPage, Page
 
 from shopelectro.models import Category, Product
+from shopelectro.tests.helpers import set_default_staticfiles_storage, disable_celery
 
 
 def wait(seconds=1):
@@ -79,7 +80,8 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).tearDownClass()
 
 
-@override_settings(DEBUG=True, INTERNAL_IPS=tuple(), USE_CELERY=False)
+@disable_celery
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class Header(SeleniumTestCase):
 
     def setUp(self):
@@ -135,6 +137,7 @@ class Header(SeleniumTestCase):
         self.assertTrue(product_price == product_total_price_price_in_cart)
 
 
+@set_default_staticfiles_storage
 class CategoryPage(SeleniumTestCase):
 
     PRODUCTS_TO_LOAD = 48
@@ -370,6 +373,7 @@ class CategoryPage(SeleniumTestCase):
         self.assertEqual(new_product_cards, 50)
 
 
+@set_default_staticfiles_storage
 class ProductPage(SeleniumTestCase):
 
     PRODUCT_ID = 1
@@ -439,7 +443,7 @@ class ProductPage(SeleniumTestCase):
 
         self.assertTrue(self.one_click.get_attribute('disabled'))
 
-    @override_settings(USE_CELERY=False)
+    @disable_celery
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
@@ -511,7 +515,8 @@ class ProductPage(SeleniumTestCase):
         self.assertTrue(all(not element.is_displayed() for element in feedbacks))
 
 
-@override_settings(USE_CELERY=False)
+@disable_celery
+@set_default_staticfiles_storage
 class OrderPage(SeleniumTestCase):
 
     @staticmethod
@@ -693,7 +698,8 @@ class SitePage(SeleniumTestCase):
         self.assertFalse(accordion_content.is_displayed())
 
 
-@override_settings(DEBUG=True, INTERNAL_IPS=tuple(), USE_CELERY=False)
+@disable_celery
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class YandexMetrika(SeleniumTestCase):
 
     def setUp(self):
