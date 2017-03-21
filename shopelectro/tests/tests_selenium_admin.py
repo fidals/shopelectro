@@ -16,6 +16,7 @@ from django.test import LiveServerTestCase, override_settings
 from django.urls import reverse
 
 from shopelectro.models import Category, Product
+from shopelectro.tests.helpers import disable_celery
 
 
 def wait(seconds=1):
@@ -146,7 +147,7 @@ class AdminPage(SeleniumTestCase):
         self.browser.find_element_by_xpath(self.price_filter).click()
         wait()
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[4]')
-        product_price = int(float(product.text))
+        product_price = int(float(product.text.replace(',', '.')))
 
         self.assertTrue(product_price >= 1000)
 
@@ -260,7 +261,7 @@ class AdminPage(SeleniumTestCase):
         wait()
 
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
-        self.assertEqual(test_h1, 'Table editor')
+        self.assertEqual(test_h1, 'Табличный редактор')
 
         test_search_value = self.browser.find_element_by_id('search-field').get_attribute('value')
         self.assertTrue(len(test_search_value) > 0)
@@ -296,7 +297,7 @@ class AdminPage(SeleniumTestCase):
 
         self.assertTrue('collapsed' in body_classes)
 
-    @override_settings(USE_CELERY=False)
+    @disable_celery
     def test_yandex_feedback_request(self):
         """Send mail with request for leaving feedback on Ya.Market."""
         self.browser.find_element_by_class_name('js-toggle-sidebar').click()
@@ -307,6 +308,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
 
 
+@override_settings(LANGUAGE_CODE='ru-ru', LANGUAGES=(('ru', 'Russian'),))
 class TableEditor(SeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""
 
@@ -420,10 +422,10 @@ class TableEditor(SeleniumTestCase):
 
     def test_edit_product_name(self):
         """We could change Product name from TE."""
-        self.get_cell(1).click()
-        self.update_input_value(0, self.new_product_name)
+        self.get_cell(2).click()
+        self.update_input_value(1, self.new_product_name)
         self.refresh_table_editor_page()
-        updated_name = self.get_cell(1).text
+        updated_name = self.get_cell(2).text
 
         self.assertEqual(updated_name, self.new_product_name)
 
@@ -479,10 +481,10 @@ class TableEditor(SeleniumTestCase):
     def test_sort_table_by_price(self):
         """We could sort products in TE by price."""
         first_product_price_before = self.get_cell(1).text
-        name_header = self.browser.find_elements_by_class_name('ui-jqgrid-sortable')[1]
+        name_header = self.browser.find_elements_by_class_name('ui-jqgrid-sortable')[3]
         name_header.click()
         name_header.click()
-        first_product_price_after = self.get_cell(1).text
+        first_product_price_after = self.get_cell(3).text
 
         self.assertNotEqual(first_product_price_before, first_product_price_after)
 
@@ -569,7 +571,7 @@ class TableEditor(SeleniumTestCase):
         self.browser.find_element_by_class_name('js-modal-close').click()
         wait()
         first_row = self.browser.find_element_by_id('jqGrid').find_element_by_class_name('jqgrow')
-        name_cell = first_row.find_elements_by_tag_name('td')[1]
+        name_cell = first_row.find_elements_by_tag_name('td')[2]
         self.assertEqual(name_cell.get_attribute('title'), new_entity_text)
 
         # We are able to change newly created entity:
