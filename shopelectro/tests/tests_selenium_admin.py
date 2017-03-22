@@ -16,7 +16,7 @@ from django.test import LiveServerTestCase, override_settings
 from django.urls import reverse
 
 from shopelectro.models import Category, Product
-from shopelectro.tests.helpers import disable_celery
+from shopelectro.tests.helpers import disable_celery, enable_russian_language
 
 
 def wait(seconds=1):
@@ -54,6 +54,7 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).tearDownClass()
 
 
+@enable_russian_language
 class AdminPage(SeleniumTestCase):
     """Selenium-based tests for Admin page UI."""
 
@@ -308,7 +309,7 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
 
 
-@override_settings(LANGUAGE_CODE='ru-ru', LANGUAGES=(('ru', 'Russian'),))
+@enable_russian_language
 class TableEditor(SeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""
 
