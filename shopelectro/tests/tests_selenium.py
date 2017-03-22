@@ -18,7 +18,7 @@ from django.urls import reverse
 from pages.models import FlatPage, CustomPage, Page
 
 from shopelectro.models import Category, Product
-from shopelectro.tests.helpers import set_default_staticfiles_storage, disable_celery
+from shopelectro.tests.helpers import disable_celery
 
 
 def wait(seconds=1):
@@ -133,11 +133,10 @@ class Header(SeleniumTestCase):
         show_cart_dropdown(self.browser)
         product_total_price = self.browser.find_element_by_class_name('js-basket-sum').text
         product_total_price_price_in_cart = int(product_total_price.split(' ')[0])
-
+        wait()
         self.assertTrue(product_price == product_total_price_price_in_cart)
 
 
-@set_default_staticfiles_storage
 class CategoryPage(SeleniumTestCase):
 
     PRODUCTS_TO_LOAD = 48
@@ -373,7 +372,6 @@ class CategoryPage(SeleniumTestCase):
         self.assertEqual(new_product_cards, 50)
 
 
-@set_default_staticfiles_storage
 class ProductPage(SeleniumTestCase):
 
     PRODUCT_ID = 1
@@ -516,7 +514,6 @@ class ProductPage(SeleniumTestCase):
 
 
 @disable_celery
-@set_default_staticfiles_storage
 class OrderPage(SeleniumTestCase):
 
     @staticmethod

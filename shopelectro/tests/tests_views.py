@@ -12,14 +12,11 @@ from operator import attrgetter
 from xml.etree import ElementTree as ET
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
 
-from pages.models import FlatPage
-
-from shopelectro.models import CategoryPage, ProductPage, Category, Product, Tag
+from shopelectro.models import Category, Product, Tag
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 
@@ -106,125 +103,6 @@ class SitemapPage(TestCase):
     def test_sitemap_self_link_on_page(self):
         sitemap_url_slug = reverse('custom_page', args=('sitemap', ))
         self.assertIn(sitemap_url_slug, self.response.content.decode('utf-8'))
-
-
-class AdminPage(TestCase):
-    """Tests for Admin page UI."""
-
-    fixtures = ['dump.json']
-
-    @classmethod
-    def setUpClass(cls):
-        super(AdminPage, cls).setUpClass()
-        cls.username = 'admin'
-        cls.email = 'admin@admin.com'
-        cls.password = 'asdfjkl'
-
-        cls.list_display = {
-            'page': ['ID', 'Name', 'Parent', 'Is active', ],
-            'product': ['Id', 'Name', 'Category', 'Price', 'Link', 'Is active', ],
-            'category': ['Id', 'Name', 'Parent', 'Is active', ],
-        }
-
-        cls.fieldsets = {
-            'page': ['Position', 'Content', 'title', 'Keywords', 'Description', 'Is active',
-                     'Seo text', 'h1', 'Name'],
-            'product': ['Name', 'Category', 'Price', 'ID', 'Purchase price', 'Wholesale large',
-                        'Wholesale medium', 'Wholesale small', 'In stock', 'Is popular', 'Tags'],
-            'category': ['Name', 'Parent', 'Position', 'ID', ],
-        }
-
-    def setUp(self):
-        self.user = User.objects.create_superuser(self.username, self.email, self.password)
-        self.client.login(username=self.username, password=self.password)
-
-    def tearDown(self):
-        self.user.delete()
-
-    def test_flat_page_changelist_display_list(self):
-        """
-        Pages model's changelist-page must have all needed columns, which was define
-        in Admin.py
-        """
-        response = self.client.get(
-            reverse('se_admin:pages_flatpage_changelist'))
-
-        for field in self.list_display['page']:
-            self.assertContains(response, field)
-
-    def test_flat_page_change_fieldset(self):
-        """Pages model's change-page must have all needed fields, which was define in Admin.py"""
-        response = self.client.get(
-            reverse(
-                'se_admin:pages_flatpage_change', args=(FlatPage.objects.filter().first().id, )
-            )
-        )
-
-        self.assertNotContains(response, 'Products')
-        self.assertNotContains(response, 'Categories')
-
-        for field in self.fieldsets['page']:
-            self.assertContains(response, field)
-
-    def test_category_page_changelist_display_list(self):
-        """
-        Categories model's changelist-page must have all needed columns, which was define
-        in Admin.py
-        """
-        response = self.client.get(
-            reverse('se_admin:shopelectro_categorypage_changelist'))
-
-        for field in self.list_display['category']:
-            self.assertContains(response, field)
-
-    def test_category_page_change_fieldset(self):
-        """
-        Categories model's change-page must have all needed fields, which was define in Admin.py
-        """
-        response = self.client.get(
-            reverse(
-                'se_admin:shopelectro_categorypage_change', args=(
-                    CategoryPage.objects.filter().first().id,
-                )
-            )
-        )
-
-        self.assertNotContains(response, 'Products')
-
-        for field in self.fieldsets['category']:
-            self.assertContains(response, field)
-
-        for field in self.fieldsets['page']:
-            self.assertContains(response, field)
-
-    def test_products_changelist_display_list(self):
-        """
-        Products model's changelist-page must have all needed columns, which was define
-        in Admin.py
-        """
-        response = self.client.get(
-            reverse('se_admin:shopelectro_productpage_changelist'))
-
-        for field in self.list_display['product']:
-            self.assertContains(response, field)
-
-    def test_products_change_fieldset(self):
-        """Products model's change-page must have all needed fields, which was define in Admin.py"""
-        response = self.client.get(
-            reverse(
-                'se_admin:shopelectro_productpage_change', args=(
-                    ProductPage.objects.filter().first().id,
-                )
-            )
-        )
-
-        self.assertNotContains(response, 'Categories')
-
-        for field in self.fieldsets['product']:
-            self.assertContains(response, field)
-
-        for field in self.fieldsets['page']:
-            self.assertContains(response, field)
 
 
 class YandexKassa(TestCase):

@@ -24,7 +24,7 @@
             {% if 'logo' in position.image %} {# position has no image #}
               <img src="{% static 'images/camera-icon.png' %}" alt="{% get_img_alt position %}">
             {% else %}
-              <a class="fancybox" rel="product-cart-gallery" href="{% static position.image %}"
+              <a class="fancybox" rel="product-cart-gallery" href="{{ position.image }}"
                  title="{{ position.name }}">
                 <img src="{% static 'images/camera-icon-clr.png' %}" alt="{% get_img_alt position %}">
               </a>
