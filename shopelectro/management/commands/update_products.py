@@ -19,6 +19,7 @@ from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 
 from shopelectro.models import Product, ProductPage
+from shopelectro.management.commands import update_meta_tags
 
 ProductUUID = str
 ProductData = Dict[str, str]
@@ -172,6 +173,7 @@ class Command(BaseCommand):
 
             if created_products.exists():
                 self.report(kwargs['recipients'])
+        update_meta_tags.update()
 
     @staticmethod
     def get_product_data() -> Dict[ProductUUID, ProductData]:

@@ -86,32 +86,36 @@ def chained_update(pages, handlers):
     ))
 
 
+def update():
+    category_pages = (
+        CategoryPage.objects
+        .select_related('shopelectro_category')
+        .prefetch_related('shopelectro_category__products')
+    )
+
+    product_pages = (
+        ProductPage.objects
+        .select_related('shopelectro_product')
+        .prefetch_related('shopelectro_product__category')
+    )
+
+    chained_update(
+        category_pages,
+        handlers=[
+            update_category_title,
+            update_category_text,
+        ]
+    )
+    chained_update(
+        product_pages,
+        handlers=[
+            update_product_title,
+            update_product_description,
+        ]
+    )
+
+
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        category_pages = (
-            CategoryPage.objects
-            .select_related('shopelectro_category')
-            .prefetch_related('shopelectro_category__products')
-        )
-
-        product_pages = (
-            ProductPage.objects
-            .select_related('shopelectro_product')
-            .prefetch_related('shopelectro_product__category')
-        )
-
-        chained_update(
-            category_pages,
-            handlers=[
-                update_category_title,
-                update_category_text,
-            ]
-        )
-        chained_update(
-            product_pages,
-            handlers=[
-                update_product_title,
-                update_product_description,
-            ]
-        )
+        update()

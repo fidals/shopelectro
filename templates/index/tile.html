@@ -116,7 +116,8 @@
       <ul class="stuff-double-list list-unstyled">
         {% for item in category_tile.multimeters %}
           <li class="stuff-item stuff-item-double-small">
-            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+            {# here we reverse product links instead of category #}
+            <a class="stuff-link" href="{% url 'product' item.slug %}">{{ item.name }}</a>
           </li>
         {% endfor %}
       </ul>
