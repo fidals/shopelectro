@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from ecommerce import mailer, views as ec_views
 from ecommerce.cart import Cart
 from ecommerce.models import Order
+from pages.models import CustomPage
 
 from shopelectro.cart import WholesaleCart
 from shopelectro.forms import OrderForm
@@ -21,6 +22,12 @@ from shopelectro.models import Product, Order
 # ECOMMERCE VIEWS
 class OrderPage(ec_views.OrderPage):
     order_form = OrderForm
+
+    def get_context_data(self, request, **kwargs):
+        return {
+            **super(OrderPage, self).get_context_data(request, **kwargs),
+            'page': CustomPage.objects.get(slug='order'),
+        }
 
 
 class AddToCart(ec_views.AddToCart):

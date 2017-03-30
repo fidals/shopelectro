@@ -67,6 +67,7 @@ const autocomplete = (() => {
       }
     },
     onSelect: (event, term, item) => {
+      event.preventDefault();
       const isRightClick = event.button === 2 || event.which === 3;
       if (isRightClick) return;
 

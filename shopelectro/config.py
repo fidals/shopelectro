@@ -54,6 +54,7 @@ def cached_time(*args, **kwargs) -> int:
 # Tile on main page
 MAIN_PAGE_TILE = {
     'accumulators': [
+        {'name': 'Типоразмера AA', 'slug': 'tiporazmer-aa'},
         {'name': 'Типоразмера ААА', 'slug': 'akkumuliatory-aaa'},
         {'name': 'Для радиомоделей и игрушек',
          'slug': 'akkumuliatory-dlia-radioupravliaemykh-modelei-i-igrushek'},
@@ -61,25 +62,23 @@ MAIN_PAGE_TILE = {
          'slug': 'akkumuliatory-svintsovo-kislotnye-4-v-6-v-12-v-lca'},
         {'name': 'Внешние универсальные',
          'slug': 'vneshnie-universalnye-akkumuliatory'},
-        {'name': 'Для ноутбуков', 'slug': 'akkumuliatory-dlia-noutbukov'},
         {'name': 'Адаптеры, отсеки и футляры',
          'slug': 'adaptery-otseki-i-futliary-dlia-akkumuliatorov'},
     ],
     'inverter': [
-        {'name': 'Инверторы СОЮЗ', 'slug': 'invertory-soiuz'},
-        {'name': 'Инверторы ROBITON', 'slug': 'invertory-robiton'},
+        {'name': 'Инверторы', 'slug': 'invertory'},
         {'name': 'Преобразователи DC 24 В/12 В KALLER',
          'slug': 'preobrazovateli-napriazheniia-dc-24-v12-v-kaller'},
     ],
     'batteries': [
         {'name': 'Типоразмера АА', 'slug': 'batareiki-aa'},
-        {'name': 'Часовые', 'slug': 'batareiki-chasovye'},
-        {'name': 'Литиевые', 'slug': 'batareiki-litievye'},
+        {'name': 'Часовые', 'slug': 'chasovye-batareiki-alkalinovye'},
+        {'name': 'Дисковые литиевые', 'slug': 'diskovye-litievye-batareiki-3-v'},
     ],
     'lights': [
-        {'name': 'Фотон', 'slug': 'fonari-foton'},
-        {'name': 'Эра', 'slug': 'fonari-era'},
-        {'name': 'Яркий Луч', 'slug': 'fonari-iarkii-luch'},
+        {'name': 'Ручные', 'slug': 'ruchnye-fonari'},
+        {'name': 'Налобные', 'slug': 'nalobnye-fonari'},
+        {'name': 'Туристические', 'slug': 'turisticheskie-kempingovye-fonari'},
     ],
     'chargers': [
         {'name': 'Для фотоаппаратов',
@@ -89,12 +88,9 @@ MAIN_PAGE_TILE = {
          'slug': 'zariadnye-ustroistva-dlia-svintsovykh-akkumuliatorov'},
     ],
     'multimeters': [
-        {'name': 'MY68 Master Professional',
-         'slug': 'multimetry-master-professional'},
-        {'name': 'MY67 Master Professional',
-         'slug': 'multimetry-master-professional'},
-        {'name': 'MY65 Master Professional',
-         'slug': 'multimetry-master-professional'},
+        {'name': 'MY68 Master Professional', 'slug': '1411'},
+        {'name': 'MY67 Master Professional', 'slug': '1692'},
+        {'name': 'MY64 Master Professional', 'slug': '1407'},
     ],
     'adapters': [
         {'id': 1, 'name': '220В для ноутбуков',
