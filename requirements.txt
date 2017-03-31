@@ -5,7 +5,7 @@ django-debug-toolbar
 django-redis
 django-mptt==0.8.7
 django-widget-tweaks
-django-user-agents==0.3.0
+-e git+https://github.com/selwin/django-user_agents@44b752611b4e5cf3df8a053f7aac299ac56f591f#egg=django_user_agents
 ipython
 openpyxl
 pillow

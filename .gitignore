@@ -17,3 +17,7 @@ priceru.xml
 yandex.yml
 docker/.env
 celerybeat-schedule
+.project
+.pydevproject
+.settings/
+assets/37.18.77.165/

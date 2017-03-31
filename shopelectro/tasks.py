@@ -25,11 +25,17 @@ def update_products():
     call_command('update_products')
 
 
+@app.task
+def update_meta_tags():
+    call_command('update_meta_tags')
+
+
 @app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=30)
 def update_catalog():
     # http://docs.celeryproject.org/en/latest/userguide/canvas.html#map-starmap
     return [
         update_products(),
+        update_meta_tags(),
         generate_price_files(),
         generate_excel_file(),
         collect_static()
