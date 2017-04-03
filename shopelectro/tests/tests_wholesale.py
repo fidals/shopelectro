@@ -26,10 +26,14 @@ class WholesaleCartTest(TestCase):
         """Return Cart object for test."""
         return WholesaleCart(self.session)
 
-    def get_wholesale_quantity(self, price_type, product):
+    @staticmethod
+    def get_price(product, price_type):
+        return getattr(product, price_type)
+
+    def get_wholesale_quantity(self, product, price_type):
         """
-        Return the approximate number of products with wholesale price type for
-        tests.
+        Return minimal products count, that we should put in cart to get
+        assigned price_type.
         """
         wholesale_price_type = {
             'price': 14000,
@@ -41,21 +45,21 @@ class WholesaleCartTest(TestCase):
         # Increment, because wholesale price should be strictly more then
         # bounds.
         return ceil(
-                wholesale_price_type[price_type] /
-                getattr(product, price_type) /
-                self.item_quantity
+            wholesale_price_type[price_type] /
+            self.get_price(product, price_type) /
+            self.item_quantity
         ) + 1
 
     def setup_for_tests(self, price_type):
-        first_product_price = float(getattr(self.first_product, price_type))
-        second_product_price = float(getattr(self.second_product, price_type))
+        first_product_price = float(self.get_price(self.first_product, price_type))
+        second_product_price = float(self.get_price(self.second_product, price_type))
 
         first_product_quantity = (
-            self.get_wholesale_quantity(price_type, self.first_product)
+            self.get_wholesale_quantity(self.first_product, price_type)
         )
 
         second_product_quantity = (
-            self.get_wholesale_quantity(price_type, self.second_product)
+            self.get_wholesale_quantity(self.second_product, price_type)
         )
 
         total_sum = (

@@ -16,12 +16,11 @@ def recalculate(func):
 
 def recalculate_price(cart: Cart) -> Cart:
     """Define what type of price should be used in Cart. Actualize price if needed."""
-
-    wholesale_types = OrderedDict((
-        ['wholesale_large', PRICE_BOUNDS['wholesale_large']],
-        ['wholesale_medium', PRICE_BOUNDS['wholesale_medium']],
-        ['wholesale_small', PRICE_BOUNDS['wholesale_small']],
-    ))
+    wholesale_types = OrderedDict([
+        ('wholesale_large', PRICE_BOUNDS['wholesale_large']),
+        ('wholesale_medium', PRICE_BOUNDS['wholesale_medium']),
+        ('wholesale_small', PRICE_BOUNDS['wholesale_small']),
+    ])
 
     def get_product_data(price_type: str) -> list:
         product_ids = [id_ for id_, _ in cart]
