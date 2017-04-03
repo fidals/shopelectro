@@ -239,7 +239,7 @@ class Command(BaseCommand):
         print('{} products  and {} pages were deleted.'.format(product_count, page_count))
 
     @transaction.atomic
-    def update(self, data: Dict[ProductUUID, ProductData]) -> QuerySet:  
+    def update(self, data: Dict[ProductUUID, ProductData]) -> QuerySet:
         def save(product, field, value):
             if field == 'name' and getattr(product, field, None):
                 return

@@ -38,6 +38,8 @@ class WholesaleCartTest(TestCase):
             'wholesale_small': 20000,
         }
 
+        # Increment, because wholesale price should be strictly more then
+        # bounds.
         return ceil(
                 wholesale_price_type[price_type] /
                 getattr(product, price_type) /
@@ -104,6 +106,7 @@ class WholesaleCartTest(TestCase):
                 [setup_data['first_product_price'],
                  setup_data['second_product_price']]
             )
+
         self.assertEqual(setup_data['total_sum'], self.cart.total_price)
 
     def test_add_method_for_wholesale_large(self):

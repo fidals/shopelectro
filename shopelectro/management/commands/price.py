@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 ('utm_source', utm),
                 ('utm_medium', 'cpc'),
                 ('utm_content', product.get_root_category().page.slug),
-                ('utm_term', str(product.id)),
+                ('utm_term', str(product.vendor_code)),
             ]
 
             url = reverse('product', args=(product.vendor_code,))
