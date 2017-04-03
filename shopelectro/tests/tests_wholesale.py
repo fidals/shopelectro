@@ -2,29 +2,23 @@ from math import ceil
 
 from django.test import TestCase
 
-from shopelectro.models import Product, Category
+from shopelectro.models import Product
 from shopelectro.cart import WholesaleCart
 
 
 class WholesaleCartTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        """Create products and category for them."""
-        category = Category.objects.create(name='Test')
-        cls.item_quantity = 2
-        cls.products = cls.first_product, cls.second_product = [
-            Product.objects.create(
-                name='Product {}'.format(i),
-                category=category,
-                price=1550.00,
-                wholesale_small=1145.74,
-                wholesale_medium=1082.59,
-                wholesale_large=992.38
-            ) for i in range(cls.item_quantity)
-            ]
+
+    fixtures = ['dump.json']
+
+    def __init__(self, *args, **kwargs):
+        self.item_quantity = 2
+
+        super(WholesaleCartTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
         """Get session for test."""
+        self.products = Product.objects.all()[:self.item_quantity]
+        self.first_product, self.second_product = self.products
         self.session = self.client.session
 
     @property
@@ -32,7 +26,7 @@ class WholesaleCartTest(TestCase):
         """Return Cart object for test."""
         return WholesaleCart(self.session)
 
-    def wholesale_quantity(self, price_type):
+    def get_wholesale_quantity(self, price_type, product):
         """
         Return the approximate number of products with wholesale price type for
         tests.
@@ -44,22 +38,28 @@ class WholesaleCartTest(TestCase):
             'wholesale_small': 20000,
         }
 
-        return sum(
-            ceil(wholesale_price_type[price_type] /
-                 float(getattr(product, price_type)) /
-                 self.item_quantity)
-            for product in self.products
-        )
+        return ceil(
+                wholesale_price_type[price_type] /
+                getattr(product, price_type) /
+                self.item_quantity
+        ) + 1
 
     def setup_for_tests(self, price_type):
         first_product_price = float(getattr(self.first_product, price_type))
         second_product_price = float(getattr(self.second_product, price_type))
-        first_product_quantity = (self.wholesale_quantity(price_type) //
-                                  self.item_quantity)
-        second_product_quantity = (self.wholesale_quantity(price_type) -
-                                   first_product_quantity)
-        total_sum = (first_product_price * first_product_quantity +
-                     second_product_price * second_product_quantity)
+
+        first_product_quantity = (
+            self.get_wholesale_quantity(price_type, self.first_product)
+        )
+
+        second_product_quantity = (
+            self.get_wholesale_quantity(price_type, self.second_product)
+        )
+
+        total_sum = (
+            first_product_price*first_product_quantity +
+            second_product_price*second_product_quantity
+        )
 
         return {
             'first_product_price': first_product_price,
@@ -80,7 +80,6 @@ class WholesaleCartTest(TestCase):
                       setup_data['first_product_quantity'])
         self.cart.add(self.second_product,
                       setup_data['second_product_quantity'])
-
         for id_, position in self.cart:
             self.assertIn(
                 position['price'],
@@ -96,10 +95,8 @@ class WholesaleCartTest(TestCase):
         """
         setup_data = self.setup_for_tests('wholesale_medium')
 
-        self.cart.add(self.first_product,
-                      setup_data['first_product_quantity'])
-        self.cart.add(self.second_product,
-                      setup_data['second_product_quantity'])
+        self.cart.add(self.first_product, setup_data['first_product_quantity'])
+        self.cart.add(self.second_product, setup_data['second_product_quantity'])
 
         for id_, position in self.cart:
             self.assertIn(

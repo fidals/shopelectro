@@ -42,14 +42,14 @@ def download_catalog(destination):
         )
     )
 
-#     subprocess.run(wget_command, shell=True, check=True)
+    subprocess.run(wget_command, shell=True, check=True)
     print('Download catalog - completed...')
 
-    # try:
-    yield
-    # finally:
-    #     # remove downloaded data
-    #     shutil.rmtree(os.path.join(destination, settings.FTP_IP))
+    try:
+        yield
+    finally:
+        # remove downloaded data
+        shutil.rmtree(os.path.join(destination, settings.FTP_IP))
 
 
 def get_xpath_queries(namespace: str, queries: Dict[str, str]) -> Dict[str, str]:
@@ -174,11 +174,11 @@ class Command(BaseCommand):
 
             if not cleaned_product_data:
                 raise Exception('Problem with uploaded files.')
-            
+
             self.delete(cleaned_product_data)
             updated_products = self.update(cleaned_product_data)
             created_products = self.create(cleaned_product_data, updated_products)
-            
+
             if created_products.exists():
                 self.report(kwargs['recipients'])
 
@@ -239,21 +239,20 @@ class Command(BaseCommand):
         print('{} products  and {} pages were deleted.'.format(product_count, page_count))
 
     @transaction.atomic
-    def update(self, data: Dict[ProductUUID, ProductData]) -> QuerySet:        
-        def filter_data(data):
-            new_data = {}
-            for uuid, product_data in data.items():
-                product_data.pop('name')
-                new_data[uuid] = product_data
-            return new_data
-        
+    def update(self, data: Dict[ProductUUID, ProductData]) -> QuerySet:  
+        def save(product, field, value):
+            if field == 'name' and getattr(product, field, None):
+                return
+
+            setattr(product, field, value)
+
         products = Product.objects.filter(uuid__in=data.keys())
-        filtered_data = filter_data(data)
-        
+
         for product in products:
-            product_data = filtered_data[str(product.uuid)]
+            product_data = data[str(product.uuid)]
+
             for field, value in product_data.items():
-                setattr(product, field, value)
+                save(product, field, value)
 
             product.save()
         print('{} products were updated.'.format(products.count()))

@@ -540,16 +540,18 @@ class TableEditor(SeleniumTestCase):
 
     def test_new_entity_creation(self):
         new_entity_text = 'A New stuff'
-        prices = [
+        numeric_fields = [
             'entity-price', 'entity-wholesale-small',
-            'entity-wholesale-medium', 'entity-wholesale-large'
+            'entity-wholesale-medium', 'entity-wholesale-large',
+            'entity-vendor-code'
         ]
 
         # Trigger entity creation modal & input data:
         self.browser.find_element_by_css_selector('button[data-target="#add-entity"]').click()
         self.browser.find_element_by_id('entity-name').send_keys(new_entity_text)
-        for price in prices:
-            self.browser.find_element_by_id(price).send_keys(123)
+
+        for field in numeric_fields:
+            self.browser.find_element_by_id(field).send_keys(123)
 
         # Check is autocomplete works for category search by manual triggering it:
         self.browser.find_element_by_id('entity-category').send_keys('Category #0')

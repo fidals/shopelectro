@@ -43,6 +43,7 @@ class AddProductForm(forms.ModelForm):
             'name',
             'category',
             'price',
+            'vendor_code',
             'wholesale_small',
             'wholesale_medium',
             'wholesale_large'
@@ -60,6 +61,16 @@ class AddProductForm(forms.ModelForm):
                     'class': 'form-control js-required',
                     'data-id': 'category',
                     'id': 'entity-category',
+                }),
+            'vendor_code': NumberInput(
+                attrs={
+                    'class': 'form-control js-required',
+                    'data-id': 'vendor_code',
+                    'id': 'entity-vendor-code',
+                    'max': '1000000',
+                    'min': '0',
+                    'pattern': '[0-9]',
+                    'step': '1'
                 }),
             'price': NumberInput(
                 attrs={

@@ -53,7 +53,7 @@ class Command(BaseCommand):
                 ('utm_term', str(product.id)),
             ]
 
-            url = reverse('product', args=(product.id,))
+            url = reverse('product', args=(product.vendor_code,))
             utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
             product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
 

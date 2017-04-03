@@ -96,7 +96,7 @@ class Product(AbstractProduct, SyncPageMixin):
     wholesale_large = models.FloatField(default=0, verbose_name=_('wholesale_large'))
 
     def get_absolute_url(self):
-        return reverse('product', args=(self.id,))
+        return reverse('product', args=(self.vendor_code,))
 
     @property
     def average_rate(self):
