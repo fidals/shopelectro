@@ -121,7 +121,7 @@ class Command(BaseCommand):
                 product_start = 'A' + self.CURRENT_ROW
                 sheet[product_start] = product.name
                 sheet[product_start].font = Font(color=BLUE)
-                sheet[product_start].hyperlink = settings.BASE_URL + product.get_absolute_url()
+                sheet[product_start].hyperlink = settings.BASE_URL + product.url
                 sheet[product_start].border = self.THIN_BORDER
                 prices = [
                     product.price,

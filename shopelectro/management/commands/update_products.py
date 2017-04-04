@@ -1,25 +1,25 @@
-from collections import defaultdict
-from contextlib import contextmanager
-from functools import reduce
 import glob
-from itertools import chain
 import os
 import shutil
 import subprocess
+from collections import defaultdict
+from contextlib import contextmanager
+from functools import reduce
+from itertools import chain
 from typing import Iterator, Dict
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 
-from django.db import transaction
-from django.db.models import QuerySet
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
 from shopelectro.models import Product, ProductPage
-from shopelectro.management.commands import update_meta_tags
+
 
 ProductUUID = str
 ProductData = Dict[str, str]
@@ -63,9 +63,13 @@ def get_xpath_queries(namespace: str, queries: Dict[str, str]) -> Dict[str, str]
 def fetch_name(root: Element, xpath_queries: Dict[str, str]) -> Iterator:
     product_els = root.findall(xpath_queries['products'])
     for product_el in product_els:
-        product_name = product_el.find(xpath_queries['product_name']).text
-        product_uuid = product_el.find(xpath_queries['product_uuid']).text
-        yield product_uuid, {'name': product_name}
+        name = product_el.find(xpath_queries['name']).text
+        uuid = product_el.find(xpath_queries['uuid']).text
+        vendor_code = product_el.find(
+            xpath_queries['vendor_code']
+        ).text.lstrip('0')
+
+        yield uuid, {'name': name, 'vendor_code': vendor_code}
 
 
 def fetch_price(root: Element, xpath_queries: Dict[str, str], **kwargs) -> Iterator:
@@ -97,8 +101,10 @@ PRODUCT_NAME_CONFIG = {
         NAMESPACE,
         {
             'products': './/{}Товары/',
-            'product_uuid': '.{}Ид',
-            'product_name': '.{}Наименование',
+            'uuid': '.{}Ид',
+            'vendor_code': '.{0}ЗначенияРеквизитов/{0}ЗначениеРеквизита'
+                           '[{0}Наименование="Код"]/{0}Значение',
+            'name': '.{}Наименование',
         },
     ),
 }
@@ -125,8 +131,10 @@ PRODUCT_PRICE_CONFIG = {
 
 
 def get_data(
-        xpath_queries: Dict[str, str], xml_path_pattern: str,
-        fetch_callback: callable, **kwargs
+        xpath_queries: Dict[str, str],
+        xml_path_pattern: str,
+        fetch_callback: callable,
+        **kwargs
 ) -> Iterator:
     """
     Get data from xml files, that matched the path pattern.
@@ -173,7 +181,6 @@ class Command(BaseCommand):
 
             if created_products.exists():
                 self.report(kwargs['recipients'])
-        update_meta_tags.update()
 
     @staticmethod
     def get_product_data() -> Dict[ProductUUID, ProductData]:
@@ -233,11 +240,19 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def update(self, data: Dict[ProductUUID, ProductData]) -> QuerySet:
+        def save(product, field, value):
+            if field == 'name' and getattr(product, field, None):
+                return
+
+            setattr(product, field, value)
+
         products = Product.objects.filter(uuid__in=data.keys())
+
         for product in products:
             product_data = data[str(product.uuid)]
+
             for field, value in product_data.items():
-                setattr(product, field, value)
+                save(product, field, value)
 
             product.save()
         print('{} products were updated.'.format(products.count()))

@@ -12,7 +12,11 @@ services:
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.prod
       - DATABASE_URL=postgres://postgres:$DB_PASS@se_db_prod/se_prod
       - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se_rabbitmq:5672/
-      - REDIS_LOCATION=redis://se_redis:6379/1
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - REDIS_LOCATION_DEFAULT=redis://se_redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se_redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se_redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se_redis:6379/3
       - FTP_USER=$FTP_USER
       - FTP_PASS=$FTP_PASS
       - FTP_IP=$FTP_IP
@@ -63,8 +67,8 @@ services:
     container_name: se_db_prod
     restart: always
     environment:
-      POSTGRES_PASSWORD: "$DB_PASS"
-      POSTGRES_DB: "se_prod"
+      - POSTGRES_DB=se_prod
+      - POSTGRES_PASSWORD=$DB_PASS
     volumes:
       - /var/lib/postgresql/data
 
@@ -73,8 +77,8 @@ services:
     container_name: se_db_dev
     restart: always
     environment:
-      POSTGRES_DB: "se_dev"
-      POSTGRES_PASSWORD: "$DB_PASS"
+      - POSTGRES_DB=se_dev
+      - POSTGRES_PASSWORD=$DB_PASS
     volumes:
       - /var/lib/postgresql/data
 
@@ -82,6 +86,7 @@ services:
     image: redis:alpine
     container_name: se_redis
     restart: always
+    command: redis-server --requirepass $REDIS_PASSWORD
     ports:
       - "6380:6379"
 
@@ -90,8 +95,8 @@ services:
     container_name: se_rabbitmq
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: $RABBITMQ_DEFAULT_USER
-      RABBITMQ_DEFAULT_PASS: $RABBITMQ_DEFAULT_PASS
+      - RABBITMQ_DEFAULT_USER=$RABBITMQ_DEFAULT_USER
+      - RABBITMQ_DEFAULT_PASS=$RABBITMQ_DEFAULT_PASS
     ports:
       - "5673:5672"
       - "15673:15672"

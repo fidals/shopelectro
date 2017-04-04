@@ -35,6 +35,7 @@ class UpdateProducts(TestCase):
         """Some product has all the fields."""
         product = random.choice(Product.objects.all())
         self.assertIsNotNone(product.id)
+        self.assertIsNotNone(product.vendor_code)
         self.assertIsNotNone(product.price)
         self.assertIsNotNone(product.wholesale_small)
         self.assertIsNotNone(product.wholesale_medium)
@@ -50,7 +51,7 @@ class UpdateProducts(TestCase):
         self.assertEqual(len(file_paths), 0)
 
     def test_update(self):
-        new_data = {'name': 'Updated test product'}
+        new_data = {'price': 123}
         update_products_count = 30
 
         product_data = {
@@ -63,11 +64,11 @@ class UpdateProducts(TestCase):
 
         self.assertEqual(len(updated_products), update_products_count)
         self.assertTrue(all(
-            product.name == new_data['name']
+            product.price == new_data['price']
             for product in updated_products))
 
     def test_create(self):
-        data = {'name': 'New product'}
+        data = {'name': 'New product', 'vendor_code': '123'}
         create_count = 10
         product_data = {
             str(uuid.uuid4()): data

@@ -126,6 +126,7 @@ class Command(BaseCommand):
         def create_product(parent: Category, tags_, price_factor):
             product = Product.objects.create(
                 id=self.product_id,
+                vendor_code=self._product_id,
                 name='Product #{} of {}'.format(price_factor, parent),
                 price=price_factor * 100,
                 category=parent,

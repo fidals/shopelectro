@@ -16,15 +16,14 @@ def recalculate(func):
 
 def recalculate_price(cart: Cart) -> Cart:
     """Define what type of price should be used in Cart. Actualize price if needed."""
-
-    wholesale_types = OrderedDict(sorted({
-        'wholesale_large': PRICE_BOUNDS['wholesale_large'],
-        'wholesale_medium': PRICE_BOUNDS['wholesale_medium'],
-        'wholesale_small': PRICE_BOUNDS['wholesale_small'],
-    }.items(), key=lambda type: type[1], reverse=True))
+    wholesale_types = OrderedDict([
+        ('wholesale_large', PRICE_BOUNDS['wholesale_large']),
+        ('wholesale_medium', PRICE_BOUNDS['wholesale_medium']),
+        ('wholesale_small', PRICE_BOUNDS['wholesale_small']),
+    ])
 
     def get_product_data(price_type: str) -> list:
-        product_ids = [item[0] for item in cart]
+        product_ids = [id_ for id_, _ in cart]
         products = Product.objects.filter(id__in=product_ids)
         return [{
             'id': id_,
@@ -32,15 +31,15 @@ def recalculate_price(cart: Cart) -> Cart:
             'quantity': position['quantity']
         } for id_, position in cart]
 
-    get_total_price_for_product = (lambda product:
-                                   product['price'] * product['quantity'])
+    def get_total_price(price_type: str):
+        return sum(
+            product_data['price'] * product_data['quantity']
+            for product_data in get_product_data(price_type)
+        )
 
     total_wholesale_prices = {
-        wholesale_price_type: sum(
-            get_total_price_for_product(product)
-            for product in get_product_data(wholesale_price_type)
-        )
-        for wholesale_price_type in wholesale_types
+        price_type: get_total_price(price_type)
+        for price_type in wholesale_types
     }
 
     def define_price_type() -> "Wholesale price type" or None:

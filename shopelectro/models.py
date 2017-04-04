@@ -88,6 +88,7 @@ class Product(AbstractProduct, SyncPageMixin):
         verbose_name=_('tags'),
     )
 
+    vendor_code = models.SmallIntegerField(verbose_name=_('vendor_code'))
     uuid = models.UUIDField(default=uuid4, editable=False)
     purchase_price = models.FloatField(default=0, verbose_name=_('purchase_price'))
     wholesale_small = models.FloatField(default=0, verbose_name=_('wholesale_small'))
@@ -95,10 +96,7 @@ class Product(AbstractProduct, SyncPageMixin):
     wholesale_large = models.FloatField(default=0, verbose_name=_('wholesale_large'))
 
     def get_absolute_url(self):
-        return reverse('product', args=(self.id,))
-
-    def save(self, *args, **kwargs):
-        super(Product, self).save(*args, **kwargs)
+        return reverse('product', args=(self.vendor_code,))
 
     @property
     def average_rate(self):

@@ -95,8 +95,8 @@ class Mobile(SeleniumTestCase):
 
     def test_cart(self):
         """Cart should updated after Product buy."""
-        product_id = Product.objects.first().id
-        product_page = self.live_server_url + reverse('product', args=(product_id,))
+        product_vendore_code = Product.objects.first().vendor_code
+        product_page = self.live_server_url + reverse('product', args=(product_vendore_code,))
         self.browser.get(product_page)
 
         buy_btn = self.browser.find_element_by_id('btn-to-basket')

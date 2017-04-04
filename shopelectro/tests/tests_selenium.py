@@ -380,7 +380,7 @@ class ProductPage(SeleniumTestCase):
         """Set up testing url and dispatch selenium webdriver."""
         product = Product.objects.get(id=self.PRODUCT_ID)
         server = self.live_server_url
-        self.test_product_page = server + reverse('product', args=(product.id,))
+        self.test_product_page = server + reverse('product', args=(product.vendor_code,))
         self.success_order = server + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success',))
         self.product_name = product.name
         self.browser.get(self.test_product_page)
@@ -705,8 +705,8 @@ class YandexMetrika(SeleniumTestCase):
         faced a problems with it in setUpClass.
         """
         server = self.live_server_url
-        product_id = Product.objects.first().id
-        self.product_page = server + reverse('product', args=(product_id,))
+        product_vendor_code = Product.objects.first().vendor_code
+        self.product_page = server + reverse('product', args=(product_vendor_code,))
         self.category_page = server + reverse(
             'category', args=(Category.objects.first().page.slug,))
         self.browser.get(self.live_server_url)

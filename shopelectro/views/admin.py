@@ -20,6 +20,7 @@ def sync_page_name(entity, value):
 
 
 class GenericTableEditor:
+
     model = models.Product
     relation_field_names = ['category', 'page']
     add_entity_form = forms.AddProductForm
@@ -41,6 +42,7 @@ class GenericTableEditor:
     excluded_model_fields = [
         'category', 'page', 'property', 'property_id', 'page_id',
         'category_id', 'id', 'product_feedbacks', 'tags', 'uuid',
+        'vendor_code',
     ]
 
     field_controller = admin_views.TableEditorFieldsControlMixin(
@@ -53,6 +55,7 @@ class GenericTableEditor:
 
 
 class TableEditorAPI(GenericTableEditor, admin_views.TableEditorAPI):
+
     pattern_to_update_model = {
         'name': sync_page_name
     }
@@ -68,10 +71,12 @@ class TableEditor(GenericTableEditor, admin_views.TableEditor):
 
 
 class Tree(admin_views.Tree):
+
     model = models.Category
 
 
 class RedirectToProduct(admin_views.RedirectToProductPage):
+
     model = models.Product
     admin_page_product_urlconf = 'admin:shopelectro_productpage_change'
     site_page_product_urlconf = 'product'
