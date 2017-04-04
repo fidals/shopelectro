@@ -38,6 +38,9 @@ class CategoryTree(catalog.CategoryTree):
 
 @set_csrf_cookie
 class ProductPage(catalog.ProductPage):
+    pk_url_kwarg = None
+    slug_url_kwarg = 'product_vendor_code'
+    slug_field = 'vendor_code'
 
     queryset = (
         Product.objects

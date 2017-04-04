@@ -57,7 +57,7 @@ catalog_urls = [
         name='products_without_images'),
     url(r'^no-text/$', views.ProductsWithoutText.as_view(),
         name='products_without_text'),
-    url(r'^products/(?P<product_id>[0-9]+)/$',
+    url(r'^products/(?P<product_vendor_code>[0-9]+)/$',
         views.ProductPage.as_view(), name='product'),
 ]
 
