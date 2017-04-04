@@ -86,7 +86,9 @@ services:
     image: redis:alpine
     container_name: se_redis
     restart: always
-    command: redis-server --requirepass $REDIS_PASSWORD
+    command: redis-server /data/redis.conf --requirepass $REDIS_PASSWORD
+    volumes:
+      - ../etc/redis/redis.conf:/data/redis.conf
     ports:
       - "6380:6379"
 
