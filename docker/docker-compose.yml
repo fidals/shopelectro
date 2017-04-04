@@ -67,8 +67,8 @@ services:
     container_name: se_db_prod
     restart: always
     environment:
-      - POSTGRES_PASSWORD=$DB_PASS
       - POSTGRES_DB=se_prod
+      - POSTGRES_PASSWORD=$DB_PASS
     volumes:
       - /var/lib/postgresql/data
 

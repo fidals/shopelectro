@@ -705,8 +705,8 @@ class YandexMetrika(SeleniumTestCase):
         faced a problems with it in setUpClass.
         """
         server = self.live_server_url
-        product_vendore_code = Product.objects.first().vendor_code
-        self.product_page = server + reverse('product', args=(product_vendore_code,))
+        product_vendor_code = Product.objects.first().vendor_code
+        self.product_page = server + reverse('product', args=(product_vendor_code,))
         self.category_page = server + reverse(
             'category', args=(Category.objects.first().page.slug,))
         self.browser.get(self.live_server_url)
