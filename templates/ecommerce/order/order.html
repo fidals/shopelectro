@@ -6,7 +6,11 @@
   <div class="order-contain js-order-contain">
     {% include 'ecommerce/order/table_form.html' %}
   </div>
-  <div>{{ page.content }}</div>
+  <div>
+    {% autoescape off %}
+      {{ page.content }}
+    {% endautoescape %}
+  </div>
 {% endblock %}
 
 {% block jslibs %}
