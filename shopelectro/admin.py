@@ -119,6 +119,15 @@ class ProductPageAdmin(models.ProductPageAdmin):
     category_page_model = se_models.CategoryPage
     list_filter = [*models.ProductPageAdmin.list_filter, HasTagsFilter, HasCategoryFilter]
     inlines = [ProductInline, inlines.ImageInline]
+    search_fields = [
+        'shopelectro_product__vendor_code', 'name', 'slug',
+    ]
+
+    def model_id(self, obj):
+        return obj.model.vendor_code
+
+    model_id.short_description = _('Vendor code')
+    model_id.admin_order_field = 'shopelectro_product__vendor_code'
 
     def get_queryset(self, request):
         return (
