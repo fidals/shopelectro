@@ -1,7 +1,6 @@
 from functools import reduce
 
 from django.db import transaction
-from django.core.management.base import BaseCommand
 
 from shopelectro.models import ProductPage, CategoryPage, Product
 
@@ -115,7 +114,5 @@ def update():
     )
 
 
-class Command(BaseCommand):
-
-    def handle(self, *args, **kwargs):
+def main(*args, **kwargs):
         update()
