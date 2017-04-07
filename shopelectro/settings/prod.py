@@ -38,7 +38,6 @@ CACHES = {
         'LOCATION': os.environ.get('REDIS_LOCATION_THUMBNAIL', 'redis://127.0.0.1:6379/2'),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
             'PASSWORD': REDIS_PASSWORD,
         }
     },
