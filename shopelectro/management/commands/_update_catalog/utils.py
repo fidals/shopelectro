@@ -2,7 +2,7 @@ import glob
 import os
 import shutil
 import subprocess
-from collections import namedtuple
+from functools import lru_cache
 from contextlib import contextmanager
 from itertools import chain
 from typing import Iterator, Dict
@@ -18,16 +18,6 @@ UUID4_LEN = len(str(uuid4()))
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
 
-_Config = namedtuple(
-    typename='Config',
-    field_names=[
-        'fetch_callback',
-        'xml_path_pattern',
-        'xpath_queries',
-        'extra_options',
-    ]
-)
-
 
 class XmlFile:
     namespace = '{urn:1C.ru:commerceml_2}'
@@ -40,15 +30,16 @@ class XmlFile:
         self.extra_options = extra_options or {}
 
     @property
+    @lru_cache(maxsize=128)
     def parsed_files(self):
         """Get parsed xml files, that matched the path pattern."""
         xml_files = glob.glob(os.path.join(
             settings.ASSETS_DIR, self.xml_path_pattern
         ))
-
         return (ElementTree.parse(file) for file in xml_files)
 
     @property
+    @lru_cache(maxsize=128)
     def xpaths(self):
         """Get xpath queries for xml."""
         return {

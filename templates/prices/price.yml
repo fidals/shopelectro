@@ -24,8 +24,8 @@
     <offers>
       {% for product in products %}
         {# Uncomment it, when Fenich will learn about stock organization #}
-        {# <offer id="{{ product.id }}" available="{{ product.in_stock|yesno:'true,false' }}"> #}
-        <offer id="{{ product.id }}" available="false">
+        {# <offer id="{{ product.vendor_code }}" available="{{ product.in_stock|yesno:'true,false' }}"> #}
+        <offer id="{{ product.vendor_code }}" available="false">
           <url>{{ product.utm_url }}</url>
           <price>{{ product.price }}</price>
           {% if utm != 'priceru' %}<purchase_price>{{ product.purchase_price }}</purchase_price>{% endif %}
@@ -37,7 +37,6 @@
           <delivery>true</delivery>
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
-          {% if product.trademark %}<vendor>{{ product.trademark }}</vendor>{% endif %}
           {% if product.page.description and not utm == 'GM' %}
             <description>{{ product.page.description }}</description>
           {% endif %}

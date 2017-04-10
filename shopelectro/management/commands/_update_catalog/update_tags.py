@@ -73,8 +73,7 @@ def create_or_update(data: Dict[UUID, Data]):
             uuid=group_uuid, defaults=data_
         )
 
-        if group_created:
-            created_groups_count += 1
+        created_groups_count += int(group_created)
 
         for tag_uuid, tag_data in tags.items():
             _, tag_created = Tag.objects.update_or_create(
@@ -82,8 +81,7 @@ def create_or_update(data: Dict[UUID, Data]):
                 defaults={**tag_data, 'group': group}
             )
 
-            if tag_created:
-                created_tags_count += 1
+            created_tags_count += int(tag_created)
 
     print('{} tag groups were created.'.format(created_groups_count))
     print('{} tags were created.'.format(created_tags_count))
@@ -95,7 +93,7 @@ def delete(group_data: Dict[UUID, Data]):
 
     group_uuids = group_data.keys()
     tag_uuids = set(chain.from_iterable(
-        data.get('tags', {}).keys()
+        data['tags'].keys()
         for data in group_data.values()
     ))
 
@@ -108,7 +106,7 @@ def delete(group_data: Dict[UUID, Data]):
     print('{} tag groups and {} tags were deleted.'.format(group_count, tag_count))
 
 
-def clear_data(group_data: Iterator) -> Dict[UUID, Data]:
+def prepare_data(group_data: Iterator) -> Dict[UUID, Data]:
     def is_uuid(uuid):
         return uuid and len(uuid) == UUID4_LEN
 
@@ -135,6 +133,6 @@ def clear_data(group_data: Iterator) -> Dict[UUID, Data]:
 
 
 def main(*args, **kwargs):
-    cleared_group_data = clear_data(tag_file.get_data())
+    cleared_group_data = prepare_data(tag_file.get_data())
     create_or_update(cleared_group_data)
     delete(cleared_group_data)

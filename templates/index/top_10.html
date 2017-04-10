@@ -16,7 +16,7 @@
         <div class="stuff-top-description">
           <div class="stuff-top-wrap">
             <a class="stuff-top-name js-browse-product"
-               href="{% url 'product' product.id %}" itemprop="name">
+               href="{{ product.url }}" itemprop="name">
               {{ product.name }}
             </a>
           </div>

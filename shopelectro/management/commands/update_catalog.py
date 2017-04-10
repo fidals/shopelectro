@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from shopelectro.management.commands._update_catalog import (
-    utils, update_tags, update_products
+    utils, update_tags, update_products,
 )
 
 

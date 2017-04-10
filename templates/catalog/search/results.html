@@ -17,7 +17,7 @@
   {% for product in products %}
     <div class="search-result-item">
       <a class="search-result-link js-browse-product" href="{{ product.url }}">
-        <p>Арт. {{ product.id }}</p>
+        <p>Арт. {{ product.vendor_code }}</p>
         {{ product.name }}
       </a>
 

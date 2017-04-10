@@ -36,7 +36,7 @@ def category_sorting(sorting_index=None):
         },
         {
             'label': 'Артикулу',
-            'field': 'id',
+            'field': 'vendor_code',
             'direction': ''
         }
     )
