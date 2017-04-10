@@ -1,12 +1,12 @@
 from copy import deepcopy
 from itertools import chain
-from typing import Iterator
+from typing import Iterator, Dict
 from xml.etree.ElementTree import Element
 
 from django.db import transaction
 
 from shopelectro.management.commands._update_catalog.utils import (
-    XmlFile, UUID4_LEN
+    XmlFile, UUID4_LEN, UUID, Data,
 )
 from shopelectro.models import Tag, TagGroup
 
@@ -60,17 +60,17 @@ tag_file = XmlFile(
 
 
 @transaction.atomic
-def create_or_update(group_data: dict):
-    group_data = deepcopy(group_data)
+def create_or_update(data: Dict[UUID, Data]):
+    group_data = deepcopy(data)
 
     created_groups_count = 0
     created_tags_count = 0
 
-    for group_uuid, data in group_data.items():
-        tags = data.pop('tags')
+    for group_uuid, data_ in group_data.items():
+        tags = data_.pop('tags')
 
         group, group_created = TagGroup.objects.update_or_create(
-            uuid=group_uuid, defaults=data
+            uuid=group_uuid, defaults=data_
         )
 
         if group_created:
@@ -90,11 +90,11 @@ def create_or_update(group_data: dict):
 
 
 @transaction.atomic
-def delete(group_data):
+def delete(group_data: Dict[UUID, Data]):
     group_data = deepcopy(group_data)
 
     group_uuids = group_data.keys()
-    tag_uuids = list(chain.from_iterable(
+    tag_uuids = set(chain.from_iterable(
         data.get('tags', {}).keys()
         for data in group_data.values()
     ))
@@ -108,7 +108,7 @@ def delete(group_data):
     print('{} tag groups and {} tags were deleted.'.format(group_count, tag_count))
 
 
-def clear_data(group_data: Iterator):
+def clear_data(group_data: Iterator) -> Dict[UUID, Data]:
     def is_uuid(uuid):
         return uuid and len(uuid) == UUID4_LEN
 

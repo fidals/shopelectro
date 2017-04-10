@@ -5,17 +5,18 @@ import subprocess
 from collections import namedtuple
 from contextlib import contextmanager
 from itertools import chain
-from typing import Iterator
+from typing import Iterator, Dict
 from uuid import uuid4
 from xml.etree import ElementTree
 
 from django.conf import settings
 
 
+UUID = str
+Data = Dict[str, str]
 UUID4_LEN = len(str(uuid4()))
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
-
 
 _Config = namedtuple(
     typename='Config',

@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 from functools import reduce
 from itertools import chain
 from typing import Iterator, Dict
@@ -12,12 +13,9 @@ from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
 from shopelectro.management.commands._update_catalog.utils import (
-    XmlFile, UUID4_LEN, NOT_SAVE_TEMPLATE,
+    XmlFile, UUID4_LEN, NOT_SAVE_TEMPLATE, UUID, Data,
 )
 from shopelectro.models import Product, ProductPage, Tag
-
-ProductUUID = str
-ProductData = Dict[str, str]
 
 
 def fetch_products(root: Element, config: XmlFile) -> Iterator:
@@ -96,7 +94,7 @@ price_file = XmlFile(
 )
 
 
-def merge_data(*data) -> Dict[ProductUUID, ProductData]:
+def merge_data(*data) -> Dict[UUID, Data]:
     """
     Merge data from xml files with different structure.
     (ex. files with product names and prices)
@@ -108,7 +106,7 @@ def merge_data(*data) -> Dict[ProductUUID, ProductData]:
     return product_data
 
 
-def clean_data(data: Dict[ProductUUID, ProductData]):
+def clean_data(data: Dict[UUID, Data]):
     def has_all_prices(_, product_data):
         price_types = price_file.extra_options['price_types']
         has = all(
@@ -173,17 +171,17 @@ def report(recipients=None):
 
 
 @transaction.atomic
-def delete(data: Dict[ProductUUID, ProductData]):
-    uuids = list(data.keys())
+def delete(data: Dict[UUID, Data]):
+    uuids = list(data)
     page_count, _ = ProductPage.objects.exclude(
         shopelectro_product__uuid__in=uuids).delete()
     product_count, _ = Product.objects.exclude(
         uuid__in=uuids).delete()
-    print('{} products  and {} pages were deleted.'.format(product_count, page_count))
+    print('{} products and {} pages were deleted.'.format(product_count, page_count))
 
 
 @transaction.atomic
-def update(data: Dict[ProductUUID, ProductData]) -> QuerySet:
+def update(data: Dict[UUID, Data]) -> QuerySet:
     def save(product, field, value):
         if field == 'name' and getattr(product, field, None):
             return
@@ -203,14 +201,20 @@ def update(data: Dict[ProductUUID, ProductData]) -> QuerySet:
 
 
 @transaction.atomic
-def create(data: Dict[ProductUUID, ProductData], updated_products: QuerySet) -> QuerySet:
+def create(data: Dict[UUID, Data], updated_products: QuerySet) -> QuerySet:
+    data = deepcopy(data)
+
     uuids_for_create = (
-        set(data.keys()) - set(str(product.uuid) for product in updated_products)
+        set(data) - set(str(product.uuid) for product in updated_products)
     )
 
     for uuid in uuids_for_create:
         product_data = data.get(uuid)
-        Product.objects.create(**product_data, uuid=uuid)
+        tags = product_data.pop('tags', {})
+
+        new_product = Product.objects.create(**product_data, uuid=uuid)
+        new_product.tags.set(tags)
+
     created_products = Product.objects.filter(uuid__in=uuids_for_create)
 
     print('{} products were created.'.format(created_products.count()))

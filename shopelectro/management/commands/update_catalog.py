@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from shopelectro.management.commands._update_catalog import (
-    utils, update_tags, update_products, update_meta_tags
+    utils, update_tags, update_products
 )
 
 
@@ -23,5 +23,4 @@ class Command(BaseCommand):
             start = time.time()
             update_tags.main(*args, **options)
             update_products.main(*args, **options)
-            update_meta_tags.main(*args, **options)
             print('Time elapsed {:.2f}.'.format(time.time() - start))
