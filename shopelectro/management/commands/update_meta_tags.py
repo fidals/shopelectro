@@ -1,7 +1,7 @@
 from functools import reduce
 
-from django.db import transaction
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from shopelectro.models import ProductPage, CategoryPage, Product
 

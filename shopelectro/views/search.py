@@ -6,6 +6,7 @@ All logic should live in respective applications.
 """
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.shortcuts import _get_queryset
 
 from pages.models import Page
 from catalog.views import search
@@ -22,6 +23,12 @@ class AdminAutocomplete(search.AdminAutocomplete):
 class Search(search.Search):
     """Override model references to SE-specific ones."""
     model_map = MODEL_MAP
+
+    def _search_product_by_id(self, term: str):
+        return (
+            _get_queryset(self.product).filter(vendor_code=term).first()
+            if term.isdecimal() else None
+        )
 
 
 class Autocomplete(search.Autocomplete):

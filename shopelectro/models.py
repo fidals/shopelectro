@@ -164,11 +164,11 @@ class ProductPage(ModelPage):
 
 class TagGroup(models.Model):
 
+    uuid = models.UUIDField(default=uuid4, editable=False)
     name = models.CharField(max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
-    uuid = models.UUIDField(default=uuid4, editable=False)
 
     def __str__(self):
         return self.name
@@ -203,13 +203,13 @@ class TagManager(models.Manager):
 
 class Tag(models.Model):
 
+    objects = TagManager()
+
+    uuid = models.UUIDField(default=uuid4, editable=False)
     name = models.CharField(max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
-    uuid = models.UUIDField(default=uuid4, editable=False)
-
-    objects = TagManager()
 
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',

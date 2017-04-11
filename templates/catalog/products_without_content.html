@@ -1,0 +1,22 @@
+{% extends 'catalog/products_without_content.html' %}
+
+{% block table %}
+  <table class="price-list">
+    <tr>
+      <td>Изображение</td>
+      <td>Наименование</td>
+      <td>Розница</td>
+    </tr>
+    {% for product in products %}
+      <tr>
+        <td>
+          <a href="{{ product.url }}" title="{{ product.name }}">
+            {{ product.vendor_code }}
+          </a>
+        </td>
+        <td><span>{{ product.name }}</span></td>
+        <td class="price-cell"><span>{{ product.price }}</span></td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

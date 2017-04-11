@@ -21,8 +21,8 @@ def collect_static():
 
 
 @app.task
-def update_products():
-    call_command('update_products')
+def update_catalog_command():
+    call_command('update_catalog')
 
 
 @app.task
@@ -34,7 +34,7 @@ def update_meta_tags():
 def update_catalog():
     # http://docs.celeryproject.org/en/latest/userguide/canvas.html#map-starmap
     return [
-        update_products(),
+        update_catalog_command(),
         update_meta_tags(),
         generate_price_files(),
         generate_excel_file(),
