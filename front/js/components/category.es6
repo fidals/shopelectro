@@ -126,10 +126,10 @@
     const path = DOM.$loadMoreBtn.data('url');
     const offset = getProductsOnPageCount();
     const sorting = getSelectedSortingOption().val();
-    const filterParams = helpers.getUrlParam('tags');
+    const filterParams = helpers.getUrlEndpointParam('tags');
     let url = `${path}load-more/${offset}/${sorting}/`;
 
-    if (filterParams) url += `?tags=${filterParams}`;
+    if (filterParams) url += `tags/${filterParams}/`;
     server.loadProducts(url)
       .then(products => mediator.publish('onProductsLoad', products));
   }
