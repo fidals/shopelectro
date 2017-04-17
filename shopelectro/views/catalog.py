@@ -4,6 +4,9 @@ Shopelectro's catalog views.
 NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
+from itertools import chain
+from collections import defaultdict
+
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
@@ -106,6 +109,33 @@ def merge_products_and_images(products):
     ]
 
 
+TAGS_TYPE_DELIMITER = '-or-'
+TAGS_GROUP_DELIMITER = '-and-'
+
+
+def serialize_product_tags(tags: list) -> str:
+    # group tags by tag group
+    tags_by_group = defaultdict(list)
+    for tag in tags:
+        tags_by_group[tag.group.id].append(
+            tag
+        )
+    for group, tags in tags_by_group.items():
+        tags_by_group[group] = TAGS_TYPE_DELIMITER.join(
+            tag.slug for tag in tags
+        )
+    return TAGS_GROUP_DELIMITER.join(tags for tags in tags_by_group.values())
+
+
+def parse_product_tags(tags: str) -> list:
+    groups = tags.split(TAGS_GROUP_DELIMITER)
+    return chain(
+        *(
+            group.split(TAGS_TYPE_DELIMITER) for group in groups
+        )
+    )
+
+
 @set_csrf_cookie
 class CategoryPage(catalog.CategoryPage):
 
@@ -132,8 +162,12 @@ class CategoryPage(catalog.CategoryPage):
         group_tags_pairs = Tag.objects.get_group_tags_pairs(all_products.get_tags())
 
         tags = self.request.GET.get('tags')
+
         if tags:
-            all_products = all_products.get_by_tags(tags.split(','))
+            tags_slugs = list(parse_product_tags(tags))
+            all_products = all_products.get_by_tags(
+                Tag.objects.filter(slug__in=tags_slugs)
+            )
 
         products = all_products.get_offset(0, products_on_page)
 

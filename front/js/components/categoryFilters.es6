@@ -35,16 +35,48 @@
     return str ? str.split(',') : [];
   }
 
+  const TAGS_TYPE_DELIMITER = '-or-'
+  const TAGS_GROUP_DELIMITER = '-and-'
+
+  function serializeTags(tags) {
+    var tags_by_groups = new Map(),
+        slugs_groups = [];
+
+    tags.map(item => tags_by_groups.set(item.group, []));
+    tags.map(item => tags_by_groups.get(item.group).push(item.slug));
+
+    for (var [_, slugs] of tags_by_groups) {
+      slugs_groups.push(
+        slugs.join(TAGS_TYPE_DELIMITER)
+      );
+    };
+
+    return slugs_groups.join(TAGS_GROUP_DELIMITER);
+
+  }
+
+  function parseTags(string) {
+    return [].concat(...(
+      string.split(TAGS_GROUP_DELIMITER).map(group => group.split(TAGS_TYPE_DELIMITER))
+    ))
+  }
+
   /**
    * Reloads current page with `tags` query parameter.
    */
   function loadFilteredProducts() {
     const $tagsObject = DOM.$filtersWrapper
       .find('input:checked')
-      .map((_, checkedItem) => $(checkedItem).data('tag-id'));
-    const tags = Array.from($tagsObject);
+      .map((_, checkedItem) => (
+        {
+            slug: $(checkedItem).data('tag-slug'),
+            group: $(checkedItem).data('tag-group-id'),
+        }
+      ));
+    const tags = Array.from($tagsObject),
+          tagsURL = serializeTags(tags);
 
-    window.location.href = `${DOM.$loadMoreBtn.data('url')}?tags=${tags}`;
+    window.location.href = `${DOM.$loadMoreBtn.data('url')}?tags=${tagsURL}`;
   }
 
   /**
@@ -96,7 +128,7 @@
     if (!window.location.search) return;
 
     // /?tags=3,4 => ['3', '4']
-    const activeFilterIds = helpers.getUrlParam('tags').split(',');
+    const activeFilterIds = parseTags(helpers.getUrlParam('tags'));
 
     activeFilterIds.map(item => $(`#tag-${item}`).attr('checked', true));
     toggleApplyBtnState();

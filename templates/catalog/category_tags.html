@@ -7,8 +7,8 @@
     <div class="tags-inputs js-tags-inputs">
       {% for tag in tags %}
         <p class="checkbox">
-          <input type="checkbox" id="tag-{{ tag.id }}" data-tag-id="{{ tag.id }}">
-          <label for="tag-{{ tag.id }}">{{ tag.name }}</label>
+          <input type="checkbox" id="tag-{{ tag.slug }}" data-tag-id="{{ tag.id }}" data-tag-slug="{{ tag.slug }}" data-tag-group-id="{{ tag.group.id }}">
+          <label for="tag-{{ tag.slug }}">{{ tag.name }}</label>
         </p>
       {% endfor %}
     </div>

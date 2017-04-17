@@ -6,6 +6,7 @@ from uuid import uuid4
 from django.db import models
 from django.db.models import Avg, Q
 from django.conf import settings
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
@@ -211,9 +212,16 @@ class Tag(models.Model):
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
 
+    slug = models.SlugField(default=None, blank=True, null=True, allow_unicode=True)
+
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        super(Tag, self).save(*args, **kwargs)
