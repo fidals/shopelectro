@@ -161,7 +161,7 @@ class CategoryPage(catalog.CategoryPage):
 
         group_tags_pairs = Tag.objects.get_group_tags_pairs(all_products.get_tags())
 
-        tags = self.request.GET.get('tags')
+        tags = self.kwargs.get('tags')
 
         if tags:
             tags_slugs = list(parse_product_tags(tags))
@@ -183,7 +183,7 @@ class CategoryPage(catalog.CategoryPage):
         }
 
 
-def load_more(request, category_slug, offset=0, sorting=0):
+def load_more(request, category_slug, offset=0, sorting=0, tags=None):
     """
     Load more products of a given category.
 
@@ -205,9 +205,10 @@ def load_more(request, category_slug, offset=0, sorting=0):
             .get_by_category(category, ordering=(sorting_option,))
     )
 
-    tags = request.GET.get('tags')
     if tags:
-        products = products.get_by_tags(tags.split(','))
+        products = products.get_by_tags(
+            Tag.objects.filter(slug__in=list(parse_product_tags(tags)))
+        )
 
     products = products.get_offset(int(offset), products_on_page)
     view = request.session.get('view_type', 'tile')

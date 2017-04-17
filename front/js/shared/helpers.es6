@@ -34,6 +34,12 @@ const helpers = (() => {
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
+  function getUrlEndpointParam(name) {
+    const regex = new RegExp(`\/${name}\/(.+?)\/`);
+    const results = regex.exec(location.href);
+    return results === null ? '' : decodeURIComponent(results[1]);
+  }
+
   /**
    * Remove only given url query param.
    *
@@ -41,6 +47,11 @@ const helpers = (() => {
    */
   function removeQueryParam(param) {
     const regex = new RegExp(`\\?${param}=[^&#]*(?!.)|\\&${param}=[^&#]*|${param}=[^&#]*(?=.)\\&`);
+    return window.location.href.replace(regex, '');
+  }
+
+  function removeUrlEndpoint(name) {
+    const regex = new RegExp(`\/${name}\/(.+?)\/`);
     return window.location.href.replace(regex, '');
   }
 
@@ -61,9 +72,11 @@ const helpers = (() => {
   return {
     debounce,
     getUrlParam,
+    getUrlEndpointParam,
     isPhoneValid,
     isEmailValid,
     removeQueryParam,
+    removeUrlEndpoint,
     setDisabledState,
   };
 })();

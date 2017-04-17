@@ -35,8 +35,8 @@
     return str ? str.split(',') : [];
   }
 
-  const TAGS_TYPE_DELIMITER = '-or-'
-  const TAGS_GROUP_DELIMITER = '-and-'
+  const TAGS_TYPE_DELIMITER = '-or-';
+  const TAGS_GROUP_DELIMITER = '-and-';
 
   function serializeTags(tags) {
     var tags_by_groups = new Map(),
@@ -73,10 +73,10 @@
             group: $(checkedItem).data('tag-group-id'),
         }
       ));
-    const tags = Array.from($tagsObject),
-          tagsURL = serializeTags(tags);
+    const tags = serializeTags(Array.from($tagsObject));
 
-    window.location.href = `${DOM.$loadMoreBtn.data('url')}?tags=${tagsURL}`;
+    window.location.href = `${DOM.$loadMoreBtn.data('url')}tags/${tags}/`;
+
   }
 
   /**
@@ -125,10 +125,8 @@
    * Set up filter checkboxes based on query `tags` parameter.
    */
   function setUpFilters() {
-    if (!window.location.search) return;
-
-    // /?tags=3,4 => ['3', '4']
-    const activeFilterIds = parseTags(helpers.getUrlParam('tags'));
+    // /tags/от-сети-220-в-and-брелок/ => ['от-сети-220-в', 'брелок']
+    const activeFilterIds = parseTags(helpers.getUrlEndpointParam('tags'));
 
     activeFilterIds.map(item => $(`#tag-${item}`).attr('checked', true));
     toggleApplyBtnState();
@@ -155,7 +153,7 @@
       (_, input) => $(input).attr('checked', false),
     );
 
-    window.location.href = helpers.removeQueryParam('tags');
+    window.location.href = helpers.removeUrlEndpoint('tags');
   }
 
   init();
