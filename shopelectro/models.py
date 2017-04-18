@@ -33,28 +33,11 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class SEProductQuerySet(ProductQuerySet):
-
-    def get_by_tags(self, tags: [models.Model or int]) -> models.QuerySet:
-        return self.filter(tags__in=tags)
-
-
-class SEProductManager(ProductManager):
-
-    def get_queryset(self):
-        return SEProductQuerySet(self.model, using=self._db)
-
-    def get_by_tags(self, tags: [models.Model]) -> models.QuerySet:
-        return self.get_queryset().get_by_tags(tags)
-
-
 class Product(AbstractProduct, SyncPageMixin):
     """
     Define n:1 relation with SE-Category and 1:n with Property.
     Add wholesale prices.
     """
-
-    objects = SEProductManager()
 
     category = models.ForeignKey(
         Category,
@@ -159,9 +142,6 @@ class TagGroup(models.Model):
 
 class TagQuerySet(models.QuerySet):
 
-    def get_by_products(self, products):
-        return self.filter(products__in=products)
-
     def get_group_tags_pairs(self, tags=None):
         if tags is not None:
             unique_tags = set(tags)
@@ -185,9 +165,6 @@ class TagManager(models.Manager):
 
     def get_group_tags_pairs(self, tags=None):
         return self.get_queryset().get_group_tags_pairs(tags)
-
-    def get_by_products(self, products):
-        return self.get_queryset().get_by_products(products)
 
 
 class Tag(models.Model):

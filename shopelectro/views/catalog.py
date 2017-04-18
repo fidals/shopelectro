@@ -136,13 +136,13 @@ class CategoryPage(catalog.CategoryPage):
 
         group_tags_pairs = models.Tag.objects.get_group_tags_pairs(
             models.Tag.objects
-            .get_by_products(all_products)
+            .filter(products__in=all_products)
             .prefetch_related('group')
         )
 
-        tags = self.request.GET.get('tags')
-        if tags:
-            all_products = all_products.get_by_tags(tags.split(','))
+        tag_ids = self.request.GET.get('tags')
+        if tag_ids:
+            all_products = all_products.filter(tags__in=tag_ids.split(','))
 
         products = all_products.get_offset(0, products_on_page)
 
@@ -153,7 +153,7 @@ class CategoryPage(catalog.CategoryPage):
             'total_products': all_products.count(),
             'sorting_options': config.category_sorting(),
             'sort': sorting,
-            'tags': tags,
+            'tags': tag_ids,
             'view_type': view_type,
         }
 
@@ -180,9 +180,9 @@ def load_more(request, category_slug, offset=0, sorting=0):
         .get_by_category(category, ordering=(sorting_option,))
     )
 
-    tags = request.GET.get('tags')
-    if tags:
-        products = products.get_by_tags(tags.split(','))
+    tag_ids = request.GET.get('tags')
+    if tag_ids:
+        products = products.filter(tags__in=tag_ids.split(','))
 
     products = products.get_offset(int(offset), products_on_page)
     view = request.session.get('view_type', 'tile')
