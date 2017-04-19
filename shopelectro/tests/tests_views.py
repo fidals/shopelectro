@@ -162,16 +162,12 @@ class YandexKassa(TestCase):
 
 class ProductPage(TestCase):
 
-    def test_orphan_product(self):
-        product = Product.objects.create(
-            name='Orphan product',
-            vendor_code=123,
-            category=None,
-        )
+    fixtures = ['dump.json']
 
-        response = self.client.get(
-            reverse('product', kwargs={'product_vendor_code': product.vendor_code})
-        )
+    def test_orphan_product(self):
+        product = Product.objects.first()
+        response = self.client.get(product.url)
+        self.assertEqual(product.category, None)
         self.assertEqual(response.status_code, 404)
 
 
