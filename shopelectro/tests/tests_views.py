@@ -160,6 +160,17 @@ class YandexKassa(TestCase):
         self.assertContains(response, 'code="1"')
 
 
+class ProductPage(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_orphan_product(self):
+        product = Product.objects.first()
+        response = self.client.get(product.url)
+        self.assertEqual(product.category, None)
+        self.assertEqual(response.status_code, 404)
+
+
 class ProductsWithoutContent(TestCase):
 
     def test_products_without_images(self):

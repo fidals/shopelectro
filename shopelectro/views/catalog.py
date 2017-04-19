@@ -44,6 +44,7 @@ class ProductPage(catalog.ProductPage):
 
     queryset = (
         Product.objects
+            .filter(category__isnull=False)
             .prefetch_related('product_feedbacks', 'page__images')
             .select_related('page')
     )
