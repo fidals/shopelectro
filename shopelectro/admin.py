@@ -73,6 +73,15 @@ class CategoryInline(inlines.CategoryInline):
 
     model = se_models.Category
 
+    fieldsets = ((None, {
+        'classes': ('primary-chars', ),
+        'fields': (
+            ('name', 'id'),
+            ('parent', 'correct_parent_id'),
+            ('seo_description_template', ),
+        )
+    }),)
+
 
 class ProductInline(inlines.ProductInline):
 

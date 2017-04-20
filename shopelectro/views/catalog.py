@@ -10,6 +10,7 @@ from collections import defaultdict
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
+from django.template import Context, Template
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
@@ -20,7 +21,11 @@ from pages import views as pages_views
 from shopelectro import config
 from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import (
-    Product, ProductFeedback, Category, CategoryPage as CategoryPageModel, Tag
+    Product,
+    ProductFeedback,
+    Category,
+    CategoryPage as CategoryPageModel,
+    Tag,
 )
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -109,30 +114,52 @@ def merge_products_and_images(products):
     ]
 
 
-TAGS_TYPE_DELIMITER = '-or-'
-TAGS_GROUP_DELIMITER = '-and-'
+URL_TAGS_TYPE_DELIMITER = '-or-'
+URL_TAGS_GROUP_DELIMITER = '-and-'
+
+TITLE_TAGS_TYPE_DELIMITER = ' или '
+TITLE_TAGS_GROUP_DELIMITER = ' и '
 
 
-def serialize_product_tags(tags: list) -> str:
-    # group tags by tag group
+def serialize_tags(tags: list,
+                   attribute: str,
+                   type_delimiter: str,
+                   group_delimiter: str) -> str:
+    # [Tag(name='220-v'), ...] -> {1: ['220-v', '...'}
     tags_by_group = defaultdict(list)
     for tag in tags:
         tags_by_group[tag.group.id].append(
             tag
         )
+    # {1: ['220-v', '...']} -> {1: '220-v-or-...'}
     for group, tags in tags_by_group.items():
-        tags_by_group[group] = TAGS_TYPE_DELIMITER.join(
-            tag.slug for tag in tags
+        tags_by_group[group] = type_delimiter.join(
+            getattr(tag, attribute) for tag in tags
         )
-    return TAGS_GROUP_DELIMITER.join(tags for tags in tags_by_group.values())
+    # {1: '220-v-or-...', ...} -> '220-v-or-...-and-...'
+    return group_delimiter.join(
+        tags for tags in tags_by_group.values()
+    )
 
 
-def parse_product_tags(tags: str) -> list:
-    groups = tags.split(TAGS_GROUP_DELIMITER)
+def serialize_url_tags(tags: list) -> str:
+    return serialize_tags(
+        tags, 'slug', URL_TAGS_TYPE_DELIMITER, URL_TAGS_GROUP_DELIMITER
+    )
+
+
+def parse_url_tags(tags: str) -> list:
+    groups = tags.split(URL_TAGS_GROUP_DELIMITER)
     return chain(
         *(
-            group.split(TAGS_TYPE_DELIMITER) for group in groups
+            group.split(URL_TAGS_TYPE_DELIMITER) for group in groups
         )
+    )
+
+
+def serialize_title_tags(tags: list) -> str:
+    return serialize_tags(
+        tags, 'name', TITLE_TAGS_TYPE_DELIMITER, TITLE_TAGS_GROUP_DELIMITER
     )
 
 
@@ -162,12 +189,36 @@ class CategoryPage(catalog.CategoryPage):
         group_tags_pairs = Tag.objects.get_group_tags_pairs(all_products.get_tags())
 
         tags = self.kwargs.get('tags')
+        tags_metadata = None
 
         if tags:
-            tags_slugs = list(parse_product_tags(tags))
-            all_products = all_products.get_by_tags(
-                Tag.objects.filter(slug__in=tags_slugs)
-            )
+            slugs = parse_url_tags(tags)
+            tags = Tag.objects.filter(slug__in=list(slugs))
+
+            all_products = all_products.filter(tags__in=tags)
+
+            tags_titles = serialize_title_tags(tags)
+            tags_description = None
+
+            if category.seo_description_template:
+                tags_description_template = Template(
+                    category.seo_description_template
+                )
+                tags_description_context = Context({
+                    'tags': tags_titles,
+                    'title': category.name,
+                })
+                tags_description = tags_description_template.render(
+                    tags_description_context
+                )
+
+            tags_metadata = {
+                'tags': tags_titles,
+                'title': '{category} {tags}'.format(
+                    category=category.name, tags=tags_titles
+                ),
+                'description': tags_description,
+            }
 
         products = all_products.get_offset(0, products_on_page)
 
@@ -180,6 +231,7 @@ class CategoryPage(catalog.CategoryPage):
             'sort': sorting,
             'tags': tags,
             'view_type': view_type,
+            'tags_metadata': tags_metadata,
         }
 
 

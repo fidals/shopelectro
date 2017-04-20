@@ -9,7 +9,7 @@ from shopelectro.models import Tag
 def migrate_forward(apps, schema_editor):
     for tag in Tag.objects.all():
         print('Generating slug for "{0}" tag'.format(tag.name))
-        tag.save() # will trigger slug update
+        tag.save()  # will trigger slug update
 
 
 def migrate_backward(apps, schema_editor):
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tag',
             name='slug',
-            field=models.SlugField(allow_unicode=True, default=None, null=True, blank=True),
+            field=models.SlugField(default=None, null=True, blank=True),
         ),
         migrations.RunPython(
             migrate_forward,

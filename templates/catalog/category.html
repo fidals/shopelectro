@@ -5,7 +5,13 @@
 
 {% block content %}
   {% breadcrumbs_with_siblings page %}
-  <h1 class="category-title">{{ page.h1 }}</h1>
+  <h1 class="category-title">
+  {% if tags_metadata %}
+  {{ tags_metadata.title }}
+  {% else %}
+  {{ page.h1 }}
+  {% endif %}
+  </h1>
 
   <div class="row">
     <div class="col-md-3 category-left-block">
@@ -22,9 +28,13 @@
     </div>
 
     <div class="col-md-9 category-right view-mode-{{ view_type }}" id="category-right">
-      {% if page.seo_text %}
+      {% if page.seo_text or tags_metadata %}
         {% autoescape off %}
-          <div class="hidden-xs hidden-sm category-text" id="category-text">{{ page.seo_text }}</div>
+          <div class="hidden-xs hidden-sm category-text" id="category-text">
+          {{ page.seo_text }}
+          <br> <br>
+          {{ tags_metadata.description }}
+          </div>
         {% endautoescape %}
       {% endif %}
 

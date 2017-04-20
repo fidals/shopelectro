@@ -1,6 +1,7 @@
 from functools import reduce
 from itertools import groupby, chain
 from operator import attrgetter, or_
+from unidecode import unidecode
 from uuid import uuid4
 
 from django.db import models
@@ -20,6 +21,8 @@ from pages.models import ModelPage, SyncPageMixin, CustomPage
 class Category(AbstractCategory, SyncPageMixin):
 
     uuid = models.UUIDField(default=uuid4, editable=False)
+
+    seo_description_template = models.TextField(blank=False, null=True)
 
     @classmethod
     def get_default_parent(cls):
@@ -212,7 +215,7 @@ class Tag(models.Model):
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
 
-    slug = models.SlugField(default=None, blank=True, null=True, allow_unicode=True)
+    slug = models.SlugField(default=None, blank=True, null=True)
 
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
@@ -223,5 +226,8 @@ class Tag(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name, allow_unicode=True)
+            # same slugify code used in PageMixin object
+            self.slug = slugify(
+                unidecode(self.name.replace('.', '-').replace('+', '-'))
+            )
         super(Tag, self).save(*args, **kwargs)
