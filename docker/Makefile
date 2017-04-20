@@ -17,7 +17,7 @@ UPDATE = docker-compose exec $(1) bash -c \
 DEPLOY = $(foreach func,$(DEPLOY-MAP),$(call $(func),$(1)))
 
 ifdef SE_REMOTE_SERVER
-	REMOTE-DEPLOY = @ssh $(SE_REMOTE_SERVER) cd prog/shopelectro/docker && make deploy
+	REMOTE-DEPLOY = @ssh $(SE_REMOTE_SERVER) 'cd prog/shopelectro/docker && make deploy'
 else
 	REMOTE-DEPLOY = @echo "Define SE_REMOTE_SERVER variables.\nexport SE_REMOTE_SERVER=..."
 endif

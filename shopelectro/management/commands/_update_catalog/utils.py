@@ -14,9 +14,14 @@ from django.conf import settings
 
 UUID = str
 Data = Dict[str, str]
-UUID4_LEN = len(str(uuid4()))
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
+
+__UUID4_LEN = len(str(uuid4()))
+
+
+def is_correct_uuid(uuid_):
+        return uuid_ and len(uuid_) == __UUID4_LEN
 
 
 class XmlFile:
