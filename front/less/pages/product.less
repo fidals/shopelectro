@@ -188,10 +188,10 @@
     display: flex;
     height: @height-product-block-mob;
     position: relative;
+    margin-bottom: 15px;
 
     .Q(@sm; {
       height: @height-product-block-pc;
-      margin-bottom: 15px;
     });
   }
 
@@ -209,10 +209,6 @@
     .Q(@md; {
       margin: 0 9px 0 0;
     });
-
-    &:last-of-type {
-      margin: 10px 0 0;
-    }
   }
 }
 
@@ -302,7 +298,7 @@
 .pr-chars-order {
   color: @c-grey-lighten-text-delivery;
 
-  .Q(@sm; {
+  .Q(@md; {
     padding: 0 0 0 10px;
   });
 

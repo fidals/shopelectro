@@ -37,45 +37,11 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class SEProductQuerySet(ProductQuerySet):
-
-    def get_pages(self):
-        """Get pages related to products."""
-        return [product.page for product in self.select_related('page')]
-
-    def get_tags(self):
-        """Get unique tags related to products."""
-        return set(chain.from_iterable(
-            product.tags.all() for product in self.prefetch_related('tags')
-        ))
-
-    def get_by_tags(self, tags: [models.Model or int]) -> models.QuerySet:
-        query = reduce(or_, (Q(tags=tag) for tag in tags))
-        return self.filter(query)
-
-
-class SEProductManager(ProductManager):
-
-    def get_queryset(self):
-        return SEProductQuerySet(self.model, using=self._db)
-
-    def get_tags(self):
-        return self.get_queryset().get_tags()
-
-    def get_pages(self):
-        return self.get_queryset().get_pages()
-
-    def get_by_tags(self, tags: [models.Model]) -> models.QuerySet:
-        return self.get_queryset().get_by_tags(tags)
-
-
 class Product(AbstractProduct, SyncPageMixin):
     """
     Define n:1 relation with SE-Category and 1:n with Property.
     Add wholesale prices.
     """
-
-    objects = SEProductManager()
 
     category = models.ForeignKey(
         Category,
@@ -184,7 +150,7 @@ class TagQuerySet(models.QuerySet):
         if tags is not None:
             unique_tags = set(tags)
         else:
-            unique_tags = self.all().select_related('group')
+            unique_tags = set(self.all().prefetch_related('group'))
 
         sorted_by_group_unique_tags = sorted(unique_tags, key=lambda x: x.group.name)
 
