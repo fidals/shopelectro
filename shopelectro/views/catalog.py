@@ -263,9 +263,9 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
     )
 
     if tags:
-        products = products.get_by_tags(
+        products = products.filter(tags__in=(
             models.Tag.objects.filter(slug__in=list(parse_url_tags(tags)))
-        )
+        ))
 
     products = products.get_offset(int(offset), products_on_page)
     view = request.session.get('view_type', 'tile')
