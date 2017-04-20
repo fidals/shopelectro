@@ -12,16 +12,16 @@ from xml.etree import ElementTree
 from django.conf import settings
 
 
-UUID = str
 Data = Dict[str, str]
+
+UUID = str
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
 
-__UUID4_LEN = len(str(uuid4()))
-
 
 def is_correct_uuid(uuid_):
-        return uuid_ and len(uuid_) == __UUID4_LEN
+        return uuid_ and len(uuid_) == __uuid_len
+__uuid_len = len(str(uuid4()))
 
 
 class XmlFile:
