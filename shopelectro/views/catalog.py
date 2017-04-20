@@ -264,7 +264,7 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
 
     if tags:
         products = products.get_by_tags(
-            models.Tag.objects.filter(slug__in=list(parse_product_tags(tags)))
+            models.Tag.objects.filter(slug__in=list(parse_url_tags(tags)))
         )
 
     products = products.get_offset(int(offset), products_on_page)
