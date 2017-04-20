@@ -6,7 +6,7 @@ from xml.etree.ElementTree import Element
 from django.db import transaction
 
 from shopelectro.management.commands._update_catalog.utils import (
-    XmlFile, UUID4_LEN, UUID, Data,
+    XmlFile, is_correct_uuid, UUID, Data,
 )
 from shopelectro.models import Tag, TagGroup
 
@@ -107,15 +107,12 @@ def delete(group_data: Dict[UUID, Data]):
 
 
 def prepare_data(group_data: Iterator) -> Dict[UUID, Data]:
-    def is_uuid(uuid):
-        return uuid and len(uuid) == UUID4_LEN
-
     def assembly_structure(group_uuid: str, group_data_: dict):
         tags_data = group_data_.pop('tags_data', [])
         tags = {
             tag_uuid: {'name': tag_name}
             for tag_uuid, tag_name in tags_data
-            if is_uuid(tag_uuid)
+            if is_correct_uuid(tag_uuid)
         }
 
         return (
@@ -128,7 +125,7 @@ def prepare_data(group_data: Iterator) -> Dict[UUID, Data]:
     return dict(
         assembly_structure(group_uuid, data)
         for group_uuid, data in group_data
-        if is_uuid(group_uuid)
+        if is_correct_uuid(group_uuid)
     )
 
 

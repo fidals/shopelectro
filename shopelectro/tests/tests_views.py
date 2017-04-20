@@ -166,8 +166,10 @@ class ProductPage(TestCase):
 
     def test_orphan_product(self):
         product = Product.objects.first()
+        product.category = None
+        product.save()
+
         response = self.client.get(product.url)
-        self.assertEqual(product.category, None)
         self.assertEqual(response.status_code, 404)
 
 

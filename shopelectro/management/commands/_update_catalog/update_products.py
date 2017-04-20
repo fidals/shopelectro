@@ -13,16 +13,13 @@ from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
 from shopelectro.management.commands._update_catalog.utils import (
-    XmlFile, UUID4_LEN, NOT_SAVE_TEMPLATE, UUID, Data,
+    XmlFile, is_correct_uuid, NOT_SAVE_TEMPLATE, UUID, Data,
 )
 from shopelectro.models import Product, ProductPage, Tag
 
 
 def fetch_products(root: Element, config: XmlFile) -> Iterator:
     product_els = root.findall(config.xpaths['products'])
-
-    def is_correct_uuid(uuid_):
-        return uuid_ and len(uuid_) == UUID4_LEN
 
     for product_el in product_els:
         name = product_el.find(config.xpaths['name']).text
@@ -62,6 +59,21 @@ def fetch_prices(root: Element, config) -> Iterator:
         yield product_uuid, prices
 
 
+def fetch_in_stock(root: Element, config: XmlFile) -> Iterator:
+    product_els = root.findall(config.xpaths['products'])
+
+    for product_el in product_els:
+        uuid = product_el.find(config.xpaths['product_uuid']).text
+        in_stock = product_el.find(config.xpaths['in_stock']).text
+
+        if not (in_stock.isdigit() and int(in_stock) >= 0):
+            in_stock = 0
+
+        yield uuid, {
+            'in_stock': in_stock,
+        }
+
+
 product_file = XmlFile(
     fetch_callback=fetch_products,
     xml_path_pattern='**/webdata/**/goods/**/import*.xml',
@@ -94,6 +106,17 @@ price_file = XmlFile(
 )
 
 
+in_stock_file = XmlFile(
+    fetch_callback=fetch_in_stock,
+    xml_path_pattern='**/webdata/**/goods/**/rests*.xml',
+    xpath_queries={
+        'products': './/{}Предложения/',
+        'product_uuid': '.{}Ид',
+        'in_stock': './/{}Количество',
+    },
+)
+
+
 def merge_data(*data) -> Dict[UUID, Data]:
     """
     Merge data from xml files with different structure.
@@ -122,7 +145,7 @@ def clean_data(data: Dict[UUID, Data]):
         return has
 
     def has_uuid(uuid, product_data):
-        has = uuid and len(uuid) == UUID4_LEN
+        has = is_correct_uuid(uuid)
         if not has:
             print(NOT_SAVE_TEMPLATE.format(
                 entity='product',
@@ -225,6 +248,7 @@ def main(*args, **kwargs):
     cleaned_product_data = clean_data(merge_data(
         product_file.get_data(),
         price_file.get_data(),
+        in_stock_file.get_data(),
     ))
 
     if not cleaned_product_data:
