@@ -1,8 +1,11 @@
 <p class="product-stock">
-   {% if product.in_stock %}
-     <i class="fa fa-circle in-stock"></i> В наличии
-   {% else %}
-     <i class="fa fa-circle out-stock"></i> <span
-       title="Ожидание товара составит до 6 рабочих дней">Под заказ</span>
-   {% endif %}
+  {# Uncomment it, when Fenich will learn about stock organization #}
+  {# {% if product.in_stock %} #}
+  {#   <i class="fa fa-circle in-stock"></i> В наличии #}
+  {# {% else %} #}
+  {#   <i class="fa fa-circle out-stock"></i> <span #}
+  {#     title="Ожидание товара составит до 6 рабочих дней">Под заказ</span> #}
+  {# {% endif %} #}
+  <i class="fa fa-circle out-stock"></i>
+  <span title="Ожидание товара составит до 6 рабочих дней">Под заказ</span>
 </p>
