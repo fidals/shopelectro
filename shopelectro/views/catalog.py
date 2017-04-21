@@ -145,7 +145,7 @@ class CategoryPage(catalog.CategoryPage):
         )
 
         tags = self.kwargs.get('tags')
-        tags_metadata = None
+        tags_metadata = {}
 
         if tags:
             slugs = models.Tag.parse_url_tags(tags)
@@ -174,6 +174,16 @@ class CategoryPage(catalog.CategoryPage):
                 'tags': tags_titles,
                 'text': tags_text,
             }
+
+        page = context['page']
+
+        page_title_template = Template(page.title)
+        page_title_context = Context({
+            'name': category.name,
+            'tags': tags_metadata.get('tags', None),
+        })
+
+        context['page'].title = page_title_template.render(page_title_context)
 
         products = all_products.get_offset(0, products_on_page)
 
