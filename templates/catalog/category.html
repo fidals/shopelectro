@@ -6,11 +6,11 @@
 {% block content %}
   {% breadcrumbs_with_siblings page %}
   <h1 class="category-title">
-  {% if tags_metadata %}
-    {{ page.h1 }} {{ tags_metadata.tags }}
-  {% else %}
-    {{ page.h1 }}
-  {% endif %}
+    {% if tags_metadata %}
+      {{ page.h1 }} {{ tags_metadata.tags }}
+    {% else %}
+      {{ page.h1 }}
+    {% endif %}
   </h1>
 
   <div class="row">
