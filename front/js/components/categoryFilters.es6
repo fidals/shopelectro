@@ -39,23 +39,22 @@
   const TAGS_GROUP_DELIMITER = '-and-';
 
   function serializeTags(tags) {
-    let tags_by_groups = tags.reduce((group, item) => {
-        let groupId = item.group;
-        group[groupId] = group[groupId] || [];
-        group[groupId].push(item.slug);
-        return group;
+    const tagsByGroups = tags.reduce((group, item) => {
+      const groupId = item.group;
+      group[groupId] = group[groupId] || [];
+      group[groupId].push(item.slug);
+      return group;
     }, {});
 
-    return Object.keys(tags_by_groups).reduce((p, c) => {
-      let d = p? TAGS_GROUP_DELIMITER: '';
-      return p + d + tags_by_groups[c].join(TAGS_TYPE_DELIMITER);
+    return Object.keys(tagsByGroups).reduce((previous, current) => {
+      return previous + (previous ? TAGS_GROUP_DELIMITER : '') + tagsByGroups[current].join(TAGS_TYPE_DELIMITER);
     }, '');
   }
 
   function parseTags(string) {
     return [].concat(...(
       string.split(TAGS_GROUP_DELIMITER).map(group => group.split(TAGS_TYPE_DELIMITER))
-    ))
+    ));
   }
 
   /**
@@ -66,14 +65,13 @@
       .find('input:checked')
       .map((_, checkedItem) => (
         {
-            slug: $(checkedItem).data('tag-slug'),
-            group: $(checkedItem).data('tag-group-id'),
+          slug: $(checkedItem).data('tag-slug'),
+          group: $(checkedItem).data('tag-group-id'),
         }
       ));
     const tags = serializeTags(Array.from($tagsObject));
 
     window.location.href = `${DOM.$loadMoreBtn.data('url')}tags/${tags}/`;
-
   }
 
   /**
