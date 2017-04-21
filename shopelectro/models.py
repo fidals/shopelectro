@@ -171,6 +171,13 @@ class TagManager(models.Manager):
         return self.get_queryset().get_group_tags_pairs(tags)
 
 
+URL_TAGS_TYPE_DELIMITER = '-or-'
+URL_TAGS_GROUP_DELIMITER = '-and-'
+
+TITLE_TAGS_TYPE_DELIMITER = ' или '
+TITLE_TAGS_GROUP_DELIMITER = ' и '
+
+
 class Tag(models.Model):
 
     objects = TagManager()
@@ -197,3 +204,37 @@ class Tag(models.Model):
                 unidecode(self.name.replace('.', '-').replace('+', '-'))
             )
         super(Tag, self).save(*args, **kwargs)
+
+    @staticmethod
+    def serialize_tags(
+        pairs: list,
+        field_name: str,
+        type_delimiter: str,
+        group_delimiter: str
+    ) -> str:
+        _, tags_by_group = zip(*pairs)
+        return group_delimiter.join(
+            # ну или так
+            # type_delimiter.join(map(attrgetter(field), tags))
+            type_delimiter.join(getattr(tag, field_name) for tag in tags)
+            for tags in tags_by_group
+        )
+
+    @staticmethod
+    def serialize_url_tags(tags: list) -> str:
+        return Tag.serialize_tags(
+            tags, 'slug', URL_TAGS_TYPE_DELIMITER, URL_TAGS_GROUP_DELIMITER
+        )
+
+    @staticmethod
+    def parse_url_tags(tags: str) -> list:
+        groups = tags.split(URL_TAGS_GROUP_DELIMITER)
+        return chain.from_iterable(
+            group.split(URL_TAGS_TYPE_DELIMITER) for group in groups
+        )
+
+    @staticmethod
+    def serialize_title_tags(tags: list) -> str:
+        return Tag.serialize_tags(
+            tags, 'name', TITLE_TAGS_TYPE_DELIMITER, TITLE_TAGS_GROUP_DELIMITER
+        )

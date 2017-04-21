@@ -115,55 +115,6 @@ def merge_products_and_images(products):
     ]
 
 
-URL_TAGS_TYPE_DELIMITER = '-or-'
-URL_TAGS_GROUP_DELIMITER = '-and-'
-
-TITLE_TAGS_TYPE_DELIMITER = ' или '
-TITLE_TAGS_GROUP_DELIMITER = ' и '
-
-
-def serialize_tags(tags: list,
-                   attribute: str,
-                   type_delimiter: str,
-                   group_delimiter: str) -> str:
-    # [Tag(name='220-v'), ...] -> {1: ['220-v', '...'}
-    tags_by_group = defaultdict(list)
-    for tag in tags:
-        tags_by_group[tag.group.id].append(
-            tag
-        )
-    # {1: ['220-v', '...']} -> {1: '220-v-or-...'}
-    for group, tags in tags_by_group.items():
-        tags_by_group[group] = type_delimiter.join(
-            getattr(tag, attribute) for tag in tags
-        )
-    # {1: '220-v-or-...', ...} -> '220-v-or-...-and-...'
-    return group_delimiter.join(
-        tags for tags in tags_by_group.values()
-    )
-
-
-def serialize_url_tags(tags: list) -> str:
-    return serialize_tags(
-        tags, 'slug', URL_TAGS_TYPE_DELIMITER, URL_TAGS_GROUP_DELIMITER
-    )
-
-
-def parse_url_tags(tags: str) -> list:
-    groups = tags.split(URL_TAGS_GROUP_DELIMITER)
-    return chain(
-        *(
-            group.split(URL_TAGS_TYPE_DELIMITER) for group in groups
-        )
-    )
-
-
-def serialize_title_tags(tags: list) -> str:
-    return serialize_tags(
-        tags, 'name', TITLE_TAGS_TYPE_DELIMITER, TITLE_TAGS_GROUP_DELIMITER
-    )
-
-
 @set_csrf_cookie
 class CategoryPage(catalog.CategoryPage):
 
@@ -197,32 +148,31 @@ class CategoryPage(catalog.CategoryPage):
         tags_metadata = None
 
         if tags:
-            slugs = parse_url_tags(tags)
+            slugs = models.Tag.parse_url_tags(tags)
             tags = models.Tag.objects.filter(slug__in=list(slugs))
 
             all_products = all_products.filter(tags__in=tags)
 
-            tags_titles = serialize_title_tags(tags)
-            tags_description = None
+            tags_titles = models.Tag.serialize_title_tags(
+                tags.get_group_tags_pairs()
+            )
+            tags_text = None
 
             if category.seo_description_template:
-                tags_description_template = Template(
+                tags_text_template = Template(
                     category.seo_description_template
                 )
-                tags_description_context = Context({
+                tags_text_context = Context({
+                    'name': category.name,
                     'tags': tags_titles,
-                    'title': category.name,
                 })
-                tags_description = tags_description_template.render(
-                    tags_description_context
+                tags_text = tags_text_template.render(
+                    tags_text_context
                 )
 
             tags_metadata = {
                 'tags': tags_titles,
-                'title': '{category} {tags}'.format(
-                    category=category.name, tags=tags_titles
-                ),
-                'description': tags_description,
+                'text': tags_text,
             }
 
         products = all_products.get_offset(0, products_on_page)
@@ -264,7 +214,9 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
 
     if tags:
         products = products.filter(tags__in=(
-            models.Tag.objects.filter(slug__in=list(parse_url_tags(tags)))
+            models.Tag.objects.filter(
+                slug__in=list(models.Tag.parse_url_tags(tags))
+            )
         ))
 
     products = products.get_offset(int(offset), products_on_page)

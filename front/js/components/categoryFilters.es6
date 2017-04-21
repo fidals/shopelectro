@@ -50,9 +50,7 @@
         slugs.join(TAGS_TYPE_DELIMITER)
       );
     };
-
     return slugs_groups.join(TAGS_GROUP_DELIMITER);
-
   }
 
   function parseTags(string) {

@@ -7,9 +7,9 @@
   {% breadcrumbs_with_siblings page %}
   <h1 class="category-title">
   {% if tags_metadata %}
-  {{ tags_metadata.title }}
+    {{ page.h1 }} {{ tags_metadata.tags }}
   {% else %}
-  {{ page.h1 }}
+    {{ page.h1 }}
   {% endif %}
   </h1>
 
@@ -31,9 +31,9 @@
       {% if page.seo_text or tags_metadata %}
         {% autoescape off %}
           <div class="hidden-xs hidden-sm category-text" id="category-text">
-          {{ page.seo_text }}
-          <br> <br>
-          {{ tags_metadata.description }}
+            {{ page.seo_text }}
+            <br> <br>
+            {{ tags_metadata.text }}
           </div>
         {% endautoescape %}
       {% endif %}
