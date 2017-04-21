@@ -39,18 +39,17 @@
   const TAGS_GROUP_DELIMITER = '-and-';
 
   function serializeTags(tags) {
-    var tags_by_groups = new Map(),
-        slugs_groups = [];
+    let tags_by_groups = tags.reduce((group, item) => {
+        let groupId = item.group;
+        group[groupId] = group[groupId] || [];
+        group[groupId].push(item.slug);
+        return group;
+    }, {});
 
-    tags.map(item => tags_by_groups.set(item.group, []));
-    tags.map(item => tags_by_groups.get(item.group).push(item.slug));
-
-    for (var [_, slugs] of tags_by_groups) {
-      slugs_groups.push(
-        slugs.join(TAGS_TYPE_DELIMITER)
-      );
-    };
-    return slugs_groups.join(TAGS_GROUP_DELIMITER);
+    return Object.keys(tags_by_groups).reduce((p, c) => {
+      let d = p? TAGS_GROUP_DELIMITER: '';
+      return p + d + tags_by_groups[c].join(TAGS_TYPE_DELIMITER);
+    }, '');
   }
 
   function parseTags(string) {
