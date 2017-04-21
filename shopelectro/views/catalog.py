@@ -156,7 +156,7 @@ class CategoryPage(catalog.CategoryPage):
             tags_titles = models.Tag.serialize_title_tags(
                 tags.get_group_tags_pairs()
             )
-            tags_text = None
+            tags_text = ''
 
             if category.seo_description_template:
                 tags_text_template = Template(
