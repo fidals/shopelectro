@@ -228,11 +228,11 @@
   function truncateDescription() {
     const $this = $(this);
 
-    if ($this.hasClass('less')) {
-      $this.removeClass('less');
+    if ($this.classList.contains('less')) {
+      $this.classList.remove('less');
       $this.html('Больше');
     } else {
-      $this.addClass('less');
+      $this.classList.add('less');
       $this.html('Меньше');
     }
 
