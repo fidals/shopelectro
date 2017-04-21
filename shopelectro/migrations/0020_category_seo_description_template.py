@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='seo_description_template',
-            field=models.TextField(null=True),
+            field=models.TextField(default=''),
         ),
     ]

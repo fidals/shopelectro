@@ -22,7 +22,7 @@ class Category(AbstractCategory, SyncPageMixin):
 
     uuid = models.UUIDField(default=uuid4, editable=False)
 
-    seo_description_template = models.TextField(blank=False, null=True)
+    seo_description_template = models.TextField(default='')
 
     @classmethod
     def get_default_parent(cls):
@@ -188,7 +188,7 @@ class Tag(models.Model):
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
 
-    slug = models.SlugField(default=None, blank=True, null=True)
+    slug = models.SlugField(default='')
 
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
@@ -214,8 +214,6 @@ class Tag(models.Model):
     ) -> str:
         _, tags_by_group = zip(*pairs)
         return group_delimiter.join(
-            # ну или так
-            # type_delimiter.join(map(attrgetter(field), tags))
             type_delimiter.join(getattr(tag, field_name) for tag in tags)
             for tags in tags_by_group
         )

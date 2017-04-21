@@ -12,10 +12,6 @@ def migrate_forward(apps, schema_editor):
         tag.save()  # will trigger slug update
 
 
-def migrate_backward(apps, schema_editor):
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -26,10 +22,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tag',
             name='slug',
-            field=models.SlugField(default=None, null=True, blank=True),
+            field=models.SlugField(default=''),
         ),
-        migrations.RunPython(
-            migrate_forward,
-            migrate_backward,
-        ),
+        migrations.RunPython(migrate_forward),
     ]

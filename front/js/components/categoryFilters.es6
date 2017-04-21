@@ -47,7 +47,8 @@
     }, {});
 
     return Object.keys(tagsByGroups).reduce((previous, current) => {
-      return previous + (previous ? TAGS_GROUP_DELIMITER : '') + tagsByGroups[current].join(TAGS_TYPE_DELIMITER);
+      const delim = previous ? TAGS_GROUP_DELIMITER : '';
+      return previous + delim + tagsByGroups[current].join(TAGS_TYPE_DELIMITER);
     }, '');
   }
 
