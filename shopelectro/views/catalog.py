@@ -180,7 +180,7 @@ class CategoryPage(catalog.CategoryPage):
         page_title_template = Template(page.title)
         page_title_context = Context({
             'name': category.name,
-            'tags': tags_metadata.get('tags', None),
+            'tags': tags_metadata.get('tags', ''),
         })
 
         context['page'].title = page_title_template.render(page_title_context)
