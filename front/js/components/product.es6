@@ -97,7 +97,7 @@
       }
       $this.addClass('shortened');
 
-      const text = $this.text();
+      const text = $.trim($this.text());
       const textLen = text.length;
 
       if (textLen > showChars + minChars) {
@@ -228,11 +228,11 @@
   function truncateDescription() {
     const $this = $(this);
 
-    if ($this.classList.contains('less')) {
-      $this.classList.remove('less');
+    if ($this.hasClass('less')) {
+      $this.removeClass('less');
       $this.html('Больше');
     } else {
-      $this.classList.add('less');
+      $this.addClass('less');
       $this.html('Меньше');
     }
 
