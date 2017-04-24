@@ -55,10 +55,17 @@ class ProductPage(catalog.ProductPage):
             .order_by('-date')
         )
 
+        group_tags_pairs = models.Tag.objects.get_group_tags_pairs(
+            models.Tag.objects
+            .filter(products__exact=context[self.context_object_name])
+            .prefetch_related('group')
+        )
+
         return {
             **context,
             'price_bounds': config.PRICE_BOUNDS,
-            'feedbacks': feedbacks
+            'feedbacks': feedbacks,
+            'group_tags_pairs': group_tags_pairs
         }
 
 

@@ -76,16 +76,36 @@
       </div>
     </div>
 
-    {% if product.page.content %}
+    {% if product.page.content or group_tags_pairs %}
       <div class="product-bottom">
-        <div class="product-desc">
-          <h3 class="product-desc-title">Описание</h3>
-          <p class="product-text">
-            {% autoescape off %}
-              {{ product.page.content }}
-            {% endautoescape %}
-          </p>
-        </div>
+        {% if product.page.content %}
+          <div class="product-desc">
+            <h3 class="product-desc-title">Описание</h3>
+            <p class="product-text">
+              {% autoescape off %}
+                {{ product.page.content }}
+              {% endautoescape %}
+            </p>
+          </div>
+        {% endif %}
+
+        {% if group_tags_pairs %}
+          <div class="product-tags">
+            <h3 class="product-tags-title">Характеристики</h3>
+            <table class="product-tags-table">
+              {% for group, tags in group_tags_pairs %}
+                <tr class="table-tr">
+                  <td class="table-td">{{ group }}:</td>
+                  <td class="table-td">
+                    {% for tag in tags %}
+                      {{ tag }}&#32;
+                    {% endfor %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
       </div>
     {% endif %}
 
