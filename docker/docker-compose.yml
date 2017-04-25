@@ -23,6 +23,7 @@ services:
       - SECRET_KEY=$SECRET_KEY
       - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+      - SLACK_REPORT_URL=$SLACK_REPORT_URL
     entrypoint:
       - circusd
       - /etc/circus/se_prod.ini
