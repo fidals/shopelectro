@@ -931,6 +931,19 @@ class Search(SeleniumTestCase):
         self.assertTrue('/search/' in self.browser.current_url)
         self.clear_input()
 
+    def test_autocomplete_by_vendor_code(self):
+        """Autocomplete should work by product's vendor code."""
+        product_vendor_code = Product.objects.first().vendor_code
+
+        self.input.send_keys(product_vendor_code)
+        first_item = self.autocomplete.find_element_by_css_selector(':first-child')
+        first_item.click()
+        wait()
+
+        test_vendor_code = self.browser.find_element_by_class_name('product-article').text
+
+        self.assertIn(str(product_vendor_code), test_vendor_code)
+
     def test_search_have_results(self):
         """Search results page should contain links on relevant pages."""
         self.fill_input()
