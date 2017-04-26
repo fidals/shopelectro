@@ -7,7 +7,6 @@
     $phone: $('#input-one-click-phone'),
     $oneClick: $('#btn-one-click-order'),
     $counter: $('#product-count'),
-    $product_text: $('.product-text'),
     $more_text_switcher: $('.js-more-text'),
 
     // Feedback DOM elements
@@ -193,6 +192,9 @@
       .fadeToggle('fast');
   }
 
+  /**
+   * Hide and show long description text.
+   */
   function toggleText() {
     const $this = $(this);
 
