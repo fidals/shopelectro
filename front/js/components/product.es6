@@ -8,6 +8,7 @@
     $oneClick: $('#btn-one-click-order'),
     $counter: $('#product-count'),
     $product_text: $('.product-text'),
+    $more_text_switcher: $('.js-more-text'),
 
     // Feedback DOM elements
     field: '.js-modal-field',
@@ -27,7 +28,6 @@
   const productId = DOM.$addToCart.attr('data-id');
 
   const init = () => {
-    shorten();
     setUpListeners();
     changeOneClickBtnState();
   };
@@ -49,7 +49,7 @@
     DOM.$phone.keyup(changeOneClickBtnState);
     DOM.$ratingList.on('click', 'li', () => mediator.publish('onRate', event));
     DOM.$ratingFilter.on('click', '.js-filter-trigger', filterByRating);
-    $('.js-more-text').on('click', truncateDescription);
+    DOM.$more_text_switcher.on('click', toggleText);
   }
 
   /**
@@ -83,38 +83,6 @@
     if (DOM.$oneClick.size() > 0) {
       DOM.$oneClick.attr('disabled', !helpers.isPhoneValid(DOM.$phone.val()));
     }
-  }
-
-  function shorten() {
-    const showChars = 140;
-    const minChars = 10;
-    const ellipses = '...';
-
-    return DOM.$product_text.each(function () {
-      const $this = $(this);
-      if ($this.hasClass('shortened')) {
-        return;
-      }
-      $this.addClass('shortened');
-
-      const text = $.trim($this.text());
-      const textLen = text.length;
-
-      if (textLen > showChars + minChars) {
-        const nextSpaceIndex = text.substr(showChars, textLen - showChars).indexOf(' ');
-        const numberOfVisible = parseInt(showChars, 10) + parseInt(nextSpaceIndex, 10);
-        const visibleText = text.substr(0, numberOfVisible);
-        const invisibleText = text.substr(numberOfVisible, textLen - numberOfVisible);
-
-        $this.html(`
-          <span class="short-content">${visibleText}</span>
-          <span>${ellipses}&nbsp;</span>
-          <span class="more-content">${invisibleText}&nbsp;</span>
-          <a href="#" class="js-more-text">Больше</a>
-        `);
-        $this.find('.more-content').hide();
-      }
-    });
   }
 
   /**
@@ -225,19 +193,20 @@
       .fadeToggle('fast');
   }
 
-  function truncateDescription() {
+  function toggleText() {
     const $this = $(this);
 
     if ($this.hasClass('less')) {
       $this.removeClass('less');
-      $this.html('Больше');
+      $this.html('Развернуть описание');
+      $this.prev().toggle();
+      $this.prev().prev().fadeToggle('fast');
     } else {
       $this.addClass('less');
-      $this.html('Меньше');
+      $this.html('Свернуть');
+      $this.prev().prev().toggle();
+      $this.prev().fadeToggle('fast');
     }
-
-    $this.prev().fadeToggle('fast');
-    $this.prev().prev().toggle();
 
     return false;
   }

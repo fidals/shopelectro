@@ -83,7 +83,17 @@
             <h3 class="product-desc-title">Описание</h3>
             <p class="product-text">
               {% autoescape off %}
-                {{ product.page.content }}
+                {% if product.page.content|length > 150 %}
+                  <span class="short-content">
+                    {{ product.page.content|truncatechars_html:140 }}
+                  </span>
+                  <span class="more-content">
+                    {{ product.page.content }}
+                  </span>
+                  <a href="#" class="js-more-text">Больше</a>
+                {% else %}
+                  {{ product.page.content }}
+                {% endif %}
               {% endautoescape %}
             </p>
           </div>
