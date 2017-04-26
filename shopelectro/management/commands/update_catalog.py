@@ -41,10 +41,8 @@ class Command(BaseCommand):
             requests.post(
                 url=report_url,
                 json={
-                    'text': '*Неудалось обновить каталог Shopelectro.*\n'
+                    'text': '*Не удалось обновить каталог Shopelectro.*\n'
                             '*Время*: {}\n'
                             '*Ошибка*: {}'.format(time.ctime(), error),
-                    'icon_emoji': ':octopus:',
-
                 }
             )
