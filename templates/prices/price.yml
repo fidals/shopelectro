@@ -30,16 +30,20 @@
           <currencyId>RUR</currencyId>
           {% include 'prices/pictures.yml' with product=product base_url=base_url only %}
           <categoryId>{{ product.category.id }}</categoryId>
+          <typePrefix>{{ product.category.name }}</typePrefix>
           <store>false</store>
           <pickup>true</pickup>
           <delivery>true</delivery>
+          {% if product.vendor %}
+          <vendor>{{ product.vendor }}</vendor>
+          {% endif %}
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
           {% if product.page.description and not utm == 'GM' %}
-            <description>{{ product.page.description }}</description>
+          <description>{{ product.page.description }}</description>
           {% endif %}
           {% if not utm == 'GM' %}
-            <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>
+          <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>
           {% endif %}
           {# product_type tag in google merchant doc : https://goo.gl/b0UJQp #}
           {% if utm == 'GM' %}<product_type>{{ product.crumbs }}</product_type>{% endif %}
