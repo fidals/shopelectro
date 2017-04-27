@@ -55,3 +55,5 @@ THUMBNAIL_CACHE = 'thumbnail'
 USER_AGENTS_CACHE = 'user_agents'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'sessions'
+
+SLACK_REPORT_URL = os.environ.get('SLACK_REPORT_URL', None)

@@ -1,5 +1,6 @@
 import time
 
+import requests
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
@@ -18,9 +19,30 @@ class Command(BaseCommand):
             help='Send an email to recipients if products will be created.',
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **kwargs):
+        try:
+            self.update(*args, **kwargs)
+        except Exception as err:
+            self.report(err)
+            raise err
+
+    @staticmethod
+    def update(*args, **kwargs):
         with utils.download_catalog(destination=settings.ASSETS_DIR):
             start = time.time()
-            update_tags.main(*args, **options)
-            update_products.main(*args, **options)
+            update_tags.main(*args, **kwargs)
+            update_products.main(*args, **kwargs)
             print('Time elapsed {:.2f}.'.format(time.time() - start))
+
+    @staticmethod
+    def report(error):
+        report_url = getattr(settings, 'SLACK_REPORT_URL', None)
+        if report_url is not None:
+            requests.post(
+                url=report_url,
+                json={
+                    'text': '*Не удалось обновить каталог Shopelectro.*\n'
+                            '*Время*: {}\n'
+                            '*Ошибка*: {}'.format(time.ctime(), error),
+                }
+            )

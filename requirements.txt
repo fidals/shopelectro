@@ -10,6 +10,7 @@ ipython
 openpyxl
 pillow
 psycopg2
+requests
 selenium
 selenium-requests
 tblib

@@ -138,17 +138,29 @@ def clean_data(data: Dict[UUID, Data]):
         )
         if not has:
             print(NOT_SAVE_TEMPLATE.format(
-                entity='product',
+                entity='Product',
                 name=product_data['name'],
                 field='price'
             ))
+        return has
+
+    def has_vendor_code(_, product_data):
+        has = bool(product_data['vendor_code'])
+
+        if not has:
+            print(NOT_SAVE_TEMPLATE.format(
+                entity='Product',
+                name=product_data['name'],
+                field='vendor_code'
+            ))
+
         return has
 
     def has_uuid(uuid, product_data):
         has = is_correct_uuid(uuid)
         if not has:
             print(NOT_SAVE_TEMPLATE.format(
-                entity='product',
+                entity='Product',
                 name=product_data['name'],
                 field='uuid'
             ))
@@ -157,7 +169,7 @@ def clean_data(data: Dict[UUID, Data]):
     def filter_(product_data):
         return all(
             f(*product_data)
-            for f in [has_all_prices, has_uuid]
+            for f in [has_all_prices, has_uuid, has_vendor_code]
         )
 
     cleaned_data = dict(
@@ -169,8 +181,8 @@ def clean_data(data: Dict[UUID, Data]):
     return cleaned_data
 
 
-def report(recipients=None):
-    message = render_to_string('report.html')
+def report(recipients=None, message=None):
+    message = message or render_to_string('report.html')
 
     user_query = (
         User.objects
