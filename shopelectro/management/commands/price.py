@@ -64,6 +64,7 @@ class Command(BaseCommand):
             product.params = Tag.objects.get_group_tags_pairs(
                 Tag.objects
                     .filter(products__id=product.id)
+                    .exclude(group__name='Производитель')
                     .prefetch_related('group')
             )
 
