@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from shopelectro.models import Product, Category, TagGroup
+from shopelectro.models import Product, Category, Tag
 
 
 class Command(BaseCommand):
@@ -60,6 +60,12 @@ class Command(BaseCommand):
             vendor_tag = product.tags.filter(group__name='Производитель').first()
             if vendor_tag is not None:
                 product.vendor = vendor_tag.name
+
+            product.params = Tag.objects.get_group_tags_pairs(
+                Tag.objects
+                    .filter(products__id=product.id)
+                    .prefetch_related('group')
+            )
 
             return product
 
