@@ -15,7 +15,7 @@ ShopElectro
 CATEGORY_SEO_TEXT_POSTFIX = '''
 Наши цены ниже, чем у конкурентов, потому что мы покупаем напрямую у
 производителя.
-'''.replace('\n', ' ')
+'''.replace('\n', ' ').strip()
 
 PRODUCT_TITLE = '''
 {name} - купить недорого оптом, со скидкой в интернет-магазине ShopElectro
@@ -45,10 +45,21 @@ def update_category_title(page_):
 
 
 def update_category_text(page_):
-    if CATEGORY_SEO_TEXT_POSTFIX not in page_.seo_text.strip():
+    category_text = page_.seo_text.strip()
+
+    if 'Наши цены' not in category_text:  # so dirty
         page_.seo_text = ' '.join([
-            page_.seo_text, CATEGORY_SEO_TEXT_POSTFIX,
+            category_text, CATEGORY_SEO_TEXT_POSTFIX,
         ])
+    else:
+        idx = category_text.index('Наши цены')
+        if idx > 0:
+            page_.seo_text = ' '.join([
+                category_text[:idx - 1], CATEGORY_SEO_TEXT_POSTFIX,
+            ])
+        else:
+            page_.seo_text = CATEGORY_SEO_TEXT_POSTFIX
+
     return page_
 
 
