@@ -264,7 +264,20 @@ def main(*args, **kwargs):
     ))
 
     if not cleaned_product_data:
-        raise Exception('Problem with uploaded files.')
+
+        parsed_files = {
+            'product_files':  list(product_file.parsed_files),
+            'price_files': list(price_file.parsed_files),
+            'in_stock_files': list(in_stock_file.parsed_files),
+        }
+
+        if not any(parsed_files.values()):
+            message = 'Files does not exist: {}'.format(parsed_files)
+        else:
+            # TODO: happy debugging (:
+            message = 'The file structure has changed or it does not contain the required data.'
+
+        raise Exception(message)
 
     delete(cleaned_product_data)
     updated_products = update(cleaned_product_data)

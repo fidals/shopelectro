@@ -44,7 +44,7 @@ class XmlFile:
         assert xml_files, 'Files on path {} does not exist.'.format(
             self.xml_path_pattern
         )
-        return (ElementTree.parse(file) for file in xml_files)
+        return [ElementTree.parse(file) for file in xml_files]
 
     @property
     @lru_cache(maxsize=128)
