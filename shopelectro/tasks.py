@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.core.management import call_command
 
 from shopelectro.celery import app
@@ -30,7 +32,7 @@ def update_meta_tags():
     call_command('update_meta_tags')
 
 
-@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=30)
+@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=timedelta(minutes=10))
 def update_catalog():
     # http://docs.celeryproject.org/en/latest/userguide/canvas.html#map-starmap
     return [
