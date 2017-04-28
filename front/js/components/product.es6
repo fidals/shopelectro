@@ -7,7 +7,7 @@
     $phone: $('#input-one-click-phone'),
     $oneClick: $('#btn-one-click-order'),
     $counter: $('#product-count'),
-    $more_text_switcher: $('.js-more-text'),
+    $more_text_toggle: $('.js-more-text'),
 
     // Feedback DOM elements
     field: '.js-modal-field',
