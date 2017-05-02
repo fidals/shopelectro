@@ -34,9 +34,6 @@
           <store>false</store>
           <pickup>true</pickup>
           <delivery>true</delivery>
-          {% if product.vendor %}
-            <vendor>{{ product.vendor }}</vendor>
-          {% endif %}
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
           {% if product.page.description and not utm == 'GM' %}
