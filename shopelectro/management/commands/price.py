@@ -57,16 +57,7 @@ class Command(BaseCommand):
             utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
             product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
 
-            vendor_tag = product.tags.filter(group__name='Производитель').first()
-            if vendor_tag is not None:
-                product.vendor = vendor_tag.name
-
-            product.params = Tag.objects.get_group_tags_pairs(
-                Tag.objects
-                    .filter(products__id=product.id)
-                    .exclude(group__name='Производитель')
-                    .prefetch_related('group')
-            )
+            product.prepared_params = list(filter(lambda x: x[0].name != 'Производитель', product.params))
 
             return product
 
