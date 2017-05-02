@@ -81,9 +81,10 @@ def chained_update(pages, handlers):
     for page in pages.iterator():
         handle(handlers, page)
 
-    print('Updated {} meta tags'.format(
-        pages[0].model._meta.verbose_name_plural
-    ))
+    if pages:
+        print('Updated {} meta tags'.format(
+            pages[0].model._meta.verbose_name_plural
+        ))
 
 
 def update():

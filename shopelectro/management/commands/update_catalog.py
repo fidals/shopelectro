@@ -1,6 +1,5 @@
 import time
 
-import requests
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
@@ -23,7 +22,7 @@ class Command(BaseCommand):
         try:
             self.update(*args, **kwargs)
         except Exception as err:
-            self.report(err)
+            utils.report(err)
             raise err
 
     @staticmethod
@@ -33,16 +32,3 @@ class Command(BaseCommand):
             update_tags.main(*args, **kwargs)
             update_products.main(*args, **kwargs)
             print('Time elapsed {:.2f}.'.format(time.time() - start))
-
-    @staticmethod
-    def report(error):
-        report_url = getattr(settings, 'SLACK_REPORT_URL', None)
-        if report_url is not None:
-            requests.post(
-                url=report_url,
-                json={
-                    'text': '*Не удалось обновить каталог Shopelectro.*\n'
-                            '*Время*: {}\n'
-                            '*Ошибка*: {}'.format(time.ctime(), error),
-                }
-            )
