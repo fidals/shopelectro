@@ -16,7 +16,7 @@
     $closeModalBtn: $('.js-modal-close'),
     $feedbackBtn: $('.js-send-feedback'),
     $feedbackDelete: $('.js-feedback-delete'),
-    $feedbackList: $('#feedbacks-list'),
+    $feedbackList: $('#feedback-list'),
     $feedbackModal: $('#product-feedback-modal'),
     $feedbackNameField: $('#feedback-modal-name'),
     $ratingFilter: $('.js-rating-filter'),
