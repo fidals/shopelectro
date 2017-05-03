@@ -74,6 +74,14 @@ class Product(AbstractProduct, SyncPageMixin):
     def feedbacks_count(self):
         return self.product_feedbacks.count()
 
+    @property
+    def params(self):
+        return Tag.objects.get_group_tags_pairs(
+            self.tags
+                .filter(products=self)
+                .prefetch_related('group')
+            )
+
 
 class ProductFeedback(models.Model):
     product = models.ForeignKey(

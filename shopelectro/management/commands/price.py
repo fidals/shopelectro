@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from shopelectro.models import Product, Category
+from shopelectro.models import Product, Category, Tag
 
 
 class Command(BaseCommand):
@@ -56,6 +56,8 @@ class Command(BaseCommand):
             url = reverse('product', args=(product.vendor_code,))
             utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
             product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
+
+            product.prepared_params = list(filter(lambda x: x[0].name != 'Производитель', product.params))
 
             return product
 
