@@ -8,6 +8,7 @@ Every Selenium-based test suite uses fixture called dump.json.
 import time
 
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from django.test import LiveServerTestCase
 from django.urls import reverse
@@ -29,12 +30,16 @@ class SeleniumTestCase(LiveServerTestCase):
     def setUpClass(cls):
         """Instantiate browser instance."""
         super(SeleniumTestCase, cls).setUpClass()
-        mobile_emulation = {'deviceName': 'Apple iPhone 5'}
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_experimental_option('mobileEmulation', mobile_emulation)
-        cls.browser = webdriver.Chrome(chrome_options=chrome_options)
+        capabilities = {
+            'browserName': 'chrome',
+            'mobileEmulation': {
+                'deviceName': 'Apple iPhone 5'
+            },
+        }
+        cls.browser = webdriver.Remote(command_executor='http://se-selenium-hub:4444/wd/hub',
+                                       desired_capabilities=capabilities)
         cls.browser.implicitly_wait(5)
-        cls.browser.maximize_window()
+        cls.browser.set_window_size(640, 320)
 
     @classmethod
     def tearDownClass(cls):
