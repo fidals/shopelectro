@@ -33,8 +33,13 @@
 # remote-deploy:
 # 	$(call REMOTE-DEPLOY)
 
+migrate:
+	docker-compose exec se-python python manage.py migrate
+
 static:
 	docker-compose up se-nodejs
+	docker-compose exec se-python python manage.py excel
+	docker-compose exec se-python python manage.py price
 	docker-compose exec se-python python manage.py collectstatic --noinput
 
 build: static
