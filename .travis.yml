@@ -28,7 +28,7 @@ install:
   - sudo docker-compose up -d
 
 script:
-  - sudo docker-compose exec se-python python manage.py test --liveserver=se-python:8020-8030 --parallel=8
+  - sudo docker-compose exec se-python python manage.py test --liveserver=se-python:8020-8030 --parallel=4
 
 after_failure:
   - docker-compose logs
