@@ -112,5 +112,5 @@ class Mobile(SeleniumTestCase):
         size = self.browser.find_element_by_class_name('js-cart-size').text
         price = self.browser.find_element_by_class_name('js-mobile-cart-price').text
 
-        self.assertTrue(int(size) > 0)
-        self.assertTrue(int(price) > 0)
+        self.assertEqual(int(size), 1)
+        self.assertEqual(int(price), 1000)

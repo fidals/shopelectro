@@ -32,7 +32,7 @@ DEBUG = True
 THUMBNAIL_DEBUG = False
 
 # setting from docker example: https://github.com/satyrius/paid/
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')]
+ALLOWED_HOSTS = ['*']
 
 # https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
