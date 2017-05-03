@@ -46,4 +46,4 @@ def update_catalog():
         ]
     except Exception as exc:
         utils.report(exc)
-        raise
+        raise exc

@@ -37,7 +37,6 @@ class XmlFile:
         self.extra_options = extra_options or {}
 
     @property
-    @lru_cache(maxsize=128)
     def parsed_files(self):
         """Get parsed xml files, that matched the path pattern."""
         xml_files = glob.glob(os.path.join(
@@ -102,7 +101,7 @@ def report(error):
             url=report_url,
             json={
                 'text': '*Не удалось обновить каталог Shopelectro.*\n'
-                '*Время*: {}\n'
-                '*Ошибка*: {}'.format(time.ctime(), error),
+                        '*Время*: {}\n'
+                        '*Ошибка*: {}'.format(time.ctime(), error),
             }
         )
