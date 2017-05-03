@@ -10,7 +10,6 @@ env:
     - DOCKER_COMPOSE_VERSION=1.11.2
   matrix:
     - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
-    - DJANGO_SETTINGS_MODULE=shopelectro.settings.prod
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
