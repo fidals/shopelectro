@@ -45,7 +45,7 @@ def update_category_title(page_):
 
 
 def update_category_text(page_):
-    if CATEGORY_SEO_TEXT_POSTFIX not in page_.seo_text.strip():
+    if CATEGORY_SEO_TEXT_POSTFIX.strip() not in page_.seo_text.strip():
         page_.seo_text = ' '.join([
             page_.seo_text, CATEGORY_SEO_TEXT_POSTFIX,
         ])
