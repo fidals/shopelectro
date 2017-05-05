@@ -48,7 +48,7 @@
     DOM.$phone.keyup(changeOneClickBtnState);
     DOM.$ratingList.on('click', 'li', () => mediator.publish('onRate', event));
     DOM.$ratingFilter.on('click', '.js-filter-trigger', filterByRating);
-    DOM.$more_text_switcher.on('click', toggleText);
+    DOM.$more_text_toggle.on('click', toggleText);
   }
 
   /**
