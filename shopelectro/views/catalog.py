@@ -51,7 +51,7 @@ class ProductPage(catalog.ProductPage):
 
         group_tags_pairs = models.Tag.objects.get_group_tags_pairs(
             models.Tag.objects
-            .filter(products=context[self.context_object_name])
+            .filter(products=self.object)
             .prefetch_related('group')
         )
 
