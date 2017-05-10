@@ -78,6 +78,14 @@ class Product(AbstractProduct, SyncPageMixin):
     def feedback(self):
         return self.product_feedbacks.all().order_by('-date')
 
+    @property
+    def params(self):
+        return Tag.objects.get_group_tags_pairs(
+            self.tags
+                .filter(products=self)
+                .prefetch_related('group')
+            )
+
 
 class ProductFeedback(models.Model):
     product = models.ForeignKey(

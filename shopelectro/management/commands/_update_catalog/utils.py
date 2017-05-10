@@ -1,7 +1,9 @@
 import glob
 import os
+import requests
 import shutil
 import subprocess
+import time
 from functools import lru_cache
 from contextlib import contextmanager
 from itertools import chain
@@ -20,7 +22,7 @@ NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' 
 
 
 def is_correct_uuid(uuid_):
-        return uuid_ and len(uuid_) == __uuid_len
+    return uuid_ and len(uuid_) == __uuid_len
 __uuid_len = len(str(uuid4()))
 
 
@@ -35,13 +37,15 @@ class XmlFile:
         self.extra_options = extra_options or {}
 
     @property
-    @lru_cache(maxsize=128)
     def parsed_files(self):
         """Get parsed xml files, that matched the path pattern."""
         xml_files = glob.glob(os.path.join(
             settings.ASSETS_DIR, self.xml_path_pattern
         ))
-        return (ElementTree.parse(file) for file in xml_files)
+        assert xml_files, 'Files on path {} does not exist.'.format(
+            self.xml_path_pattern
+        )
+        return [ElementTree.parse(file) for file in xml_files]
 
     @property
     @lru_cache(maxsize=128)
@@ -79,7 +83,8 @@ def download_catalog(destination):
     )
 
     subprocess.run(wget_command, shell=True)
-    assert os.path.exists(os.path.join(destination, settings.FTP_IP)), 'Files do not downloaded...'
+    assert os.path.exists(os.path.join(
+        destination, settings.FTP_IP)), 'Files do not downloaded...'
     print('Download catalog - completed...')
 
     try:
@@ -87,3 +92,16 @@ def download_catalog(destination):
     finally:
         # remove downloaded data
         shutil.rmtree(os.path.join(destination, settings.FTP_IP))
+
+
+def report(error):
+    report_url = getattr(settings, 'SLACK_REPORT_URL', None)
+    if report_url is not None:
+        requests.post(
+            url=report_url,
+            json={
+                'text': '*Не удалось обновить каталог Shopelectro.*\n'
+                        '*Время*: {}\n'
+                        '*Ошибка*: {}'.format(time.ctime(), error),
+            }
+        )

@@ -78,6 +78,9 @@ def chained_update(pages, handlers):
         result_page = reduce(lambda x, y: y(x), handlers_, page_)
         result_page.save()
 
+    if not pages:
+        return
+
     for page in pages.iterator():
         handle(handlers, page)
 
