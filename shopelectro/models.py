@@ -71,8 +71,12 @@ class Product(AbstractProduct, SyncPageMixin):
         return round(rating, 1)
 
     @property
-    def feedbacks_count(self):
+    def feedback_count(self):
         return self.product_feedbacks.count()
+
+    @property
+    def feedback(self):
+        return self.product_feedbacks.all().order_by('-date')
 
     @property
     def params(self):

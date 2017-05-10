@@ -7,6 +7,7 @@
     $phone: $('#input-one-click-phone'),
     $oneClick: $('#btn-one-click-order'),
     $counter: $('#product-count'),
+    $more_text_toggle: $('.js-more-text'),
 
     // Feedback DOM elements
     field: '.js-modal-field',
@@ -15,7 +16,7 @@
     $closeModalBtn: $('.js-modal-close'),
     $feedbackBtn: $('.js-send-feedback'),
     $feedbackDelete: $('.js-feedback-delete'),
-    $feedbackList: $('#feedbacks-list'),
+    $feedbackList: $('#feedback-list'),
     $feedbackModal: $('#product-feedback-modal'),
     $feedbackNameField: $('#feedback-modal-name'),
     $ratingFilter: $('.js-rating-filter'),
@@ -47,6 +48,7 @@
     DOM.$phone.keyup(changeOneClickBtnState);
     DOM.$ratingList.on('click', 'li', () => mediator.publish('onRate', event));
     DOM.$ratingFilter.on('click', '.js-filter-trigger', filterByRating);
+    DOM.$more_text_toggle.on('click', toggleText);
   }
 
   /**
@@ -188,6 +190,27 @@
     DOM.$feedbackList
       .find(`div[data-rating="${rating}"]`)
       .fadeToggle('fast');
+  }
+
+  /**
+   * Hide and show long description text.
+   */
+  function toggleText() {
+    const $this = $(this);
+
+    if ($this.hasClass('less')) {
+      $this.removeClass('less');
+      $this.html('Развернуть описание');
+      $this.prev().toggle();
+      $this.prev().prev().fadeToggle('fast');
+    } else {
+      $this.addClass('less');
+      $this.html('Свернуть');
+      $this.prev().prev().toggle();
+      $this.prev().fadeToggle('fast');
+    }
+
+    return false;
   }
 
   init();
