@@ -3,9 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-# https://goo.gl/5qYGp1
-flag_symbol = '\U0001F6A9'
-
 
 def migrate_forward(apps, schema_editor):
     PageTemplate = apps.get_model('pages', 'PageTemplate')
@@ -40,10 +37,7 @@ def migrate_backward(apps, schema_editor):
     Category.objects.update(template_id=1)
     Product.objects.update(template_id=1)
 
-    PageTemplate.objects.filter(name__in=[
-        'Шаблон страницы категории',
-        'Шаблон страницы продукта',
-    ]).delete()
+    PageTemplate.objects.exclude(id=1).delete()
 
 
 class Migration(migrations.Migration):
