@@ -1,6 +1,6 @@
 {% for page in pages %}
   <div class="news-small">
-    <a class="caption-pub" href="{{ page.get_absolute_url }}">{{ page.h1 }}</a>
+    <a class="caption-pub" href="{{ page.get_absolute_url }}">{{ page.display_h1 }}</a>
     <p class="date-pub">{{ page.date_published|date:'d.m.Y' }}</p>
     <p class="news-intro">
       {{ page.content|striptags|truncatechars:230 }}

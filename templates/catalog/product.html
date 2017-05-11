@@ -5,7 +5,7 @@
 
 {% block content %}
   <div itemscope itemtype="http://schema.org/Product" class="page-product custom-checkbox">
-    <meta property="description" itemprop="description" content="{{ product.page.description }}" />
+    <meta property="description" itemprop="description" content="{{ product.page.display_description }}" />
     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
       <span itemprop="price">{{ product.price|humanize_price }}</span>
       <span itemprop="priceCurrency">RUB</span>
@@ -14,7 +14,7 @@
     </div>
 
     {% breadcrumbs_with_siblings page %}
-    <h1 class="product-h1" itemprop="name">{{ page.h1 }}</h1>
+    <h1 class="product-h1" itemprop="name">{{ page.display_h1 }}</h1>
     <span class="hidden-xs hidden-sm product-article">Арт. {{ product.vendor_code }}</span>
 
     <div class="product-top">
