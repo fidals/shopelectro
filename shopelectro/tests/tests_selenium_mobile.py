@@ -39,7 +39,7 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.browser = webdriver.Remote(command_executor='http://se-selenium-hub:4444/wd/hub',
                                        desired_capabilities=capabilities)
         cls.browser.implicitly_wait(5)
-        cls.browser.set_window_size(640, 320)
+        cls.browser.set_window_size(400, 800)
 
     @classmethod
     def tearDownClass(cls):
@@ -79,7 +79,7 @@ class Mobile(SeleniumTestCase):
         toggler.click()
         search_input = self.browser.find_element_by_class_name('js-search-input')
         search_input.send_keys('Cate')
-        wait()
+        self.browser.implicitly_wait(10)
         autocomplete = self.browser.find_element_by_class_name('autocomplete-suggestions')
 
         self.assertTrue(autocomplete.is_displayed())
@@ -89,7 +89,7 @@ class Mobile(SeleniumTestCase):
         catalog = self.browser.find_element_by_class_name('js-mobile-catalog-btn')
         catalog.click()
         catalog_item = self.browser.find_element_by_class_name('js-mobile-menu-item')
-        wait()
+        self.browser.implicitly_wait(10)
         self.assertTrue(catalog_item.is_displayed())
 
         catalog_item_icon = self.browser.find_element_by_class_name('js-mobile-link-arrow')
@@ -108,7 +108,7 @@ class Mobile(SeleniumTestCase):
         self.browser.execute_script('return arguments[0].scrollIntoView();', buy_btn)
 
         buy_btn.click()
-        wait()
+        self.browser.implicitly_wait(10)
         size = self.browser.find_element_by_class_name('js-cart-size').text
         price = self.browser.find_element_by_class_name('js-mobile-cart-price').text
 
