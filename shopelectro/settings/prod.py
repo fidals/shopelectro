@@ -5,12 +5,14 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-# @dveselov: I have no idea why django returns 403 HTTP code (CSRF verification failed) in admin \w this setting
-# http->https change
-# os.environ['HTTPS'] = 'on'
+# enable https if we're not in continuous integration
+if not os.environ.get('CONTINUOUS_INTEGRATION', None):
+    # http->https change
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+    os.environ['HTTPS'] = 'on'
+
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
