@@ -5,16 +5,15 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-# enable https if we're not in continuous integration
-if not os.environ.get('CONTINUOUS_INTEGRATION', None):
+if os.environ.get('CONTINUOUS_INTEGRATION', None):
+    # disable https in CI
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
+else:
     # http->https change
-
     os.environ['HTTPS'] = 'on'
 
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-else:
-    SECURE_PROXY_SSL_HEADER = None
 
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
