@@ -17,6 +17,7 @@ services:
     container_name: se-python
     environment:
       - ALLOWED_HOSTS=*
+      - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
       - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
       - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/

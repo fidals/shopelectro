@@ -33,8 +33,10 @@ THUMBNAIL_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-# https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if os.environ.get('TEST_ENV', False):
+    # disable https in CI
+    # https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
 
 # Enable in frame loading for Ya.Metric
 # https://docs.djangoproject.com/es/1.10/ref/clickjacking/

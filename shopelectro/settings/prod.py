@@ -5,12 +5,11 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-if os.environ.get('CONTINUOUS_INTEGRATION', None):
-    # disable https in CI
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
-else:
+if not os.environ.get('TEST_ENV', False):
     # http->https change
     os.environ['HTTPS'] = 'on'
+
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
