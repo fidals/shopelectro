@@ -9,6 +9,9 @@ ALLOWED_HOSTS = ['*']
 # http->https change
 # os.environ['HTTPS'] = 'on'
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
 USE_CELERY = True

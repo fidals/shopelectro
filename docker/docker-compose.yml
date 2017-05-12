@@ -7,8 +7,6 @@ services:
     container_name: se-source
     volumes:
       - ./../:/usr/app/src/ # code volume
-      # - ./../static/:/usr/app/src/static/ # shared static folder
-      # - ./../media/:/usr/app/src/media/ # shared media folder
     command: sh -c "top > /dev/null"
 
   se-python:

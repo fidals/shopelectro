@@ -31,7 +31,6 @@ DEBUG = True
 # http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = False
 
-# setting from docker example: https://github.com/satyrius/paid/
 ALLOWED_HOSTS = ['*']
 
 # https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
