@@ -38,6 +38,7 @@ services:
     depends_on:
       - se-postgres
       - se-rabbitmq
+      - se-redis
     networks:
       - se-backend
       - se-frontend

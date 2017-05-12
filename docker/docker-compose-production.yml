@@ -39,6 +39,7 @@ services:
     depends_on:
       - se-postgres
       - se-rabbitmq
+      - se-redis
     ports:
       - $VIRTUAL_HOST_PORT
     volumes:
