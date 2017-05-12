@@ -73,7 +73,7 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.browser = Remote(command_executor='http://se-selenium-hub:4444/wd/hub',
                              desired_capabilities=DesiredCapabilities.CHROME)
         cls.browser.implicitly_wait(10)
-        cls.browser.set_window_size(1024, 768)
+        cls.browser.set_window_size(1920, 1080)
 
     @classmethod
     def tearDownClass(cls):
