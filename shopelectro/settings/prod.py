@@ -13,6 +13,8 @@ if not os.environ.get('CONTINUOUS_INTEGRATION', None):
 
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
+else:
+    SECURE_PROXY_SSL_HEADER = None
 
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
