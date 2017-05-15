@@ -53,7 +53,7 @@ services:
       context: ..
       dockerfile: docker/node/Dockerfile
     container_name: se-nodejs
-    command: bash -c 'npm install && npm install -g gulp-cli && gulp build'
+    command: bash -c 'gulp watch || (npm install && npm install -g gulp-cli && gulp build && gulp watch)'
     volumes_from:
       - se-source
       - se-python
