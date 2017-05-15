@@ -33,7 +33,7 @@ def update_meta_tags():
     call_command('update_meta_tags')
 
 
-@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=60 * 10)
+@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=60*10)
 def update_catalog():
     # http://docs.celeryproject.org/en/latest/userguide/canvas.html#map-starmap
     try:
