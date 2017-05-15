@@ -1,105 +1,137 @@
-version: "2"
+version: '2'
 
 services:
-  se_prod:
+
+  se-source:
+    image: busybox
+    container_name: se-source
+    volumes:
+      - ./../:/usr/app/src/ # code volume
+    command: sh -c "top > /dev/null"
+
+  se-python:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
-    image: fidals/se
-    restart: always
-    container_name: se_prod
+      dockerfile: docker/python/dev/Dockerfile
+    image: fidals/se:dev
+    container_name: se-python
     environment:
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.prod
-      - DATABASE_URL=postgres://postgres:$DB_PASS@se_db_prod/se_prod
-      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se_rabbitmq:5672/
+      - ALLOWED_HOSTS=*
+      - TEST_ENV=true
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
       - REDIS_PASSWORD=$REDIS_PASSWORD
-      - REDIS_LOCATION_DEFAULT=redis://se_redis:6379/0
-      - REDIS_LOCATION_SESSION=redis://se_redis:6379/1
-      - REDIS_LOCATION_THUMBNAIL=redis://se_redis:6379/2
-      - REDIS_LOCATION_USER_AGENT=redis://se_redis:6379/3
+      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
       - FTP_USER=$FTP_USER
       - FTP_PASS=$FTP_PASS
       - FTP_IP=$FTP_IP
       - SECRET_KEY=$SECRET_KEY
       - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
-      - SLACK_REPORT_URL=$SLACK_REPORT_URL
-    entrypoint:
-      - circusd
-      - /etc/circus/se_prod.ini
     ports:
-      - "8010:80"
-    links:
-      - se_db_prod
-      - se_rabbitmq
-      - se_redis
-    depends_on:  # can't be inherited
-      - se_db_prod
-    volumes:  # TODO - divide volumes on dev/ and prod/
-      - /opt/media/shopelectro:/opt/shopelectro/app/media
+      - '$VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT'
+      - $VIRTUAL_HOST_LIVESERVER_PORT
+    depends_on:
+      - se-postgres
+      - se-rabbitmq
+      - se-redis
+    networks:
+      - se-backend
+      - se-frontend
+    volumes:
+      - /src/ # contains refarm-site modules
+    volumes_from:
+      - se-source
+    command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
 
-  se_dev:
-    image: fidals/se
-    container_name: se_dev
-    environment:
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
-      - DATABASE_URL=postgres://postgres:$DB_PASS@se_db_dev/se_dev
-      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se_rabbitmq:5672/
-      - FTP_USER=$FTP_USER
-      - FTP_PASS=$FTP_PASS
-      - FTP_IP=$FTP_IP
-      - SECRET_KEY=$SECRET_KEY
-      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
-      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
-    entrypoint:
-      - circusd
-      - /etc/circus/se_dev.ini
-    ports:
-      - "8011:80"
-    links:
-      - se_db_dev
-    depends_on:  # can't be inherited
-      - se_db_dev
-    volumes:  # TODO - divide volumes on dev/ and prod/
-      - /opt/media/shopelectro:/opt/shopelectro/app/media
+  se-nodejs:
+    build:
+      context: ..
+      dockerfile: docker/node/Dockerfile
+    container_name: se-nodejs
+    command: bash -c 'gulp watch || (npm install && npm install -g gulp-cli && gulp build && gulp watch)'
+    volumes_from:
+      - se-source
+      - se-python
 
-  se_db_prod:
+  se-postgres:
     image: postgres:9.5
-    container_name: se_db_prod
     restart: always
+    container_name: se-postgres
     environment:
-      - POSTGRES_DB=se_prod
-      - POSTGRES_PASSWORD=$DB_PASS
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_PASSWORD: $DB_PASS
+    networks:
+      - se-backend
     volumes:
       - /var/lib/postgresql/data
 
-  se_db_dev:
-    image: postgres:9.5
-    container_name: se_db_dev
+  se-rabbitmq:
+    image: rabbitmq:management-alpine
     restart: always
+    container_name: se-rabbitmq
     environment:
-      - POSTGRES_DB=se_dev
-      - POSTGRES_PASSWORD=$DB_PASS
-    volumes:
-      - /var/lib/postgresql/data
+      RABBITMQ_DEFAULT_USER: $RABBITMQ_DEFAULT_USER
+      RABBITMQ_DEFAULT_PASS: $RABBITMQ_DEFAULT_PASS
+    networks:
+      - se-backend
+    ports:
+      - '5673:5672'
+      - '15673:15672'
 
-  se_redis:
+  se-redis:
     image: redis:alpine
-    container_name: se_redis
+    container_name: se-redis
     restart: always
     command: redis-server /data/redis.conf --requirepass $REDIS_PASSWORD
     volumes:
       - ../etc/redis/redis.conf:/data/redis.conf
+    networks:
+      - se-backend
     ports:
-      - "6380:6379"
+      - '6380:6379'
 
-  se_rabbitmq:
-    image: rabbitmq:management-alpine
-    container_name: se_rabbitmq
+  # TODO:
+  # Selenium Grid stuff (can't get it to work)
+
+  # selenium-hub:
+  #   image: selenium/hub:3.2.0
+  #   restart: always
+  #   networks:
+  #     - se-backend
+  #   ports:
+  #     - '4444:4444'
+
+  # selenium-chrome:
+  #   image: selenium/node-chrome:3.2.0
+  #   restart: always
+  #   depends_on:
+  #     - selenium-hub
+  #   environment:
+  #     - HUB_PORT_4444_TCP_ADDR=selenium-hub
+  #     - HUB_PORT_4444_TCP_PORT=4444
+  #   networks:
+  #     - se-backend
+  #   ports:
+  #     - 5555
+  #     - 5900
+
+  se-selenium-hub:
+    image: selenium/standalone-chrome-debug:3.3.0
     restart: always
-    environment:
-      - RABBITMQ_DEFAULT_USER=$RABBITMQ_DEFAULT_USER
-      - RABBITMQ_DEFAULT_PASS=$RABBITMQ_DEFAULT_PASS
     ports:
-      - "5673:5672"
-      - "15673:15672"
+      - '4444:4444'
+      - '5900'
+    networks:
+      - se-backend
+    volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
+      - /dev/shm:/dev/shm
+
+networks:
+  se-backend:
+  se-frontend:
+

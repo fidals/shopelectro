@@ -31,11 +31,12 @@ DEBUG = True
 # http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = False
 
-# setting from docker example: https://github.com/satyrius/paid/
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',')]
+ALLOWED_HOSTS = ['*']
 
-# https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if os.environ.get('TEST_ENV', False):
+    # disable https in CI
+    # https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
 
 # Enable in frame loading for Ya.Metric
 # https://docs.djangoproject.com/es/1.10/ref/clickjacking/
@@ -163,6 +164,22 @@ DATABASES = {
         env='DATABASE_URL',
         default=DATABASE_URL,
     )
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
 }
 
 SITE_CREATED = datetime(2013, 1, 1)

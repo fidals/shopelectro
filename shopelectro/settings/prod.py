@@ -5,8 +5,14 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-# http->https change
-os.environ['HTTPS'] = 'on'
+if not os.environ.get('TEST_ENV', False):
+    # http->https change
+    os.environ['HTTPS'] = 'on'
+
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
