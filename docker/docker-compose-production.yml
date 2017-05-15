@@ -230,8 +230,8 @@ services:
     networks:
       - se-backend
     ports:
-      - '5674:5672'
-      - '15674:15672'
+      - '5673:5672'
+      - '15673:15672'
 
   se-redis:
     image: redis:alpine
