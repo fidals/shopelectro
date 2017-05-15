@@ -17,8 +17,6 @@ def show_debug_toolbar(request):
     '''
     Show debug toolbar even if settings doesn't have INTERNAL_IPS list
     '''
-    if request.is_ajax():
-        return False
     return True
 
 
