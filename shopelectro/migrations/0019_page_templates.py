@@ -24,9 +24,9 @@ def migrate_forward(apps, schema_editor):
     Category = apps.get_model('shopelectro', 'CategoryPage')
     Product = apps.get_model('shopelectro', 'ProductPage')
 
-    Category.objects.filter(template_id=1).update(template=category_template)
+    Category.objects.update(template=category_template)
 
-    Product.objects.filter(template_id=1).update(template=product_template)
+    Product.objects.update(template=product_template)
 
 
 def migrate_backward(apps, schema_editor):
@@ -34,10 +34,13 @@ def migrate_backward(apps, schema_editor):
     Category = apps.get_model('shopelectro', 'CategoryPage')
     Product = apps.get_model('shopelectro', 'ProductPage')
 
-    Category.objects.update(template_id=1)
-    Product.objects.update(template_id=1)
+    Category.objects.update(template=None)
+    Product.objects.update(template=None)
 
-    PageTemplate.objects.exclude(id=1).delete()
+    PageTemplate.objects.filter(name__in=[
+        'Шаблон страницы категории',
+        'Шаблон страницы продукта',
+    ]).delete()
 
 
 class Migration(migrations.Migration):

@@ -9,8 +9,8 @@ from shopelectro.models import ProductPage, CategoryPage
 def update():
 
     # select category & product pages with default page template
-    categories = CategoryPage.objects.filter(template_id=1)
-    products = ProductPage.objects.filter(template_id=1)
+    categories = CategoryPage.objects.filter(template__is_null=True)
+    products = ProductPage.objects.filter(template__is_null=True)
 
     # select default category and product page templates
     category_template = PageTemplate.objects.get(name='Шаблон страницы категории')
