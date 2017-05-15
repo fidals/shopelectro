@@ -22,6 +22,8 @@ def show_debug_toolbar(request):
     return True
 
 
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
+
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': 'shopelectro.settings.dev.show_debug_toolbar'
 }
