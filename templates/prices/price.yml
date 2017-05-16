@@ -30,7 +30,6 @@
           <currencyId>RUR</currencyId>
           {% include 'prices/pictures.yml' with product=product base_url=base_url only %}
           <categoryId>{{ product.category.id }}</categoryId>
-          <typePrefix>{{ product.category.name }}</typePrefix>
           <store>false</store>
           <pickup>true</pickup>
           <delivery>true</delivery>
