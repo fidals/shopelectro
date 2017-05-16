@@ -171,14 +171,6 @@ class CategoryPage(catalog.CategoryPage):
         page = context['page']
         page.get_template_render_context = partial(template_context, page, tags_metadata)
 
-        page_title_template = Template(page.title)
-        page_title_context = Context({
-            'name': category.name,
-            'tags': tags_metadata.get('tags', ''),
-        })
-
-        context['page'].title = page_title_template.render(page_title_context)
-
         products = all_products.get_offset(0, products_on_page)
 
         return {

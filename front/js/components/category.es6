@@ -69,7 +69,13 @@
   }
 
   function reloadPageWithSorting() {
-    location.href = getSelectedSortingOption().attr('data-path');
+    const tags = helpers.getUrlEndpointParam('tags');
+    const selectedSorting = getSelectedSortingOption().attr('data-path').trim();
+    if (tags === '') {
+      location.href = selectedSorting;
+    } else {
+      location.href = `${selectedSorting}tags/${tags}/`;
+    };
   }
 
   /**
