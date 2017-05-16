@@ -35,16 +35,44 @@
     return str ? str.split(',') : [];
   }
 
+  const TAGS_TYPE_DELIMITER = '-or-';
+  const TAGS_GROUP_DELIMITER = '-and-';
+
+  function serializeTags(tags) {
+    const tagsByGroups = tags.reduce((group, item) => {
+      const groupId = item.group;
+      group[groupId] = group[groupId] || [];
+      group[groupId].push(item.slug);
+      return group;
+    }, {});
+
+    return Object.keys(tagsByGroups).reduce((previous, current) => {
+      const delim = previous ? TAGS_GROUP_DELIMITER : '';
+      return previous + delim + tagsByGroups[current].join(TAGS_TYPE_DELIMITER);
+    }, '');
+  }
+
+  function parseTags(string) {
+    return [].concat(...(
+      string.split(TAGS_GROUP_DELIMITER).map(group => group.split(TAGS_TYPE_DELIMITER))
+    ));
+  }
+
   /**
    * Reloads current page with `tags` query parameter.
    */
   function loadFilteredProducts() {
     const $tagsObject = DOM.$filtersWrapper
       .find('input:checked')
-      .map((_, checkedItem) => $(checkedItem).data('tag-id'));
-    const tags = Array.from($tagsObject);
+      .map((_, checkedItem) => (
+        {
+          slug: $(checkedItem).data('tag-slug'),
+          group: $(checkedItem).data('tag-group-id'),
+        }
+      ));
+    const tags = serializeTags(Array.from($tagsObject));
 
-    window.location.href = `${DOM.$loadMoreBtn.data('url')}?tags=${tags}`;
+    window.location.href = `${DOM.$loadMoreBtn.data('url')}tags/${tags}/`;
   }
 
   /**
@@ -93,10 +121,8 @@
    * Set up filter checkboxes based on query `tags` parameter.
    */
   function setUpFilters() {
-    if (!window.location.search) return;
-
-    // /?tags=3,4 => ['3', '4']
-    const activeFilterIds = helpers.getUrlParam('tags').split(',');
+    // /tags/от-сети-220-в-and-брелок/ => ['от-сети-220-в', 'брелок']
+    const activeFilterIds = parseTags(helpers.getUrlEndpointParam('tags'));
 
     activeFilterIds.map(item => $(`#tag-${item}`).attr('checked', true));
     toggleApplyBtnState();
@@ -123,7 +149,7 @@
       (_, input) => $(input).attr('checked', false),
     );
 
-    window.location.href = helpers.removeQueryParam('tags');
+    window.location.href = helpers.removeUrlEndpoint('tags');
   }
 
   init();

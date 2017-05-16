@@ -48,10 +48,17 @@ admin_urls = [
 catalog_urls = [
     url(r'^categories/(?P<slug>[\w-]+)/$',
         cached_2h(views.CategoryPage.as_view()), name='category'),
+    url(r'^categories/(?P<slug>[\w-]+)/tags/(?P<tags>[\w-]+)/$',
+        cached_2h(views.CategoryPage.as_view()), name='category'),
     url(r'^categories/(?P<slug>[\w-]+)/(?P<sorting>[0-9]*)/$',
+        views.CategoryPage.as_view(), name='category'),
+    url(r'^categories/(?P<slug>[\w-]+)/(?P<sorting>[0-9]*)/tags/(?P<tags>[\w-]+)/$',
         views.CategoryPage.as_view(), name='category'),
     url(r'categories/(?P<category_slug>[\w-]+)/load-more/'
         r'(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/$',
+        views.load_more, name='load_more'),
+    url(r'categories/(?P<category_slug>[\w-]+)/load-more/'
+        r'(?P<offset>[0-9]+)/(?P<sorting>[0-9]*)/tags/(?P<tags>[\w-]+)/$',
         views.load_more, name='load_more'),
     url(r'^no-images/$', views.ProductsWithoutImages.as_view(),
         name='products_without_images'),

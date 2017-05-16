@@ -1,11 +1,13 @@
 from functools import reduce
 from itertools import groupby, chain
 from operator import attrgetter, or_
+from unidecode import unidecode
 from uuid import uuid4
 
 from django.db import models
 from django.db.models import Avg, Q
 from django.conf import settings
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
@@ -179,6 +181,13 @@ class TagManager(models.Manager):
         return self.get_queryset().get_group_tags_pairs(tags)
 
 
+URL_TAGS_TYPE_DELIMITER = '-or-'
+URL_TAGS_GROUP_DELIMITER = '-and-'
+
+TITLE_TAGS_TYPE_DELIMITER = ' или '
+TITLE_TAGS_GROUP_DELIMITER = ' и '
+
+
 class Tag(models.Model):
 
     objects = TagManager()
@@ -189,9 +198,51 @@ class Tag(models.Model):
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
 
+    slug = models.SlugField(default='')
+
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            # same slugify code used in PageMixin object
+            self.slug = slugify(
+                unidecode(self.name.replace('.', '-').replace('+', '-'))
+            )
+        super(Tag, self).save(*args, **kwargs)
+
+    @staticmethod
+    def serialize_tags(
+        pairs: list,
+        field_name: str,
+        type_delimiter: str,
+        group_delimiter: str
+    ) -> str:
+        _, tags_by_group = zip(*pairs)
+        return group_delimiter.join(
+            type_delimiter.join(getattr(tag, field_name) for tag in tags)
+            for tags in tags_by_group
+        )
+
+    @staticmethod
+    def serialize_url_tags(tags: list) -> str:
+        return Tag.serialize_tags(
+            tags, 'slug', URL_TAGS_TYPE_DELIMITER, URL_TAGS_GROUP_DELIMITER
+        )
+
+    @staticmethod
+    def parse_url_tags(tags: str) -> list:
+        groups = tags.split(URL_TAGS_GROUP_DELIMITER)
+        return chain.from_iterable(
+            group.split(URL_TAGS_TYPE_DELIMITER) for group in groups
+        )
+
+    @staticmethod
+    def serialize_title_tags(tags: list) -> str:
+        return Tag.serialize_tags(
+            tags, 'name', TITLE_TAGS_TYPE_DELIMITER, TITLE_TAGS_GROUP_DELIMITER
+        )

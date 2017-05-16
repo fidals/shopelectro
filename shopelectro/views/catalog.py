@@ -4,9 +4,14 @@ Shopelectro's catalog views.
 NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
+from itertools import chain
+from functools import partial
+from collections import defaultdict
+
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
+from django.template import Context, Template
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
@@ -140,9 +145,39 @@ class CategoryPage(catalog.CategoryPage):
             .prefetch_related('group')
         )
 
-        tag_ids = self.request.GET.get('tags')
-        if tag_ids:
-            all_products = all_products.filter(tags__in=tag_ids.split(','))
+        tags = self.kwargs.get('tags')
+        tags_metadata = {
+            'titles': '',
+        }
+
+        if tags:
+            slugs = models.Tag.parse_url_tags(tags)
+            tags = models.Tag.objects.filter(slug__in=list(slugs))
+
+            all_products = all_products.filter(tags__in=tags)
+
+            tags_titles = models.Tag.serialize_title_tags(
+                tags.get_group_tags_pairs()
+            )
+
+            tags_metadata['titles'] = tags_titles
+
+        def template_context(page, tags):
+            return {
+                'page': page,
+                'tags': tags,
+            }
+
+        page = context['page']
+        page.get_template_render_context = partial(template_context, page, tags_metadata)
+
+        page_title_template = Template(page.title)
+        page_title_context = Context({
+            'name': category.name,
+            'tags': tags_metadata.get('tags', ''),
+        })
+
+        context['page'].title = page_title_template.render(page_title_context)
 
         products = all_products.get_offset(0, products_on_page)
 
@@ -153,12 +188,13 @@ class CategoryPage(catalog.CategoryPage):
             'total_products': all_products.count(),
             'sorting_options': config.category_sorting(),
             'sort': sorting,
-            'tags': tag_ids,
+            'tags': tags,
             'view_type': view_type,
+            'tags_metadata': tags_metadata,
         }
 
 
-def load_more(request, category_slug, offset=0, sorting=0):
+def load_more(request, category_slug, offset=0, sorting=0, tags=None):
     """
     Load more products of a given category.
 
@@ -180,9 +216,12 @@ def load_more(request, category_slug, offset=0, sorting=0):
         .get_by_category(category, ordering=(sorting_option,))
     )
 
-    tag_ids = request.GET.get('tags')
-    if tag_ids:
-        products = products.filter(tags__in=tag_ids.split(','))
+    if tags:
+        products = products.filter(tags__in=(
+            models.Tag.objects.filter(
+                slug__in=list(models.Tag.parse_url_tags(tags))
+            )
+        ))
 
     products = products.get_offset(int(offset), products_on_page)
     view = request.session.get('view_type', 'tile')
