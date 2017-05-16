@@ -78,7 +78,6 @@ class CategoryInline(inlines.CategoryInline):
         'fields': (
             ('name', 'id'),
             ('parent', 'correct_parent_id'),
-            ('seo_description_template', ),
         )
     }),)
 

@@ -22,8 +22,6 @@ class Category(AbstractCategory, SyncPageMixin):
 
     uuid = models.UUIDField(default=uuid4, editable=False)
 
-    seo_description_template = models.TextField(default='')
-
     @classmethod
     def get_default_parent(cls):
         return CustomPage.objects.filter(slug='catalog').first()

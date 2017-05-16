@@ -5,6 +5,7 @@ NOTE: They all should be 'zero-logic'.
 All logic should live in respective applications.
 """
 from itertools import chain
+from functools import partial
 from collections import defaultdict
 
 from django.conf import settings
@@ -145,7 +146,9 @@ class CategoryPage(catalog.CategoryPage):
         )
 
         tags = self.kwargs.get('tags')
-        tags_metadata = {}
+        tags_metadata = {
+            'titles': '',
+        }
 
         if tags:
             slugs = models.Tag.parse_url_tags(tags)
@@ -156,26 +159,17 @@ class CategoryPage(catalog.CategoryPage):
             tags_titles = models.Tag.serialize_title_tags(
                 tags.get_group_tags_pairs()
             )
-            tags_text = ''
 
-            if category.seo_description_template:
-                tags_text_template = Template(
-                    category.seo_description_template
-                )
-                tags_text_context = Context({
-                    'name': category.name,
-                    'tags': tags_titles,
-                })
-                tags_text = tags_text_template.render(
-                    tags_text_context
-                )
+            tags_metadata['titles'] = tags_titles
 
-            tags_metadata = {
-                'tags': tags_titles,
-                'text': tags_text,
+        def template_context(page, tags):
+            return {
+                'page': page,
+                'tags': tags,
             }
 
         page = context['page']
+        page.get_template_render_context = partial(template_context, page, tags_metadata)
 
         page_title_template = Template(page.title)
         page_title_context = Context({

@@ -15,7 +15,7 @@ def migrate_forward(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopelectro', '0018_product_vendor_code'),
+        ('shopelectro', '0019_page_templates'),
     ]
 
     operations = [
