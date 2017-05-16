@@ -36,8 +36,8 @@
           <delivery>true</delivery>
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
-          {% if product.page.description and not utm == 'GM' %}
-            <description>{{ product.page.description }}</description>
+          {% if product.page.display_description and not utm == 'GM' %}
+            <description>{{ product.page.display_description }}</description>
           {% endif %}
           {% if not utm == 'GM' %}
             <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>

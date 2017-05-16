@@ -23,7 +23,7 @@
           <div class="stuff-top-category">{{ root_category.name }}</div>
           <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="stuff-top-price-new">
             <link itemprop="availability" href="http://schema.org/InStock">
-            <meta itemprop="description" content="{{ product.page.description }}">
+            <meta itemprop="description" content="{{ product.page.display_description }}">
             <meta itemprop="priceCurrency" content="RUB" />
             <span itemprop="price">{{ product.price|humanize_price }}</span> руб
           </div>

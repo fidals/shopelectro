@@ -5,12 +5,12 @@
 
 {% block content %}
   <div class="container">
-    <h1>{{ page.h1 }}</h1>
+    <h1>{{ page.display_h1 }}</h1>
 
     <ul class="catalog-list">
-      {% for page in paginator_pages|dictsort:'h1' %}
+      {% for page in paginator_pages|dictsort:'display_h1' %}
         <li class="catalog-list-item">
-          <a href="{{ page.url }}">{{ page.h1 }}</a>
+          <a href="{{ page.url }}">{{ page.display_h1 }}</a>
         </li>
       {% endfor %}
     </ul>
