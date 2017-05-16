@@ -29,8 +29,8 @@ def update_catalog_command():
 
 
 @app.task
-def update_meta_tags():
-    call_command('update_meta_tags')
+def update_default_templates():
+    call_command('update_default_templates')
 
 
 @app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=60*10)
@@ -39,7 +39,7 @@ def update_catalog():
     try:
         return [
             update_catalog_command(),
-            update_meta_tags(),
+            update_default_templates(),
             generate_price_files(),
             generate_excel_file(),
             collect_static()
