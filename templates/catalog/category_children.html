@@ -2,7 +2,7 @@
   <ul class="subcategory-list list-unstyled">
     {% for child in category.get_children_sorted_by_position %}
       <li class="subcategory-list-item">
-        <a class="subcategory-list-link" href="{{ child.url }}{% if tags %}?tags={{ tags }}{% endif %}">
+        <a class="subcategory-list-link" href="{{ child.url }}">
           {{ child.name }}
         </a>
       </li>
