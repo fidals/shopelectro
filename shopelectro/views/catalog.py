@@ -51,18 +51,18 @@ class ProductPage(catalog.ProductPage):
     )
 
     def get_context_data(self, **kwargs):
-        """Inject breadcrumbs into context."""
         context = super(ProductPage, self).get_context_data(**kwargs)
-        feedbacks = (
-            context[self.context_object_name]
-            .product_feedbacks.all()
-            .order_by('-date')
+
+        group_tags_pairs = models.Tag.objects.get_group_tags_pairs(
+            models.Tag.objects
+            .filter(products=self.object)
+            .prefetch_related('group')
         )
 
         return {
             **context,
             'price_bounds': config.PRICE_BOUNDS,
-            'feedbacks': feedbacks
+            'group_tags_pairs': group_tags_pairs
         }
 
 

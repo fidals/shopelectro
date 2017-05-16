@@ -13,16 +13,13 @@ from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
 from shopelectro.management.commands._update_catalog.utils import (
-    XmlFile, UUID4_LEN, NOT_SAVE_TEMPLATE, UUID, Data,
+    XmlFile, is_correct_uuid, NOT_SAVE_TEMPLATE, UUID, Data,
 )
 from shopelectro.models import Product, ProductPage, Tag
 
 
 def fetch_products(root: Element, config: XmlFile) -> Iterator:
     product_els = root.findall(config.xpaths['products'])
-
-    def is_correct_uuid(uuid_):
-        return uuid_ and len(uuid_) == UUID4_LEN
 
     for product_el in product_els:
         name = product_el.find(config.xpaths['name']).text
@@ -62,6 +59,21 @@ def fetch_prices(root: Element, config) -> Iterator:
         yield product_uuid, prices
 
 
+def fetch_in_stock(root: Element, config: XmlFile) -> Iterator:
+    product_els = root.findall(config.xpaths['products'])
+
+    for product_el in product_els:
+        uuid = product_el.find(config.xpaths['product_uuid']).text
+        in_stock = product_el.find(config.xpaths['in_stock']).text
+
+        if not (in_stock.isdigit() and int(in_stock) >= 0):
+            in_stock = 0
+
+        yield uuid, {
+            'in_stock': in_stock,
+        }
+
+
 product_file = XmlFile(
     fetch_callback=fetch_products,
     xml_path_pattern='**/webdata/**/goods/**/import*.xml',
@@ -94,6 +106,17 @@ price_file = XmlFile(
 )
 
 
+in_stock_file = XmlFile(
+    fetch_callback=fetch_in_stock,
+    xml_path_pattern='**/webdata/**/goods/**/rests*.xml',
+    xpath_queries={
+        'products': './/{}Предложения/',
+        'product_uuid': '.{}Ид',
+        'in_stock': './/{}Количество',
+    },
+)
+
+
 def merge_data(*data) -> Dict[UUID, Data]:
     """
     Merge data from xml files with different structure.
@@ -115,17 +138,29 @@ def clean_data(data: Dict[UUID, Data]):
         )
         if not has:
             print(NOT_SAVE_TEMPLATE.format(
-                entity='product',
+                entity='Product',
                 name=product_data['name'],
                 field='price'
             ))
         return has
 
-    def has_uuid(uuid, product_data):
-        has = uuid and len(uuid) == UUID4_LEN
+    def has_vendor_code(_, product_data):
+        has = bool(product_data['vendor_code'])
+
         if not has:
             print(NOT_SAVE_TEMPLATE.format(
-                entity='product',
+                entity='Product',
+                name=product_data['name'],
+                field='vendor_code'
+            ))
+
+        return has
+
+    def has_uuid(uuid, product_data):
+        has = is_correct_uuid(uuid)
+        if not has:
+            print(NOT_SAVE_TEMPLATE.format(
+                entity='Product',
                 name=product_data['name'],
                 field='uuid'
             ))
@@ -134,7 +169,7 @@ def clean_data(data: Dict[UUID, Data]):
     def filter_(product_data):
         return all(
             f(*product_data)
-            for f in [has_all_prices, has_uuid]
+            for f in [has_all_prices, has_uuid, has_vendor_code]
         )
 
     cleaned_data = dict(
@@ -146,8 +181,8 @@ def clean_data(data: Dict[UUID, Data]):
     return cleaned_data
 
 
-def report(recipients=None):
-    message = render_to_string('report.html')
+def report(recipients=None, message=None):
+    message = message or render_to_string('report.html')
 
     user_query = (
         User.objects
@@ -225,10 +260,24 @@ def main(*args, **kwargs):
     cleaned_product_data = clean_data(merge_data(
         product_file.get_data(),
         price_file.get_data(),
+        in_stock_file.get_data(),
     ))
 
     if not cleaned_product_data:
-        raise Exception('Problem with uploaded files.')
+
+        parsed_files = {
+            'product_files':  list(product_file.parsed_files),
+            'price_files': list(price_file.parsed_files),
+            'in_stock_files': list(in_stock_file.parsed_files),
+        }
+
+        if not any(parsed_files.values()):
+            message = 'Files does not exist: {}'.format(parsed_files)
+        else:
+            # TODO: happy debugging (:
+            message = 'The file structure has changed or it does not contain the required data.'
+
+        raise Exception(message)
 
     delete(cleaned_product_data)
     updated_products = update(cleaned_product_data)

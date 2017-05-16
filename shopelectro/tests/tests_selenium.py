@@ -9,7 +9,8 @@ import time
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from seleniumrequests import Chrome  # We use this instead of standard selenium
+from seleniumrequests import Remote  # We use this instead of standard selenium
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from django.db.models import Count
 from django.test import LiveServerTestCase, override_settings
@@ -69,9 +70,12 @@ class SeleniumTestCase(LiveServerTestCase):
     def setUpClass(cls):
         """Instantiate browser instance."""
         super(SeleniumTestCase, cls).setUpClass()
-        cls.browser = Chrome()
-        cls.browser.implicitly_wait(5)
-        cls.browser.maximize_window()
+        cls.browser = Remote(
+            command_executor='http://se-selenium-hub:4444/wd/hub',
+            desired_capabilities=DesiredCapabilities.CHROME
+        )
+        cls.browser.implicitly_wait(10)
+        cls.browser.set_window_size(1920, 1080)
 
     @classmethod
     def tearDownClass(cls):
@@ -930,6 +934,19 @@ class Search(SeleniumTestCase):
 
         self.assertTrue('/search/' in self.browser.current_url)
         self.clear_input()
+
+    def test_autocomplete_by_vendor_code(self):
+        """Autocomplete should work by product's vendor code."""
+        product_vendor_code = Product.objects.first().vendor_code
+
+        self.input.send_keys(product_vendor_code)
+        first_item = self.autocomplete.find_element_by_css_selector(':first-child')
+        first_item.click()
+        wait()
+
+        test_vendor_code = self.browser.find_element_by_class_name('product-article').text
+
+        self.assertIn(str(product_vendor_code), test_vendor_code)
 
     def test_search_have_results(self):
         """Search results page should contain links on relevant pages."""

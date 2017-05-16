@@ -52,7 +52,7 @@ class UpdateProducts(TestCase):
 
         self.assertEqual(len(file_paths), 0)
 
-    def test_update_produts(self):
+    def test_update_products(self):
         new_data = {'price': 123}
         update_products_count = 30
 

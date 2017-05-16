@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from pages.models import CustomPage, FlatPage
+from pages.models import CustomPage, FlatPage, PageTemplate
 from generic_admin import inlines, models, sites
 
 from shopelectro import models as se_models
@@ -210,9 +210,12 @@ class TagAdmin(admin.ModelAdmin):
 se_admin = SEAdminSite(name='se_admin')
 se_admin.register(CustomPage, models.CustomPageAdmin)
 se_admin.register(FlatPage, models.FlatPageAdmin)
+se_admin.register(PageTemplate, models.CustomPageTemplateAdmin)
+
 se_admin.register(se_models.CategoryPage, CategoryPageAdmin)
 se_admin.register(se_models.ProductPage, ProductPageAdmin)
 se_admin.register(se_models.ProductFeedback, ProductFeedbackPageAdmin)
 se_admin.register(se_models.TagGroup, TagGroupAdmin)
 se_admin.register(se_models.Tag, TagAdmin)
+
 se_admin.register(Redirect)

@@ -75,8 +75,20 @@ class Product(AbstractProduct, SyncPageMixin):
         return round(rating, 1)
 
     @property
-    def feedbacks_count(self):
+    def feedback_count(self):
         return self.product_feedbacks.count()
+
+    @property
+    def feedback(self):
+        return self.product_feedbacks.all().order_by('-date')
+
+    @property
+    def params(self):
+        return Tag.objects.get_group_tags_pairs(
+            self.tags
+                .filter(products=self)
+                .prefetch_related('group')
+            )
 
 
 class ProductFeedback(models.Model):

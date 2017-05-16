@@ -22,22 +22,18 @@
         </a>
       </div>
       <div class="product-card-price">{{ product.price|humanize_price }} руб / шт</div>
-      <meta property="description" itemprop="description" content="{{ product.page.description }}">
+      <meta property="description" itemprop="description" content="{{ product.page.display_description }}">
       <meta property="price" itemprop="price" content="{{ product.price }}">
       <meta property="priceCurrency" itemprop="priceCurrency" content="RUB">
       <div class="stock">
-        {# Uncomment it, when Fenich will learn about stock organization #}
-        {# {% if product.in_stock > 0 %} #}
-        {# <i class="fa fa-circle in-stock"></i> В наличии #}
-        {# <link itemprop="availability" href="http://schema.org/InStock"> #}
-        {# {% else %} #}
-        {# <i class="fa fa-circle out-stock"></i> #}
-        {# <span title="Ожидание товара составит до 6 рабочих дней">Под заказ</span> #}
-        {# <link itemprop="availability" href="http://schema.org/PreOrder"> #}
-        {# {% endif %} #}
-        <i class="fa fa-circle out-stock"></i>
-        <span title="Ожидание товара составит до 6 рабочих дней">Под заказ</span>
-        <link itemprop="availability" href="http://schema.org/PreOrder">
+         {% if product.in_stock > 0 %}
+           <i class="fa fa-circle in-stock"></i> В наличии
+           <link itemprop="availability" href="http://schema.org/InStock">
+         {% else %}
+           <i class="fa fa-circle out-stock"></i>
+           <span title="Ожидание товара составит до 6 рабочих дней">Под заказ</span>
+           <link itemprop="availability" href="http://schema.org/PreOrder">
+         {% endif %}
       </div>
       <div class="js-order order row">
         <input class="col-xs-4 input-number category-prods-count js-product-count js-touchspin"

@@ -1,0 +1,250 @@
+version: '2'
+
+services:
+
+  se-source:
+    build:
+      context: ..
+      dockerfile: docker/source/prod/Dockerfile
+    image: fidals/se-source:prod
+    container_name: se-source
+    restart: always
+    volumes:
+      - /usr/app/src/ # code volume
+      - /opt/media/shopelectro/:/usr/app/src/media/
+    command: sh -c "top > /dev/null"
+
+  se-python:
+    build:
+      context: ..
+      dockerfile: docker/python/prod/Dockerfile
+    image: fidals/se:prod
+    container_name: se-python
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    depends_on:
+      - se-postgres
+      - se-rabbitmq
+      - se-redis
+    ports:
+      - $VIRTUAL_HOST_PORT
+    volumes:
+      - /src/ # contains refarm-site modules
+    volumes_from:
+      - se-source
+    networks:
+      - se-backend
+      - se-frontend
+    command: gunicorn shopelectro.wsgi:application -c /etc/gunicorn.py -b 0.0.0.0:$VIRTUAL_HOST_PORT
+
+  se-python-stage:
+    image: fidals/se:prod
+    container_name: se-python-stage
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
+      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_DEV_NAME
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    depends_on:
+      - se-postgres
+      - se-rabbitmq
+    ports:
+      - '$VIRTUAL_HOST_STAGE_EXPOSE_PORT:$VIRTUAL_HOST_STAGE_PORT'
+    volumes:
+      - /src/ # contains refarm-site modules
+    volumes_from:
+      - se-source
+    networks:
+      - se-backend
+      - se-frontend
+    command: gunicorn shopelectro.wsgi:application -c /etc/gunicorn.py -b 0.0.0.0:$VIRTUAL_HOST_STAGE_PORT
+
+  se-celery-beat:
+    image: fidals/se:prod
+    container_name: se-celery-beat
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    depends_on:
+      - se-python
+    volumes_from:
+      - se-source
+    networks:
+      - se-backend
+    command: celery -A shopelectro beat -l info
+
+  se-celery-default-worker:
+    image: fidals/se:prod
+    container_name: se-celery-default-worker
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    depends_on:
+      - se-python
+    volumes_from:
+      - se-source
+    networks:
+      - se-backend
+    command: celery -A shopelectro worker -E -n worker.default@%%h -l info -Q default
+
+  se-celery-mail-worker:
+    image: fidals/se:prod
+    container_name: se-celery-mail-worker
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    depends_on:
+      - se-python
+    volumes_from:
+      - se-source
+    networks:
+      - se-backend
+    command: celery -A shopelectro worker -E -n worker.mail@%%h -l info -Q mail
+
+  se-celery-command-worker:
+    image: fidals/se:prod
+    container_name: se-celery-command-worker
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
+      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
+      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
+      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
+      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
+      - FTP_USER=$FTP_USER
+      - FTP_PASS=$FTP_PASS
+      - FTP_IP=$FTP_IP
+      - SECRET_KEY=$SECRET_KEY
+      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
+      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+    depends_on:
+      - se-python
+    volumes_from:
+      - se-source
+    networks:
+      - se-backend
+    command: celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
+
+  se-nginx:
+    build:
+      context: ..
+      dockerfile: docker/nginx/Dockerfile
+    image: fidals/se-nginx:prod
+    container_name: se-nginx
+    restart: always
+    depends_on:
+      - se-python
+    volumes_from:
+      - se-source
+    ports:
+      - '$VIRTUAL_HOST_EXPOSE_PORT:80'
+    networks:
+      - se-frontend
+    command: nginx -g 'daemon off;'
+
+  se-postgres:
+    image: postgres:9.5
+    restart: always
+    container_name: se-postgres
+    environment:
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_PASSWORD: $DB_PASS
+    networks:
+      - se-backend
+    volumes:
+      - /opt/database/shopelectro:/var/lib/postgresql/data
+
+  se-rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: se-rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: $RABBITMQ_DEFAULT_USER
+      RABBITMQ_DEFAULT_PASS: $RABBITMQ_DEFAULT_PASS
+    networks:
+      - se-backend
+    ports:
+      - '5673:5672'
+      - '15673:15672'
+
+  se-redis:
+    image: redis:alpine
+    container_name: se-redis
+    restart: always
+    command: redis-server /data/redis.conf --requirepass $REDIS_PASSWORD
+    volumes:
+      - ../etc/redis/redis.conf:/data/redis.conf
+    networks:
+      - se-backend
+    ports:
+      - '6380:6379'
+
+networks:
+  se-backend:
+  se-frontend:

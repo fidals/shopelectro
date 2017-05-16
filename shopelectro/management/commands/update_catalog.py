@@ -18,9 +18,17 @@ class Command(BaseCommand):
             help='Send an email to recipients if products will be created.',
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **kwargs):
+        try:
+            self.update(*args, **kwargs)
+        except Exception as err:
+            utils.report(err)
+            raise err
+
+    @staticmethod
+    def update(*args, **kwargs):
         with utils.download_catalog(destination=settings.ASSETS_DIR):
             start = time.time()
-            update_tags.main(*args, **options)
-            update_products.main(*args, **options)
+            update_tags.main(*args, **kwargs)
+            update_products.main(*args, **kwargs)
             print('Time elapsed {:.2f}.'.format(time.time() - start))

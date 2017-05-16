@@ -30,12 +30,7 @@ const spawnSync = require('child_process').spawnSync;
  *   (ex. {styles: ['~/app_name/front/styles/style.less'], ...})
  */
 function getAppSrcPaths(appName) {
-  const processData = spawnSync('python3', ['manage.py', 'get_app_path_for_gulp', appName]);
-  const err = processData.stderr.toString().trim();
-  if (err) throw Error(err);
-
-  const appPath = processData.stdout.toString().trim();
-  return require(appPath + '/front/paths.js');
+  return require(`/src/refarm-site/${appName}/front/paths.js`);
 }
 
 // ================================================================

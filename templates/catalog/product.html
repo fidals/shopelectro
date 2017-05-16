@@ -5,17 +5,16 @@
 
 {% block content %}
   <div itemscope itemtype="http://schema.org/Product" class="page-product custom-checkbox">
-    <meta property="description" itemprop="description" content="{{ product.page.description }}" />
+    <meta property="description" itemprop="description" content="{{ product.page.display_description }}" />
     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
       <span itemprop="price">{{ product.price|humanize_price }}</span>
       <span itemprop="priceCurrency">RUB</span>
-      {# Uncomment it, when Fenich will learn about stock organization #}
-      {# <link itemprop="availability" href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}"> #}
-      <link itemprop="availability" href="http://schema.org/PreOrder">
+      <link itemprop="availability"
+            href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}">
     </div>
 
     {% breadcrumbs_with_siblings page %}
-    <h1 class="product-h1" itemprop="name">{{ page.h1 }}</h1>
+    <h1 class="product-h1" itemprop="name">{{ page.display_h1 }}</h1>
     <span class="hidden-xs hidden-sm product-article">Арт. {{ product.vendor_code }}</span>
 
     <div class="product-top">
@@ -77,21 +76,51 @@
       </div>
     </div>
 
-    {% if product.page.content %}
+    {% if product.page.content or group_tags_pairs %}
       <div class="product-bottom">
-        <div class="product-desc">
-          <h3 class="product-desc-title">Описание</h3>
-          <p class="product-text">
-            {% autoescape off %}
-              {{ product.page.content }}
-            {% endautoescape %}
-          </p>
-        </div>
+        {% if product.page.content %}
+          <div class="product-desc">
+            <h3 class="product-desc-title">Описание</h3>
+            <p class="product-text">
+              {% autoescape off %}
+                {% if product.page.content|length > 150 %}
+                  <span class="short-content">
+                    {{ product.page.content|truncatechars_html:140 }}
+                  </span>
+                  <span class="more-content">
+                    {{ product.page.content }}
+                  </span>
+                  <a href="#" class="js-more-text">Больше</a>
+                {% else %}
+                  {{ product.page.content }}
+                {% endif %}
+              {% endautoescape %}
+            </p>
+          </div>
+        {% endif %}
+
+        {% if group_tags_pairs %}
+          <div class="product-tags">
+            <h3 class="product-tags-title">Характеристики</h3>
+            <table class="product-tags-table">
+              {% for group, tags in group_tags_pairs %}
+                <tr class="table-tr">
+                  <td class="table-td">{{ group }}:</td>
+                  <td class="table-td">
+                    {% for tag in tags %}
+                      {{ tag }}&#32;
+                    {% endfor %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
       </div>
     {% endif %}
 
     {% include 'catalog/product_delivery.html' %}
-    {% include 'catalog/product_feedbacks.html' %}
+    {% include 'catalog/product_feedback.html' %}
   </div>
 {% endblock %}
 

@@ -1,18 +1,18 @@
 {% load se_extras %}
 
-<div class="feedbacks">
-  <div class="feedbacks-block">
-    <div class="feedbacks-heading-wrapper">
-      <h2 class="feedbacks-heading font-bold">Отзывы покупателей</h2>
+<div class="feedback">
+  <div class="feedback-block">
+    <div class="feedback-heading-wrapper">
+      <h2 class="feedback-heading font-bold">Отзывы покупателей</h2>
     </div>
 
-    {% if feedbacks %}
-      <div class="feedbacks-block-content">
+    {% if product.feedback %}
+      <div class="feedback-block-content">
         <div class="rating-total">
           <div class="rating-total-num">{{ product.average_rate }}</div>
           <div class="rating-total-rating">
             {% icon_stars product.average_rate %}
-            <br> Всего отзывов: {{ product.feedbacks_count }}
+            <br> Всего отзывов: {{ product.feedback_count }}
           </div>
 
           <button class="btn btn-blue js-open-feedback-modal" data-toggle="modal"
@@ -52,7 +52,7 @@
         </ul>
       </div>
     {% else %}
-      <div class="feedbacks-block-empty text-center">
+      <div class="feedback-block-empty text-center">
         <h4>У этого товара пока нет отзывов.</h4>
         <button type="button" class="btn btn-blue" data-toggle="modal"
                 data-target="#product-feedback-modal">Оставить отзыв</button>
@@ -60,14 +60,14 @@
     {% endif %}
   </div>
 
-  {% if feedbacks %}
-    <div id="feedbacks-list">
-      {% for feedback in feedbacks %}
-        <div class="feedbacks-block" data-rating="{{ feedback.rating }}">
-          <div class="feedbacks-block-content">
+  {% if product.feedback %}
+    <div id="feedback-list">
+      {% for feedback in product.feedback %}
+        <div class="feedback-block" data-rating="{{ feedback.rating }}">
+          <div class="feedback-block-content">
             {% if request.user.is_authenticated %}
-              <i class="feedbacks-remove js-feedback-delete"
-                 data-id="{{ feedback.id }}"title="Удалить отзыв"></i>
+              <i class="feedback-remove js-feedback-delete"
+                 data-id="{{ feedback.id }}" title="Удалить отзыв"></i>
             {% endif %}
             <div class="rating-review" itemprop="review" itemscope="" itemtype="http://schema.org/Review">
               <meta itemprop="author" content="{{ feedback.name }}">
