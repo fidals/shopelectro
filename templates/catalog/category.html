@@ -5,7 +5,7 @@
 
 {% block content %}
   {% breadcrumbs_with_siblings page %}
-  <h1 class="category-title">{{ page.display_h1 }}</h1>
+  <h1 class="category-title">{{ page.display_h1|capfirst }}</h1>
 
   <div class="row">
     <div class="col-md-3 category-left-block">
