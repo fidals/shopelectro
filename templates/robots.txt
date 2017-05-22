@@ -1,11 +1,11 @@
 User-agent: *{% if debug %}
 Disallow: /
 {% else %}
+User-agent: *
 Disallow: /search/
 Disallow: /search-results/
 Disallow: /service/
-Disallow: /*.css$
-Disallow: /*.js$
+Disallow: /*-or-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
@@ -17,8 +17,7 @@ User-agent: Yandex
 Disallow: /search/
 Disallow: /search-results/
 Disallow: /service/
-Disallow: /*.css$
-Disallow: /*.js$
+Disallow: /*-or-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
