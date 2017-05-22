@@ -144,11 +144,22 @@
 }
 
 .product-bottom {
-  float: left;
-  width: 305px;
-  padding-right: 18px;
+  position: relative;
+  z-index: 0;
+
+  .Q(650; {
+    float: left;
+    margin-right: 20px;
+    width: 58%;
+  });
 
   .Q(@sm; {
+    width: 50%;
+  });
+
+  .Q(@md; {
+    margin: 0 15px 0 0;
+    min-height: @height-product-block-pc;
     width: 355px;
   });
 }
