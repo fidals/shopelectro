@@ -1,7 +1,6 @@
 User-agent: *{% if debug %}
 Disallow: /
 {% else %}
-User-agent: *
 Disallow: /search/
 Disallow: /search-results/
 Disallow: /service/
