@@ -19,7 +19,7 @@
     <div class="div-table-body">
       {% for id, position in cart %}
         <div class="div-table-row" data-table-id="{{ id }}">
-          <div class="div-table-cell order-table-product-id">{{ id }}</div>
+          <div class="div-table-cell order-table-product-id">{{ position.vendor_code }}</div>
           <div class="div-table-cell order-table-product-photo text-center">
             {% if 'logo' in position.image %} {# position has no image #}
               <img src="{% static 'images/camera-icon.png' %}" alt="{% get_img_alt position %}">
