@@ -142,37 +142,6 @@ class UpdateProducts(TestCase):
         self.assertEqual(TagGroup.objects.count(), groups_count)
 
 
-class UpdateMetaTags(TestCase):
-
-    fixtures = ['dump.json']
-
-    @staticmethod
-    def have_just_filled_fields(pages, fields):
-        """Pages have filled fields."""
-        def is_filled(page, value):
-            return value != page.name and value is not None
-
-        return all(
-            is_filled(page, getattr(page, field))
-            for page in pages for field in fields
-        )
-
-    def _test_pattern(self, model, fields):
-        pages = model.objects.all()
-        self.assertFalse(self.have_just_filled_fields(pages, fields))
-
-        call_command('update_meta_tags')
-
-        updated_pages = model.objects.all()
-        self.assertTrue(self.have_just_filled_fields(updated_pages, fields))
-
-    def test_update_product(self):
-        self._test_pattern(ProductPage, ['title', 'description'])
-
-    def test_update_category(self):
-        self._test_pattern(CategoryPage, ['seo_text', 'title'])
-
-
 class GeneratePrices(TestCase):
 
     fixtures = ['dump.json']

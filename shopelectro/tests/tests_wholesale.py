@@ -3,17 +3,17 @@ from math import ceil
 from django.test import TestCase
 
 from shopelectro.models import Product
-from shopelectro.cart import WholesaleCart
+from shopelectro.cart import SECart
 
 
-class WholesaleCartTest(TestCase):
+class SECartTest(TestCase):
 
     fixtures = ['dump.json']
 
     def __init__(self, *args, **kwargs):
         self.item_quantity = 2
 
-        super(WholesaleCartTest, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def setUp(self):
         """Get session for test."""
@@ -24,7 +24,7 @@ class WholesaleCartTest(TestCase):
     @property
     def cart(self):
         """Return Cart object for test."""
-        return WholesaleCart(self.session)
+        return SECart(self.session)
 
     @staticmethod
     def get_price(product, price_type):
@@ -51,8 +51,10 @@ class WholesaleCartTest(TestCase):
         ) + 1
 
     def setup_for_tests(self, price_type):
-        first_product_price = float(self.get_price(self.first_product, price_type))
-        second_product_price = float(self.get_price(self.second_product, price_type))
+        first_product_price = float(
+            self.get_price(self.first_product, price_type))
+        second_product_price = float(
+            self.get_price(self.second_product, price_type))
 
         first_product_quantity = (
             self.get_wholesale_quantity(self.first_product, price_type)
@@ -63,8 +65,8 @@ class WholesaleCartTest(TestCase):
         )
 
         total_sum = (
-            first_product_price*first_product_quantity +
-            second_product_price*second_product_quantity
+            first_product_price * first_product_quantity +
+            second_product_price * second_product_quantity
         )
 
         return {
@@ -82,65 +84,86 @@ class WholesaleCartTest(TestCase):
         """
         setup_data = self.setup_for_tests('wholesale_small')
 
-        self.cart.add(self.first_product,
-                      setup_data['first_product_quantity'])
-        self.cart.add(self.second_product,
-                      setup_data['second_product_quantity'])
+        self.cart.add(
+            self.first_product,
+            setup_data['first_product_quantity']
+        )
+        self.cart.add(
+            self.second_product,
+            setup_data['second_product_quantity']
+        )
+        prices = [
+            setup_data['first_product_price'],
+            setup_data['second_product_price']
+        ]
         for id_, position in self.cart:
-            self.assertIn(
-                position['price'],
-                [setup_data['first_product_price'], setup_data['second_product_price']]
-            )
+            self.assertIn(position['price'], prices)
 
         self.assertEqual(setup_data['total_sum'], self.cart.total_price)
 
     def test_add_method_for_wholesale_medium(self):
         """
         If the sum of prices on medium wholesale is greater than
-        50 000 rub. then price for every product equated medium wholesale price.
+        50 000 rub. then price for every product equated medium
+        wholesale price.
         """
         setup_data = self.setup_for_tests('wholesale_medium')
 
         self.cart.add(self.first_product, setup_data['first_product_quantity'])
-        self.cart.add(self.second_product, setup_data['second_product_quantity'])
+        self.cart.add(self.second_product, setup_data[
+                      'second_product_quantity'])
 
+        prices = [
+            setup_data['first_product_price'],
+            setup_data['second_product_price']
+        ]
         for id_, position in self.cart:
-            self.assertIn(
-                position['price'],
-                [setup_data['first_product_price'],
-                 setup_data['second_product_price']]
-            )
+            self.assertIn(position['price'], prices)
 
         self.assertEqual(setup_data['total_sum'], self.cart.total_price)
 
     def test_add_method_for_wholesale_large(self):
         """
         If the sum of prices on large wholesale is greater than
-        100 000 rub. then price for every product equated large wholesale price.
+        100 000 rub. then price for every product equated large
+        wholesale price.
         """
         setup_data = self.setup_for_tests('wholesale_large')
 
-        self.cart.add(self.first_product, setup_data[
-            'first_product_quantity'])
-        self.cart.add(self.second_product, setup_data[
-            'second_product_quantity'])
+        self.cart.add(
+            self.first_product,
+            setup_data['first_product_quantity']
+        )
+        self.cart.add(
+            self.second_product,
+            setup_data['second_product_quantity']
+        )
 
+        prices = [
+            setup_data['first_product_price'],
+            setup_data['second_product_price']
+        ]
         for id_, position in self.cart:
-            self.assertIn(position['price'],
-                          [setup_data['first_product_price'],
-                           setup_data['second_product_price']])
-        self.assertEqual(setup_data['total_sum'],
-                         self.cart.total_price)
+            self.assertIn(position['price'], prices)
+        self.assertEqual(
+            setup_data['total_sum'], self.cart.total_price
+        )
 
     def setup_for_remove_method(self, before, after):
         before = self.setup_for_tests(before)
         after = self.setup_for_tests(after)
-        self.cart.add(self.first_product,
-                      before['first_product_quantity'])
-        self.cart.add(self.second_product,
-                      before['second_product_quantity'])
-        total_sum = (after['first_product_price'] *
-                     before['first_product_quantity'])
+        self.cart.add(
+            self.first_product,
+            before['first_product_quantity']
+        )
+        self.cart.add(
+            self.second_product,
+            before['second_product_quantity']
+        )
+        total_sum = (
+            after['first_product_price'] *
+            before['first_product_quantity']
+        )
 
         return {
             'total_sum': total_sum,
@@ -158,54 +181,65 @@ class WholesaleCartTest(TestCase):
         self.cart.remove(self.second_product)
 
         for id_, position in self.cart:
-            self.assertEqual(position['price'],
-                             setup_data['after']['first_product_price'])
-        self.assertEqual(setup_data['total_sum'],
-                         self.cart.total_price)
+            self.assertEqual(
+                position['price'],
+                setup_data['after']['first_product_price']
+            )
+        self.assertEqual(
+            setup_data['total_sum'], self.cart.total_price
+        )
 
     def test_remove_method_for_wholesale_medium(self):
         """
         If the sum of prices on medium wholesale is less than
         40 000 rub. then price for every product equated small price.
         """
-        setup_data = self.setup_for_remove_method('wholesale_medium',
-                                                  'wholesale_small')
+        setup_data = self.setup_for_remove_method(
+            'wholesale_medium', 'wholesale_small'
+        )
 
         self.cart.remove(self.second_product)
 
         for id_, position in self.cart:
-            self.assertEqual(position['price'],
-                             setup_data['after']['first_product_price'])
-        self.assertEqual(setup_data['total_sum'],
-                         self.cart.total_price)
+            self.assertEqual(
+                position['price'], setup_data['after']['first_product_price']
+            )
+        self.assertEqual(
+            setup_data['total_sum'], self.cart.total_price
+        )
 
     def test_remove_method_for_wholesale_large(self):
         """
         If the sum of prices on large wholesale is less than
         100 000 rub. then price for every product equated medium price.
         """
-        setup_data = self.setup_for_remove_method('wholesale_large',
-                                                  'wholesale_medium')
+        setup_data = self.setup_for_remove_method(
+            'wholesale_large', 'wholesale_medium'
+        )
 
         self.cart.remove(self.second_product)
 
         for id_, position in self.cart:
-            self.assertEqual(position['price'],
-                             setup_data['after']['first_product_price'])
-        self.assertEqual(setup_data['total_sum'],
-                         self.cart.total_price)
+            self.assertEqual(
+                position['price'], setup_data['after']['first_product_price']
+            )
+        self.assertEqual(
+            setup_data['total_sum'], self.cart.total_price
+        )
 
     def setup_for_set_product_quantity(self, before, after):
         before = self.setup_for_tests(before)
         after = self.setup_for_tests(after)
-        self.cart.add(self.first_product,
-                      before['first_product_quantity'])
-        self.cart.add(self.second_product,
-                      before['second_product_quantity'])
-        total_sum = (after['first_product_price'] *
-                     before['first_product_quantity'] +
-                     after['second_product_price'] *
-                     after['second_product_quantity'])
+        self.cart.add(
+            self.first_product, before['first_product_quantity']
+        )
+        self.cart.add(
+            self.second_product, before['second_product_quantity']
+        )
+        total_sum = (
+            after['first_product_price'] * before['first_product_quantity'] +
+            after['second_product_price'] * after['second_product_quantity']
+        )
 
         return {
             'total_sum': total_sum,
@@ -227,8 +261,9 @@ class WholesaleCartTest(TestCase):
             setup_data['after']['second_product_quantity']
         )
 
-        self.assertEqual(setup_data['total_sum'],
-                         self.cart.total_price)
+        self.assertEqual(
+            setup_data['total_sum'], self.cart.total_price
+        )
 
     def test_set_product_quantity_method_for_wholesale_medium(self):
         """
@@ -244,8 +279,9 @@ class WholesaleCartTest(TestCase):
             setup_data['after']['second_product_quantity']
         )
 
-        self.assertEqual(setup_data['total_sum'],
-                         self.cart.total_price)
+        self.assertEqual(
+            setup_data['total_sum'], self.cart.total_price
+        )
 
     def test_set_product_quantity_method_for_wholesale_large(self):
         """
@@ -261,5 +297,6 @@ class WholesaleCartTest(TestCase):
             setup_data['after']['second_product_quantity']
         )
 
-        self.assertEqual(setup_data['total_sum'],
-                         self.cart.total_price)
+        self.assertEqual(
+            setup_data['total_sum'], self.cart.total_price
+        )

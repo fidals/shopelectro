@@ -65,7 +65,7 @@ class SECart(Cart):
 
     def get_product_data(self, product):
         return {
-            **super().get_product_attributes(product),
+            **super().get_product_data(product),
             'vendor_code': product.vendor_code
         }
 

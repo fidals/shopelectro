@@ -161,7 +161,7 @@ class CategoryPage(SeleniumTestCase):
         self.deep_children_category = self.testing_url(
             category_with_product_less_then_LOAD_LIMIT.page.slug)
         self.apply_btn = 'js-apply-filter'
-        self.filter_tag = 'label[for="tag-1"]'
+        self.filter_tag = 'label[for="tag-6-v"]'
 
     @property
     def load_more_button(self):
@@ -365,6 +365,7 @@ class CategoryPage(SeleniumTestCase):
     def test_load_more_after_filtering(self):
         """Sorting should work after filtering."""
         self.browser.get(self.root_category)
+        wait()
 
         self.browser.find_element_by_css_selector(self.filter_tag).click()
         self.browser.find_element_by_class_name(self.apply_btn).click()
@@ -384,7 +385,7 @@ class ProductPage(SeleniumTestCase):
         """Set up testing url and dispatch selenium webdriver."""
         product = Product.objects.get(id=self.PRODUCT_ID)
         server = self.live_server_url
-        self.test_product_page = server + reverse('product', args=(product.vendor_code,))
+        self.test_product_page = server + product.url
         self.success_order = server + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success',))
         self.product_name = product.name
         self.browser.get(self.test_product_page)
@@ -499,8 +500,8 @@ class ProductPage(SeleniumTestCase):
 
         # check for new feedback on page with `text_of_feedback`
         self.browser.refresh()
-        feedbacks_list = self.browser.find_element_by_id('feedbacks-list')
-        text = feedbacks_list.find_element_by_class_name('feedbacks-block-content').text
+        feedback_list = self.browser.find_element_by_id('feedback-list')
+        text = feedback_list.find_element_by_class_name('feedback-block-content').text
 
         self.assertIn(text_of_feedback, text)
 
@@ -511,10 +512,10 @@ class ProductPage(SeleniumTestCase):
             star.click()
 
         wait()
-        feedbacks_list = self.browser.find_element_by_id('feedbacks-list')
-        feedbacks = feedbacks_list.find_elements_by_class_name('feedbacks-block-content')
+        feedback_list = self.browser.find_element_by_id('feedback-list')
+        feedback = feedback_list.find_elements_by_class_name('feedback-block-content')
 
-        self.assertTrue(all(not element.is_displayed() for element in feedbacks))
+        self.assertTrue(all(not element.is_displayed() for element in feedback))
 
 
 @disable_celery

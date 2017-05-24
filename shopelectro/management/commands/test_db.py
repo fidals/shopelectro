@@ -34,6 +34,7 @@ class Command(BaseCommand):
         os.path.dirname(os.path.abspath(se_tests.__file__)),
         'assets/gold_deer.jpg'
     )
+
     PRODUCT_WITH_IMAGE = 1
 
     def __init__(self):
@@ -91,7 +92,7 @@ class Command(BaseCommand):
         return self._product_id
 
     @staticmethod
-    def create_root(count, ):
+    def create_root(count):
         get_name = 'Category #{}'.format
         return [
             se_models.Category.objects.create(name=get_name(i))
