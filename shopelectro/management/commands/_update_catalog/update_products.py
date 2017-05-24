@@ -27,6 +27,7 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         vendor_code = product_el.find(
             config.xpaths['vendor_code']
         ).text.lstrip('0')
+        content = product_el.find(config.xpaths['content']).text
 
         tag_els = product_el.findall(config.xpaths['tags'])
         tag_uuids = filter(is_correct_uuid, (
@@ -39,6 +40,7 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         yield uuid, {
             'name': name,
             'vendor_code': vendor_code,
+            'content': content,
             'tags': tags
         }
 
@@ -81,6 +83,7 @@ product_file = XmlFile(
         'products': './/{}Товары/',
         'name': '.{}Наименование',
         'uuid': '.{}Ид',
+        'content': '.{}Описание',
         'tags': '.{}ЗначенияСвойств/',
         'tag_value_uuid': '.{}Значение',
         'vendor_code': '.{0}ЗначенияРеквизитов/{0}ЗначениеРеквизита'
@@ -220,7 +223,10 @@ def update(data: Dict[UUID, Data]) -> QuerySet:
     def save(product, field, value):
         if field == 'name' and getattr(product, field, None):
             return
-        setattr(product, field, value)
+        elif field == 'content' and not getattr(product.page, field, None):
+            setattr(product.page, field, value)
+        else:
+            setattr(product, field, value)
 
     products = Product.objects.filter(uuid__in=data)
 
