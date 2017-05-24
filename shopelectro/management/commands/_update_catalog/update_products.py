@@ -221,12 +221,12 @@ def delete(data: Dict[UUID, Data]):
 @transaction.atomic
 def update(data: Dict[UUID, Data]) -> QuerySet:
     def save(product, field, value):
-        if (
-            (field == 'name' or field == 'content')
-            and getattr(product, field, None)
-        ):
+        if (field == 'name') and getattr(product, field, None):
             return
-        setattr(product, field, value)
+        elif (field == 'content') and not getattr(product.page, field, None):
+            setattr(product.page, field, value)
+        else:
+            setattr(product, field, value)
 
     products = Product.objects.filter(uuid__in=data)
 
