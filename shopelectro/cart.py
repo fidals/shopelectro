@@ -60,22 +60,29 @@ def recalculate_price(cart: Cart) -> Cart:
     set_position_prices(define_price_type())
 
 
-class WholesaleCart(Cart):
+class SECart(Cart):
     """Override Cart class for Wholesale features"""
+
+    def get_product_data(self, product):
+        return {
+            **super().get_product_data(product),
+            'vendor_code': product.vendor_code
+        }
+
     @recalculate
     def add(self, product, quantity=1):
         """Override add method because it changing state of the Cart instance"""
-        super(WholesaleCart, self).add(product, quantity)
+        super().add(product, quantity)
         return self
 
     @recalculate
     def set_product_quantity(self, product, quantity):
         """Override set_product_quantity method because it changing state of the Cart instance"""
-        super(WholesaleCart, self).set_product_quantity(product, quantity)
+        super().set_product_quantity(product, quantity)
         return self
 
     @recalculate
     def remove(self, product):
         """Override remove method because it changing state of the Cart instance"""
-        super(WholesaleCart, self).remove(product)
+        super().remove(product)
         return self

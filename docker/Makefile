@@ -15,4 +15,3 @@ test: static
 	docker-compose up -d se-redis
 	docker-compose exec se-python python manage.py test --liveserver=se-python:8020-8030 --parallel
 	docker-compose stop
-

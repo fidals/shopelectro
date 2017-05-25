@@ -14,7 +14,7 @@ from ecommerce.cart import Cart
 from ecommerce.models import Order
 from pages.models import CustomPage
 
-from shopelectro.cart import WholesaleCart
+from shopelectro.cart import SECart
 from shopelectro.forms import OrderForm
 from shopelectro.models import Product, Order
 
@@ -22,6 +22,7 @@ from shopelectro.models import Product, Order
 # ECOMMERCE VIEWS
 class OrderPage(ec_views.OrderPage):
     order_form = OrderForm
+    cart = SECart
 
     def get_context_data(self, request, **kwargs):
         return {
@@ -31,19 +32,19 @@ class OrderPage(ec_views.OrderPage):
 
 
 class AddToCart(ec_views.AddToCart):
-    cart = WholesaleCart
+    cart = SECart
     product_model = Product
     order_form = OrderForm
 
 
 class RemoveFromCart(ec_views.RemoveFromCart):
-    cart = WholesaleCart
+    cart = SECart
     product_model = Product
     order_form = OrderForm
 
 
 class ChangeCount(ec_views.ChangeCount):
-    cart = WholesaleCart
+    cart = SECart
     product_model = Product
     order_form = OrderForm
 

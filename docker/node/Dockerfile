@@ -1,3 +1,3 @@
-FROM node:latest
+FROM node:slim
 
 WORKDIR /usr/app/src/

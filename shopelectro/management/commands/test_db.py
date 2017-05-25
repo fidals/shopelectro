@@ -18,23 +18,23 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from images.models import Image
-from pages.models import Page, FlatPage
+from pages.models import Page, FlatPage, PageTemplate
 from pages.utils import save_custom_pages, init_redirects_app
 
-from shopelectro.models import Product, Category, Order, ProductFeedback, TagGroup, Tag
-import shopelectro.tests
+from shopelectro import models as se_models, tests as se_tests
 
 
 class Command(BaseCommand):
 
     FIRST_IMAGE = os.path.join(
-        os.path.dirname(os.path.abspath(shopelectro.tests.__file__)),
+        os.path.dirname(os.path.abspath(se_tests.__file__)),
         'assets/deer.jpg'
     )
     SECOND_IMAGE = os.path.join(
-        os.path.dirname(os.path.abspath(shopelectro.tests.__file__)),
+        os.path.dirname(os.path.abspath(se_tests.__file__)),
         'assets/gold_deer.jpg'
     )
+
     PRODUCT_WITH_IMAGE = 1
 
     def __init__(self):
@@ -63,6 +63,7 @@ class Command(BaseCommand):
         self.create_page()
         self.create_order()
         self.create_feedbacks()
+        self.create_templates()
         self.rebuild_mptt_tree()
         self.save_dump()
 
@@ -93,14 +94,17 @@ class Command(BaseCommand):
     @staticmethod
     def create_root(count):
         get_name = 'Category #{}'.format
-        return [Category.objects.create(name=get_name(i)) for i in range(count)]
+        return [
+            se_models.Category.objects.create(name=get_name(i))
+            for i in range(count)
+        ]
 
     @staticmethod
     def create_children(count, parents):
         name = 'Category #{} of #{}'
 
         def create_categories(name, parent):
-            return Category.objects.create(name=name, parent=parent)
+            return se_models.Category.objects.create(name=name, parent=parent)
 
         def get_name(number, parent=None):
             return name.format(number, parent)
@@ -123,11 +127,12 @@ class Command(BaseCommand):
             create_image(file_path=self.FIRST_IMAGE, slug='deer')
             create_image(file_path=self.SECOND_IMAGE, slug='gold')
 
-        def create_product(parent: Category, tags_, price_factor):
-            product = Product.objects.create(
+        def create_product(parent: se_models.Category, tags_, price_factor):
+            product = se_models.Product.objects.create(
                 id=self.product_id,
                 vendor_code=self._product_id,
                 name='Product #{} of {}'.format(price_factor, parent),
+                in_stock=price_factor % 3,
                 price=price_factor * 100,
                 category=parent,
                 wholesale_small=price_factor * 75,
@@ -147,26 +152,31 @@ class Command(BaseCommand):
                     create_product(category, tags_, price_factor=i)
 
         zipped_tags = list(zip(*tags))
-        fill_with_products(to_fill=categories[4:], tags_=zipped_tags[0], count=25)
-        fill_with_products(to_fill=categories[:4], tags_=zipped_tags[1], count=50)
+        fill_with_products(
+            to_fill=categories[4:], tags_=zipped_tags[0], count=25)
+        fill_with_products(
+            to_fill=categories[:4], tags_=zipped_tags[1], count=50)
 
     def create_tag_groups(self):
         for i, name in enumerate(self.group_names, start=1):
-            yield TagGroup.objects.create(
+            yield se_models.TagGroup.objects.create(
                 name=name,
                 position=i,
             )
 
     def create_tags(self, groups):
         def create_tag(group_, position, name):
-            return Tag.objects.create(
-                    group=group_,
-                    name=name,
-                    position=position,
-                )
+            return se_models.Tag.objects.create(
+                group=group_,
+                name=name,
+                position=position,
+            )
 
         for group, names in zip(groups, self.tag_names):
-            yield list(map(partial(create_tag, group), *zip(*enumerate(names, start=1))))
+            yield [
+                create_tag(group, i, name)
+                for i, name in enumerate(names, start=1)
+            ]
 
     @staticmethod
     def create_page():
@@ -177,7 +187,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_order():
-        Order.objects.create(
+        se_models.Order.objects.create(
             pk=7,
             name='Test Name',
             phone='88005553535',
@@ -189,7 +199,7 @@ class Command(BaseCommand):
 
         def generate_feedback_data(index):
             return {
-                'product': Product.objects.get(id=1),
+                'product': se_models.Product.objects.get(id=1),
                 'rating': index,
                 'name': 'User #{}'.format(index),
                 'dignities': 'Some dignities.',
@@ -198,11 +208,27 @@ class Command(BaseCommand):
             }
 
         for i in range(1, feedbacks_count + 1):
-            ProductFeedback.objects.create(**generate_feedback_data(i))
+            se_models.ProductFeedback.objects.create(
+                **generate_feedback_data(i)
+            )
+
+    def create_templates(self):
+        template = '{{ page.name }}'
+        page_template = PageTemplate.objects.create(
+            name='{} name.'.format(template),
+            h1='{} h1.'.format(template),
+            keywords='{} keywords.'.format(template),
+            description='{} description.'.format(template),
+            title='{} title.'.format(template),
+            seo_text='{} seotext.'.format(template)
+        )
+
+        se_models.ProductPage.objects.update(template=page_template)
+        se_models.CategoryPage.objects.update(template=page_template)
 
     @staticmethod
     def rebuild_mptt_tree():
-        Category.objects.rebuild()
+        se_models.Category.objects.rebuild()
         Page.objects.rebuild()
 
     @staticmethod
