@@ -30,7 +30,7 @@ const spawnSync = require('child_process').spawnSync;
  *   (ex. {styles: ['~/app_name/front/styles/style.less'], ...})
  */
 function getAppSrcPaths(appName) {
-  return require(`/src/refarm-site/${appName}/front/paths.js`);
+  return require(`/usr/app/src/src/refarm-site/${appName}/front/paths.js`);
 }
 
 // ================================================================

@@ -1,21 +1,20 @@
-from functools import reduce
-from itertools import groupby, chain
-from operator import attrgetter, or_
-from unidecode import unidecode
+from itertools import chain, groupby
+from operator import attrgetter
 from uuid import uuid4
 
-from django.db import models
-from django.db.models import Avg, Q
 from django.conf import settings
+from django.db import models
+from django.db.models import Avg, QuerySet
+from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.urls import reverse
+from unidecode import unidecode
 
 from catalog.models import (
-    AbstractProduct, AbstractCategory, ProductManager, ProductQuerySet
+    AbstractProduct, AbstractCategory
 )
 from ecommerce.models import Order as ecOrder
-from pages.models import ModelPage, SyncPageMixin, CustomPage
+from pages.models import CustomPage, ModelPage, SyncPageMixin
 
 
 class Category(AbstractCategory, SyncPageMixin):
@@ -58,10 +57,14 @@ class Product(AbstractProduct, SyncPageMixin):
 
     vendor_code = models.SmallIntegerField(verbose_name=_('vendor_code'))
     uuid = models.UUIDField(default=uuid4, editable=False)
-    purchase_price = models.FloatField(default=0, verbose_name=_('purchase_price'))
-    wholesale_small = models.FloatField(default=0, verbose_name=_('wholesale_small'))
-    wholesale_medium = models.FloatField(default=0, verbose_name=_('wholesale_medium'))
-    wholesale_large = models.FloatField(default=0, verbose_name=_('wholesale_large'))
+    purchase_price = models.FloatField(
+        default=0, verbose_name=_('purchase_price'))
+    wholesale_small = models.FloatField(
+        default=0, verbose_name=_('wholesale_small'))
+    wholesale_medium = models.FloatField(
+        default=0, verbose_name=_('wholesale_medium'))
+    wholesale_large = models.FloatField(
+        default=0, verbose_name=_('wholesale_large'))
 
     def get_absolute_url(self):
         return reverse('product', args=(self.vendor_code,))
@@ -69,7 +72,8 @@ class Product(AbstractProduct, SyncPageMixin):
     @property
     def average_rate(self):
         """Return rounded to first decimal averaged rating."""
-        rating = self.product_feedbacks.aggregate(avg=Avg('rating')).get('avg', 0)
+        rating = self.product_feedbacks.aggregate(
+            avg=Avg('rating')).get('avg', 0)
         return round(rating, 1)
 
     @property
@@ -86,7 +90,7 @@ class Product(AbstractProduct, SyncPageMixin):
             self.tags
                 .filter(products=self)
                 .prefetch_related('group')
-            )
+        )
 
 
 class ProductFeedback(models.Model):
@@ -95,16 +99,25 @@ class ProductFeedback(models.Model):
         related_name='product_feedbacks'
     )
 
-    date = models.DateTimeField(auto_now=True, db_index=True, verbose_name=_('date'))
-    name = models.CharField(max_length=255, db_index=True, verbose_name=_('name'))
-    rating = models.PositiveSmallIntegerField(default=1, db_index=True, verbose_name=_('rating'))
-    dignities = models.TextField(default='', blank=True, verbose_name=_('dignities'))
-    limitations = models.TextField(default='', blank=True, verbose_name=_('limitations'))
-    general = models.TextField(default='', blank=True, verbose_name=_('limitations'))
+    date = models.DateTimeField(
+        auto_now=True, db_index=True, verbose_name=_('date'))
+    name = models.CharField(
+        max_length=255, db_index=True, verbose_name=_('name'))
+    rating = models.PositiveSmallIntegerField(
+        default=1, db_index=True, verbose_name=_('rating'))
+    dignities = models.TextField(
+        default='', blank=True, verbose_name=_('dignities'))
+    limitations = models.TextField(
+        default='', blank=True, verbose_name=_('limitations'))
+    general = models.TextField(
+        default='', blank=True, verbose_name=_('limitations'))
 
 
 def _default_payment():
-    """Return default payment option, which is first element of first tuple in options."""
+    """
+    Return default payment option, which is first element of
+    first tuple in options.
+    """
     assert settings.PAYMENT_OPTIONS[0][0], 'No payment options!'
     return settings.PAYMENT_OPTIONS[0][0]
 
@@ -145,7 +158,8 @@ class ProductPage(ModelPage):
 class TagGroup(models.Model):
 
     uuid = models.UUIDField(default=uuid4, editable=False)
-    name = models.CharField(max_length=100, db_index=True, verbose_name=_('name'))
+    name = models.CharField(
+        max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
@@ -156,20 +170,24 @@ class TagGroup(models.Model):
 
 class TagQuerySet(models.QuerySet):
 
-    def get_group_tags_pairs(self, tags=None):
-        if tags is not None:
-            unique_tags = set(tags)
-        else:
-            unique_tags = set(self.all().prefetch_related('group'))
+    def get_group_tags_pairs(self):
+        ordering = ['group__position', 'group__name', 'position', 'name']
+        distinct = [order.lstrip('-') for order in ordering]
 
-        sorted_by_group_unique_tags = sorted(unique_tags, key=lambda x: x.group.name)
-
-        group_tags_pair = (
-            (group, list(sorted(tags_, key=attrgetter('position'))))
-            for group, tags_ in groupby(sorted_by_group_unique_tags, key=attrgetter('group'))
+        tags = (
+            self
+            .all()
+            .prefetch_related('group')
+            .order_by(*ordering)
+            .distinct(*distinct, 'id')
         )
 
-        return list(sorted(group_tags_pair, key=lambda x: x[0].position))
+        group_tags_pair = [
+            (group, list(tags_))
+            for group, tags_ in groupby(tags, key=attrgetter('group'))
+        ]
+
+        return group_tags_pair
 
 
 class TagManager(models.Manager):
@@ -177,8 +195,8 @@ class TagManager(models.Manager):
     def get_queryset(self):
         return TagQuerySet(self.model, using=self._db)
 
-    def get_group_tags_pairs(self, tags=None):
-        return self.get_queryset().get_group_tags_pairs(tags)
+    def get_group_tags_pairs(self):
+        return self.get_queryset().get_group_tags_pairs()
 
 
 URL_TAGS_TYPE_DELIMITER = '-or-'
@@ -193,7 +211,8 @@ class Tag(models.Model):
     objects = TagManager()
 
     uuid = models.UUIDField(default=uuid4, editable=False)
-    name = models.CharField(max_length=100, db_index=True, verbose_name=_('name'))
+    name = models.CharField(
+        max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
@@ -237,9 +256,9 @@ class Tag(models.Model):
     @staticmethod
     def parse_url_tags(tags: str) -> list:
         groups = tags.split(URL_TAGS_GROUP_DELIMITER)
-        return chain.from_iterable(
+        return set(chain.from_iterable(
             group.split(URL_TAGS_TYPE_DELIMITER) for group in groups
-        )
+        ))
 
     @staticmethod
     def serialize_title_tags(tags: list) -> str:
