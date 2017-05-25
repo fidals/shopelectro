@@ -1,10 +1,15 @@
 from collections import OrderedDict
 from functools import wraps
 
+from django.db.models import Model
 from ecommerce.cart import Cart
 
 from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import Product
+
+
+class SECartAddError(Exception):
+    """Shopelectro cart error."""
 
 
 def recalculate(func):
@@ -22,14 +27,22 @@ def recalculate_price(cart: Cart) -> Cart:
         ('wholesale_small', PRICE_BOUNDS['wholesale_small']),
     ])
 
+    product_ids = [position['id'] for _, position in cart]
+    products = Product.objects.filter(id__in=product_ids)
+
+    def get_product(id_):
+        return next((product for product in products if product.id == id_), {})
+
     def get_product_data(price_type: str) -> list:
-        product_ids = [id_ for id_, _ in cart]
-        products = Product.objects.filter(id__in=product_ids)
         return [{
-            'id': id_,
-            'price': getattr(products.get(id=id_), price_type or 'price'),
-            'quantity': position['quantity']
-        } for id_, position in cart]
+            'id': vendor_code,
+            'quantity': position['quantity'],
+            'price': getattr(
+                get_product(position['id']),
+                price_type or 'price',
+                0
+            ),
+        } for vendor_code, position in cart]
 
     def get_total_price(price_type: str):
         return sum(
@@ -43,9 +56,10 @@ def recalculate_price(cart: Cart) -> Cart:
     }
 
     def define_price_type() -> "Wholesale price type" or None:
-        is_applicable = (lambda price_type:
-                         wholesale_types[price_type] <
-                         total_wholesale_prices[price_type])
+        is_applicable = (
+            lambda price_type:
+            wholesale_types[price_type] < total_wholesale_prices[price_type]
+        )
 
         for price_type in wholesale_types:
             if is_applicable(price_type):
@@ -53,9 +67,13 @@ def recalculate_price(cart: Cart) -> Cart:
 
     def set_position_prices(price_type: str):
         """
-        If price_type is NoneType, then it is retail price, set price from Product.price"""
-        new_data = get_product_data(price_type)
-        cart.update_product_prices(new_data)
+        If price_type is NoneType, then it is retail price,
+        set price from Product.price
+        """
+        if price_type not in total_wholesale_prices:
+            return
+
+        cart.update_product_prices(get_product_data(price_type))
 
     set_position_prices(define_price_type())
 
@@ -66,13 +84,27 @@ class SECart(Cart):
     def get_product_data(self, product):
         return {
             **super().get_product_data(product),
-            'vendor_code': product.vendor_code
+            'id': product.id
         }
 
     @recalculate
-    def add(self, product, quantity=1):
-        """Override add method because it changing state of the Cart instance"""
-        super().add(product, quantity)
+    def add(self, product: Model, quantity=1):
+        """
+        Add a Product to the Cart or update its quantity if it's already in it.
+        """
+        required_fields = ['vendor_code', 'name', 'price']
+        for field in required_fields:
+            has = hasattr(product, field)
+            if not has:
+                raise SECartAddError(
+                    'Product has not required field {}'.format(field))
+
+        if product.vendor_code not in self:
+            self._cart[product.vendor_code] = self.get_product_data(product)
+            self._cart[product.vendor_code]['quantity'] = quantity
+        else:
+            self._cart[product.vendor_code]['quantity'] += quantity
+        self.save()
         return self
 
     @recalculate

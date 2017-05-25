@@ -28,7 +28,7 @@ class SECartTest(TestCase):
 
     @staticmethod
     def get_price(product, price_type):
-        return getattr(product, price_type)
+        return float(getattr(product, price_type))
 
     def get_wholesale_quantity(self, product, price_type):
         """
@@ -36,25 +36,22 @@ class SECartTest(TestCase):
         assigned price_type.
         """
         wholesale_price_type = {
-            'price': 14000,
-            'wholesale_large': 100000,
-            'wholesale_medium': 50000,
-            'wholesale_small': 20000,
+            'price': 14000 / 2,
+            'wholesale_large': 100000 / 2,
+            'wholesale_medium': 50000 / 2,
+            'wholesale_small': 20000 / 2,
         }
 
         # Increment, because wholesale price should be strictly more then
         # bounds.
         return ceil(
             wholesale_price_type[price_type] /
-            self.get_price(product, price_type) /
-            self.item_quantity
-        ) + 1
+            self.get_price(product, price_type)
+        )
 
     def setup_for_tests(self, price_type):
-        first_product_price = float(
-            self.get_price(self.first_product, price_type))
-        second_product_price = float(
-            self.get_price(self.second_product, price_type))
+        first_product_price = self.get_price(self.first_product, price_type)
+        second_product_price = self.get_price(self.second_product, price_type)
 
         first_product_quantity = (
             self.get_wholesale_quantity(self.first_product, price_type)

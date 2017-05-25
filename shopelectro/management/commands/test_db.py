@@ -130,7 +130,8 @@ class Command(BaseCommand):
         def create_product(parent: se_models.Category, tags_, price_factor):
             product = se_models.Product.objects.create(
                 id=self.product_id,
-                vendor_code=self._product_id,
+                # vendor_code should be differ from id for tests.
+                vendor_code=self._product_id + 1,
                 name='Product #{} of {}'.format(price_factor, parent),
                 in_stock=price_factor % 3,
                 price=price_factor * 100,

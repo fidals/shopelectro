@@ -54,10 +54,10 @@ class ProductPage(catalog.ProductPage):
     def get_context_data(self, **kwargs):
         context = super(ProductPage, self).get_context_data(**kwargs)
 
-        group_tags_pairs = models.Tag.objects.get_group_tags_pairs(
+        group_tags_pairs = (
             models.Tag.objects
             .filter(products=self.object)
-            .prefetch_related('group')
+            .get_group_tags_pairs()
         )
 
         return {
@@ -89,7 +89,8 @@ class IndexPage(pages_views.CustomPageView):
             )
         )
 
-        categories = models.Category.objects.get_root_categories_by_products(top_products)
+        categories = models.Category.objects.get_root_categories_by_products(
+            top_products)
 
         prepared_top_products = []
         if not mobile_view:
@@ -139,10 +140,10 @@ class CategoryPage(catalog.CategoryPage):
             .get_by_category(category, ordering=(sorting_option, ))
         )
 
-        group_tags_pairs = models.Tag.objects.get_group_tags_pairs(
+        group_tags_pairs = (
             models.Tag.objects
             .filter(products__in=all_products)
-            .prefetch_related('group')
+            .get_group_tags_pairs()
         )
 
         tags = self.kwargs.get('tags')
@@ -152,9 +153,14 @@ class CategoryPage(catalog.CategoryPage):
 
         if tags:
             slugs = models.Tag.parse_url_tags(tags)
-            tags = models.Tag.objects.filter(slug__in=list(slugs))
+            tags = models.Tag.objects.filter(slug__in=slugs)
 
-            all_products = all_products.filter(tags__in=tags)
+            all_products = (
+                all_products
+                .filter(tags__in=tags)
+                # use distinct because filtering at QuerySet tags.
+                .distinct(sorting_option.lstrip('-'))
+            )
 
             tags_titles = models.Tag.serialize_title_tags(
                 tags.get_group_tags_pairs()
@@ -169,7 +175,8 @@ class CategoryPage(catalog.CategoryPage):
             }
 
         page = context['page']
-        page.get_template_render_context = partial(template_context, page, tags_metadata)
+        page.get_template_render_context = partial(
+            template_context, page, tags_metadata)
 
         products = all_products.get_offset(0, products_on_page)
 
@@ -209,11 +216,14 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
     )
 
     if tags:
-        products = products.filter(tags__in=(
-            models.Tag.objects.filter(
-                slug__in=list(models.Tag.parse_url_tags(tags))
-            )
-        ))
+        tag_entities = models.Tag.objects.filter(
+            slug__in=list(models.Tag.parse_url_tags(tags)))
+
+        products = (
+            products
+            .filter(tags__in=tag_entities)
+            .distinct(sorting_option.lstrip('-'))
+        )
 
     products = products.get_offset(int(offset), products_on_page)
     view = request.session.get('view_type', 'tile')
