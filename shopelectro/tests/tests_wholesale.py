@@ -4,6 +4,7 @@ from django.test import TestCase
 
 from shopelectro.models import Product
 from shopelectro.cart import SECart
+from shopelectro.config import PRICE_BOUNDS
 
 
 class SECartTest(TestCase):
@@ -12,7 +13,6 @@ class SECartTest(TestCase):
 
     def __init__(self, *args, **kwargs):
         self.item_quantity = 2
-
         super().__init__(*args, **kwargs)
 
     def setUp(self):
@@ -30,47 +30,57 @@ class SECartTest(TestCase):
     def get_price(product, price_type):
         return float(getattr(product, price_type))
 
-    def get_wholesale_quantity(self, product, price_type):
+    def get_wholesale_data(self, price_type, products: list):
         """
         Return minimal products count, that we should put in cart to get
         assigned price_type.
         """
+        bound_devider = len(products)
         wholesale_price_type = {
-            'price': 14000 / 2,
-            'wholesale_large': 100000 / 2,
-            'wholesale_medium': 50000 / 2,
-            'wholesale_small': 20000 / 2,
+            'wholesale_large': PRICE_BOUNDS['wholesale_large'],
+            'wholesale_medium': PRICE_BOUNDS['wholesale_medium'],
+            'wholesale_small': PRICE_BOUNDS['wholesale_small'],
+            'price': 10000
         }
 
-        # Increment, because wholesale price should be strictly more then
-        # bounds.
-        return ceil(
-            wholesale_price_type[price_type] /
-            self.get_price(product, price_type)
-        )
+        def get_data(product):
+            price = self.get_price(product, price_type)
+            quantity = ceil(
+                wholesale_price_type[price_type] / bound_devider / price)
+            return {
+                'price': price,
+                'quantity': quantity
+            }
+
+        wholesale_data = {product: get_data(product) for product in products}
+        *_, last_product = products
+        # Increment quantity, because wholesale price should be strictly
+        # more then bounds.
+        wholesale_data[last_product]['quantity'] += 1
+
+        return wholesale_data
 
     def setup_for_tests(self, price_type):
-        first_product_price = self.get_price(self.first_product, price_type)
-        second_product_price = self.get_price(self.second_product, price_type)
-
-        first_product_quantity = (
-            self.get_wholesale_quantity(self.first_product, price_type)
+        product_data = (
+            self.get_wholesale_data(
+                price_type,
+                [self.first_product, self.second_product],
+            )
         )
 
-        second_product_quantity = (
-            self.get_wholesale_quantity(self.second_product, price_type)
-        )
+        first_product = product_data[self.first_product]
+        second_product = product_data[self.second_product]
 
         total_sum = (
-            first_product_price * first_product_quantity +
-            second_product_price * second_product_quantity
+            first_product['price'] * first_product['quantity'] +
+            second_product['price'] * second_product['quantity']
         )
 
         return {
-            'first_product_price': first_product_price,
-            'second_product_price': second_product_price,
-            'first_product_quantity': first_product_quantity,
-            'second_product_quantity': second_product_quantity,
+            'first_product_price': first_product['price'],
+            'second_product_price': second_product['price'],
+            'first_product_quantity': first_product['quantity'],
+            'second_product_quantity': second_product['quantity'],
             'total_sum': total_sum
         }
 
@@ -107,13 +117,14 @@ class SECartTest(TestCase):
         setup_data = self.setup_for_tests('wholesale_medium')
 
         self.cart.add(self.first_product, setup_data['first_product_quantity'])
-        self.cart.add(self.second_product, setup_data[
-                      'second_product_quantity'])
+        self.cart.add(
+            self.second_product, setup_data['second_product_quantity'])
 
         prices = [
             setup_data['first_product_price'],
             setup_data['second_product_price']
         ]
+
         for id_, position in self.cart:
             self.assertIn(position['price'], prices)
 
@@ -140,6 +151,7 @@ class SECartTest(TestCase):
             setup_data['first_product_price'],
             setup_data['second_product_price']
         ]
+
         for id_, position in self.cart:
             self.assertIn(position['price'], prices)
         self.assertEqual(

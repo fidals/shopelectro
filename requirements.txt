@@ -18,5 +18,5 @@ unidecode
 ua-parser==0.7.3
 user-agents==1.0.1
 sorl-thumbnail==12.4a1
--e git+https://github.com/fidals/refarm-site.git#egg=refarm-site
+git+https://github.com/fidals/refarm-site.git#egg=refarm-site
 

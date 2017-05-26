@@ -11,8 +11,7 @@ build: static
 	docker-compose build --no-cache
 	docker-compose -f docker-compose-production.yml build
 
-# test: static
-test:
+test: static
 	docker-compose up -d se-selenium-hub
 	docker-compose up -d se-redis
 	docker-compose exec se-python python manage.py test --liveserver=se-python:8020-8030 --parallel

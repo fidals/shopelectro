@@ -86,11 +86,7 @@ class Product(AbstractProduct, SyncPageMixin):
 
     @property
     def params(self):
-        return Tag.objects.get_group_tags_pairs(
-            self.tags
-                .filter(products=self)
-                .prefetch_related('group')
-        )
+        return Tag.objects.filter(products=self).get_group_tags_pairs()
 
 
 class ProductFeedback(models.Model):

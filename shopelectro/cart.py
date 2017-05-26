@@ -2,6 +2,7 @@ from collections import OrderedDict
 from functools import wraps
 
 from django.db.models import Model
+
 from ecommerce.cart import Cart
 
 from shopelectro.config import PRICE_BOUNDS
@@ -19,8 +20,11 @@ def recalculate(func):
     return wrapper
 
 
-def recalculate_price(cart: Cart) -> Cart:
-    """Define what type of price should be used in Cart. Actualize price if needed."""
+def recalculate_price(cart: Cart):
+    """
+    Define what type of price should be used in Cart. Actualize price if
+    needed.
+    """
     wholesale_types = OrderedDict([
         ('wholesale_large', PRICE_BOUNDS['wholesale_large']),
         ('wholesale_medium', PRICE_BOUNDS['wholesale_medium']),
@@ -38,9 +42,7 @@ def recalculate_price(cart: Cart) -> Cart:
             'id': vendor_code,
             'quantity': position['quantity'],
             'price': getattr(
-                get_product(position['id']),
-                price_type or 'price',
-                0
+                get_product(position['id']), price_type or 'price',
             ),
         } for vendor_code, position in cart]
 
@@ -56,10 +58,11 @@ def recalculate_price(cart: Cart) -> Cart:
     }
 
     def define_price_type() -> "Wholesale price type" or None:
-        is_applicable = (
-            lambda price_type:
-            wholesale_types[price_type] < total_wholesale_prices[price_type]
-        )
+        def is_applicable(price_type):
+            return (
+                wholesale_types[price_type] <
+                total_wholesale_prices[price_type]
+            )
 
         for price_type in wholesale_types:
             if is_applicable(price_type):
@@ -70,9 +73,6 @@ def recalculate_price(cart: Cart) -> Cart:
         If price_type is NoneType, then it is retail price,
         set price from Product.price
         """
-        if price_type not in total_wholesale_prices:
-            return
-
         cart.update_product_prices(get_product_data(price_type))
 
     set_position_prices(define_price_type())
@@ -82,6 +82,7 @@ class SECart(Cart):
     """Override Cart class for Wholesale features"""
 
     def get_product_data(self, product):
+        """Add id to position data."""
         return {
             **super().get_product_data(product),
             'id': product.id
@@ -90,7 +91,10 @@ class SECart(Cart):
     @recalculate
     def add(self, product: Model, quantity=1):
         """
-        Add a Product to the Cart or update its quantity if it's already in it.
+        Replace id to vendor_code as key in cart, because in Order model
+        we are save product's id, name, price, quantity and after in email
+        templates try reverse urls by order's product id, but should by
+        vendor_code.
         """
         required_fields = ['vendor_code', 'name', 'price']
         for field in required_fields:
@@ -109,12 +113,17 @@ class SECart(Cart):
 
     @recalculate
     def set_product_quantity(self, product, quantity):
-        """Override set_product_quantity method because it changing state of the Cart instance"""
+        """
+        Override set_product_quantity method because it changing state of the
+        Cart instance
+        """
         super().set_product_quantity(product, quantity)
         return self
 
     @recalculate
     def remove(self, product):
-        """Override remove method because it changing state of the Cart instance"""
+        """
+        Override remove method because it changing state of the Cart instance
+        """
         super().remove(product)
         return self

@@ -158,7 +158,8 @@ class CategoryPage(catalog.CategoryPage):
             all_products = (
                 all_products
                 .filter(tags__in=tags)
-                # use distinct because filtering at QuerySet tags.
+                # Use distinct because filtering by QuerySet tags,
+                # that related with products by many-to-many relation.
                 .distinct(sorting_option.lstrip('-'))
             )
 
@@ -222,6 +223,8 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
         products = (
             products
             .filter(tags__in=tag_entities)
+            # Use distinct because filtering by QuerySet tags,
+            # that related with products by many-to-many relation.
             .distinct(sorting_option.lstrip('-'))
         )
 
