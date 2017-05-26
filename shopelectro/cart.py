@@ -9,10 +9,6 @@ from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import Product
 
 
-class SECartAddError(Exception):
-    """Shopelectro cart error."""
-
-
 def recalculate(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -31,7 +27,7 @@ def recalculate_price(cart: Cart):
         ('wholesale_small', PRICE_BOUNDS['wholesale_small']),
     ])
 
-    product_ids = [position['id'] for _, position in cart]
+    product_ids = [id_ for id_, _ in cart]
     products = Product.objects.filter(id__in=product_ids)
 
     def get_product(id_):
@@ -39,12 +35,12 @@ def recalculate_price(cart: Cart):
 
     def get_product_data(price_type: str) -> list:
         return [{
-            'id': vendor_code,
+            'id': id_,
             'quantity': position['quantity'],
             'price': getattr(
-                get_product(position['id']), price_type or 'price',
+                get_product(id_), price_type or 'price',
             ),
-        } for vendor_code, position in cart]
+        } for id_, position in cart]
 
     def get_total_price(price_type: str):
         return sum(
@@ -79,51 +75,28 @@ def recalculate_price(cart: Cart):
 
 
 class SECart(Cart):
-    """Override Cart class for Wholesale features"""
+    """
+    Override Cart class for Wholesale features.
+    """
 
     def get_product_data(self, product):
-        """Add id to position data."""
+        """Add vendor_code to cart's positions data."""
         return {
             **super().get_product_data(product),
-            'id': product.id
+            'vendor_code': product.vendor_code
         }
 
     @recalculate
     def add(self, product: Model, quantity=1):
-        """
-        Replace id to vendor_code as key in cart, because in Order model
-        we are save product's id, name, price, quantity and after in email
-        templates try reverse urls by order's product id, but should by
-        vendor_code.
-        """
-        required_fields = ['vendor_code', 'name', 'price']
-        for field in required_fields:
-            has = hasattr(product, field)
-            if not has:
-                raise SECartAddError(
-                    'Product has not required field {}'.format(field))
-
-        if product.vendor_code not in self:
-            self._cart[product.vendor_code] = self.get_product_data(product)
-            self._cart[product.vendor_code]['quantity'] = quantity
-        else:
-            self._cart[product.vendor_code]['quantity'] += quantity
-        self.save()
+        super().add(product, quantity)
         return self
 
     @recalculate
-    def set_product_quantity(self, product, quantity):
-        """
-        Override set_product_quantity method because it changing state of the
-        Cart instance
-        """
+    def set_product_quantity(self, product: Model, quantity: int):
         super().set_product_quantity(product, quantity)
         return self
 
     @recalculate
-    def remove(self, product):
-        """
-        Override remove method because it changing state of the Cart instance
-        """
+    def remove(self, product: Model):
         super().remove(product)
         return self

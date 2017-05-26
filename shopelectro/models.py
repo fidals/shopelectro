@@ -134,6 +134,24 @@ class Order(ecOrder):
             if self.payment_type == option
         )
 
+    def set_positions(self, cart):
+        """
+        Save cart's state into Order instance.
+        :param cart: user's cart
+        :return: self
+        """
+        self.save()
+        for id_, position in cart:
+            self.positions.create(
+                order=self,
+                product_id=id_,
+                vendor_code=position['vendor_code'],
+                name=position['name'],
+                price=position['price'],
+                quantity=position['quantity']
+            )
+        return self
+
 
 class CategoryPage(ModelPage):
     """Create proxy model for Admin."""

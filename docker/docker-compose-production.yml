@@ -10,8 +10,8 @@ services:
     container_name: se-source
     restart: always
     volumes:
-      - /usr/app/src/ # code volume
-      - /opt/media/shopelectro/:/usr/app/src/media/
+      - $SRC_DIR # code volume
+      - /opt/media/shopelectro/:$SRC_DIR/media/
     command: sh -c "top > /dev/null"
 
   se-python:
@@ -43,7 +43,7 @@ services:
     ports:
       - $VIRTUAL_HOST_PORT
     volumes:
-      - /src/ # contains refarm-site modules
+      - $DEPS_DIR # contains refarm-site modules
     volumes_from:
       - se-source
     networks:
@@ -75,7 +75,7 @@ services:
     ports:
       - '$VIRTUAL_HOST_STAGE_EXPOSE_PORT:$VIRTUAL_HOST_STAGE_PORT'
     volumes:
-      - /src/ # contains refarm-site modules
+      - $DEPS_DIR # contains refarm-site modules
     volumes_from:
       - se-source
     networks:
