@@ -83,6 +83,7 @@ class Command(BaseCommand):
             # I just followed this: http://bit.ly/so-contenttype-dump-solving
             '--natural-foreign',
             '--natural-primary',
+            '--exclude', 'sites',
             output='shopelectro/fixtures/dump.json'
         )
 
