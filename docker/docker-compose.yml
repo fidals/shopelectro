@@ -6,7 +6,7 @@ services:
     image: busybox
     container_name: se-source
     volumes:
-      - ./../:/usr/app/src/ # code volume
+      - ./../:$SRC_DIR # code volume
     command: sh -c "top > /dev/null"
 
   se-python:
@@ -43,7 +43,7 @@ services:
       - se-backend
       - se-frontend
     volumes:
-      - /src/ # contains refarm-site modules
+      - $DEPS_DIR # contains refarm-site modules
     volumes_from:
       - se-source
     command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
@@ -57,6 +57,8 @@ services:
     volumes_from:
       - se-source
       - se-python
+    environment:
+      - DEPS_DIR=$DEPS_DIR
 
   se-postgres:
     image: postgres:9.5

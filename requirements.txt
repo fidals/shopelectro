@@ -5,7 +5,6 @@ django-debug-toolbar
 django-redis
 django-mptt==0.8.7
 django-widget-tweaks
-git+https://github.com/selwin/django-user_agents@44b752611b4e5cf3df8a053f7aac299ac56f591f#egg=django_user_agents
 ipython
 openpyxl
 pillow
@@ -18,5 +17,5 @@ unidecode
 ua-parser==0.7.3
 user-agents==1.0.1
 sorl-thumbnail==12.4a1
--e git+https://github.com/fidals/refarm-site.git#egg=refarm-site
-
+https://github.com/selwin/django-user_agents/archive/master.zip
+https://github.com/fidals/refarm-site/archive/master.zip

@@ -27,7 +27,7 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         vendor_code = product_el.find(
             config.xpaths['vendor_code']
         ).text.lstrip('0')
-        content = product_el.find(config.xpaths['content']).text
+        content = product_el.find(config.xpaths['page_content']).text or ''
 
         tag_els = product_el.findall(config.xpaths['tags'])
         tag_uuids = filter(is_correct_uuid, (
@@ -40,7 +40,9 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         yield uuid, {
             'name': name,
             'vendor_code': vendor_code,
-            'content': content,
+            'page': {
+                'content': content
+            },
             'tags': tags
         }
 
@@ -83,7 +85,7 @@ product_file = XmlFile(
         'products': './/{}Товары/',
         'name': '.{}Наименование',
         'uuid': '.{}Ид',
-        'content': '.{}Описание',
+        'page_content': '.{}Описание',
         'tags': '.{}ЗначенияСвойств/',
         'tag_value_uuid': '.{}Значение',
         'vendor_code': '.{0}ЗначенияРеквизитов/{0}ЗначениеРеквизита'
@@ -215,7 +217,8 @@ def delete(data: Dict[UUID, Data]):
         shopelectro_product__uuid__in=uuids).delete()
     product_count, _ = Product.objects.exclude(
         uuid__in=uuids).delete()
-    print('{} products and {} pages were deleted.'.format(product_count, page_count))
+    print('{} products and {} pages were deleted.'.format(
+        product_count, page_count))
 
 
 @transaction.atomic
@@ -223,8 +226,10 @@ def update(data: Dict[UUID, Data]) -> QuerySet:
     def save(product, field, value):
         if field == 'name' and getattr(product, field, None):
             return
-        elif field == 'content' and not getattr(product.page, field, None):
-            setattr(product.page, field, value)
+        elif field == 'page':
+            for page_field, page_value in value.items():
+                if not getattr(product.page, page_field, ''):
+                    setattr(product.page, page_field, page_value)
         else:
             setattr(product, field, value)
 
@@ -232,7 +237,6 @@ def update(data: Dict[UUID, Data]) -> QuerySet:
 
     for product in products:
         product_data = data[str(product.uuid)]
-
         for field, value in product_data.items():
             save(product, field, value)
 
@@ -244,7 +248,6 @@ def update(data: Dict[UUID, Data]) -> QuerySet:
 @transaction.atomic
 def create(data: Dict[UUID, Data], updated_products: QuerySet) -> QuerySet:
     data = deepcopy(data)
-
     uuids_for_create = (
         set(data) - set(str(product.uuid) for product in updated_products)
     )
@@ -252,9 +255,13 @@ def create(data: Dict[UUID, Data], updated_products: QuerySet) -> QuerySet:
     for uuid in uuids_for_create:
         product_data = data.get(uuid)
         tags = product_data.pop('tags', {})
+        page_data = product_data.pop('page', {})
 
         new_product = Product.objects.create(**product_data, uuid=uuid)
         new_product.tags.set(tags)
+        for field, value in page_data.items():
+            setattr(new_product.page, field, value)
+        new_product.page.save()
 
     created_products = Product.objects.filter(uuid__in=uuids_for_create)
 
@@ -272,7 +279,7 @@ def main(*args, **kwargs):
     if not cleaned_product_data:
 
         parsed_files = {
-            'product_files':  list(product_file.parsed_files),
+            'product_files': list(product_file.parsed_files),
             'price_files': list(price_file.parsed_files),
             'in_stock_files': list(in_stock_file.parsed_files),
         }

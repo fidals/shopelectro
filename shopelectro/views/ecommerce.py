@@ -10,13 +10,12 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
 from ecommerce import mailer, views as ec_views
-from ecommerce.cart import Cart
 from ecommerce.models import Order
 from pages.models import CustomPage
 
 from shopelectro.cart import SECart
 from shopelectro.forms import OrderForm
-from shopelectro.models import Product, Order
+from shopelectro.models import Product
 
 
 # ECOMMERCE VIEWS
@@ -66,9 +65,9 @@ def one_click_buy(request):
     Accept XHR, save Order to DB, send mail about it
     and return 200 OK.
     """
-    Cart(request.session).clear()
+    SECart(request.session).clear()
 
-    cart = Cart(request.session)
+    cart = SECart(request.session)
     product = get_object_or_404(Product, id=request.POST['product'])
     cart.add(product, int(request.POST['quantity']))
     order = Order(phone=request.POST['phone'])
@@ -85,7 +84,8 @@ def one_click_buy(request):
 @require_POST
 def order_call(request):
     """Send email about ordered call."""
-    phone, time, url = ec_views.get_keys_from_post(request, 'phone', 'time', 'url')
+    phone, time, url = ec_views.get_keys_from_post(
+        request, 'phone', 'time', 'url')
 
     mailer.send_backcall(
         subject=settings.EMAIL_SUBJECTS['call'],

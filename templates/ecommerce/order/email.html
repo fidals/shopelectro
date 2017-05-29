@@ -56,10 +56,10 @@
           {% for position in order.items %}
             <tr>
               <td align="left" style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
-                {{ position.product_id }}
+                {{ position.vendor_code }}
               </td>
               <td align="left" style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
-                <a href="{% full_url 'product' position.product_id %}">
+                <a href="{% full_url 'product' position.vendor_code %}">
                   {{ position.name }}
                 </a>
               </td>
