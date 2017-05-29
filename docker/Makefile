@@ -7,8 +7,10 @@ static:
 	docker-compose exec se-python python manage.py price
 	docker-compose exec se-python python manage.py collectstatic --noinput
 
-build: static
-	docker-compose build --no-cache
+build-dev-py:
+	docker-compose build --no-cache se-python
+
+build: build-dev-py static
 	docker-compose -f docker-compose-production.yml build
 
 test: static
