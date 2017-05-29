@@ -218,7 +218,7 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
 
     if tags:
         tag_entities = models.Tag.objects.filter(
-            slug__in=list(models.Tag.parse_url_tags(tags)))
+            slug__in=models.Tag.parse_url_tags(tags))
 
         products = (
             products
