@@ -10,12 +10,11 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
 from ecommerce import mailer, views as ec_views
-from ecommerce.models import Order
 from pages.models import CustomPage
 
 from shopelectro.cart import SECart
 from shopelectro.forms import OrderForm
-from shopelectro.models import Product
+from shopelectro.models import Product, Order
 
 
 # ECOMMERCE VIEWS
