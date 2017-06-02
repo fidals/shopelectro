@@ -73,7 +73,7 @@ def one_click_buy(request):
     order.set_positions(cart)
     ec_views.save_order_to_session(request.session, order)
     mailer.send_order(
-        subject=settings.EMAIL_SUBJECTS['order'],
+        subject=settings.EMAIL_SUBJECTS['one_click'],
         order=order,
         to_customer=False,
     )
