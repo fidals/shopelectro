@@ -7,7 +7,6 @@ Every Selenium-based test suite uses fixture called dump.json.
 
 import time
 
-import re
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Remote  # We use this instead of standard selenium
