@@ -108,6 +108,18 @@ class Header(SeleniumTestCase):
         self.assertTrue(self.browser.find_element_by_class_name(
             'js-backcall-success').is_displayed())
 
+    @disable_celery
+    def test_order_backcall_email(self):
+        """Back call phone number should be same in sent email"""
+        self.browser.find_element_by_class_name('js-backcall-order').click()
+        self.browser.find_element_by_id('back-call-phone').send_keys('2222222222')
+        self.browser.find_element_by_class_name('js-send-backcall').click()
+        wait(3)
+        sent_mail = mail.outbox[0]
+
+        self.assertEqual(sent_mail.subject, settings.EMAIL_SUBJECTS['call'])
+        self.assertIn('+7 (222) 222 22 22', sent_mail.body)
+
     def test_empty_cart(self):
         """By default there should be 'Корзина пуста' in the header's cart."""
         cart_in_header = self.browser.find_element_by_class_name(
@@ -453,7 +465,7 @@ class ProductPage(SeleniumTestCase):
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
-            'input-one-click-phone').send_keys('222222222222')
+            'input-one-click-phone').send_keys('2222222222')
         self.one_click.click()
         wait()
 
@@ -472,28 +484,28 @@ class ProductPage(SeleniumTestCase):
             self.browser.find_element_by_class_name('js-touchspin')
             .get_attribute('value')
         )
-
-        self.browser.find_element_by_id(
-            'input-one-click-phone').send_keys('2222222222')
+        self.browser.execute_script('$("#input-one-click-phone").val("");')
+        (self.browser
+            .find_element_by_id('input-one-click-phone')
+            .send_keys('2222222222')
+        )
         self.one_click.click()
-        wait(5)
+        wait(3)
 
         sent_mail_body = mail.outbox[0].body
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
         self.assertInHTML(
-            '''<td align="left" 
-                style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
-                {0}
-            </td>'''.format(product_vendor_code),
+            '<td align="left"' +
+            'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+            .format(product_vendor_code),
             sent_mail_body)
         self.assertIn(self.product.url, sent_mail_body)
         self.assertIn('{0} шт.'.format(result_quantity), sent_mail_body)
         self.assertInHTML(
-            '<td align="right" style="padding:5px 10px;">{0} руб.</td>'
+            '<td align="right" style="padding:5px 10px">{0} руб.</td>'
             .format(int(self.product.price * result_quantity)),
             sent_mail_body
         )
-        mail.outbox = []
 
     def test_add_to_cart(self):
         """We can add item to cart from it's page."""
@@ -679,9 +691,14 @@ class OrderPage(SeleniumTestCase):
         wait()
 
     def fill_and_submit_form(self):
+        self.browser.execute_script('$("#id_name").val("");')
+        self.browser.execute_script('$("#id_city").val("");')
+        self.browser.execute_script('$("#id_phone").val("");')
+        self.browser.execute_script('$("#id_email").val("");')
+
         self.browser.find_element_by_id('id_name').send_keys('Name')
         self.browser.find_element_by_id('id_city').send_keys('Санкт-Петербург')
-        self.browser.find_element_by_id('id_phone').send_keys('22222222222')
+        self.browser.find_element_by_id('id_phone').send_keys('2222222222')
         self.browser.find_element_by_id('id_email').send_keys('test@test.test')
         wait()
         self.browser.find_element_by_id('submit-order').click()
@@ -689,31 +706,31 @@ class OrderPage(SeleniumTestCase):
 
     @disable_celery
     def test_order_email(self):
-        codes = self.browser.find_elements_by_class_name('order-table-product-id')
+        codes = self.browser.find_elements_by_class_name(
+            'order-table-product-id')
         clean_codes = []
         for code in codes:
             clean_codes.append(code.text)
 
         self.perform_operations_on_cart()
         final_price = self.browser.find_element_by_id('cart-page-sum').text[:-5]
+
         self.fill_and_submit_form()
-        wait(5)
-        print(mail.get_connection())
+        wait(3)
         sent_mail_body = mail.outbox[0].body
 
         self.assertIn('Наличные', sent_mail_body)
-        self.assertIn('+2 (222) 222 22 22', sent_mail_body)
+        self.assertIn('+7 (222) 222 22 22', sent_mail_body)
         self.assertIn('test@test.test', sent_mail_body)
         self.assertInHTML(
-            '<strong style="font-weight:bold;"> Санкт-Петербург</strong>',
+            '<strong style="font-weight:bold">Санкт-Петербург</strong>',
             sent_mail_body
         )
         for code in clean_codes:
             self.assertInHTML(
-                '''<td align="left" 
-                    style="border-bottom: 1px solid #E4E4E4; padding: 10px;">
-                    {0}</td>
-                '''.format(code),
+                '<td align="left"' +
+                'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+                .format(code),
                 sent_mail_body
             )
             self.assertIn(
@@ -723,11 +740,10 @@ class OrderPage(SeleniumTestCase):
             )
 
         self.assertInHTML(
-            '<td align="right" style="padding:5px 10px;">{0} руб.</td>'
+            '<td align="right" style="padding:5px 10px">{0} руб.</td>'
             .format(final_price),
             sent_mail_body
         )
-        mail.outbox = []
 
 
 class SitePage(SeleniumTestCase):
@@ -782,20 +798,6 @@ class SitePage(SeleniumTestCase):
         wait()
 
         self.assertFalse(accordion_content.is_displayed())
-
-    @disable_celery
-    def test_backcall_order_email(self):
-        """Back call phone number should be same in sent email"""
-        backcall = self.browser.find_element_by_class_name('js-backcall-order')
-        backcall.click()
-        self.browser.find_element_by_id('back-call-phone').send_keys('22222222222')
-        self.browser.find_element_by_class_name('js-send-backcall').click()
-        wait(5)
-        sent_mail = mail.outbox[0]
-
-        self.assertEqual(sent_mail.subject, settings.EMAIL_SUBJECTS['call'])
-        self.assertIn('+2 (222) 222 22 22', sent_mail.body)
-        mail.outbox = []
 
 
 @disable_celery

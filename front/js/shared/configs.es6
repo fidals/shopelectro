@@ -50,7 +50,6 @@ const configs = (() => {
   function setupListeners() {
     DOM.$modal.on('shown.bs.modal', focusFirstField);
     DOM.$phoneInput.on('input', storePhoneNumber);
-    DOM.$phoneInput.focus(phoneFieldFocus);
   }
 
   /**
@@ -73,7 +72,7 @@ const configs = (() => {
     initTouchspin();
     initMmenu();
 
-    DOM.$phoneInput.mask('+0 (000) 000 00 00', {
+    DOM.$phoneInput.mask('+7 (000) 000 00 00', {
       placeholder: '+7 (999) 000 00 00',
     });
   }
@@ -120,11 +119,6 @@ const configs = (() => {
 
   function storePhoneNumber() {
     localStorage.setItem(labels.phone, $(event.target).val());
-  }
-
-  function phoneFieldFocus() {
-    const $phoneInput = $(event.target);
-    if (!$phoneInput.val()) $phoneInput.val('+7').trigger('change');
   }
 
   init();
