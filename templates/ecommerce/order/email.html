@@ -11,19 +11,19 @@
 
   <body style="font-family:arial,sans-serif;margin:0;width:100%">
     <div style="width:100%;margin-bottom:35px">
-      <span style="float:right;font-size:16px;color:#767a7b">
+      <span style="float:right;font-size:16px;color:#767A7B">
         <small style="position:relative;top:-.2em">(812)</small>
-        <span style="color:#cc0000;font-size:25px" class="ya-opt-phone">
+        <span style="color:#C00;font-size:25px" class="ya-opt-phone">
           <a href="tel:+78124163200">416-32-00</a>
         </span>
       </span>
 
       <a href="https://www.shopelectro.ru/" target="_blank"
-         style="color:#cc0000;font-size:25px;font-family:arial,sans-serif;
+         style="color:#C00;font-size:25px;font-family:arial,sans-serif;
          font-weight:bold;text-decoration:none">
         ShopElectro
       </a>
-      <div style="width:100%;background-color:#d7d7d7;height:1px"></div>
+      <div style="width:100%;background-color:#D7D7D7;height:1px"></div>
     </div>
     <div style="font-size:1.077em;line-height:1.43;margin:35px 0">
       <p style="margin:0 0 1.15em;font-family:arial,sans-serif">
@@ -41,35 +41,35 @@
       <table width="100%" cellspacing="0" cellpadding="3px" border="0">
         <tbody>
           <tr>
-            <td width="5%" align="left" style="border-bottom:1px solid #e4e4e4;
+            <td width="5%" align="left" style="border-bottom:1px solid #E4E4E4;
             padding:10px;font-weight:bold">Артикул</td>
-            <td width="65%" align="left" style="border-bottom:1px solid #e4e4e4;
+            <td width="65%" align="left" style="border-bottom:1px solid #E4E4E4;
             padding:10px;font-weight:bold">Наименование</td>
-            <td width="10%" align="right" style="border-bottom:1px solid #e4e4e4;
+            <td width="10%" align="right" style="border-bottom:1px solid #E4E4E4;
             padding:10px;font-weight:bold">Кол-во</td>
-            <td width="10%" align="right" style="border-bottom:1px solid #e4e4e4;
+            <td width="10%" align="right" style="border-bottom:1px solid #E4E4E4;
             padding:10px;font-weight:bold">Цена</td>
-            <td width="10%" align="right" style="border-bottom:1px solid #e4e4e4;
+            <td width="10%" align="right" style="border-bottom:1px solid #E4E4E4;
             padding:10px;font-weight:bold">Сумма</td>
           </tr>
 
           {% for position in order.items %}
             <tr>
-              <td align="left" style="border-bottom:1px solid #e4e4e4;padding:10px"><!--
+              <td align="left" style="border-bottom:1px solid #E4E4E4;padding:10px"><!--
               -->{{ position.vendor_code }}
               </td>
-              <td align="left" style="border-bottom:1px solid #e4e4e4;padding:10px"><!--
+              <td align="left" style="border-bottom:1px solid #E4E4E4;padding:10px"><!--
               --><a href="{% full_url 'product' position.vendor_code %}"><!--
                 -->{{ position.name }}
                 </a>
               </td>
-              <td align="right" style="border-bottom:1px solid #e4e4e4;padding:10px"><!--
+              <td align="right" style="border-bottom:1px solid #E4E4E4;padding:10px"><!--
               -->{{ position.quantity }} шт.
               </td>
-              <td align="right" style="border-bottom:1px solid #e4e4e4;padding:10px"><!--
+              <td align="right" style="border-bottom:1px solid #E4E4E4;padding:10px"><!--
               -->{{ position.price|humanize_price }} руб.
               </td>
-              <td align="right" style="border-bottom:1px solid #e4e4e4;padding:10px"><!--
+              <td align="right" style="border-bottom:1px solid #E4E4E4;padding:10px"><!--
               -->{{ position.total_price|humanize_price }} руб.
               </td>
             </tr>
@@ -83,7 +83,7 @@
         </tbody>
       </table>
 
-      <p style="border-top:1px solid #e4e4e4"></p>
+      <p style="border-top:1px solid #E4E4E4"></p>
 
       <ul style="padding:0;list-style:none">
         <li style="margin:0 0 1em">Тип платежа:
@@ -105,7 +105,7 @@
         {% endif %}
       </ul>
 
-      <p style="border-top:1px solid #e4e4e4;border-bottom:1px solid #e4e4e4;
+      <p style="border-top:1px solid #E4E4E4;border-bottom:1px solid #E4E4E4;
       padding:15px 0;font-size:18px">
         Адреса магазинов: СПб, пр-т Елизарова, 38А, 3 этаж, офис 312;
         ул. Маршала Казакова, 35, ярмарка «Юнона», пав. №660, 662

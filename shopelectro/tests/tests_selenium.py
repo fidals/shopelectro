@@ -484,20 +484,19 @@ class ProductPage(SeleniumTestCase):
             .get_attribute('value')
         )
         self.browser.execute_script('$("#input-one-click-phone").val("");')
-        (self.browser
-            .find_element_by_id('input-one-click-phone')
-            .send_keys('2222222222')
-        )
+        phone_field = self.browser.find_element_by_id('input-one-click-phone')
+        phone_field.send_keys('2222222222')
         self.one_click.click()
         wait(3)
 
         sent_mail_body = mail.outbox[0].body
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
         self.assertInHTML(
-            '<td align="left"' +
+            '<td align="left"'
             'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
             .format(product_vendor_code),
-            sent_mail_body)
+            sent_mail_body
+        )
         self.assertIn(self.product.url, sent_mail_body)
         self.assertIn('{0} шт.'.format(result_quantity), sent_mail_body)
         self.assertInHTML(
@@ -707,9 +706,7 @@ class OrderPage(SeleniumTestCase):
     def test_order_email(self):
         codes = self.browser.find_elements_by_class_name(
             'order-table-product-id')
-        clean_codes = []
-        for code in codes:
-            clean_codes.append(code.text)
+        clean_codes = [code.text for code in codes]
 
         self.perform_operations_on_cart()
         final_price = self.browser.find_element_by_id('cart-page-sum').text[:-5]
@@ -727,7 +724,7 @@ class OrderPage(SeleniumTestCase):
         )
         for code in clean_codes:
             self.assertInHTML(
-                '<td align="left"' +
+                '<td align="left"'
                 'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
                 .format(code),
                 sent_mail_body
