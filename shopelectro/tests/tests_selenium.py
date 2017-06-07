@@ -12,6 +12,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from seleniumrequests import Remote  # We use this instead of standard selenium
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
+from django.core import mail
+from django.conf import settings
 from django.db.models import Count
 from django.test import LiveServerTestCase, override_settings
 from django.urls import reverse
@@ -104,6 +106,18 @@ class Header(SeleniumTestCase):
 
         self.assertTrue(self.browser.find_element_by_class_name(
             'js-backcall-success').is_displayed())
+
+    @disable_celery
+    def test_order_backcall_email(self):
+        """Back call phone number should be same in sent email"""
+        self.browser.find_element_by_class_name('js-backcall-order').click()
+        self.browser.find_element_by_id('back-call-phone').send_keys('2222222222')
+        self.browser.find_element_by_class_name('js-send-backcall').click()
+        wait(3)
+        sent_mail = mail.outbox[0]
+
+        self.assertEqual(sent_mail.subject, settings.EMAIL_SUBJECTS['call'])
+        self.assertIn('+7 (222) 222 22 22', sent_mail.body)
 
     def test_empty_cart(self):
         """By default there should be 'Корзина пуста' in the header's cart."""
@@ -383,11 +397,11 @@ class ProductPage(SeleniumTestCase):
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
-        product = Product.objects.get(id=self.PRODUCT_ID)
+        self.product = Product.objects.get(id=self.PRODUCT_ID)
         server = self.live_server_url
-        self.test_product_page = server + product.url
+        self.test_product_page = server + self.product.url
         self.success_order = server + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success',))
-        self.product_name = product.name
+        self.product_name = self.product.name
         self.browser.get(self.test_product_page)
         self.one_click = self.browser.find_element_by_id('btn-one-click-order')
 
@@ -450,11 +464,46 @@ class ProductPage(SeleniumTestCase):
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
-            'input-one-click-phone').send_keys('222222222222')
+            'input-one-click-phone').send_keys('2222222222')
         self.one_click.click()
         wait()
 
         self.assertEqual(self.browser.current_url, self.success_order)
+
+    @disable_celery
+    def test_one_click_buy_order_email(self):
+        product_vendor_code = self.product.vendor_code
+
+        increase_quantity = self.browser.find_element_by_xpath(
+            '//*[@class="product-price-wrapper"]/div[1]/div[1]/span[3]/button[1]'
+        )
+        increase_quantity.click()
+        increase_quantity.click()
+        result_quantity = int(
+            self.browser.find_element_by_class_name('js-touchspin')
+            .get_attribute('value')
+        )
+        self.browser.execute_script('$("#input-one-click-phone").val("");')
+        phone_field = self.browser.find_element_by_id('input-one-click-phone')
+        phone_field.send_keys('2222222222')
+        self.one_click.click()
+        wait(3)
+
+        sent_mail_body = mail.outbox[0].body
+        self.assertIn('+7 (222) 222 22 22', sent_mail_body)
+        self.assertInHTML(
+            '<td align="left"'
+            'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+            .format(product_vendor_code),
+            sent_mail_body
+        )
+        self.assertIn(self.product.url, sent_mail_body)
+        self.assertIn('{0} шт.'.format(result_quantity), sent_mail_body)
+        self.assertInHTML(
+            '<td align="right" style="padding:5px 10px">{0} руб.</td>'
+            .format(int(self.product.price * result_quantity)),
+            sent_mail_body
+        )
 
     def test_add_to_cart(self):
         """We can add item to cart from it's page."""
@@ -626,24 +675,71 @@ class OrderPage(SeleniumTestCase):
 
     def test_confirm_order(self):
         """After filling the form we should be able to confirm an Order."""
-        self.browser.find_element_by_id('id_payment_type_0').click()
-        add_one_more = self.browser.find_element_by_xpath(self.add_product)
-        add_one_more.click()  # perform some operations on cart
-        wait()
+        self.perform_operations_on_cart()
         self.fill_and_submit_form()
         self.assertEqual(
             self.browser.current_url,
             self.live_server_url + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success', ))
         )
 
+    def perform_operations_on_cart(self):
+        self.browser.find_element_by_id('id_payment_type_0').click()
+        add_one_more = self.browser.find_element_by_xpath(self.add_product)
+        add_one_more.click()
+        wait()
+
     def fill_and_submit_form(self):
+        self.browser.execute_script('$("#id_name").val("");')
+        self.browser.execute_script('$("#id_city").val("");')
+        self.browser.execute_script('$("#id_phone").val("");')
+        self.browser.execute_script('$("#id_email").val("");')
+
         self.browser.find_element_by_id('id_name').send_keys('Name')
         self.browser.find_element_by_id('id_city').send_keys('Санкт-Петербург')
-        self.browser.find_element_by_id('id_phone').send_keys('22222222222')
+        self.browser.find_element_by_id('id_phone').send_keys('2222222222')
         self.browser.find_element_by_id('id_email').send_keys('test@test.test')
         wait()
         self.browser.find_element_by_id('submit-order').click()
         wait()
+
+    @disable_celery
+    def test_order_email(self):
+        codes = self.browser.find_elements_by_class_name(
+            'order-table-product-id')
+        clean_codes = [code.text for code in codes]
+
+        self.perform_operations_on_cart()
+        final_price = self.browser.find_element_by_id('cart-page-sum').text[:-5]
+
+        self.fill_and_submit_form()
+        wait(3)
+        sent_mail_body = mail.outbox[0].body
+
+        self.assertIn('Наличные', sent_mail_body)
+        self.assertIn('+7 (222) 222 22 22', sent_mail_body)
+        self.assertIn('test@test.test', sent_mail_body)
+        self.assertInHTML(
+            '<strong style="font-weight:bold">Санкт-Петербург</strong>',
+            sent_mail_body
+        )
+        for code in clean_codes:
+            self.assertInHTML(
+                '<td align="left"'
+                'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+                .format(code),
+                sent_mail_body
+            )
+            self.assertIn(
+                '<a href="https://www.shopelectro.ru{0}"'
+                .format(reverse('product', args=(code,))),
+                sent_mail_body
+            )
+
+        self.assertInHTML(
+            '<td align="right" style="padding:5px 10px">{0} руб.</td>'
+            .format(final_price),
+            sent_mail_body
+        )
 
 
 class SitePage(SeleniumTestCase):
