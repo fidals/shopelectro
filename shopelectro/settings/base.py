@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'images',
     'pages',
     'catalog',
+    'search',
     'ecommerce',
     'shopelectro',
 ]
