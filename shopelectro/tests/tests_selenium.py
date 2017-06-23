@@ -493,7 +493,7 @@ class ProductPage(SeleniumTestCase):
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
         self.assertInHTML(
             '<td align="left"'
-            'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+            'style="border-bottom:1px solid #E4E4E4;padding:10px">{0}</td>'
             .format(product_vendor_code),
             sent_mail_body
         )
@@ -725,7 +725,7 @@ class OrderPage(SeleniumTestCase):
         for code in clean_codes:
             self.assertInHTML(
                 '<td align="left"'
-                'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+                'style="border-bottom:1px solid #E4E4E4;padding:10px">{0}</td>'
                 .format(code),
                 sent_mail_body
             )

@@ -72,6 +72,7 @@ class Mobile(SeleniumTestCase):
         self.assertTrue(catalog.is_displayed())
 
         toggler.click()
+        wait()
         search_input = self.browser.find_element_by_class_name('js-search-input')
         self.assertTrue(search_input.is_displayed())
 
@@ -79,12 +80,22 @@ class Mobile(SeleniumTestCase):
         """Autocomplete in mobile search should work."""
         toggler = self.browser.find_element_by_class_name(self.toggler)
         toggler.click()
-        search_input = self.browser.find_element_by_class_name('js-search-input')
+        wait()
+        search_input = self.browser.find_element_by_css_selector('input.js-search-input')
         search_input.send_keys('Cate')
-        self.browser.implicitly_wait(10)
-        autocomplete = self.browser.find_element_by_class_name('autocomplete-suggestions')
+        wait()
 
-        self.assertTrue(autocomplete.is_displayed())
+        # autoComplete.js makes several divs with 'autocomplete-suggestions' class
+        containers = self.browser.find_elements_by_class_name('autocomplete-suggestions')
+        for autocomplete_element in containers:
+            try:
+                self.assertTrue(autocomplete_element.is_displayed())
+            except AssertionError:
+                continue
+            else:
+                break
+        else:
+            raise AssertionError
 
     def test_catalog(self):
         """Catalog should expand on click on fa fa-chevron icons."""

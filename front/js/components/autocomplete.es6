@@ -5,10 +5,6 @@ const autocomplete = (() => {
     minChars: 2,
   };
 
-  const init = () => {
-    new autoComplete(constructorArgs);
-  };
-
   /**
    * Highlight term in search results
    * Behind the scenes JavaScript autoComplete lib use this highlight code
@@ -50,7 +46,7 @@ const autocomplete = (() => {
    * Constructor args for autocomplete lib.
    * https://goodies.pixabay.com/javascript/auto-complete/demo.html
    */
-  const constructorArgs = {
+  let constructorArgs = {
     selector: config.searchInput,
     source: (term, response) => {
       $.getJSON(config.url, { term }, (searchedItems) => {
@@ -73,6 +69,13 @@ const autocomplete = (() => {
 
       window.location = $(item).find('a').attr('href');
     },
+  };
+
+  const init = (isMobileMenu) => {
+    if (isMobileMenu) {
+      constructorArgs['selector'] = document.querySelector('input.js-search-input');
+    }
+    new autoComplete(constructorArgs);
   };
 
   init();

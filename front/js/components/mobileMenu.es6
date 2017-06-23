@@ -24,7 +24,7 @@
   function initSearch() {
     if (DOM.$mobSearch.hasClass(DOM.searchClass)) return;
     DOM.$mobSearch.addClass(DOM.searchClass);
-    autocomplete.init();
+    autocomplete.init(true);
   }
 
   function toggleMenuIcon() {
