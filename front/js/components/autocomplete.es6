@@ -73,7 +73,7 @@ const autocomplete = (() => {
 
   const init = (isMobileMenu) => {
     if (isMobileMenu) {
-      constructorArgs['selector'] = document.querySelector('input.js-search-input');
+      constructorArgs['selector'] = $(config.searchInput)[0];
     }
     new autoComplete(constructorArgs);
   };
