@@ -96,8 +96,6 @@ class Mobile(SeleniumTestCase):
                     WebDriverWait(self.browser, 5)
                     .until(expected_conditions.visibility_of(autocomplete_element))
                 )
-                print(element)
-                # self.assertTrue(autocomplete_element.is_displayed())
             except TimeoutException:
                 continue
             else:

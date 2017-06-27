@@ -46,36 +46,35 @@ const autocomplete = (() => {
    * Constructor args for autocomplete lib.
    * https://goodies.pixabay.com/javascript/auto-complete/demo.html
    */
-  let constructorArgs = {
-    selector: config.searchInput,
-    source: (term, response) => {
-      $.getJSON(config.url, { term }, (searchedItems) => {
-        response(searchedItems);
-      });
-    },
-    renderItem: (item, term) => {
-      if (['category', 'product'].includes(item.type)) {
-        return renderSearchItem(item, term);
-      }
+  const getAutoCompleteArgs = () => {
+    return {
+      selector: $(config.searchInput)[0],
+      source: (term, response) => {
+        $.getJSON(config.url, {term}, (searchedItems) => {
+          response(searchedItems);
+        });
+      },
+      renderItem: (item, term) => {
+        if (['category', 'product'].includes(item.type)) {
+          return renderSearchItem(item, term);
+        }
 
-      if (item.type === 'see_all') {
-        return renderLastItem(item);
-      }
-    },
-    onSelect: (event, term, item) => {
-      event.preventDefault();
-      const isRightClick = event.button === 2 || event.which === 3;
-      if (isRightClick) return;
+        if (item.type === 'see_all') {
+          return renderLastItem(item);
+        }
+      },
+      onSelect: (event, term, item) => {
+        event.preventDefault();
+        const isRightClick = event.button === 2 || event.which === 3;
+        if (isRightClick) return;
 
-      window.location = $(item).find('a').attr('href');
-    },
+        window.location = $(item).find('a').attr('href');
+      }
+    };
   };
 
-  const init = (isMobileMenu) => {
-    if (isMobileMenu) {
-      constructorArgs['selector'] = $(config.searchInput)[0];
-    }
-    new autoComplete(constructorArgs);
+  const init = () => {
+    new autoComplete(getAutoCompleteArgs());
   };
 
   init();
