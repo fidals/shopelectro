@@ -118,7 +118,7 @@ class Mobile(SeleniumTestCase):
 
         buy_btn.click()
         self.browser.implicitly_wait(10)
-        # size = self.browser.find_element_by_class_name('js-cart-size').text
+        size = self.browser.find_element_by_class_name('js-cart-size').text
         price = self.browser.find_element_by_class_name('js-mobile-cart-price').text
 
         self.assertEqual(int(price), 1000)
