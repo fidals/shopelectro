@@ -8,9 +8,7 @@ Every Selenium-based test suite uses fixture called dump.json.
 import time
 
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions
 
 from django.test import LiveServerTestCase
@@ -90,8 +88,9 @@ class Mobile(SeleniumTestCase):
         search_input.send_keys('Cate')
         WebDriverWait(self.browser, 5).until(
             expected_conditions
-            .presence_of_all_elements_located((By.CLASS_NAME, 'autocomplete-suggestion'))
+            .text_to_be_present_in_element((By.CSS_SELECTOR, '.autocomplete-suggestion a span b'), 'Cate')
         )
+        WebDriverWait(self.browser, 5)
 
     def test_catalog(self):
         """Catalog should expand on click on fa fa-chevron icons."""
