@@ -175,7 +175,7 @@ class CategoryPage(SeleniumTestCase):
         self.deep_children_category = self.testing_url(
             category_with_product_less_then_LOAD_LIMIT.page.slug)
         self.apply_btn = 'js-apply-filter'
-        self.filter_tag = 'label[for="tag-6-v"]'
+        self.filter_tag = 'label[for="tag-24-v"]'
 
     @property
     def load_more_button(self):
@@ -379,6 +379,10 @@ class CategoryPage(SeleniumTestCase):
     def test_load_more_after_filtering(self):
         """Sorting should work after filtering."""
         self.browser.get(self.root_category)
+        wait()
+
+        section_toggler = self.browser.find_element_by_class_name('js-toggle-tag-group')
+        section_toggler.click()
         wait()
 
         self.browser.find_element_by_css_selector(self.filter_tag).click()
