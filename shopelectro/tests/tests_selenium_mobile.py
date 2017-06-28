@@ -91,8 +91,7 @@ class Mobile(SeleniumTestCase):
             .visibility_of_all_elements_located((By.CSS_SELECTOR, '.autocomplete-suggestion'))
         )
         for item in autocomplete_items[:-1]:  # last autocomplete item has no contains data
-            if not item.get_attribute('data-val') == 'Cate':
-                raise AssertionError
+            self.assertTrue(item.get_attribute('data-val') == 'Cate')
 
     def test_catalog(self):
         """Catalog should expand on click on fa fa-chevron icons."""
