@@ -5,10 +5,6 @@ const autocomplete = (() => {
     minChars: 2,
   };
 
-  const init = () => {
-    new autoComplete(constructorArgs);
-  };
-
   /**
    * Highlight term in search results
    * Behind the scenes JavaScript autoComplete lib use this highlight code
@@ -48,31 +44,39 @@ const autocomplete = (() => {
 
   /**
    * Constructor args for autocomplete lib.
+   * Packed into a function because search input selector should be
+   * rendered before autocomplete will init
    * https://goodies.pixabay.com/javascript/auto-complete/demo.html
    */
-  const constructorArgs = {
-    selector: config.searchInput,
-    source: (term, response) => {
-      $.getJSON(config.url, { term }, (searchedItems) => {
-        response(searchedItems);
-      });
-    },
-    renderItem: (item, term) => {
-      if (['category', 'product'].includes(item.type)) {
-        return renderSearchItem(item, term);
-      }
+  const getAutoCompleteArgs = () => {
+    return {
+      selector: $(config.searchInput)[0],
+      source: (term, response) => {
+        $.getJSON(config.url, {term}, (searchedItems) => {
+          response(searchedItems);
+        });
+      },
+      renderItem: (item, term) => {
+        if (['category', 'product'].includes(item.type)) {
+          return renderSearchItem(item, term);
+        }
 
-      if (item.type === 'see_all') {
-        return renderLastItem(item);
-      }
-    },
-    onSelect: (event, term, item) => {
-      event.preventDefault();
-      const isRightClick = event.button === 2 || event.which === 3;
-      if (isRightClick) return;
+        if (item.type === 'see_all') {
+          return renderLastItem(item);
+        }
+      },
+      onSelect: (event, term, item) => {
+        event.preventDefault();
+        const isRightClick = event.button === 2 || event.which === 3;
+        if (isRightClick) return;
 
-      window.location = $(item).find('a').attr('href');
-    },
+        window.location = $(item).find('a').attr('href');
+      }
+    };
+  };
+
+  const init = () => {
+    new autoComplete(getAutoCompleteArgs());
   };
 
   init();

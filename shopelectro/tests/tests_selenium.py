@@ -54,7 +54,7 @@ def make_backcall(browser):
 def show_cart_dropdown(browser):
     cart_parent = browser.find_element_by_class_name('basket-parent')
     hover(browser, cart_parent)
-    wait()
+    wait(0.5)
 
 
 def add_to_cart(browser, live_server_url):
@@ -128,8 +128,8 @@ class Header(SeleniumTestCase):
 
     def test_cart_hover(self):
         """Cart dropdown should be visible on hover."""
-        show_cart_dropdown(self.browser)
         cart = self.browser.find_element_by_class_name('basket-wrapper')
+        show_cart_dropdown(self.browser)
 
         self.assertTrue(cart.is_displayed())
 
@@ -175,7 +175,7 @@ class CategoryPage(SeleniumTestCase):
         self.deep_children_category = self.testing_url(
             category_with_product_less_then_LOAD_LIMIT.page.slug)
         self.apply_btn = 'js-apply-filter'
-        self.filter_tag = 'label[for="tag-6-v"]'
+        self.filter_tag = 'label[for="tag-24-v"]'
 
     @property
     def load_more_button(self):
@@ -381,6 +381,10 @@ class CategoryPage(SeleniumTestCase):
         self.browser.get(self.root_category)
         wait()
 
+        section_toggler = self.browser.find_element_by_class_name('js-toggle-tag-group')
+        section_toggler.click()
+        wait()
+
         self.browser.find_element_by_css_selector(self.filter_tag).click()
         self.browser.find_element_by_class_name(self.apply_btn).click()
 
@@ -493,7 +497,7 @@ class ProductPage(SeleniumTestCase):
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
         self.assertInHTML(
             '<td align="left"'
-            'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+            'style="border-bottom:1px solid #E4E4E4;padding:10px">{0}</td>'
             .format(product_vendor_code),
             sent_mail_body
         )
@@ -725,7 +729,7 @@ class OrderPage(SeleniumTestCase):
         for code in clean_codes:
             self.assertInHTML(
                 '<td align="left"'
-                'style="border-bottom:1px solid #e4e4e4;padding:10px">{0}</td>'
+                'style="border-bottom:1px solid #E4E4E4;padding:10px">{0}</td>'
                 .format(code),
                 sent_mail_body
             )

@@ -8,10 +8,12 @@ Every Selenium-based test suite uses fixture called dump.json.
 import time
 
 from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
 
 from django.test import LiveServerTestCase
 from django.urls import reverse
+from selenium.webdriver.support.ui import WebDriverWait
 
 from shopelectro.models import Product
 
@@ -29,7 +31,7 @@ class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         """Instantiate browser instance."""
-        super(SeleniumTestCase, cls).setUpClass()
+        super().setUpClass()
         capabilities = {
             'browserName': 'chrome',
             'mobileEmulation': {
@@ -72,6 +74,7 @@ class Mobile(SeleniumTestCase):
         self.assertTrue(catalog.is_displayed())
 
         toggler.click()
+        wait()
         search_input = self.browser.find_element_by_class_name('js-search-input')
         self.assertTrue(search_input.is_displayed())
 
@@ -79,12 +82,16 @@ class Mobile(SeleniumTestCase):
         """Autocomplete in mobile search should work."""
         toggler = self.browser.find_element_by_class_name(self.toggler)
         toggler.click()
-        search_input = self.browser.find_element_by_class_name('js-search-input')
-        search_input.send_keys('Cate')
-        self.browser.implicitly_wait(10)
-        autocomplete = self.browser.find_element_by_class_name('autocomplete-suggestions')
+        wait()
 
-        self.assertTrue(autocomplete.is_displayed())
+        search_input = self.browser.find_element_by_css_selector('input.js-search-input')
+        search_input.send_keys('Cate')
+        autocomplete_items = WebDriverWait(self.browser, 5).until(
+            expected_conditions
+            .visibility_of_all_elements_located((By.CSS_SELECTOR, '.autocomplete-suggestion'))
+        )
+        for item in autocomplete_items[:-1]:  # last autocomplete item has no contains data
+            self.assertTrue(item.get_attribute('data-val') == 'Cate')
 
     def test_catalog(self):
         """Catalog should expand on click on fa fa-chevron icons."""
@@ -102,10 +109,9 @@ class Mobile(SeleniumTestCase):
 
     def test_cart(self):
         """Cart should updated after Product buy."""
-        product_vendore_code = Product.objects.first().vendor_code
-        product_page = self.live_server_url + reverse('product', args=(product_vendore_code,))
+        product_vendor_code = Product.objects.first().vendor_code
+        product_page = self.live_server_url + reverse('product', args=(product_vendor_code,))
         self.browser.get(product_page)
-
         buy_btn = self.browser.find_element_by_id('btn-to-basket')
         self.browser.execute_script('return arguments[0].scrollIntoView();', buy_btn)
 
