@@ -9,6 +9,7 @@ import time
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions
 
@@ -84,24 +85,13 @@ class Mobile(SeleniumTestCase):
         toggler = self.browser.find_element_by_class_name(self.toggler)
         toggler.click()
         wait()
+
         search_input = self.browser.find_element_by_css_selector('input.js-search-input')
         search_input.send_keys('Cate')
-        wait()
-
-        # autoComplete.js makes several divs with 'autocomplete-suggestions' class
-        containers = self.browser.find_elements_by_class_name('autocomplete-suggestions')
-        for autocomplete_element in containers:
-            try:
-                element = (
-                    WebDriverWait(self.browser, 5)
-                    .until(expected_conditions.visibility_of(autocomplete_element))
-                )
-            except TimeoutException:
-                continue
-            else:
-                break
-        else:
-            raise AssertionError
+        WebDriverWait(self.browser, 5).until(
+            expected_conditions
+            .presence_of_all_elements_located((By.CLASS_NAME, 'autocomplete-suggestion'))
+        )
 
     def test_catalog(self):
         """Catalog should expand on click on fa fa-chevron icons."""
