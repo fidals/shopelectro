@@ -44,6 +44,8 @@ const autocomplete = (() => {
 
   /**
    * Constructor args for autocomplete lib.
+   * Packed into a function because search input selector should be
+   * rendered before autocomplete will init
    * https://goodies.pixabay.com/javascript/auto-complete/demo.html
    */
   const getAutoCompleteArgs = () => {
