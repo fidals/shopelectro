@@ -54,7 +54,7 @@ def make_backcall(browser):
 def show_cart_dropdown(browser):
     cart_parent = browser.find_element_by_class_name('basket-parent')
     hover(browser, cart_parent)
-    wait()
+    wait(0.5)
 
 
 def add_to_cart(browser, live_server_url):
@@ -128,8 +128,8 @@ class Header(SeleniumTestCase):
 
     def test_cart_hover(self):
         """Cart dropdown should be visible on hover."""
-        show_cart_dropdown(self.browser)
         cart = self.browser.find_element_by_class_name('basket-wrapper')
+        show_cart_dropdown(self.browser)
 
         self.assertTrue(cart.is_displayed())
 
