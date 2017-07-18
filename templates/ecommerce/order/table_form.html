@@ -122,9 +122,16 @@
           </div>
 
           <div class="form-group">
-            <label class="col-sm-5 control-label" for="{{ form.address.id_for_label }}">Адрес, Комментарий:</label>
+            <label class="col-sm-5 control-label" for="{{ form.address.id_for_label }}">Адрес:</label>
             <div class="col-sm-7">
               {{ form.address }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-5 control-label" for="{{ form.comment.id_for_label }}">Комментарий:</label>
+            <div class="col-sm-7">
+              {{ form.comment }}
             </div>
           </div>
 

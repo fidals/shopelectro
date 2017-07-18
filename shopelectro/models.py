@@ -125,6 +125,7 @@ class Order(ecOrder):
         choices=settings.PAYMENT_OPTIONS,
         default=_default_payment()
     )
+    comment = models.TextField(blank=True, default='')
 
     @property
     def payment_type_name(self):

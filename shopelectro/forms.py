@@ -15,7 +15,7 @@ class OrderForm(forms.ModelForm):
 
         fields = [
             'name', 'email', 'phone', 'city',
-            'address', 'payment_type'
+            'address', 'comment', 'payment_type'
         ]
 
         widgets = {
@@ -26,7 +26,8 @@ class OrderForm(forms.ModelForm):
                 'class': input_css_class,
                 'placeholder': 'Санкт - Петербург'
             }),
-            'address': Textarea(attrs={
+            'address': TextInput(attrs={'class': input_css_class}),
+            'comment': Textarea(attrs={
                 'class': input_css_class,
                 'rows': 5,
             }),

@@ -10,19 +10,25 @@
     </tr>
     <tr>
       <td>Оплатил</td>
-      <td>{{ paid|humanize_price }}</td>
+      <td>{{ extra_context.paid|humanize_price }}</td>
     </tr>
     <tr>
       <td>Зашло на счет</td>
-      <td>{{ profit }}</td>
+      <td>{{ extra_context.profit }}</td>
     </tr>
     <tr>
       <td>Комиссия Я.Кассы</td>
-      <td>{{ commission }} %</td>
+      <td>{{ extra_context.commission }} %</td>
     </tr>
     <tr>
       <td>Способ оплаты</td>
       <td>{{ order.payment_type_name }}</td>
     </tr>
+    {% if order.comment %}
+    <tr>
+      <td>Комментарий</td>
+      <td>{{ order.comment }}</td>
+    </tr>
+    {% endif %}
   </table>
 {% endblock %}
