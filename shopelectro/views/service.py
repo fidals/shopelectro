@@ -104,7 +104,8 @@ def yandex_aviso(request):
 
     def send_mail_to_shop(order):
         paid, profit = get_keys_from_post(request, 'orderSumAmount', 'shopSumAmount')
-        commission = round((float(paid) - float(profit)) / float(paid), 2)
+        proportion = 100 * float(profit) / float(paid)
+        commission = round(100 - proportion, 2)  # in percents
         mailer.send_order(
             template='ecommerce/yandex_order_email.html',
             subject=settings.EMAIL_SUBJECTS['yandex_order'],
