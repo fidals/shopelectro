@@ -1,3 +1,5 @@
+[![PDD status](http://www.0pdd.com/svg?name=yegor256/0pdd)](http://www.0pdd.com/p?name=fidals/shopelectro)
+
 # shopelectro
 shopelectro.ru site's code
 
