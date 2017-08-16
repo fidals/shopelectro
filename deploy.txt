@@ -1,5 +1,0 @@
-Standard deploy instructions:
-
->>> docker login -u user_name
->>> cd ./docker/
->>> make deploy
