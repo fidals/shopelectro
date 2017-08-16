@@ -17,3 +17,4 @@ priceru.xml
 yandex.yml
 docker/.env
 celerybeat-schedule
+package-lock.json

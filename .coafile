@@ -1,19 +1,25 @@
 # coala python 3 bears:
 # https://github.com/coala/bear-docs/blob/master/README.rst#python
 
-# @todo #158:60m Настроить подключеные bears. Возможно, что-то придется выкинуть.
+# @todo #158:60m Настройти pylint
+# @todo #158:60m Настроить eslint
 
-[Default]
+[all]
 bears = DuplicateFileBear,InvalidLinkBear
-files = src/*
+ignore = shopelectro/**/__init__.py,shopelectro/**/__pycache__/**,front/**/vendors/**,front/(images|fonts|build)/**
 
-[Docker]
-bears = DockerfileLintBear
-
-[Python]
-bears = BanditBear,CPDBear,PyLintBear,FilenameBear,SpaceConsistencyBear
-files = src/*.py
+[all.python]
+bears = BanditBear,CPDBear,FilenameBear,SpaceConsistencyBear,PyLintBear
+files = shopelectro/**/*.py
+file_naming_convention = snake
+pylint_rcfile = .pylintrc
 use_spaces = True
-file_naming_convention = space
 language = Python 3
-max_line_length = 100
+
+[all.javascript]
+bears = CPDBear,FilenameBear,SpaceConsistencyBear,JSComplexityBear,ESLintBear
+files = front/js/**
+file_naming_convention = camel
+use_spaces = True
+eslint_config = .eslintrc
+language = JavaScript

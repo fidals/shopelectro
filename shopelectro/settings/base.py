@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 Django settings for shopelectro project.
 
@@ -184,7 +185,7 @@ LOGGING = {
 
 SITE_CREATED = datetime(2013, 1, 1)
 
-LOCALHOST = 'http://127.0.0.1:8000/'
+LOCALHOST = 'http://127.0.0.1:8000/'  # Ignore InvalidLinkBear
 BASE_URL = 'https://www.shopelectro.ru'
 
 PLACEHOLDER_IMAGE = 'images/logo.png'
