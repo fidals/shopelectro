@@ -461,14 +461,13 @@ class TableEditor(AdminSeleniumTestCase):
 
         self.assertNotEqual(rows_before, rows_after)
 
-    def test_filters_equals_table_headers(self):
+    def test_filters_equals_table_headers(self):  # Ignore PyDocStyleBear
         """Headers in TE should be equal to chosen filters respectively."""
         self.open_filters()
         self.check_filters_and_table_headers_equality()
 
-    def test_save_and_drop_custom_filters(self):
-        """
-        Headers in TE should be generated based on user settings in localStorage.
+    def test_save_and_drop_custom_filters(self):  # Ignore PyDocStyleBear
+        """Headers in TE should be generated based on user settings in localStorage.
 
         This test case is contains save & drop cases cause they are depends on each other.
         """

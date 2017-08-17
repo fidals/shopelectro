@@ -67,9 +67,7 @@ class Command(BaseCommand):
             return product
 
         def put_crumbs(product):
-            """
-            Crumbs for google merchant. https://goo.gl/b0UJQp
-            """
+            """Crumbs for google merchant. https://goo.gl/b0UJQp"""
             product.crumbs = ' > '.join(
                 product.page.get_ancestors_fields('h1', include_self=False)[1:]
             )
@@ -85,7 +83,7 @@ class Command(BaseCommand):
             return Category.objects.exclude(id__in=categories_to_exclude)
 
         def prepare_products(categories_):
-            """Filter product list and patch it for rendering"""
+            """Filter product list and patch it for rendering."""
             products_except_others = (
                 Product.objects
                 .select_related('page')

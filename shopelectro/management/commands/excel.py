@@ -1,5 +1,4 @@
-"""
-Generate Excel price-list.
+"""Generate Excel price-list.
 
 Uses this excel editor lib:
 https://openpyxl.readthedocs.io/en/default/
@@ -20,7 +19,6 @@ from shopelectro.models import Product, Category
 
 
 class Command(BaseCommand):
-    """Command class."""
     TEMPLATE = 'templates/ecommerce/template.xlsx'
     NAME = 'pricelist.xlsx'
     SHEET_TITLE = 'Прайс Shopelectro'
@@ -63,8 +61,8 @@ class Command(BaseCommand):
             self.sheet[cell].border = self.THIN_BORDER
 
     def set_collapse_controls(self):
-        """
-        Collapse controls looks like this: http://prntscr.com/clf9xh
+        """Collapse controls looks like this: http://prntscr.com/clf9xh .
+
         Doc link: https://goo.gl/nR5pLO
         """
         self.sheet.sheet_properties.outlinePr.summaryBelow = False
@@ -77,8 +75,7 @@ class Command(BaseCommand):
         return self.sheet.row_dimensions[int(row_number)]
 
     def load_file_and_sheet(self):
-        """
-        Load template file into openpyxl.
+        """Load template file into openpyxl.
 
         Return tuple with opened openpyxl file's object
         and active price sheet.
@@ -99,7 +96,7 @@ class Command(BaseCommand):
         self.sheet.column_dimensions.group('H', 'K', hidden=True, outline_level=0)
 
     def write_catalog(self):
-        """Writes categories and products to sheet."""
+        """Write categories and products to sheet."""
         categories = Category.objects.all().order_by('name').filter(children=None)
         for category in categories.iterator():
             self.write_category_with_products(category)

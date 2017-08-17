@@ -1,6 +1,4 @@
-"""
-Create serialized data for tests.
-Store this data in json file.
+"""Create serialized data for tests and store this data in json file.
 
 Usage:
 - create db named `test`

@@ -57,9 +57,9 @@ class XmlFile:
         }
 
     def get_data(self) -> Iterator:
-        """
-        Get data from xml files.
-        (ex. files with products names or prices)
+        """Get data from xml files.
+
+        Example files with products names or prices.
         """
         return chain.from_iterable(
             self.fetch_callback(file, self)

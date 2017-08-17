@@ -41,9 +41,6 @@ def class_name(model):
 
 @register.simple_tag
 def time_to_call():
-    """
-    Return time when SE-manager will call the client based on current datetime.
-    """
     def is_weekend(t):
         return t.weekday() > 4
 

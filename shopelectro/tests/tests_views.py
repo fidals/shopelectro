@@ -1,5 +1,4 @@
-"""
-Views tests.
+"""Views tests.
 
 Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
@@ -57,8 +56,9 @@ class CatalogPage(TestCase):
 
 
 class SitemapXML(TestCase):
-    """
-    Tests for Sitemap XML.
+
+    """Tests for Sitemap XML.
+
     Getting sitemap.xml and parsing it as string.
     """
 
@@ -106,8 +106,9 @@ class SitemapPage(TestCase):
 
 
 class YandexKassa(TestCase):
-    """
-    Tests for yandex check order and yandex aviso
+
+    """Tests for yandex check order and yandex aviso.
+
     Yandex docs https://goo.gl/bOf3kw
     """
 
@@ -146,9 +147,10 @@ class YandexKassa(TestCase):
         self.assertContains(response, 'invoiceId="123"')
 
     def test_yandex_aviso_body(self):
-        """
-        Response should contain attr code="0" - it's mean, that all right, if code="1" - it's mean,
-        yandex's request body contain incorrect data.
+        """Test response code.
+
+        Response should contain attr code="0" - it's mean, that all right,
+        if code="1" - it's mean, yandex's request body contain incorrect data.
         """
         response = self.yandex_aviso_request()
 

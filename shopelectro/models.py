@@ -34,10 +34,6 @@ class Category(AbstractCategory, SyncPageMixin):
 
 
 class Product(AbstractProduct, SyncPageMixin):
-    """
-    Define n:1 relation with SE-Category and 1:n with Property.
-    Add wholesale prices.
-    """
 
     category = models.ForeignKey(
         Category,
@@ -109,10 +105,7 @@ class ProductFeedback(models.Model):
 
 
 def _default_payment():
-    """
-    Return default payment option, which is first element of
-    first tuple in options.
-    """
+    """Default payment option is first element of first tuple in options."""
     assert settings.PAYMENT_OPTIONS[0][0], 'No payment options!'
     return settings.PAYMENT_OPTIONS[0][0]
 
@@ -135,11 +128,7 @@ class Order(ecOrder):
         )
 
     def set_positions(self, cart):
-        """
-        Save cart's state into Order instance.
-        :param cart: user's cart
-        :return: self
-        """
+        """Save cart's state into Order instance."""
         self.save()
         for id_, position in cart:
             self.positions.create(
@@ -154,7 +143,9 @@ class Order(ecOrder):
 
 
 class CategoryPage(ModelPage):
+
     """Create proxy model for Admin."""
+
     class Meta(ModelPage.Meta):
         proxy = True
 
@@ -162,7 +153,9 @@ class CategoryPage(ModelPage):
 
 
 class ProductPage(ModelPage):
+
     """Create proxy model for Admin."""
+
     class Meta(ModelPage.Meta):
         proxy = True
 
@@ -171,7 +164,7 @@ class ProductPage(ModelPage):
 
 class TagGroup(models.Model):
 
-    uuid = models.UUIDField(default=uuid4, editable=False)  # Ignore CPDBear
+    uuid = models.UUIDField(default=uuid4, editable=False)
     name = models.CharField(
         max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(
