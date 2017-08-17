@@ -9,7 +9,6 @@ Usage:
 - launch this command
 - now you have json file, that'll be used by our TDD tests
 """
-from functools import partial
 import os
 
 from django.conf import settings

@@ -29,7 +29,7 @@ sitemaps = OrderedDict([
 
 # disable cache
 if settings.DEBUG:
-    def cache_page(arg):
+    def cache_page(arg):  # Ignore PyFlakesBear
         if callable(arg):
             return arg
         return cache_page

@@ -1,17 +1,15 @@
 """
 Selenium-based tests.
 
-If you need to create new test-suite, subclass it from SeleniumTestCase class.
+If you need to create new test-suite, subclass it from helpers.SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
-from seleniumrequests import Remote  # We use this instead of standard selenium
 
 from django.conf import settings
 from django.core import mail
 from django.db.models import Count
-from django.test import LiveServerTestCase, override_settings
+from django.test import override_settings
 from django.urls import reverse
 
 from pages.models import FlatPage, CustomPage, Page
@@ -44,32 +42,13 @@ def add_to_cart(browser, live_server_url):
     helpers.wait()
 
 
-class SeleniumTestCase(LiveServerTestCase):
-    """Common superclass for running selenium-based tests."""
-
-    fixtures = ['dump.json']
-
-    @classmethod
-    def setUpClass(cls):
-        """Instantiate browser instance."""
-        super(SeleniumTestCase, cls).setUpClass()
-        cls.browser = Remote(
-            command_executor='http://se-selenium-hub:4444/wd/hub',
-            desired_capabilities=DesiredCapabilities.CHROME
-        )
-        cls.browser.helpers.implicitly_wait(10)
-        cls.browser.set_window_size(1920, 1080)
-
-    @classmethod
-    def tearDownClass(cls):
-        """Close selenium session."""
-        cls.browser.quit()
-        super(SeleniumTestCase, cls).tearDownClass()
+def is_cart_empty(browser):
+    return browser.find_element_by_class_name('js-cart-is-empty').is_displayed()
 
 
 @helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
-class Header(SeleniumTestCase):
+class Header(helpers.SeleniumTestCase):
 
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
@@ -107,7 +86,7 @@ class Header(SeleniumTestCase):
 
         self.assertTrue('Корзина пуста' in cart_in_header.text)
 
-    def test_cart_helpers.hover(self):
+    def test_cart_hover(self):
         """Cart dropdown should be visible on hover."""
         cart = self.browser.find_element_by_class_name('basket-wrapper')
         show_cart_dropdown(self.browser)
@@ -121,9 +100,7 @@ class Header(SeleniumTestCase):
         show_cart_dropdown(self.browser)
         self.browser.find_element_by_class_name('basket-reset').click()
         helpers.wait()
-        cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
-
-        self.assertTrue(cart_is_empty.is_displayed())
+        self.assertTrue(is_cart_empty(self.browser))
 
     def test_product_total_price_in_dropdown(self):
         add_to_cart(self.browser, self.live_server_url)
@@ -136,7 +113,7 @@ class Header(SeleniumTestCase):
         self.assertTrue(product_price == product_total_price_price_in_cart)
 
 
-class CategoryPage(SeleniumTestCase):
+class CategoryPage(helpers.SeleniumTestCase):
 
     PRODUCTS_TO_LOAD = 48
 
@@ -161,6 +138,10 @@ class CategoryPage(SeleniumTestCase):
     @property
     def load_more_button(self):
         return self.browser.find_element_by_id('btn-load-products')
+
+    @property
+    def is_cart_empty(self):
+        return self.browser.find_element_by_class_name('js-cart-is-empty')
 
     def test_breadcrumbs(self):
         """
@@ -279,10 +260,7 @@ class CategoryPage(SeleniumTestCase):
         self.browser.find_elements_by_class_name(
             'js-product-to-cart')[0].click()
         helpers.wait()
-        cart_is_empty = self.browser.find_element_by_class_name(
-            'js-cart-is-empty')
-
-        self.assertFalse(cart_is_empty.is_displayed())
+        self.assertFalse(is_cart_empty(self.browser))
 
     def test_add_to_cart_after_load_more(self):
         """
@@ -298,10 +276,7 @@ class CategoryPage(SeleniumTestCase):
             'js-product-to-cart')[self.PRODUCTS_TO_LOAD + 1]
         recently_loaded_product.click()
         helpers.wait()
-        cart_is_empty = self.browser.find_element_by_class_name(
-            'js-cart-is-empty')
-
-        self.assertFalse(cart_is_empty.is_displayed())
+        self.assertFalse(is_cart_empty(self.browser))
 
     def test_apply_filter_state(self):
         """Apply filters btn should be disabled with no checked tags."""
@@ -378,7 +353,7 @@ class CategoryPage(SeleniumTestCase):
         self.assertEqual(new_product_cards, 50)
 
 
-class ProductPage(SeleniumTestCase):
+class ProductPage(helpers.SeleniumTestCase):
 
     PRODUCT_ID = 1
 
@@ -496,9 +471,7 @@ class ProductPage(SeleniumTestCase):
         """We can add item to cart from it's page."""
         self.browser.find_element_by_class_name('btn-to-basket').click()
         helpers.wait()
-        cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
-
-        self.assertFalse(cart_is_empty.is_displayed())
+        self.assertFalse(is_cart_empty(self.browser))
 
     def test_product_name_in_cart_dropdown(self):
         self.browser.find_element_by_class_name('btn-to-basket').click()
@@ -555,7 +528,7 @@ class ProductPage(SeleniumTestCase):
 
 
 @helpers.disable_celery
-class OrderPage(SeleniumTestCase):
+class OrderPage(helpers.SeleniumTestCase):
 
     @staticmethod
     def get_cell(pos, col):
@@ -729,7 +702,7 @@ class OrderPage(SeleniumTestCase):
         )
 
 
-class SitePage(SeleniumTestCase):
+class SitePage(helpers.SeleniumTestCase):
 
     def setUp(self):
         self.page_top = FlatPage.objects.create(
@@ -785,7 +758,7 @@ class SitePage(SeleniumTestCase):
 
 @helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
-class YandexMetrika(SeleniumTestCase):
+class YandexMetrika(helpers.SeleniumTestCase):
 
     def setUp(self):
         """
@@ -946,7 +919,7 @@ class YandexMetrika(SeleniumTestCase):
         self.assertTrue('COPY_MAIL' in self.reached_goals)
 
 
-class Search(SeleniumTestCase):
+class Search(helpers.SeleniumTestCase):
 
     QUERY = 'Cate'
 

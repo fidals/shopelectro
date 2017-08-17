@@ -18,7 +18,7 @@ from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
 )
 from shopelectro.models import (
-    Category, Product, ProductPage, CategoryPage, Tag, TagGroup
+    Category, Product, Tag, TagGroup
 )
 
 

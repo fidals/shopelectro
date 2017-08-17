@@ -4,20 +4,15 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.common.keys import Keys
-# We use this instead of standard selenium
-from seleniumrequests import Remote
-
 from django.conf import settings
-from django.test import LiveServerTestCase
 from django.urls import reverse
+from selenium.webdriver.common.keys import Keys
 
 from shopelectro.models import Category, Product
 from shopelectro.tests import helpers
 
 
-class AdminSeleniumTestCase(LiveServerTestCase):
+class AdminSeleniumTestCase(helpers.SeleniumTestCase):
     """Common superclass for running selenium-based tests."""
 
     fixtures = ['dump.json', 'admin.json']
@@ -37,23 +32,6 @@ class AdminSeleniumTestCase(LiveServerTestCase):
 
     def setUp(self):
         self.login()
-
-    @classmethod
-    def setUpClass(cls):
-        """Instantiate browser instance."""
-        super(SeleniumTestCase, cls).setUpClass()
-        cls.browser = Remote(
-            command_executor='http://se-selenium-hub:4444/wd/hub',
-            desired_capabilities=DesiredCapabilities.CHROME
-        )
-        cls.browser.implicitly_wait(5)
-        cls.browser.set_window_size(1920, 1080)
-
-    @classmethod
-    def tearDownClass(cls):
-        """Close selenium session."""
-        cls.browser.quit()
-        super(SeleniumTestCase, cls).tearDownClass()
 
 
 @helpers.enable_russian_language

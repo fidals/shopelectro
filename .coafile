@@ -8,12 +8,12 @@
 bears = InvalidLinkBear,SpaceConsistencyBear
 use_spaces = True
 files = **/(*.py|*.es6)
-ignore = shopelectro/**/__init__.py,shopelectro/**/__pycache__/**,front/**/vendors/**,front/(images|fonts|build)/**,shopelectro/migrations/**
+ignore = shopelectro/**/__init__.py,shopelectro/**/__pycache__/**,front/**/vendors/**,front/(images|fonts|build)/**,shopelectro/migrations/**,shopelectro/settings/**
 
 [all.python]
-bears = CPDBear,PycodestyleBear,PyDocStyleBear,RadonBear
+bears = CPDBear,PycodestyleBear,PyDocStyleBear,PyFlakesBear
 files = shopelectro/**/*.py
-minimum_tokens = 30
+minimum_tokens = 40
 max_line_length = 100
 pycodestyle_ignore = E305
 pydocstyle_ignore = D100,D101,D102,D103,D104,D105,D106
@@ -22,7 +22,7 @@ use_parentheses_in_import = False
 language = Python 3
 
 [all.javascript]
-bears = CPDBear,JSComplexityBear,ESLintBear
-files = front/js/**
+bears = CPDBear,ESLintBear
+files = front/js/**/*.es6
 eslint_config = ./.eslintrc
 language = JavaScript

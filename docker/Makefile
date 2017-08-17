@@ -21,4 +21,4 @@ test: static
 
 lint:
 	docker-compose up -d se-python
-	docker run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
+	docker run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base bash -c 'npm install -g eslint eslint-plugin-import eslint-config-airbnb-base && coala all.javascript --ci'

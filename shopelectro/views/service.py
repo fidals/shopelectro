@@ -1,11 +1,7 @@
 """
 Shopelectro's service views.
 """
-import os
-import sys
-import logging
 from hashlib import md5
-from functools import wraps
 
 from django.conf import settings
 from django.shortcuts import render

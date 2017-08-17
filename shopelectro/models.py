@@ -4,7 +4,6 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Avg, QuerySet
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -73,7 +72,7 @@ class Product(AbstractProduct, SyncPageMixin):
     def average_rate(self):
         """Return rounded to first decimal averaged rating."""
         rating = self.product_feedbacks.aggregate(
-            avg=Avg('rating')).get('avg', 0)
+            avg=models.Avg('rating')).get('avg', 0)
         return round(rating, 1)
 
     @property

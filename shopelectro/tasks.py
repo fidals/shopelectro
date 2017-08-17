@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.core.management import call_command
 
 from shopelectro.celery import app
