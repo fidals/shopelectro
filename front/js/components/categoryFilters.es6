@@ -41,7 +41,7 @@
   function serializeTags(tags) {
     const tagsByGroups = tags.reduce((group, item) => {
       const groupId = item.group;
-      group[groupId] = group[groupId] || [];
+      group[groupId] = group[groupId] || [];  // Ignore ESLintBear (no-param-reassign)
       group[groupId].push(item.slug);
       return group;
     }, {});

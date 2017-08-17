@@ -75,7 +75,7 @@
       location.href = selectedSorting;
     } else {
       location.href = `${selectedSorting}tags/${tags}/`;
-    };
+    }
   }
 
   /**

@@ -1,5 +1,0 @@
-[FORMAT]
-max-line-length=100
-
-[MESSAGES CONTROL]
-disable-msg=C0111

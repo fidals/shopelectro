@@ -47,7 +47,7 @@ def update_default_templates():
         call_command('update_default_templates')
 
 
-@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=60*10)
+@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=60*10)  # Ignore PycodestyleBear (E226)
 def update_catalog():
     # http://docs.celeryproject.org/en/latest/userguide/canvas.html#map-starmap
     return [

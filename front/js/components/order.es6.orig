@@ -92,7 +92,7 @@
   function fillSavedInputs() {
     const getFieldByName = name => $(`#id_${name}`);
 
-    for (const fieldName in DOM.orderForm) {  // Ignore ESLintBear (no-restricted-syntax)
+    for (const fieldName in DOM.orderForm) {
       if ({}.hasOwnProperty.call(DOM.orderForm, fieldName)) {
         const $field = getFieldByName(fieldName);
         const savedValue = localStorage.getItem(fieldName);
@@ -186,7 +186,7 @@
     `;
 
     DOM.$yandexFormWrapper.html(formHtml);
-  }
+  };
 
   /**
    * Before submit:
@@ -222,7 +222,7 @@
    */
   function storeInput(target) {
     localStorage.setItem(target.attr('name'), target.val());
-  }
+  };
 
   /**
    * Render table and form.

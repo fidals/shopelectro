@@ -1,15 +1,14 @@
 """
-Views tests.
+View tests.
 
 Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
-
-All Selenium-tests should live in tests_selenium.
 """
 from functools import partial
 from itertools import chain
 from operator import attrgetter
 from xml.etree import ElementTree as ET
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.db.models import Q
@@ -58,7 +57,8 @@ class CatalogPage(TestCase):
 
 class SitemapXML(TestCase):
     """
-    Tests for Sitemap XML.
+    Test Sitemap XML.
+
     Getting sitemap.xml and parsing it as string.
     """
 
@@ -78,9 +78,8 @@ class SitemapXML(TestCase):
 
     def test_models_urls(self):
         """Sitemap page should to print correct urls for models."""
-        slice_start_index = len('https://' + settings.SITE_DOMAIN_NAME)
         path = '{0}url[2]/{0}loc'.format(self.NAMESPACE)
-        model_url_text = self.root.find(path).text[slice_start_index:]
+        model_url_text = urlparse(self.root.find(path).text).path
         response = self.client.get(model_url_text)
 
         self.assertEqual(response.status_code, 200)
@@ -107,7 +106,8 @@ class SitemapPage(TestCase):
 
 class YandexKassa(TestCase):
     """
-    Tests for yandex check order and yandex aviso
+    Test yandex check order and yandex aviso.
+
     Yandex docs https://goo.gl/bOf3kw
     """
 
@@ -147,8 +147,10 @@ class YandexKassa(TestCase):
 
     def test_yandex_aviso_body(self):
         """
-        Response should contain attr code="0" - it's mean, that all right, if code="1" - it's mean,
-        yandex's request body contain incorrect data.
+        Test response code.
+
+        Response should contain attr code="0" - it's mean, that all right,
+        if code="1" - it's mean, yandex's request body contain incorrect data.
         """
         response = self.yandex_aviso_request()
 

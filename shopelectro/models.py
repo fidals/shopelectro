@@ -4,7 +4,6 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Avg, QuerySet
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -35,10 +34,6 @@ class Category(AbstractCategory, SyncPageMixin):
 
 
 class Product(AbstractProduct, SyncPageMixin):
-    """
-    Define n:1 relation with SE-Category and 1:n with Property.
-    Add wholesale prices.
-    """
 
     category = models.ForeignKey(
         Category,
@@ -73,7 +68,7 @@ class Product(AbstractProduct, SyncPageMixin):
     def average_rate(self):
         """Return rounded to first decimal averaged rating."""
         rating = self.product_feedbacks.aggregate(
-            avg=Avg('rating')).get('avg', 0)
+            avg=models.Avg('rating')).get('avg', 0)
         return round(rating, 1)
 
     @property
@@ -110,10 +105,7 @@ class ProductFeedback(models.Model):
 
 
 def _default_payment():
-    """
-    Return default payment option, which is first element of
-    first tuple in options.
-    """
+    """Default payment option is first element of first tuple in options."""
     assert settings.PAYMENT_OPTIONS[0][0], 'No payment options!'
     return settings.PAYMENT_OPTIONS[0][0]
 
@@ -136,11 +128,7 @@ class Order(ecOrder):
         )
 
     def set_positions(self, cart):
-        """
-        Save cart's state into Order instance.
-        :param cart: user's cart
-        :return: self
-        """
+        """Save cart's state into Order instance."""
         self.save()
         for id_, position in cart:
             self.positions.create(
@@ -156,7 +144,8 @@ class Order(ecOrder):
 
 class CategoryPage(ModelPage):
     """Create proxy model for Admin."""
-    class Meta(ModelPage.Meta):
+
+    class Meta(ModelPage.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
     objects = ModelPage.create_model_page_managers(Category)
@@ -164,7 +153,8 @@ class CategoryPage(ModelPage):
 
 class ProductPage(ModelPage):
     """Create proxy model for Admin."""
-    class Meta(ModelPage.Meta):
+
+    class Meta(ModelPage.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
     objects = ModelPage.create_model_page_managers(Product)
@@ -172,7 +162,7 @@ class ProductPage(ModelPage):
 
 class TagGroup(models.Model):
 
-    uuid = models.UUIDField(default=uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid4, editable=False)  # Ignore CPDBear
     name = models.CharField(
         max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(

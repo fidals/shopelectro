@@ -38,7 +38,10 @@
     );
   }
 
-  const scrollToTop = () => $('html, body').animate({ scrollTop: 0 }, 300);
+  function scrollToTop() {
+    $('html, body').animate({ scrollTop: 0 }, 300);
+  }
+
   const enableScrollToTop = () => DOM.$btnScrollTop.addClass('active');
   const disableScrollToTop = () => DOM.$btnScrollTop.removeClass('active');
 

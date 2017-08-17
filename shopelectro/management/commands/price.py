@@ -1,9 +1,3 @@
-"""
-yml_price command.
-
-Generate price files.
-"""
-
 import os
 
 from django.conf import settings
@@ -11,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from shopelectro.models import Product, Category, Tag
+from shopelectro.models import Product, Category
 
 
 class Command(BaseCommand):
@@ -57,14 +51,17 @@ class Command(BaseCommand):
             utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
             product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
 
-            product.prepared_params = list(filter(lambda x: x[0].name != 'Производитель', product.params))
+            product.prepared_params = list(
+                filter(
+                    lambda x: x[0].name != 'Производитель',
+                    product.params
+                )
+            )
 
             return product
 
-        def put_crumbs(product):
-            """
-            Crumbs for google merchant. https://goo.gl/b0UJQp
-            """
+        def put_crumbs(product):  # Ignore PyDocStyleBear
+            """Crumbs for google merchant. https://goo.gl/b0UJQp"""
             product.crumbs = ' > '.join(
                 product.page.get_ancestors_fields('h1', include_self=False)[1:]
             )
@@ -73,19 +70,19 @@ class Command(BaseCommand):
         def filter_categories():
             categories_to_exclude = (
                 Category.objects
-                    .filter(name__in=cls.IGNORED_CATEGORIES)
-                    .get_descendants(include_self=True)
+                .filter(name__in=cls.IGNORED_CATEGORIES)
+                .get_descendants(include_self=True)
             )
 
             return Category.objects.exclude(id__in=categories_to_exclude)
 
         def prepare_products(categories_):
-            """Filter product list and patch it for rendering"""
+            """Filter product list and patch it for rendering."""
             products_except_others = (
                 Product.objects
-                    .select_related('page')
-                    .prefetch_related('category')
-                    .filter(category__in=categories_, price__gt=0)
+                .select_related('page')
+                .prefetch_related('category')
+                .filter(category__in=categories_, price__gt=0)
             )
 
             result_products = [

@@ -71,7 +71,6 @@ def fetch_prices(root: Element, config) -> Iterator:
 
 def fetch_in_stock(root: Element, config: XmlFile) -> Iterator:
     product_els = root.findall(config.xpaths['products'])
-
     for product_el in product_els:
         uuid = product_el.find(config.xpaths['product_uuid']).text
         in_stock = product_el.find(config.xpaths['in_stock']).text
@@ -131,7 +130,8 @@ in_stock_file = XmlFile(
 def merge_data(*data) -> Dict[UUID, Data]:
     """
     Merge data from xml files with different structure.
-    (ex. files with product names and prices)
+
+    Example: files with product names and prices.
     """
     product_data = defaultdict(dict)
     for key, data in chain.from_iterable(filter(None, data)):
@@ -277,6 +277,7 @@ def create(data: Dict[UUID, Data], updated_products: QuerySet) -> QuerySet:
 
 class UpdateProductError(Exception):
     pass
+
 
 def main(*args, **kwargs):
     cleaned_product_data = clean_data(merge_data(

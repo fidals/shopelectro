@@ -6,9 +6,11 @@ from shopelectro.models import Order, Product
 
 class OrderForm(forms.ModelForm):
     """
-    Form for making orders. Based on Order model.
-    Define required contact information about a customer.
+    Form for making orders.
+
+    Based on Order model. Define required contact information about a customer.
     """
+
     class Meta:
         model = Order
         input_css_class = 'form-control'

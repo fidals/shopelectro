@@ -19,6 +19,16 @@ class SEAdminSite(sites.SiteWithTableEditor):
     table_editor_view = TableEditor
 
 
+def prepare_has_filter_queryset(value, db_table, queryset):
+    if not value:
+        return
+
+    query = '{}__tags__isnull'.format(db_table)
+
+    # Use brackets, because `Explicit is better than implicit`.
+    return queryset.filter(**{query: value != 'yes'})
+
+
 class HasTagsFilter(admin.SimpleListFilter):
 
     product_model = se_models.Product
@@ -32,13 +42,11 @@ class HasTagsFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        if not self.value():
-            return
-
-        query = '{}__tags__isnull'.format(self.product_model._meta.db_table)
-
-        # Use brackets, because `Explicit is better than implicit`.
-        return queryset.filter(**{query: not (self.value() == 'yes')})
+        return prepare_has_filter_queryset(
+            self.value(),
+            self.product_model._meta.db_table,
+            queryset
+        )
 
 
 class HasCategoryFilter(admin.SimpleListFilter):
@@ -54,13 +62,11 @@ class HasCategoryFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        if not self.value():
-            return
-
-        query = '{}__category__isnull'.format(self.product_model._meta.db_table)
-
-        # Use brackets, because `Explicit is better than implicit`.
-        return queryset.filter(**{query: not (self.value() == 'yes')})
+        return prepare_has_filter_queryset(
+            self.value(),
+            self.product_model._meta.db_table,
+            queryset
+        )
 
 
 class TagInline(admin.StackedInline):
@@ -115,8 +121,8 @@ class CategoryPageAdmin(models.CategoryPageAdmin):
     def get_queryset(self, request):
         return (
             super(CategoryPageAdmin, self)
-                .get_queryset(request)
-                .select_related('shopelectro_category')
+            .get_queryset(request)
+            .select_related('shopelectro_category')
         )
 
 
@@ -140,8 +146,8 @@ class ProductPageAdmin(models.ProductPageAdmin):
     def get_queryset(self, request):
         return (
             super(ProductPageAdmin, self)
-                .get_queryset(request)
-                .select_related('shopelectro_product')
+            .get_queryset(request)
+            .select_related('shopelectro_product')
         )
 
 
@@ -165,14 +171,14 @@ class ProductFeedbackPageAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return (
             super(ProductFeedbackPageAdmin, self)
-                .get_queryset(request)
-                .select_related('product')
+            .get_queryset(request)
+            .select_related('product')
         )
 
 
 class TagGroupAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'name', 'position','count_tags']
+    list_display = ['id', 'name', 'position', 'count_tags']
     list_display_links = ['name']
 
     inlines = [TagInline]

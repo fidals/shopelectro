@@ -28,14 +28,14 @@ const helpers = (() => {  // Ignore ESLintBear (no-unused-vars)
   }
 
   function getUrlParam(name) {
-    const paramName = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');  // Ignore ESLintBear (no-useless-escape)
+    const paramName = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
     const results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
   function getUrlEndpointParam(name) {
-    const regex = new RegExp(`\/${name}\/(.+?)\/`);  // Ignore ESLintBear (no-useless-escape)
+    const regex = new RegExp(`\/${name}\/(.+?)\/`);
     const results = regex.exec(location.href);
     return results === null ? '' : decodeURIComponent(results[1]);
   }
@@ -51,7 +51,7 @@ const helpers = (() => {  // Ignore ESLintBear (no-unused-vars)
   }
 
   function removeUrlEndpoint(name) {
-    const regex = new RegExp(`\/${name}\/(.+?)\/`);  // Ignore ESLintBear (no-useless-escape)
+    const regex = new RegExp(`\/${name}\/(.+?)\/`);
     return window.location.href.replace(regex, '');
   }
 
