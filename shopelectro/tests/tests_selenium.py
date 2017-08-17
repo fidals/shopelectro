@@ -4,16 +4,12 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-
-import time
-
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-from seleniumrequests import Remote  # We use this instead of standard selenium
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.keys import Keys
+from seleniumrequests import Remote  # We use this instead of standard selenium
 
-from django.core import mail
 from django.conf import settings
+from django.core import mail
 from django.db.models import Count
 from django.test import LiveServerTestCase, override_settings
 from django.urls import reverse
@@ -21,46 +17,31 @@ from django.urls import reverse
 from pages.models import FlatPage, CustomPage, Page
 
 from shopelectro.models import Category, Product
-from shopelectro.tests.helpers import disable_celery
-
-
-def wait(seconds=1):
-    """Simple wrapper on time.sleep() method."""
-    time.sleep(seconds)
-
-
-def hover(browser, element):
-    """Perform a hover over an element."""
-    ActionChains(browser).move_to_element(element).perform()
-
-
-def context_click(browser, element):
-    ActionChains(browser).context_click(element).perform()
-    wait()
+from shopelectro.tests import helpers
 
 
 def make_backcall(browser):
     """Trigger backcall modal. Fill it and submit."""
     browser.find_element_by_class_name('js-backcall-order').click()
-    wait()
+    helpers.wait()
     browser.find_element_by_id('back-call-phone').send_keys('22222222222')
     browser.find_element_by_xpath(
         '//*[@id="back-call-time"]/option[3]').click()
-    wait()
+    helpers.wait()
     browser.find_element_by_class_name('js-send-backcall').click()
-    wait()
+    helpers.wait()
 
 
 def show_cart_dropdown(browser):
     cart_parent = browser.find_element_by_class_name('basket-parent')
-    hover(browser, cart_parent)
-    wait(0.5)
+    helpers.hover(browser, cart_parent)
+    helpers.wait(0.5)
 
 
 def add_to_cart(browser, live_server_url):
     browser.get(live_server_url + Product.objects.first().url)
     browser.find_element_by_class_name('btn-to-basket').click()
-    wait()
+    helpers.wait()
 
 
 class SeleniumTestCase(LiveServerTestCase):
@@ -76,7 +57,7 @@ class SeleniumTestCase(LiveServerTestCase):
             command_executor='http://se-selenium-hub:4444/wd/hub',
             desired_capabilities=DesiredCapabilities.CHROME
         )
-        cls.browser.implicitly_wait(10)
+        cls.browser.helpers.implicitly_wait(10)
         cls.browser.set_window_size(1920, 1080)
 
     @classmethod
@@ -86,7 +67,7 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).tearDownClass()
 
 
-@disable_celery
+@helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class Header(SeleniumTestCase):
 
@@ -107,13 +88,13 @@ class Header(SeleniumTestCase):
         self.assertTrue(self.browser.find_element_by_class_name(
             'js-backcall-success').is_displayed())
 
-    @disable_celery
+    @helpers.disable_celery
     def test_order_backcall_email(self):
         """Back call phone number should be same in sent email"""
         self.browser.find_element_by_class_name('js-backcall-order').click()
         self.browser.find_element_by_id('back-call-phone').send_keys('2222222222')
         self.browser.find_element_by_class_name('js-send-backcall').click()
-        wait(3)
+        helpers.wait(3)
         sent_mail = mail.outbox[0]
 
         self.assertEqual(sent_mail.subject, settings.EMAIL_SUBJECTS['call'])
@@ -126,7 +107,7 @@ class Header(SeleniumTestCase):
 
         self.assertTrue('Корзина пуста' in cart_in_header.text)
 
-    def test_cart_hover(self):
+    def test_cart_helpers.hover(self):
         """Cart dropdown should be visible on hover."""
         cart = self.browser.find_element_by_class_name('basket-wrapper')
         show_cart_dropdown(self.browser)
@@ -139,7 +120,7 @@ class Header(SeleniumTestCase):
 
         show_cart_dropdown(self.browser)
         self.browser.find_element_by_class_name('basket-reset').click()
-        wait()
+        helpers.wait()
         cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
 
         self.assertTrue(cart_is_empty.is_displayed())
@@ -151,7 +132,7 @@ class Header(SeleniumTestCase):
         show_cart_dropdown(self.browser)
         product_total_price = self.browser.find_element_by_class_name('js-basket-sum').text
         product_total_price_price_in_cart = int(product_total_price.split(' ')[0])
-        wait()
+        helpers.wait()
         self.assertTrue(product_price == product_total_price_price_in_cart)
 
 
@@ -216,7 +197,7 @@ class CategoryPage(SeleniumTestCase):
         self.browser.get(self.root_category)
         self.browser.refresh()
         self.load_more_button.click()  # Let's load another set of products.
-        wait()
+        helpers.wait()
         loaded_products_count = self.browser.find_element_by_class_name(
             'js-products-showed-count').text
 
@@ -228,7 +209,7 @@ class CategoryPage(SeleniumTestCase):
         we shouldn't see `Load more` button.
         """
         self.browser.get(self.deep_children_category)
-        wait()
+        helpers.wait()
 
         self.assertTrue('hidden' in self.load_more_button.get_attribute('class'))
 
@@ -297,7 +278,7 @@ class CategoryPage(SeleniumTestCase):
         self.browser.get(self.children_category)
         self.browser.find_elements_by_class_name(
             'js-product-to-cart')[0].click()
-        wait()
+        helpers.wait()
         cart_is_empty = self.browser.find_element_by_class_name(
             'js-cart-is-empty')
 
@@ -310,13 +291,13 @@ class CategoryPage(SeleniumTestCase):
         """
         self.browser.get(self.root_category)
         self.browser.refresh()
-        wait()
+        helpers.wait()
         self.load_more_button.click()  # Let's load another PRODUCTS_TO_LOAD products.
-        wait(15)
+        helpers.wait(15)
         recently_loaded_product = self.browser.find_elements_by_class_name(
             'js-product-to-cart')[self.PRODUCTS_TO_LOAD + 1]
         recently_loaded_product.click()
-        wait()
+        helpers.wait()
         cart_is_empty = self.browser.find_element_by_class_name(
             'js-cart-is-empty')
 
@@ -326,11 +307,13 @@ class CategoryPage(SeleniumTestCase):
         """Apply filters btn should be disabled with no checked tags."""
         self.browser.get(self.root_category)
 
-        attribute = self.browser.find_element_by_class_name(self.apply_btn).get_attribute('disabled')
+        attribute = self.browser.find_element_by_class_name(
+            self.apply_btn).get_attribute('disabled')
         self.assertTrue(attribute, True)
 
         self.browser.find_element_by_css_selector(self.filter_tag).click()
-        attribute = self.browser.find_element_by_class_name(self.apply_btn).get_attribute('disabled')
+        attribute = self.browser.find_element_by_class_name(
+            self.apply_btn).get_attribute('disabled')
         self.assertEqual(attribute, None)
 
     def test_filter_products_by_tag(self):
@@ -379,17 +362,17 @@ class CategoryPage(SeleniumTestCase):
     def test_load_more_after_filtering(self):
         """Sorting should work after filtering."""
         self.browser.get(self.root_category)
-        wait()
+        helpers.wait()
 
         section_toggler = self.browser.find_element_by_class_name('js-toggle-tag-group')
         section_toggler.click()
-        wait()
+        helpers.wait()
 
         self.browser.find_element_by_css_selector(self.filter_tag).click()
         self.browser.find_element_by_class_name(self.apply_btn).click()
 
         self.load_more_button.click()
-        wait()
+        helpers.wait()
         new_product_cards = len(self.browser.find_elements_by_class_name('product-card'))
 
         self.assertEqual(new_product_cards, 50)
@@ -435,7 +418,7 @@ class ProductPage(SeleniumTestCase):
     def test_fancybox(self):
         """ProductPage should have fancyBox plugin"""
         self.browser.find_element_by_id('product-image-big').click()
-        wait()
+        helpers.wait()
         fancybox_wrap = self.browser.find_element_by_class_name('fancybox-wrap')
 
         self.assertTrue(fancybox_wrap)
@@ -444,7 +427,7 @@ class ProductPage(SeleniumTestCase):
         """If product has > 1 image, we could to switch them by clicking."""
         def get_main_image_src():
             image = self.browser.find_element_by_id('product-image-big')
-            wait()
+            helpers.wait()
             return image.get_attribute('src')
 
         not_switched_path = get_main_image_src()
@@ -452,7 +435,7 @@ class ProductPage(SeleniumTestCase):
         # click on second image preview
         image_preview = self.browser.find_elements_by_class_name('js-image-switch')[1]
         image_preview.click()
-        wait()
+        helpers.wait()
         switched_path = get_main_image_src()
 
         self.assertNotEquals(not_switched_path, switched_path)
@@ -464,17 +447,17 @@ class ProductPage(SeleniumTestCase):
 
         self.assertTrue(self.one_click.get_attribute('disabled'))
 
-    @disable_celery
+    @helpers.disable_celery
     def test_one_click_buy_action(self):
         """We can order product via one-click buy button."""
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys('2222222222')
         self.one_click.click()
-        wait()
+        helpers.wait()
 
         self.assertEqual(self.browser.current_url, self.success_order)
 
-    @disable_celery
+    @helpers.disable_celery
     def test_one_click_buy_order_email(self):
         product_vendor_code = self.product.vendor_code
 
@@ -491,7 +474,7 @@ class ProductPage(SeleniumTestCase):
         phone_field = self.browser.find_element_by_id('input-one-click-phone')
         phone_field.send_keys('2222222222')
         self.one_click.click()
-        wait(3)
+        helpers.wait(3)
 
         sent_mail_body = mail.outbox[0].body
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
@@ -512,14 +495,14 @@ class ProductPage(SeleniumTestCase):
     def test_add_to_cart(self):
         """We can add item to cart from it's page."""
         self.browser.find_element_by_class_name('btn-to-basket').click()
-        wait()
+        helpers.wait()
         cart_is_empty = self.browser.find_element_by_class_name('js-cart-is-empty')
 
         self.assertFalse(cart_is_empty.is_displayed())
 
     def test_product_name_in_cart_dropdown(self):
         self.browser.find_element_by_class_name('btn-to-basket').click()
-        wait()
+        helpers.wait()
         show_cart_dropdown(self.browser)
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         cart = cart_parent.find_element_by_class_name('basket-wrapper')
@@ -529,7 +512,7 @@ class ProductPage(SeleniumTestCase):
     def test_actual_product_count_in_cart_dropdown(self):
         self.browser.find_element_by_id('product-count').send_keys('42')
         self.browser.find_element_by_class_name('btn-to-basket').click()
-        wait()
+        helpers.wait()
         show_cart_dropdown(self.browser)
         cart_size = self.browser.find_element_by_class_name('js-cart-size')
 
@@ -549,7 +532,7 @@ class ProductPage(SeleniumTestCase):
         rating_stars = self.browser.find_element_by_class_name('js-rating')
         rating_stars.find_element_by_css_selector('.rating-icon-empty:last-child').click()
         feedback_modal.find_element_by_css_selector('.js-send-feedback').click()
-        wait()
+        helpers.wait()
 
         # check for new feedback on page with `text_of_feedback`
         self.browser.refresh()
@@ -564,14 +547,14 @@ class ProductPage(SeleniumTestCase):
         for star in stars:
             star.click()
 
-        wait()
+        helpers.wait()
         feedback_list = self.browser.find_element_by_id('feedback-list')
         feedback = feedback_list.find_elements_by_class_name('feedback-block-content')
 
         self.assertTrue(all(not element.is_displayed() for element in feedback))
 
 
-@disable_celery
+@helpers.disable_celery
 class OrderPage(SeleniumTestCase):
 
     @staticmethod
@@ -598,7 +581,7 @@ class OrderPage(SeleniumTestCase):
         self.add_product = self.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
         self.category = reverse('category', args=(Category.objects.first().page.slug,))
         self.buy_products()
-        wait()
+        helpers.wait()
         self.browser.get(self.live_server_url + self.order_page.url)
 
     def buy_products(self):
@@ -623,7 +606,7 @@ class OrderPage(SeleniumTestCase):
         first_row_remove = self.browser.find_element_by_xpath(
             self.remove_product)
         first_row_remove.click()
-        wait()
+        helpers.wait()
 
         self.assertFalse(
             self.first_product_id in
@@ -638,7 +621,7 @@ class OrderPage(SeleniumTestCase):
         while removes:
             remove = removes[0]
             remove.click()
-            wait()
+            helpers.wait()
             removes = self.browser.find_elements_by_class_name('js-remove')
 
         self.assertTrue('Корзина пуста' in
@@ -662,16 +645,16 @@ class OrderPage(SeleniumTestCase):
         self.assertIn('5', dropdown_count)
         self.browser.find_element_by_xpath(
             self.add_product.format(self.first_product_id)).click()
-        wait()
+        helpers.wait()
 
         table_count, dropdown_count = get_counts()
         self.assertIn('6', table_count)
         self.assertIn('6', dropdown_count)
-        wait()
+        helpers.wait()
 
         self.browser.find_element_by_xpath(
             self.remove_product.format(self.first_product_id)).click()
-        wait()
+        helpers.wait()
 
         table_count, dropdown_count = get_counts()
         self.assertIn('4', dropdown_count)
@@ -690,7 +673,7 @@ class OrderPage(SeleniumTestCase):
         self.browser.find_element_by_id('id_payment_type_0').click()
         add_one_more = self.browser.find_element_by_xpath(self.add_product)
         add_one_more.click()
-        wait()
+        helpers.wait()
 
     def fill_and_submit_form(self):
         self.browser.execute_script('$("#id_name").val("");')
@@ -702,11 +685,11 @@ class OrderPage(SeleniumTestCase):
         self.browser.find_element_by_id('id_city').send_keys('Санкт-Петербург')
         self.browser.find_element_by_id('id_phone').send_keys('2222222222')
         self.browser.find_element_by_id('id_email').send_keys('test@test.test')
-        wait()
+        helpers.wait()
         self.browser.find_element_by_id('submit-order').click()
-        wait()
+        helpers.wait()
 
-    @disable_celery
+    @helpers.disable_celery
     def test_order_email(self):
         codes = self.browser.find_elements_by_class_name(
             'order-table-product-id')
@@ -716,7 +699,7 @@ class OrderPage(SeleniumTestCase):
         final_price = self.browser.find_element_by_id('cart-page-sum').text[:-5]
 
         self.fill_and_submit_form()
-        wait(3)
+        helpers.wait(3)
         sent_mail_body = mail.outbox[0].body
 
         self.assertIn('Наличные', sent_mail_body)
@@ -763,7 +746,7 @@ class SitePage(SeleniumTestCase):
         self.browser.execute_script('localStorage.clear();')
         self.browser.get(self.live_server_url + self.page_last.url)
 
-        wait()
+        helpers.wait()
 
     @property
     def accordion_title(self):
@@ -784,7 +767,7 @@ class SitePage(SeleniumTestCase):
         accordion_title = self.accordion_title
         accordion_content = self.accordion_content
         accordion_title.click()
-        wait()
+        helpers.wait()
 
         self.assertTrue(accordion_content.is_displayed())
 
@@ -793,14 +776,14 @@ class SitePage(SeleniumTestCase):
         accordion_title = self.accordion_title
         accordion_content = self.accordion_content
         accordion_title.click()
-        wait()
+        helpers.wait()
         accordion_title.click()
-        wait()
+        helpers.wait()
 
         self.assertFalse(accordion_content.is_displayed())
 
 
-@disable_celery
+@helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class YandexMetrika(SeleniumTestCase):
 
@@ -845,11 +828,11 @@ class YandexMetrika(SeleniumTestCase):
     def buy_product(self):
         self.browser.get(self.product_page)
         self.browser.find_element_by_id('btn-to-basket').click()
-        wait()
+        helpers.wait()
 
     def go_to_cart(self):
         self.browser.find_element_by_class_name('js-go-to-cart').click()
-        wait()
+        helpers.wait()
 
     def test_download_header_price(self):
         """User clicks Download price button in site's header."""
@@ -896,7 +879,7 @@ class YandexMetrika(SeleniumTestCase):
         self.browser.get(self.product_page)
         self.buy_product()
         self.browser.find_element_by_class_name('js-cart-remove').click()
-        wait()
+        helpers.wait()
 
         self.assertTrue('DELETE_PRODUCT' in self.reached_goals)
 
@@ -939,7 +922,7 @@ class YandexMetrika(SeleniumTestCase):
         self.buy_product()
         self.prevent_default('click', '.js-go-to-cart')
         self.go_to_cart()
-        wait()
+        helpers.wait()
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
         self.prevent_default('click', '.btn-to-order')
@@ -973,7 +956,7 @@ class Search(SeleniumTestCase):
         faced a problems with it in setUpClass.
         """
         self.browser.get(self.live_server_url)
-        wait()
+        helpers.wait()
 
     @property
     def autocomplete(self):
@@ -986,26 +969,26 @@ class Search(SeleniumTestCase):
     def fill_input(self):
         """Enter correct search term."""
         self.input.send_keys(self.QUERY)
-        wait()
+        helpers.wait()
 
     def clear_input(self):
         """Enter correct search term."""
-        self.input.send_keys(Keys.BACKSPACE*len(self.QUERY))
-        wait()
+        self.input.send_keys(Keys.BACKSPACE * len(self.QUERY))
+        helpers.wait()
 
     def test_autocomplete_can_expand_and_collapse(self):
         """
         Autocomplete should minimize during user typing correct search query.
         Autocomplete should minimize by removing search query.
         """
-        wait()
+        helpers.wait()
         self.fill_input()
         # fill input and autocomplete expands
         self.assertTrue(self.autocomplete.is_displayed())
 
         # remove search term ...
         self.input.send_keys(Keys.BACKSPACE * len(self.QUERY))
-        wait()
+        helpers.wait()
         # ... and autocomplete collapse
         self.assertFalse(self.autocomplete.is_displayed())
         self.clear_input()
@@ -1015,9 +998,9 @@ class Search(SeleniumTestCase):
         self.fill_input()
         first_item = self.autocomplete.find_element_by_css_selector(
             ':first-child')
-        wait()
+        helpers.wait()
         first_item.click()
-        wait()
+        helpers.wait()
 
         self.assertTrue('/catalog/categories/' in self.browser.current_url)
         self.clear_input()
@@ -1031,7 +1014,7 @@ class Search(SeleniumTestCase):
         last_item = self.autocomplete.find_element_by_class_name(
             'autocomplete-last-item')
         last_item.click()
-        wait()
+        helpers.wait()
 
         self.assertTrue('/search/' in self.browser.current_url)
         self.clear_input()
@@ -1043,7 +1026,7 @@ class Search(SeleniumTestCase):
         self.input.send_keys(product_vendor_code)
         first_item = self.autocomplete.find_element_by_css_selector(':first-child')
         first_item.click()
-        wait()
+        helpers.wait()
 
         test_vendor_code = self.browser.find_element_by_class_name('product-article').text
 
@@ -1054,7 +1037,7 @@ class Search(SeleniumTestCase):
         self.fill_input()
         search_form = self.browser.find_element_by_class_name('search-form')
         search_form.submit()
-        wait()
+        helpers.wait()
         self.assertTrue(self.browser.find_element_by_link_text(
             'Category #0 of #Category #0 of #Category #0'))
 
@@ -1067,7 +1050,7 @@ class Search(SeleniumTestCase):
         self.input.send_keys('Not existing search query')
         button_submit = self.browser.find_element_by_id('search-submit')
         button_submit.click()
-        wait()
+        helpers.wait()
         h1 = self.browser.find_element_by_tag_name('h1')
 
         self.assertTrue(h1.text == 'По вашему запросу ничего не найдено')

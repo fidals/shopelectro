@@ -4,23 +4,15 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-
-import time
-
+from django.test import LiveServerTestCase
+from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
-
-from django.test import LiveServerTestCase
-from django.urls import reverse
 from selenium.webdriver.support.ui import WebDriverWait
 
 from shopelectro.models import Product
-
-
-def wait(seconds=1):
-    """Simple wrapper on time.sleep() method."""
-    time.sleep(seconds)
+from shopelectro.tests import helpers
 
 
 class SeleniumTestCase(LiveServerTestCase):
@@ -74,7 +66,7 @@ class Mobile(SeleniumTestCase):
         self.assertTrue(catalog.is_displayed())
 
         toggler.click()
-        wait()
+        helpers.wait()
         search_input = self.browser.find_element_by_class_name('js-search-input')
         self.assertTrue(search_input.is_displayed())
 
@@ -82,7 +74,7 @@ class Mobile(SeleniumTestCase):
         """Autocomplete in mobile search should work."""
         toggler = self.browser.find_element_by_class_name(self.toggler)
         toggler.click()
-        wait()
+        helpers.wait()
 
         search_input = self.browser.find_element_by_css_selector('input.js-search-input')
         search_input.send_keys('Cate')
@@ -104,7 +96,7 @@ class Mobile(SeleniumTestCase):
         catalog_item_icon = self.browser.find_element_by_class_name('js-mobile-link-arrow')
         catalog_item_icon.click()
         catalog_subitem = self.browser.find_element_by_class_name('mobile-catalog-sub-link')
-        wait()
+        helpers.wait()
         self.assertTrue(catalog_subitem.is_displayed())
 
     def test_cart(self):

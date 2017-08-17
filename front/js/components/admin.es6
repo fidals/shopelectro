@@ -112,7 +112,7 @@ class SETableEditor extends TableEditor {
       'name',
       'category',
       'price',
-      'vendor_code',  
+      'vendor_code',
       'wholesale_small',
       'wholesale_medium',
       'wholesale_large',

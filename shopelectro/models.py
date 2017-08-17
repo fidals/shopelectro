@@ -172,7 +172,7 @@ class ProductPage(ModelPage):
 
 class TagGroup(models.Model):
 
-    uuid = models.UUIDField(default=uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid4, editable=False)  # Ignore CPDBear
     name = models.CharField(
         max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(

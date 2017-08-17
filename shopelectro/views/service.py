@@ -17,35 +17,6 @@ from ecommerce.views import get_keys_from_post
 
 from shopelectro.models import Order
 
-
-def logging_yandex_kassa(func):
-    @wraps(func)
-    def make_logging(*args, **kwargs):
-        file_name = os.path.join(settings.BASE_DIR, 'yandex_kassa.log')
-        conf_for_logger = logging.basicConfig(
-            filename=file_name, level=logging.DEBUG, format='\n %(asctime)s \n %(message)s \n')
-        logger = logging.getLogger(conf_for_logger)
-        response = None
-
-        try:
-            logger.info('REQUEST_ROUTE: {}\n REQUEST_BODY: {}'.format(args[0].path, args[0].POST))
-            response = func(*args, **kwargs)
-            response_code = response.status_code
-            response_content = str(response.content)
-
-            if not response_code == 200 or 'code="0"' not in response_content:
-                logger.warning('STATUS_CODE: {}\n RESPONSE_CONTENT: {}'.format(
-                    response_code, response_content))
-
-            logger.info('STATUS_CODE: {}\n RESPONSE_CONTENT: {}'.format(
-                    response_code, response_content))
-        except:
-            logger.warning('ERROR: \n {}'.format(sys.exc_info()))
-
-        return response
-
-    return make_logging
-
 YANDEX_REQUEST_PARAM = (
     'action', 'orderSumAmount', 'orderSumCurrencyPaycash', 'orderSumBankPaycash',
     'shopId', 'invoiceId', 'customerNumber'
@@ -70,7 +41,6 @@ def has_correct_md5(post_body):
     return md5 == post_body['md5']
 
 
-@logging_yandex_kassa
 @csrf_exempt
 def yandex_check(request):
     """
@@ -84,7 +54,6 @@ def yandex_check(request):
                   content_type='application/xhtml+xml')
 
 
-@logging_yandex_kassa
 @csrf_exempt
 def yandex_aviso(request):
     """

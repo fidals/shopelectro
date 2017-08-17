@@ -5,21 +5,24 @@
 # @todo #158:60m Настроить eslint
 
 [all]
-bears = DuplicateFileBear,InvalidLinkBear
-ignore = shopelectro/**/__init__.py,shopelectro/**/__pycache__/**,front/**/vendors/**,front/(images|fonts|build)/**
+bears = InvalidLinkBear,SpaceConsistencyBear
+use_spaces = True
+files = **/(*.py|*.es6)
+ignore = shopelectro/**/__init__.py,shopelectro/**/__pycache__/**,front/**/vendors/**,front/(images|fonts|build)/**,shopelectro/migrations/**
 
 [all.python]
-bears = BanditBear,CPDBear,FilenameBear,SpaceConsistencyBear,PyLintBear
+bears = CPDBear,PycodestyleBear,PyDocStyleBear,RadonBear
 files = shopelectro/**/*.py
-file_naming_convention = snake
-pylint_rcfile = .pylintrc
-use_spaces = True
+minimum_tokens = 30
+max_line_length = 100
+pycodestyle_ignore = E305
+pydocstyle_ignore = D100,D101,D102,D103,D104,D105,D106
+force_sort_within_import_sections = False
+use_parentheses_in_import = False
 language = Python 3
 
 [all.javascript]
-bears = CPDBear,FilenameBear,SpaceConsistencyBear,JSComplexityBear,ESLintBear
+bears = CPDBear,JSComplexityBear,ESLintBear
 files = front/js/**
-file_naming_convention = camel
-use_spaces = True
-eslint_config = .eslintrc
+eslint_config = ./.eslintrc
 language = JavaScript

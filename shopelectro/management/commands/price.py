@@ -57,7 +57,12 @@ class Command(BaseCommand):
             utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
             product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
 
-            product.prepared_params = list(filter(lambda x: x[0].name != 'Производитель', product.params))
+            product.prepared_params = list(
+                filter(
+                    lambda x: x[0].name != 'Производитель',
+                    product.params
+                )
+            )
 
             return product
 
@@ -73,8 +78,8 @@ class Command(BaseCommand):
         def filter_categories():
             categories_to_exclude = (
                 Category.objects
-                    .filter(name__in=cls.IGNORED_CATEGORIES)
-                    .get_descendants(include_self=True)
+                .filter(name__in=cls.IGNORED_CATEGORIES)
+                .get_descendants(include_self=True)
             )
 
             return Category.objects.exclude(id__in=categories_to_exclude)
@@ -83,9 +88,9 @@ class Command(BaseCommand):
             """Filter product list and patch it for rendering"""
             products_except_others = (
                 Product.objects
-                    .select_related('page')
-                    .prefetch_related('category')
-                    .filter(category__in=categories_, price__gt=0)
+                .select_related('page')
+                .prefetch_related('category')
+                .filter(category__in=categories_, price__gt=0)
             )
 
             result_products = [
