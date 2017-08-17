@@ -1,7 +1,6 @@
 # coala python 3 bears:
 # https://github.com/coala/bear-docs/blob/master/README.rst#python
 
-# @todo #158:60m Настройти pylint
 # @todo #158:60m Настроить eslint
 
 [all]
