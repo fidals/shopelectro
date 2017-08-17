@@ -1,9 +1,3 @@
-"""
-yml_price command.
-
-Generate price files.
-"""
-
 import os
 
 from django.conf import settings
@@ -66,7 +60,7 @@ class Command(BaseCommand):
 
             return product
 
-        def put_crumbs(product):
+        def put_crumbs(product):  # Ignore PyDocStyleBear
             """Crumbs for google merchant. https://goo.gl/b0UJQp"""
             product.crumbs = ' > '.join(
                 product.page.get_ancestors_fields('h1', include_self=False)[1:]

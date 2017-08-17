@@ -1,4 +1,5 @@
-"""Create serialized data for tests and store this data in json file.
+"""
+Create serialized data for tests and store this data in json file.
 
 Usage:
 - create db named `test`
@@ -179,7 +180,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_page():
-        """Create only one page with type=FLAT_PAGE"""
+        """Create only one page with type=FLAT_PAGE."""
         FlatPage.objects.create(
             slug='flat',
         )

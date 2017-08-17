@@ -143,20 +143,18 @@ class Order(ecOrder):
 
 
 class CategoryPage(ModelPage):
-
     """Create proxy model for Admin."""
 
-    class Meta(ModelPage.Meta):
+    class Meta(ModelPage.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
     objects = ModelPage.create_model_page_managers(Category)
 
 
 class ProductPage(ModelPage):
-
     """Create proxy model for Admin."""
 
-    class Meta(ModelPage.Meta):
+    class Meta(ModelPage.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
     objects = ModelPage.create_model_page_managers(Product)
@@ -164,7 +162,7 @@ class ProductPage(ModelPage):
 
 class TagGroup(models.Model):
 
-    uuid = models.UUIDField(default=uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid4, editable=False)  # Ignore CPDBear
     name = models.CharField(
         max_length=100, db_index=True, verbose_name=_('name'))
     position = models.PositiveSmallIntegerField(

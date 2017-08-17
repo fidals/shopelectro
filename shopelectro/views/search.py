@@ -1,8 +1,3 @@
-"""Shopelectro's search views.
-
-NOTE: They all should be 'zero-logic'.
-All logic should live in respective applications.
-"""
 from django.conf import settings
 from django.shortcuts import _get_queryset
 from django.urls import reverse_lazy
@@ -14,16 +9,13 @@ from pages.models import Page
 from shopelectro.views.helpers import MODEL_MAP
 
 
-# SEARCH VIEWS
 class AdminAutocomplete(search.AdminAutocomplete):
-
     """Override model_map for autocomplete."""
 
     model_map = MODEL_MAP
 
 
 class Search(search.Search):
-
     """Override model references to SE-specific ones."""
 
     model_map = MODEL_MAP
@@ -36,7 +28,6 @@ class Search(search.Search):
 
 
 class Autocomplete(search.Autocomplete):
-
     """Override model references to SE-specific ones."""
 
     product_lookups = ['name__icontains', 'vendor_code__contains']

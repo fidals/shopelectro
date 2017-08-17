@@ -1,6 +1,4 @@
-"""
-Create Image objects from folder with image files
-"""
+"""Create Image objects from folder with image files."""
 import os
 
 from django.conf import settings

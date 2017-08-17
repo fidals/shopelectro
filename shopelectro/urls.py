@@ -1,10 +1,3 @@
-"""
-shopelectro.ru urlconf.
-
-NOTE: it's better to group related sets of urls into
-distinct lists and then include them all at once.
-"""
-
 from collections import OrderedDict
 
 from django.conf import settings

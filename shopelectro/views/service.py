@@ -1,6 +1,3 @@
-"""
-Shopelectro's service views.
-"""
 from hashlib import md5
 
 from django.conf import settings
@@ -20,9 +17,7 @@ YANDEX_REQUEST_PARAM = (
 
 
 def generate_md5_for_ya_kassa(post_body):
-    """
-    Generate md5 based on this param
-    """
+    """Generate md5 based on this param."""
     params = [post_body[param] for param in YANDEX_REQUEST_PARAM]
     params.append(settings.YANDEX_SHOP_PASS)
     param_sequence = str(';'.join(params)).encode('utf-8')
@@ -30,9 +25,7 @@ def generate_md5_for_ya_kassa(post_body):
 
 
 def has_correct_md5(post_body):
-    """
-    Compare our md5 with md5 from yandex request
-    """
+    """Compare our md5 with md5 from yandex request."""
     md5 = generate_md5_for_ya_kassa(post_body)
     return md5 == post_body['md5']
 
@@ -54,6 +47,7 @@ def yandex_check(request):
 def yandex_aviso(request):
     """
     Handle Yandex Aviso check.
+
     It's marked with @csrf_exempt, because we don't need to
     check CSRF in yandex-requests.
 
@@ -63,7 +57,6 @@ def yandex_aviso(request):
        send different emails to client and shop.
     3. Get invoice id from request and return XML to Yandex.
     """
-
     def is_first_aviso(order_):
         return order_ and not order_.paid
 
@@ -116,7 +109,7 @@ def yandex_aviso(request):
 @require_POST
 @csrf_exempt
 def ya_feedback_request(request):
-    """Send email to user with Y.Market feedback request"""
+    """Send email to user with Y.Market feedback request."""
     user_email = request.POST['email']
     mailer.ya_feedback(user_email)
 
@@ -125,5 +118,5 @@ def ya_feedback_request(request):
 
 
 def ya_feedback_with_redirect(request):
-    """Redirect user to Y.Market for feedback"""
+    """Redirect user to Y.Market for feedback."""
     return render(request, 'ecommerce/yandex_feedback_redirect.html')

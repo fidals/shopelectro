@@ -57,7 +57,8 @@ class XmlFile:
         }
 
     def get_data(self) -> Iterator:
-        """Get data from xml files.
+        """
+        Get data from xml files.
 
         Example files with products names or prices.
         """
@@ -69,9 +70,7 @@ class XmlFile:
 
 @contextmanager
 def download_catalog(destination):
-    """
-    Download catalog's xml files and delete after handle them.
-    """
+    """Download catalog's xml files and delete after handle them."""
     wget_command = (
         'wget -r -P {} ftp://{}:{}@{}/webdata'
         ' 2>&1 | grep "время\|time\|Downloaded"'.format(

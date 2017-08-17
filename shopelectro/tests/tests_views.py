@@ -1,9 +1,8 @@
-"""Views tests.
+"""
+View tests.
 
 Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
-
-All Selenium-tests should live in tests_selenium.
 """
 from functools import partial
 from itertools import chain
@@ -56,8 +55,8 @@ class CatalogPage(TestCase):
 
 
 class SitemapXML(TestCase):
-
-    """Tests for Sitemap XML.
+    """
+    Test Sitemap XML.
 
     Getting sitemap.xml and parsing it as string.
     """
@@ -106,8 +105,8 @@ class SitemapPage(TestCase):
 
 
 class YandexKassa(TestCase):
-
-    """Tests for yandex check order and yandex aviso.
+    """
+    Test yandex check order and yandex aviso.
 
     Yandex docs https://goo.gl/bOf3kw
     """
@@ -147,7 +146,8 @@ class YandexKassa(TestCase):
         self.assertContains(response, 'invoiceId="123"')
 
     def test_yandex_aviso_body(self):
-        """Test response code.
+        """
+        Test response code.
 
         Response should contain attr code="0" - it's mean, that all right,
         if code="1" - it's mean, yandex's request body contain incorrect data.

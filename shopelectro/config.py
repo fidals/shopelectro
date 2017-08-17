@@ -1,5 +1,6 @@
 """
 Config storage for shopelectro.ru.
+
 Every config-like option which doesn't belong to settings should be here.
 """
 from datetime import timedelta
@@ -48,7 +49,7 @@ def category_sorting(sorting_index=None):
 
 
 def cached_time(*args, **kwargs) -> int:
-    """Returns value of time for caching in seconds."""
+    """Return value of time for caching in seconds."""
     return int(timedelta(*args, **kwargs).total_seconds())
 
 # Tile on main page

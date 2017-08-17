@@ -1,9 +1,3 @@
-"""
-Shopelectro's catalog views.
-
-NOTE: They all should be 'zero-logic'.
-All logic should live in respective applications.
-"""
 from functools import partial
 
 from django.conf import settings

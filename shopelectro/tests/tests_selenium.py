@@ -69,7 +69,7 @@ class Header(helpers.SeleniumTestCase):
 
     @helpers.disable_celery
     def test_order_backcall_email(self):
-        """Back call phone number should be same in sent email"""
+        """Back call phone number should be same in sent email."""
         self.browser.find_element_by_class_name('js-backcall-order').click()
         self.browser.find_element_by_id('back-call-phone').send_keys('2222222222')
         self.browser.find_element_by_class_name('js-send-backcall').click()
@@ -94,7 +94,7 @@ class Header(helpers.SeleniumTestCase):
         self.assertTrue(cart.is_displayed())
 
     def test_cart_flush(self):
-        """We can flush cart from header's cart dropdown"""
+        """We can flush cart from header's cart dropdown."""
         add_to_cart(self.browser, self.live_server_url)
 
         show_cart_dropdown(self.browser)
@@ -145,6 +145,8 @@ class CategoryPage(helpers.SeleniumTestCase):
 
     def test_breadcrumbs(self):
         """
+        Test breadcrumbs.
+
         Breadcrumbs should be presented on every category page.
         Their count depends on category's depth in a catalog tree.
         For the root categories, for example, there should be 3 crumbs.
@@ -185,10 +187,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.assertEqual(2 * self.PRODUCTS_TO_LOAD, int(loaded_products_count))
 
     def test_load_more_hidden_in_fully_loaded_categories(self):
-        """
-        If category has less products than LOAD_LIMIT
-        we shouldn't see `Load more` button.
-        """
+        """If category has less products than LOAD_LIMIT we shouldn't see `Load more` button."""
         self.browser.get(self.deep_children_category)
         helpers.wait()
 
@@ -211,10 +210,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.assertTrue('view-mode-tile' in products_view.get_attribute('class'))
 
     def test_change_view(self):
-        """
-        We should be able to change default view
-        to list view without reloading a page.
-        """
+        """We should be able to change default view to list view without reloading a page."""
         self.browser.get(self.children_category)
         list_view_selector = self.browser.find_element_by_class_name(
             'js-icon-mode-list')
@@ -263,14 +259,11 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.assertFalse(is_cart_empty(self.browser))
 
     def test_add_to_cart_after_load_more(self):
-        """
-        We are able to add loaded product to Cart after Load more button click on
-        Category page.
-        """
         self.browser.get(self.root_category)
         self.browser.refresh()
         helpers.wait()
-        self.load_more_button.click()  # Let's load another PRODUCTS_TO_LOAD products.
+        # Let's load another PRODUCTS_TO_LOAD products.
+        self.load_more_button.click()
         helpers.wait(15)
         recently_loaded_product = self.browser.find_elements_by_class_name(
             'js-product-to-cart')[self.PRODUCTS_TO_LOAD + 1]
@@ -292,7 +285,6 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.assertEqual(attribute, None)
 
     def test_filter_products_by_tag(self):
-        """Products should be filterable by tag."""
         total_class = 'js-total-products'
         self.browser.get(self.root_category)
 
@@ -369,6 +361,8 @@ class ProductPage(helpers.SeleniumTestCase):
 
     def test_breadcrumbs(self):
         """
+        Test breadcrumb properties.
+
         Breadcrumbs should be presented on every product page.
         Their count depends on product's depth in a catalog tree.
         """
@@ -379,8 +373,10 @@ class ProductPage(helpers.SeleniumTestCase):
 
     def test_ui_elements(self):
         """
-        Every ProductPage should have buttons to make order and input
-        for phone number
+        Test ProductPage ui.
+
+        Every ProductPage should have button to make order and input
+        for phone number.
         """
         button_order = self.browser.find_element_by_id('btn-to-basket')
         input_one_click_order = self.browser.find_element_by_id(
@@ -390,8 +386,8 @@ class ProductPage(helpers.SeleniumTestCase):
         self.assertTrue(self.one_click)
         self.assertTrue(input_one_click_order)
 
-    def test_fancybox(self):
-        """ProductPage should have fancyBox plugin"""
+    def test_fancybox(self):  # Ignore PyDocStyleBear
+        """ProductPage should have fancyBox plugin."""
         self.browser.find_element_by_id('product-image-big').click()
         helpers.wait()
         fancybox_wrap = self.browser.find_element_by_class_name('fancybox-wrap')
@@ -416,7 +412,7 @@ class ProductPage(helpers.SeleniumTestCase):
         self.assertNotEquals(not_switched_path, switched_path)
 
     def test_one_click_buy_disabled_with_empty_phone(self):
-        """By default .btn-one-click-order should be disabled"""
+        """By default .btn-one-click-order should be disabled."""
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys(Keys.BACKSPACE)
 
@@ -566,10 +562,7 @@ class OrderPage(helpers.SeleniumTestCase):
             ).click()
 
     def test_table_is_presented_if_there_is_some_products(self):
-        """
-        If there are some products in cart,
-        we should see them in table on OrderPage.
-        """
+        """If there are some products in cart, we should see them in table on OrderPage."""
         order_table = self.browser.find_element_by_class_name('order-list')
 
         self.assertTrue(order_table.is_displayed())
@@ -586,10 +579,7 @@ class OrderPage(helpers.SeleniumTestCase):
             self.browser.find_element_by_class_name('order-list').text)
 
     def test_empty_cart(self):
-        """
-        After removing every product from cart
-        we should see that it is empty.
-        """
+        """After removing every product from cart we should see that it is empty."""
         removes = self.browser.find_elements_by_class_name('js-remove')
         while removes:
             remove = removes[0]
@@ -732,11 +722,11 @@ class SitePage(helpers.SeleniumTestCase):
             'js-accordion-content-{}'.format(self.page_top.id))
 
     def test_accordion_minimized(self):
-        """Accordion item should be minimized by default"""
+        """Accordion item should be minimized by default."""
         self.assertFalse(self.accordion_content.is_displayed())
 
     def test_accordion_expand(self):
-        """Accordion item should expand by click on title"""
+        """Accordion item should expand by click on title."""
         accordion_title = self.accordion_title
         accordion_content = self.accordion_content
         accordion_title.click()
@@ -745,7 +735,7 @@ class SitePage(helpers.SeleniumTestCase):
         self.assertTrue(accordion_content.is_displayed())
 
     def test_accordion_minimize_by_double_click(self):
-        """Accordion item should be minimized by two clicks on title"""
+        """Accordion item should be minimized by two clicks on title."""
         accordion_title = self.accordion_title
         accordion_content = self.accordion_content
         accordion_title.click()
@@ -761,10 +751,6 @@ class SitePage(helpers.SeleniumTestCase):
 class YandexMetrika(helpers.SeleniumTestCase):
 
     def setUp(self):
-        """
-        We should use self.browser.get(...) in this case, because we
-        faced a problems with it in setUpClass.
-        """
         server = self.live_server_url
         product_vendor_code = Product.objects.first().vendor_code
         self.product_page = server + reverse('product', args=(product_vendor_code,))
@@ -924,10 +910,6 @@ class Search(helpers.SeleniumTestCase):
     QUERY = 'Cate'
 
     def setUp(self):
-        """
-        We should use self.browser.get(...) in this case, because we
-        faced a problems with it in setUpClass.
-        """
         self.browser.get(self.live_server_url)
         helpers.wait()
 
@@ -950,10 +932,6 @@ class Search(helpers.SeleniumTestCase):
         helpers.wait()
 
     def test_autocomplete_can_expand_and_collapse(self):
-        """
-        Autocomplete should minimize during user typing correct search query.
-        Autocomplete should minimize by removing search query.
-        """
         helpers.wait()
         self.fill_input()
         # fill input and autocomplete expands
@@ -981,6 +959,7 @@ class Search(helpers.SeleniumTestCase):
     def test_autocomplete_see_all_item(self):
         """
         Autocomplete should contain "see all" item.
+
         `See all` item links on search results page.
         """
         self.fill_input()

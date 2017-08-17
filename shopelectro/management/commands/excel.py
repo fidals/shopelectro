@@ -1,19 +1,16 @@
-"""Generate Excel price-list.
-
-Uses this excel editor lib:
-https://openpyxl.readthedocs.io/en/default/
 """
+Generate Excel price-list.
 
+Use this excel editor lib: https://openpyxl.readthedocs.io/en/default/
+"""
 import datetime
 import os
-import openpyxl
 from collections import namedtuple
-from openpyxl.styles import Font
-from openpyxl.styles.borders import Border, Side
-from openpyxl.styles.colors import BLUE
 
+import openpyxl
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from openpyxl.styles import borders, colors, Font
 
 from shopelectro.models import Product, Category
 
@@ -32,11 +29,11 @@ class Command(BaseCommand):
         end_color='FEFEF0',
         fill_type='solid'
     )
-    THIN_BORDER = Border(
-        top=Side(style='thin'),
-        right=Side(style='thin'),
-        bottom=Side(style='thin'),
-        left=Side(style='thin')
+    THIN_BORDER = borders.Border(
+        top=borders.Side(style='thin'),
+        right=borders.Side(style='thin'),
+        bottom=borders.Side(style='thin'),
+        left=borders.Side(style='thin')
     )
     CURRENT_ROW = '9'  # Start of catalog section in file.
     cell = namedtuple('cell', ['row', 'col'])
@@ -61,7 +58,8 @@ class Command(BaseCommand):
             self.sheet[cell].border = self.THIN_BORDER
 
     def set_collapse_controls(self):
-        """Collapse controls looks like this: http://prntscr.com/clf9xh .
+        """
+        Collapse controls looks like this: http://prntscr.com/clf9xh .
 
         Doc link: https://goo.gl/nR5pLO
         """
@@ -75,10 +73,10 @@ class Command(BaseCommand):
         return self.sheet.row_dimensions[int(row_number)]
 
     def load_file_and_sheet(self):
-        """Load template file into openpyxl.
+        """
+        Load template file into openpyxl.
 
-        Return tuple with opened openpyxl file's object
-        and active price sheet.
+        Return tuple with opened openpyxl file's object and active price sheet.
         """
         file = openpyxl.load_workbook(os.path.join(
             settings.BASE_DIR, self.TEMPLATE))
@@ -117,7 +115,7 @@ class Command(BaseCommand):
             for product in products.iterator():
                 product_start = 'A' + self.CURRENT_ROW
                 sheet[product_start] = product.name
-                sheet[product_start].font = Font(color=BLUE)
+                sheet[product_start].font = Font(color=colors.BLUE)
                 sheet[product_start].hyperlink = settings.BASE_URL + product.url
                 sheet[product_start].border = self.THIN_BORDER
                 prices = [

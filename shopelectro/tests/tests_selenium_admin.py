@@ -103,13 +103,13 @@ class AdminPage(AdminSeleniumTestCase):
 
     def test_login(self):
         """We are able to login to Admin page."""
-
         admin_title = self.browser.find_element_by_id('site-name')
         self.assertIn(self.title_text, admin_title.text)
 
     def test_product_price_filter(self):
         """
         Price filter is able to filter products by set range.
+
         In this case we filter products with 1000 - 2000 price range.
         """
         # separated var for debugging
@@ -122,9 +122,7 @@ class AdminPage(AdminSeleniumTestCase):
         self.assertTrue(product_price >= 1000)
 
     def test_image_filter(self):
-        """
-        Image filter is able to filter pages by the presence of the image.
-        """
+        """Image filter is able to filter pages by the presence of the image."""
         self.browser.get(self.change_products_url)
         self.browser.find_element_by_xpath(self.filter_by_has_image).click()
         helpers.wait()
@@ -141,9 +139,7 @@ class AdminPage(AdminSeleniumTestCase):
         self.assertTrue('299' in table)
 
     def test_content_filter(self):
-        """
-        Content filter is able to filter pages by the presence of the content.
-        """
+        """Content filter is able to filter pages by the presence of the content."""
         self.browser.get(self.change_products_url)
         self.browser.find_element_by_xpath(self.filter_by_has_content).click()
         helpers.wait()
@@ -161,7 +157,6 @@ class AdminPage(AdminSeleniumTestCase):
 
     def test_is_active_filter(self):
         """Activity filter returns only active or non active items."""
-
         self.browser.get(self.change_products_url)
         helpers.wait()
         self.browser.find_element_by_xpath(self.active_products).click()
@@ -181,7 +176,6 @@ class AdminPage(AdminSeleniumTestCase):
 
     def test_search_autocomplete(self):
         """Search field should autocomplete."""
-
         self.browser.get(self.change_products_url)
         self.browser.find_element_by_id('searchbar').send_keys(self.autocomplete_text)
         helpers.wait()
@@ -195,7 +189,6 @@ class AdminPage(AdminSeleniumTestCase):
 
     def test_sidebar_not_on_dashboard(self):
         """Sidebar should be not only on dashboard page."""
-
         self.browser.get(self.change_products_url)
         sidebar = self.browser.find_element_by_class_name('sidebar')
 
@@ -222,7 +215,7 @@ class AdminPage(AdminSeleniumTestCase):
         self.assertIn(test_h1, expected_h1)
 
     def test_tree_redirect_to_table_editor_page(self):
-        """Test redirect to table editor page by context click at tree's item"""
+        """Test redirect to table editor page by context click at tree's item."""
         self.open_js_tree_nodes()
         tree_item = self.browser.find_element_by_id(
             self.tree_product_id).find_element_by_tag_name('a')
@@ -257,7 +250,6 @@ class AdminPage(AdminSeleniumTestCase):
 
     def test_sidebar_toggle(self):
         """Sidebar toggle button storage collapsed state."""
-
         self.browser.find_element_by_class_name('js-toggle-sidebar').click()
         helpers.wait()
         body_classes = self.browser.find_element_by_tag_name('body').get_attribute('class')
@@ -467,7 +459,8 @@ class TableEditor(AdminSeleniumTestCase):
         self.check_filters_and_table_headers_equality()
 
     def test_save_and_drop_custom_filters(self):  # Ignore PyDocStyleBear
-        """Headers in TE should be generated based on user settings in localStorage.
+        """
+        Headers in TE should be generated based on user settings in localStorage.
 
         This test case is contains save & drop cases cause they are depends on each other.
         """

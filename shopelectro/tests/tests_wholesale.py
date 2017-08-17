@@ -31,10 +31,7 @@ class SECartTest(TestCase):
         return float(getattr(product, price_type))
 
     def get_wholesale_data(self, price_type, products: list):
-        """
-        Return minimal products count, that we should put in cart to get
-        assigned price_type.
-        """
+        """Return minimal products count to get assigned price_type."""
         bound_devider = len(products)
         wholesale_price_type = {
             'wholesale_large': PRICE_BOUNDS['wholesale_large'],
@@ -133,6 +130,8 @@ class SECartTest(TestCase):
 
     def test_add_method_for_wholesale_small(self):
         """
+        Test changing price type after add product to card.
+
         If the sum of prices on small wholesale is greater than
         20 000 rub. then price for every product equated small wholesale price.
         """
@@ -140,6 +139,8 @@ class SECartTest(TestCase):
 
     def test_add_method_for_wholesale_medium(self):
         """
+        Test changing price type after add product to card.
+
         If the sum of prices on medium wholesale is greater than
         50 000 rub. then price for every product equated medium
         wholesale price.
@@ -148,6 +149,8 @@ class SECartTest(TestCase):
 
     def test_add_method_for_wholesale_large(self):
         """
+        Test changing price type after add product to card.
+
         If the sum of prices on large wholesale is greater than
         100 000 rub. then price for every product equated large
         wholesale price.
@@ -156,6 +159,8 @@ class SECartTest(TestCase):
 
     def test_remove_method_for_wholesale_small(self):
         """
+        Test changing price type after remove product from card.
+
         If the sum of prices on small wholesale is less than
         15 000 rub. then price for every product equated default price.
         """
@@ -169,6 +174,8 @@ class SECartTest(TestCase):
 
     def test_remove_method_for_wholesale_medium(self):
         """
+        Test changing price type after remove product from card.
+
         If the sum of prices on medium wholesale is less than
         40 000 rub. then price for every product equated small price.
         """
@@ -182,6 +189,8 @@ class SECartTest(TestCase):
 
     def test_remove_method_for_wholesale_large(self):
         """
+        Test changing price type after remove product from card.
+
         If the sum of prices on large wholesale is less than
         100 000 rub. then price for every product equated medium price.
         """
@@ -195,6 +204,8 @@ class SECartTest(TestCase):
 
     def test_set_product_quantity_method_for_wholesale_small(self):
         """
+        Test changing price type after set product quality in card.
+
         If the sum of prices on small wholesale is less than
         15 000 rub. then price for every product equated default price.
         """
@@ -208,6 +219,8 @@ class SECartTest(TestCase):
 
     def test_set_product_quantity_method_for_wholesale_medium(self):
         """
+        Test changing price type after set product quality in card.
+
         If the sum of prices on medium wholesale is less than
         40 000 rub. then price for every product equated small price.
         """
@@ -221,6 +234,8 @@ class SECartTest(TestCase):
 
     def test_set_product_quantity_method_for_wholesale_large(self):
         """
+        Test changing price type after set product quality in card.
+
         If the sum of prices on large wholesale is less than
         40 000 rub. then price for every product equated medium price.
         """

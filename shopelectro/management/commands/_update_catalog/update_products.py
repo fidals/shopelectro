@@ -125,7 +125,8 @@ in_stock_file = XmlFile(
 def merge_data(*data) -> Dict[UUID, Data]:
     """
     Merge data from xml files with different structure.
-    (ex. files with product names and prices)
+
+    Example: files with product names and prices.
     """
     product_data = defaultdict(dict)
     for key, data in chain(*data):

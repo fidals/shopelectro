@@ -53,7 +53,8 @@ class Mobile(SeleniumTestCase):
 
     def test_ui(self):
         """
-        Test mobile ui:
+        Test mobile ui.
+
         - off-canvas menu;
         - catalog button;
         - bottom fixed mobile cart;
