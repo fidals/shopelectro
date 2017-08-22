@@ -1,25 +1,25 @@
 # coala python 3 bears:
 # https://github.com/coala/bear-docs/blob/master/README.rst#python
 
-# @todo #158:60m Настройти pylint
 # @todo #158:60m Настроить eslint
 
 [all]
-bears = DuplicateFileBear,InvalidLinkBear
-ignore = shopelectro/**/__init__.py,shopelectro/**/__pycache__/**,front/**/vendors/**,front/(images|fonts|build)/**
+bears = InvalidLinkBear,SpaceConsistencyBear
+use_spaces = True
+files = **/(*.py|*.es6)
+ignore = shopelectro/**/__init__.py,shopelectro/**/__pycache__/**,front/**/vendors/**,front/(images|fonts|build)/**,shopelectro/migrations/**,shopelectro/settings/**
 
 [all.python]
-bears = BanditBear,CPDBear,FilenameBear,SpaceConsistencyBear,PyLintBear
+bears = CPDBear,PycodestyleBear,PyDocStyleBear,PyFlakesBear
 files = shopelectro/**/*.py
-file_naming_convention = snake
-pylint_rcfile = .pylintrc
-use_spaces = True
+minimum_tokens = 40
+max_line_length = 100
+pycodestyle_ignore = E305
+pydocstyle_ignore = D100,D101,D102,D103,D104,D105,D106,D203,D212
 language = Python 3
 
 [all.javascript]
-bears = CPDBear,FilenameBear,SpaceConsistencyBear,JSComplexityBear,ESLintBear
-files = front/js/**
-file_naming_convention = camel
-use_spaces = True
-eslint_config = .eslintrc
+bears = CPDBear,ESLintBear
+files = front/js/**/*.es6
+eslint_config = ./.eslintrc
 language = JavaScript

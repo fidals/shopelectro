@@ -1,4 +1,4 @@
-const server = (() => {
+const server = (() => {  // Ignore ESLintBear (no-unused-vars)
   const config = {
     orderCallUrl: '/shop/order-call/',
     addToCartUrl: '/shop/cart-add/',

@@ -115,8 +115,8 @@ class CategoryPageAdmin(models.CategoryPageAdmin):
     def get_queryset(self, request):
         return (
             super(CategoryPageAdmin, self)
-                .get_queryset(request)
-                .select_related('shopelectro_category')
+            .get_queryset(request)
+            .select_related('shopelectro_category')
         )
 
 
@@ -140,8 +140,8 @@ class ProductPageAdmin(models.ProductPageAdmin):
     def get_queryset(self, request):
         return (
             super(ProductPageAdmin, self)
-                .get_queryset(request)
-                .select_related('shopelectro_product')
+            .get_queryset(request)
+            .select_related('shopelectro_product')
         )
 
 
@@ -165,14 +165,14 @@ class ProductFeedbackPageAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return (
             super(ProductFeedbackPageAdmin, self)
-                .get_queryset(request)
-                .select_related('product')
+            .get_queryset(request)
+            .select_related('product')
         )
 
 
 class TagGroupAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'name', 'position','count_tags']
+    list_display = ['id', 'name', 'position', 'count_tags']
     list_display_links = ['name']
 
     inlines = [TagInline]

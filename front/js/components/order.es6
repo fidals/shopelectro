@@ -135,7 +135,7 @@
   function changeProductCount(event) {
     const productID = getElAttr(event, 'productId');
     server.changeInCart(productID, event.target.value)
-        .then(data => mediator.publish('onCartUpdate', data));
+      .then(data => mediator.publish('onCartUpdate', data));
   }
 
   /**
@@ -170,17 +170,17 @@
 
   const renderYandexForm = (formData) => {
     const formHtml = `
-      <form action="${formData['yandex_kassa_link']}" method="POST" id="yandex-form">
-        <input type="text" name="shopId" value="${formData['shopId']}">
-        <input type="text" name="scid" value="${formData['scid']}">
-        <input type="text" name="shopSuccessURL" value="${formData['shopSuccessURL']}">
-        <input type="text" name="shopFailURL" value="${formData['shopFailURL']}">
-        <input type="text" name="cps_phone" value="${formData['cps_phone']}">
-        <input type="text" name="cps_email" value="${formData['cps_email']}">
-        <input type="text" name="sum" value="${formData['sum']}">
-        <input type="text" name="customerNumber" value="${formData['customerNumber']}">
-        <input type="text" name="orderNumber" value="${formData['orderNumber']}">
-        <input type="text" name="paymentType" value="${formData['paymentType']}">
+      <form action="${formData.yandex_kassa_link}" method="POST" id="yandex-form">
+        <input type="text" name="shopId" value="${formData.shopId}">
+        <input type="text" name="scid" value="${formData.scid}">
+        <input type="text" name="shopSuccessURL" value="${formData.shopSuccessURL}">
+        <input type="text" name="shopFailURL" value="${formData.shopFailURL}">
+        <input type="text" name="cps_phone" value="${formData.cps_phone}">
+        <input type="text" name="cps_email" value="${formData.cps_email}">
+        <input type="text" name="sum" value="${formData.sum}">
+        <input type="text" name="customerNumber" value="${formData.customerNumber}">
+        <input type="text" name="orderNumber" value="${formData.orderNumber}">
+        <input type="text" name="paymentType" value="${formData.paymentType}">
         <input type="submit">
       </form>
     `;

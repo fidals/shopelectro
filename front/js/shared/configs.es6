@@ -2,7 +2,7 @@
  * There are all common configs for all common plugins.
  * This module is an entry point for plugins initialization.
  */
-const configs = (() => {
+const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
   const DOM = {
     $mobileMenu: $('#mobile-menu'),
     $modal: $('.modal'),

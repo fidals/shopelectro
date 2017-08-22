@@ -1,5 +1,5 @@
 """
-Tests for catalog command, which call other commands like price and excel.
+Test catalog command, which call other commands like price and excel.
 
 Note: tests running pretty long.
 """
@@ -18,7 +18,7 @@ from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
 )
 from shopelectro.models import (
-    Category, Product, ProductPage, CategoryPage, Tag, TagGroup
+    Category, Product, Tag, TagGroup
 )
 
 
@@ -44,7 +44,7 @@ class UpdateProducts(TestCase):
         self.assertIsNotNone(product.wholesale_large)
 
     def test_delete_xml(self):
-        """Delete XML files after process"""
+        """Delete XML files after process."""
         file_paths = glob.glob(
             os.path.join(settings.ASSETS_DIR, settings.FTP_IP, '**/*.xml'),
             recursive=True

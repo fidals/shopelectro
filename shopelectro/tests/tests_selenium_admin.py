@@ -4,62 +4,38 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-
-import time
-
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-from seleniumrequests import Remote  # We use this instead of standard selenium
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
 from django.conf import settings
-from django.test import LiveServerTestCase, override_settings
 from django.urls import reverse
+from selenium.webdriver.common.keys import Keys
 
 from shopelectro.models import Category, Product
-from shopelectro.tests.helpers import disable_celery, enable_russian_language
+from shopelectro.tests import helpers
 
 
-def wait(seconds=1):
-    """Simple wrapper on time.sleep() method."""
-    time.sleep(seconds)
-
-
-def hover(browser, element):
-    """Perform a hover over an element."""
-    ActionChains(browser).move_to_element(element).perform()
-
-
-def context_click(browser, element):
-    ActionChains(browser).context_click(element).perform()
-    wait()
-
-
-class SeleniumTestCase(LiveServerTestCase):
+class AdminSeleniumTestCase(helpers.SeleniumTestCase):
     """Common superclass for running selenium-based tests."""
 
     fixtures = ['dump.json', 'admin.json']
 
-    @classmethod
-    def setUpClass(cls):
-        """Instantiate browser instance."""
-        super(SeleniumTestCase, cls).setUpClass()
-        cls.browser = Remote(
-            command_executor='http://se-selenium-hub:4444/wd/hub',
-            desired_capabilities=DesiredCapabilities.CHROME
-        )
-        cls.browser.implicitly_wait(5)
-        cls.browser.set_window_size(1920, 1080)
+    def login(self):
+        self.browser.delete_all_cookies()
+        self.browser.get(self.admin_page)
+        login_field = self.browser.find_element_by_id('id_username')
+        login_field.clear()
+        login_field.send_keys(self.login)
+        password_field = self.browser.find_element_by_id('id_password')
+        password_field.clear()
+        password_field.send_keys(self.password)
+        login_form = self.browser.find_element_by_id('login-form')
+        login_form.submit()
+        helpers.wait()
 
-    @classmethod
-    def tearDownClass(cls):
-        """Close selenium session."""
-        cls.browser.quit()
-        super(SeleniumTestCase, cls).tearDownClass()
+    def setUp(self):
+        self.login()
 
 
-@enable_russian_language
-class AdminPage(SeleniumTestCase):
+@helpers.enable_russian_language
+class AdminPage(AdminSeleniumTestCase):
     """Selenium-based tests for Admin page UI."""
 
     @classmethod
@@ -93,17 +69,6 @@ class AdminPage(SeleniumTestCase):
         self.tree_product_id = str(Product.objects.filter(
             category_id=self.deep_children_category_id).first().id)
 
-        self.browser.get(self.admin_page)
-        login_field = self.browser.find_element_by_id('id_username')
-        login_field.clear()
-        login_field.send_keys(self.login)
-        password_field = self.browser.find_element_by_id('id_password')
-        password_field.clear()
-        password_field.send_keys(self.password)
-        login_form = self.browser.find_element_by_id('login-form')
-        login_form.submit()
-        wait()
-
     def get_table_with_products(self):
         return self.browser.find_element_by_class_name(self.product_table)
 
@@ -114,10 +79,10 @@ class AdminPage(SeleniumTestCase):
         def change_state(id=None, class_name=None):
             if id:
                 get_change_state_button(id).click()
-                wait()
+                helpers.wait()
             else:
                 self.browser.find_element_by_class_name(class_name).click()
-                wait()
+                helpers.wait()
 
         def is_node_open(id):
             return self.browser.find_element_by_id(
@@ -138,57 +103,53 @@ class AdminPage(SeleniumTestCase):
 
     def test_login(self):
         """We are able to login to Admin page."""
-
         admin_title = self.browser.find_element_by_id('site-name')
         self.assertIn(self.title_text, admin_title.text)
 
     def test_product_price_filter(self):
         """
         Price filter is able to filter products by set range.
+
         In this case we filter products with 1000 - 2000 price range.
         """
         # separated var for debugging
         self.browser.get(self.change_products_url)
         self.browser.find_element_by_xpath(self.price_filter).click()
-        wait()
+        helpers.wait()
         product = self.browser.find_element_by_xpath('//*[@id="result_list"]/tbody/tr[1]/td[4]')
         product_price = int(float(product.text.replace(',', '.')))
 
         self.assertTrue(product_price >= 1000)
 
     def test_image_filter(self):
-        """
-        Image filter is able to filter pages by the presence of the image.
-        """
+        """Image filter is able to filter pages by the presence of the image."""
         self.browser.get(self.change_products_url)
         self.browser.find_element_by_xpath(self.filter_by_has_image).click()
-        wait()
+        helpers.wait()
 
         table = self.get_table_with_products().text
 
         self.assertTrue('1' in table)
 
         self.browser.find_element_by_xpath(self.filter_by_has_not_image).click()
-        wait()
+        helpers.wait()
 
         table = self.get_table_with_products().text
 
         self.assertTrue('299' in table)
 
     def test_content_filter(self):
-        """
-        Content filter is able to filter pages by the presence of the content.
-        """
+        """Content filter is able to filter pages by the presence of the content."""
         self.browser.get(self.change_products_url)
         self.browser.find_element_by_xpath(self.filter_by_has_content).click()
-        wait()
+        helpers.wait()
 
         table = self.browser.find_element_by_class_name(self.product_table).text
 
         self.assertTrue('0' in table)
 
         self.browser.find_element_by_xpath(self.filter_by_has_not_content).click()
-        wait()
+        helpers.wait()
 
         table = self.get_table_with_products().text
 
@@ -196,11 +157,10 @@ class AdminPage(SeleniumTestCase):
 
     def test_is_active_filter(self):
         """Activity filter returns only active or non active items."""
-
         self.browser.get(self.change_products_url)
-        wait()
+        helpers.wait()
         self.browser.find_element_by_xpath(self.active_products).click()
-        wait()
+        helpers.wait()
 
         first_product = self.browser.find_element_by_class_name(
             self.is_active_img).find_element_by_tag_name('img')
@@ -209,17 +169,16 @@ class AdminPage(SeleniumTestCase):
         self.assertTrue(first_product_state == 'true')
 
         self.browser.find_element_by_xpath(self.inactive_products).click()
-        wait()
+        helpers.wait()
         results = self.browser.find_element_by_class_name('paginator')
 
         self.assertTrue('0' in results.text)
 
     def test_search_autocomplete(self):
         """Search field should autocomplete."""
-
         self.browser.get(self.change_products_url)
         self.browser.find_element_by_id('searchbar').send_keys(self.autocomplete_text)
-        wait()
+        helpers.wait()
 
         first_suggested_item = self.browser.find_element_by_class_name(
             'autocomplete-suggestion')
@@ -230,7 +189,6 @@ class AdminPage(SeleniumTestCase):
 
     def test_sidebar_not_on_dashboard(self):
         """Sidebar should be not only on dashboard page."""
-
         self.browser.get(self.change_products_url)
         sidebar = self.browser.find_element_by_class_name('sidebar')
 
@@ -251,19 +209,19 @@ class AdminPage(SeleniumTestCase):
         # click at tree's item, redirect to entity edit page
         root_node = self.browser.find_element_by_id(self.root_category_id)
         root_node.find_element_by_tag_name('a').click()
-        wait()
+        helpers.wait()
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
 
         self.assertIn(test_h1, expected_h1)
 
     def test_tree_redirect_to_table_editor_page(self):
-        """Test redirect to table editor page by context click at tree's item"""
+        """Test redirect to table editor page by context click at tree's item."""
         self.open_js_tree_nodes()
         tree_item = self.browser.find_element_by_id(
             self.tree_product_id).find_element_by_tag_name('a')
-        context_click(self.browser, tree_item)
+        helpers.context_click(self.browser, tree_item)
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[0].click()
-        wait()
+        helpers.wait()
 
         test_h1 = self.browser.find_elements_by_tag_name('h1')[1].text
         self.assertEqual(test_h1, 'Табличный редактор')
@@ -282,9 +240,9 @@ class AdminPage(SeleniumTestCase):
         category_h1 = Category.objects.get(id=self.root_category_id).page.display_h1
 
         # open context menu and click at redirect to site's page
-        context_click(self.browser, tree_item)
+        helpers.context_click(self.browser, tree_item)
         self.browser.find_elements_by_class_name('vakata-contextmenu-sep')[1].click()
-        wait()
+        helpers.wait()
         self.browser.switch_to.window(window_name=self.browser.window_handles[1])
         test_h1 = self.browser.find_element_by_tag_name('h1').text
 
@@ -292,32 +250,31 @@ class AdminPage(SeleniumTestCase):
 
     def test_sidebar_toggle(self):
         """Sidebar toggle button storage collapsed state."""
-
         self.browser.find_element_by_class_name('js-toggle-sidebar').click()
-        wait()
+        helpers.wait()
         body_classes = self.browser.find_element_by_tag_name('body').get_attribute('class')
 
         self.assertTrue('collapsed' in body_classes)
 
         self.browser.refresh()
-        wait()
+        helpers.wait()
         body_classes = self.browser.find_element_by_tag_name('body').get_attribute('class')
 
         self.assertTrue('collapsed' in body_classes)
 
-    @disable_celery
+    @helpers.disable_celery
     def test_yandex_feedback_request(self):
         """Send mail with request for leaving feedback on Ya.Market."""
         self.browser.find_element_by_class_name('js-toggle-sidebar').click()
         email_field = self.browser.find_element_by_id('user-email')
         email_field.send_keys(settings.EMAIL_HOST_USER + Keys.RETURN)
-        wait()
+        helpers.wait()
 
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
 
 
-@enable_russian_language
-class TableEditor(SeleniumTestCase):
+@helpers.enable_russian_language
+class TableEditor(AdminSeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""
 
     new_product_name = 'Product'
@@ -332,23 +289,13 @@ class TableEditor(SeleniumTestCase):
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
-        self.browser.delete_all_cookies()
-        self.browser.get(self.admin_page)
-        login_field = self.browser.find_element_by_id('id_username')
-        login_field.clear()
-        login_field.send_keys(self.login)
-        password_field = self.browser.find_element_by_id('id_password')
-        password_field.clear()
-        password_field.send_keys(self.password)
-        login_form = self.browser.find_element_by_id('login-form')
-        login_form.submit()
-        wait()
+        super().setUp()
         self.browser.find_element_by_id('admin-editor-link').click()
-        wait()
+        helpers.wait()
 
     def refresh_table_editor_page(self):
         self.browser.find_element_by_id('admin-editor-link').click()
-        wait()
+        helpers.wait()
 
     def trigger_autocomplete(self, selector):
         """Trigger jQ autocomplete widget."""
@@ -362,7 +309,7 @@ class TableEditor(SeleniumTestCase):
         editable_input.clear()
         editable_input.send_keys(new_data)
         editable_input.send_keys(Keys.ENTER)
-        wait()
+        helpers.wait()
 
     def get_cell(self, index=0):
         """Return WebElement for subsequent manipulations by index."""
@@ -395,7 +342,7 @@ class TableEditor(SeleniumTestCase):
 
         if not filters_wrapper.is_displayed():
             self.browser.find_element_by_class_name('js-hide-filter').click()
-            wait()
+            helpers.wait()
 
     def check_filters_and_table_headers_equality(self):
         """TE filters and table headers text should be equal."""
@@ -420,7 +367,7 @@ class TableEditor(SeleniumTestCase):
 
     def save_filters(self):
         self.browser.find_element_by_class_name('js-save-filters').click()
-        wait(2)
+        helpers.wait(2)
 
     def test_products_loaded(self):
         """TE should have all products."""
@@ -443,7 +390,7 @@ class TableEditor(SeleniumTestCase):
         price_cell_input = 2
         new_price = self.get_current_price(price_cell_index) + 100
         self.get_cell(price_cell_index).click()
-        wait()
+        helpers.wait()
         self.update_input_value(price_cell_input, new_price)
         self.refresh_table_editor_page()
         updated_price = self.get_current_price(price_cell_index)
@@ -470,9 +417,9 @@ class TableEditor(SeleniumTestCase):
         """We could remove Product from TE."""
         old_first_row_id = self.get_cell().text
         self.browser.find_element_by_class_name('js-confirm-delete-modal').click()
-        wait()
+        helpers.wait()
         self.browser.find_element_by_class_name('js-modal-delete').click()
-        wait()
+        helpers.wait()
         new_first_row_id = self.get_cell().text
 
         self.assertNotEqual(old_first_row_id, new_first_row_id)
@@ -501,17 +448,17 @@ class TableEditor(SeleniumTestCase):
         rows_before = len(self.browser.find_elements_by_class_name('jqgrow'))
         search_field = self.browser.find_element_by_id('search-field')
         search_field.send_keys('384')
-        wait(2)
+        helpers.wait(2)
         rows_after = len(self.browser.find_elements_by_class_name('jqgrow'))
 
         self.assertNotEqual(rows_before, rows_after)
 
-    def test_filters_equals_table_headers(self):
+    def test_filters_equals_table_headers(self):  # Ignore PyDocStyleBear
         """Headers in TE should be equal to chosen filters respectively."""
         self.open_filters()
         self.check_filters_and_table_headers_equality()
 
-    def test_save_and_drop_custom_filters(self):
+    def test_save_and_drop_custom_filters(self):  # Ignore PyDocStyleBear
         """
         Headers in TE should be generated based on user settings in localStorage.
 
@@ -522,7 +469,7 @@ class TableEditor(SeleniumTestCase):
 
         checkboxes = self.browser.find_elements_by_class_name('filter-fields-item')
 
-        for index, item in enumerate(checkboxes):
+        for index in range(len(checkboxes)):
             self.browser.find_elements_by_class_name('filter-fields-item')[index].click()
 
         self.save_filters()
@@ -530,10 +477,10 @@ class TableEditor(SeleniumTestCase):
 
         self.browser.refresh()
         self.open_filters()
-        wait(2)
+        helpers.wait(2)
 
         self.browser.find_element_by_class_name('js-drop-filters').click()
-        wait(2)
+        helpers.wait(2)
         self.check_filters_and_table_headers_equality()
 
     def test_non_existing_category_change(self):
@@ -562,15 +509,15 @@ class TableEditor(SeleniumTestCase):
 
         # Check is autocomplete works for category search by manual triggering it:
         self.browser.find_element_by_id('entity-category').send_keys('Category #0')
-        wait()
+        helpers.wait()
         self.trigger_autocomplete('#entity-category')
-        wait()
+        helpers.wait()
         autocomplete = self.browser.find_element_by_class_name('ui-autocomplete')
 
         # Choose category from autocomplete dropdown & save new entity:
         autocomplete.find_element_by_class_name('ui-menu-item-wrapper').click()
         self.browser.find_element_by_id('entity-save').click()
-        wait()
+        helpers.wait()
 
         # If entity was successfully changed `refresh_btn` should become active:
         refresh_btn = self.browser.find_element_by_id('refresh-table')
@@ -579,7 +526,7 @@ class TableEditor(SeleniumTestCase):
         # After click on `refresh_btn` TE should be updated:
         refresh_btn.click()
         self.browser.find_element_by_class_name('js-modal-close').click()
-        wait()
+        helpers.wait()
         first_row = self.browser.find_element_by_id('jqGrid').find_element_by_class_name('jqgrow')
         name_cell = first_row.find_elements_by_tag_name('td')[2]
         self.assertEqual(name_cell.get_attribute('title'), new_entity_text)

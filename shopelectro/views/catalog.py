@@ -1,17 +1,8 @@
-"""
-Shopelectro's catalog views.
-
-NOTE: They all should be 'zero-logic'.
-All logic should live in respective applications.
-"""
-from itertools import chain
 from functools import partial
-from collections import defaultdict
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
-from django.template import Context, Template
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
@@ -218,7 +209,8 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
 
     if tags:
         tag_entities = models.Tag.objects.filter(
-            slug__in=models.Tag.parse_url_tags(tags))
+            slug__in=models.Tag.parse_url_tags(tags)
+        )
 
         products = (
             products

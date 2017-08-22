@@ -18,8 +18,9 @@ def recalculate(func):
 
 def recalculate_price(cart: Cart):
     """
-    Define what type of price should be used in Cart. Actualize price if
-    needed.
+    Define what type of price should be used in Cart.
+
+    Actualize price if needed.
     """
     wholesale_types = OrderedDict([
         ('wholesale_large', PRICE_BOUNDS['wholesale_large']),
@@ -66,8 +67,10 @@ def recalculate_price(cart: Cart):
 
     def set_position_prices(price_type: str):
         """
-        If price_type is NoneType, then it is retail price,
-        set price from Product.price
+        Set price from Product.price.
+
+        If price_type is NoneType, then it is retail price, set price from
+        Product.price.
         """
         cart.update_product_prices(get_product_data(price_type))
 
@@ -75,9 +78,7 @@ def recalculate_price(cart: Cart):
 
 
 class SECart(Cart):
-    """
-    Override Cart class for Wholesale features.
-    """
+    """Override Cart class for Wholesale features."""
 
     def get_product_data(self, product):
         """Add vendor_code to cart's positions data."""

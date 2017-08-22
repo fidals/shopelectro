@@ -26,7 +26,7 @@
     const productId = $(event.target).attr('data-id');
 
     server.removeFromCart(productId)
-      .then(data => {
+      .then((data) => {
         mediator.publish('onCartUpdate', data);
         mediator.publish('onProductRemove');
       });
