@@ -12,6 +12,7 @@ psycopg2
 requests
 selenium
 selenium-requests
+Sphinx
 tblib
 unidecode
 ua-parser==0.7.3
