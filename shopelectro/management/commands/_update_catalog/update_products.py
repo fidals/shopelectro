@@ -269,6 +269,9 @@ def create(data: Dict[UUID, Data], updated_products: QuerySet) -> QuerySet:
     return created_products
 
 
+class UpdateProductError(Exception):
+    pass
+
 def main(*args, **kwargs):
     cleaned_product_data = clean_data(merge_data(
         product_file.get_data(),
@@ -290,7 +293,7 @@ def main(*args, **kwargs):
             # TODO: happy debugging (:
             message = 'The file structure has changed or it does not contain the required data.'
 
-        raise Exception(message)
+        raise UpdateProductError(message)
 
     delete(cleaned_product_data)
     updated_products = update(cleaned_product_data)

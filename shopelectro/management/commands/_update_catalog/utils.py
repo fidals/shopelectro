@@ -68,17 +68,18 @@ class XmlFile:
 
 
 @contextmanager
-def collect_errors():
+def collect_errors(error_types: tuple):
     errors = []
 
     @contextmanager
     def collect():
         try:
             yield
-        except Exception as error:
+        except error_types as error:
             errors.append(error)
-    yield collect, errors
-
+    yield collect
+    if errors:
+        raise errors[0]
 
 @contextmanager
 def download_catalog(destination):
