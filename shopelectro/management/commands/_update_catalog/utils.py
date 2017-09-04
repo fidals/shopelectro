@@ -68,6 +68,19 @@ class XmlFile:
 
 
 @contextmanager
+def collect_errors():
+    errors = []
+
+    @contextmanager
+    def collect():
+        try:
+            yield
+        except Exception as error:
+            errors.append(error)
+    yield collect, errors
+
+
+@contextmanager
 def download_catalog(destination):
     """
     Download catalog's xml files and delete after handle them.

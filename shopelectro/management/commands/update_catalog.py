@@ -28,7 +28,12 @@ class Command(BaseCommand):
     @staticmethod
     def update(*args, **kwargs):
         with utils.download_catalog(destination=settings.ASSETS_DIR):
-            start = time.time()
-            update_tags.main(*args, **kwargs)
-            update_products.main(*args, **kwargs)
-            print('Time elapsed {:.2f}.'.format(time.time() - start))
+            with utils.collect_errors() as (collect_error, errors):
+                start = time.time()
+                with collect_error():
+                    update_tags.main(*args, **kwargs)
+                with collect_error():
+                    update_products.main(*args, **kwargs)
+                if errors:
+                    raise errors[0]
+                print('Time elapsed {:.2f}.'.format(time.time() - start))
