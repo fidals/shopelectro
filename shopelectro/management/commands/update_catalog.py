@@ -19,16 +19,18 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        try:
-            self.update(*args, **kwargs)
-        except Exception as err:
-            utils.report(err)
-            raise err
+        self.update(*args, **kwargs)
 
     @staticmethod
     def update(*args, **kwargs):
         with utils.download_catalog(destination=settings.ASSETS_DIR):
-            start = time.time()
-            update_tags.main(*args, **kwargs)
-            update_products.main(*args, **kwargs)
-            print('Time elapsed {:.2f}.'.format(time.time() - start))
+            with utils.collect_errors(
+                (AssertionError, update_products.UpdateProductError)
+            ) as collect_error:
+                start = time.time()
+                with collect_error():
+                    update_tags.main(*args, **kwargs)
+                with collect_error():
+                    update_products.main(*args, **kwargs)
+
+                print('Time elapsed {:.2f}.'.format(time.time() - start))
