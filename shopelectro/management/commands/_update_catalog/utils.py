@@ -1,32 +1,34 @@
 import glob
 import os
-import requests
 import shutil
 import subprocess
 import time
-from functools import lru_cache
 from contextlib import contextmanager
+from functools import lru_cache
 from itertools import chain
 from typing import Iterator, Dict
-from uuid import uuid4
+from uuid import UUID
 from xml.etree import ElementTree
 
+import requests
 from django.conf import settings
 
 
 Data = Dict[str, str]
-
-UUID = str
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
 
 
 def is_correct_uuid(uuid_):
-    return uuid_ and len(uuid_) == __uuid_len
-__uuid_len = len(str(uuid4()))
+    try:
+        val = UUID(uuid_)
+    except (ValueError, TypeError):
+        return False
+    return str(val) == uuid_
 
 
 class XmlFile:
+
     namespace = '{urn:1C.ru:commerceml_2}'
 
     def __init__(self, fetch_callback, xml_path_pattern, xpath_queries,
@@ -48,7 +50,6 @@ class XmlFile:
         return [ElementTree.parse(file) for file in xml_files]
 
     @property
-    @lru_cache(maxsize=128)
     def xpaths(self):
         """Get xpath queries for xml."""
         return {

@@ -28,16 +28,20 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         ).text.lstrip('0')
         content = product_el.find(config.xpaths['page_content']).text or ''
 
-        tag_value_els = filter(None, (
+        tag_value_els = (
             tag_el.find(config.xpaths['tag_value_uuid'])
             for tag_el in product_el.findall(config.xpaths['tags'])
-        ))
-        tag_uuids = filter(is_correct_uuid, (
-            tag_el.text
-            for tag_el in tag_value_els
-        ))
+            if tag_el is not None
+        )
 
-        tags = Tag.objects.filter(uuid__in=list(tag_uuids))
+        tag_uuids = list(filter(is_correct_uuid, (
+            tag_value.text
+            for tag_value in tag_value_els
+            # should use 'is not None', because __bool__ does not defined
+            if tag_value is not None
+        )))
+
+        tags = Tag.objects.filter(uuid__in=tag_uuids)
 
         yield uuid, {
             'name': name,
@@ -130,7 +134,7 @@ def merge_data(*data) -> Dict[UUID, Data]:
     (ex. files with product names and prices)
     """
     product_data = defaultdict(dict)
-    for key, data in chain(*data):
+    for key, data in chain.from_iterable(filter(None, data)):
         product_data[key].update(data)
 
     return product_data
