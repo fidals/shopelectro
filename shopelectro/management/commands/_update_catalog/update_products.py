@@ -20,7 +20,6 @@ from shopelectro.models import Product, ProductPage, Tag
 
 def fetch_products(root: Element, config: XmlFile) -> Iterator:
     product_els = root.findall(config.xpaths['products'])
-
     for product_el in product_els:
         name = product_el.find(config.xpaths['name']).text
         uuid = product_el.find(config.xpaths['uuid']).text
@@ -29,13 +28,20 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         ).text.lstrip('0')
         content = product_el.find(config.xpaths['page_content']).text or ''
 
-        tag_els = product_el.findall(config.xpaths['tags'])
-        tag_uuids = filter(is_correct_uuid, (
-            tag_el.find(config.xpaths['tag_value_uuid']).text
-            for tag_el in tag_els
-        ))
+        tag_value_els = (
+            tag_el.find(config.xpaths['tag_value_uuid'])
+            for tag_el in product_el.findall(config.xpaths['tags'])
+            if tag_el is not None
+        )
 
-        tags = Tag.objects.filter(uuid__in=list(tag_uuids))
+        tag_uuids = list(filter(is_correct_uuid, (
+            tag_value.text
+            for tag_value in tag_value_els
+            # should use 'is not None', because __bool__ does not defined
+            if tag_value is not None
+        )))
+
+        tags = Tag.objects.filter(uuid__in=tag_uuids)
 
         yield uuid, {
             'name': name,
@@ -48,17 +54,17 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
 
 
 def fetch_prices(root: Element, config) -> Iterator:
-    product_price_els = root.findall(config.xpaths['product_prices'])
-
-    def get_prices():
+    def get_prices(prices_el):
         def get_(price_el: Element):
             return float(price_el.find(config.xpaths['price']).text)
-
         return sorted(map(get_, prices_el.findall(config.xpaths['prices'])))
-
+    product_price_els = root.findall(config.xpaths['product_prices'])
     for prices_el in product_price_els:
         product_uuid = prices_el.find(config.xpaths['product_uuid']).text
-        prices = dict(zip(config.extra_options['price_types'], get_prices()))
+        prices = dict(zip(
+            config.extra_options['price_types'],
+            get_prices(prices_el)
+        ))
 
         yield product_uuid, prices
 
@@ -128,7 +134,7 @@ def merge_data(*data) -> Dict[UUID, Data]:
     (ex. files with product names and prices)
     """
     product_data = defaultdict(dict)
-    for key, data in chain(*data):
+    for key, data in chain.from_iterable(filter(None, data)):
         product_data[key].update(data)
 
     return product_data
