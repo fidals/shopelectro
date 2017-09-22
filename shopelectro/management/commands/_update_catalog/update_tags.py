@@ -46,7 +46,7 @@ def fetch_tags(root: Element, config: XmlFile):
 
 tag_file = XmlFile(
     fetch_callback=fetch_tags,
-    xml_path_pattern='**/webdata/0*/import*.xml',
+    xml_path_pattern='**/webdata/0*/properties/**/import*.xml',
     xpath_queries={
         'tag_groups': './/{}Свойства/',
         'tag_group_uuid': '.{}Ид',

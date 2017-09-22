@@ -135,9 +135,11 @@ class Mobile(MobileSeleniumTestCase):
         self.browser.get(product_page)
         self.wait_page_loading()
 
-        self.browser.find_element_by_id('btn-to-basket').click()
+        self.wait.until(EC.visibility_of_element_located(
+            (By.ID, 'btn-to-basket')
+        )).click()
         wait_updates()
-
         new_price, new_size = get_cart_price_and_size()
+
         self.assertEqual(int(new_price.get_attribute('textContent')), 1000)
         self.assertEqual(int(new_size.get_attribute('textContent')), 1)

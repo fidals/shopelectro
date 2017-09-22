@@ -124,7 +124,9 @@ class Header(helpers.SeleniumTestCase):
         add_to_cart(self.browser, self.live_server_url)
         product_price = int(Product.objects.first().price)
         show_cart_dropdown(self.browser)
-        product_total_price = self.browser.find_element_by_class_name('js-basket-sum').text
+        product_total_price = self.wait.until(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'js-basket-sum'))
+        ).text
         product_total_price_in_cart = int(product_total_price.split(' ')[0])
 
         self.assertTrue(product_price == product_total_price_in_cart)
