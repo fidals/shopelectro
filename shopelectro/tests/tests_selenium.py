@@ -1016,12 +1016,15 @@ class Search(helpers.SeleniumTestCase):
 
     @property
     def autocomplete(self):
-        return self.browser.find_element_by_class_name(
-            'autocomplete-suggestions')
+        return self.wait.until(EC.presence_of_element_located(
+            (By.CLASS_NAME, 'autocomplete-suggestions')
+        ))
 
     @property
     def input(self):
-        return self.browser.find_element_by_class_name('js-search-input')
+        return self.wait.until(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'js-search-input')
+        ))
 
     def fill_input(self, query=''):
         """Enter correct search term."""

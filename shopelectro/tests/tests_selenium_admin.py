@@ -396,9 +396,9 @@ class TableEditor(AdminSeleniumTestCase):
 
     def open_filters(self):
         """Open TE filters cause they are collapsed by default."""
-        filters_wrapper = self.browser.find_element_by_class_name(
-            self.filter_wrapper_class
-        )
+        filters_wrapper = self.wait.until(EC.presence_of_element_located(
+            (By.CLASS_NAME, self.filter_wrapper_class)
+        ))
 
         if not filters_wrapper.is_displayed():
             self.browser.find_element_by_class_name('js-hide-filter').click()
