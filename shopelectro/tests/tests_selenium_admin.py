@@ -24,8 +24,8 @@ class AdminSeleniumTestCase(helpers.SeleniumTestCase):
     password = 'asdfjkl;'
 
     def wait_page_loading(self):
-        self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'admin')
+        self.wait.until(EC.presence_of_element_located(
+            (By.TAG_NAME, 'body')
         ))
 
     def signin(self):
@@ -40,6 +40,7 @@ class AdminSeleniumTestCase(helpers.SeleniumTestCase):
         password_field.send_keys(self.password)
         login_form = self.browser.find_element_by_id('login-form')
         login_form.submit()
+        self.wait_page_loading()
 
     def setUp(self):
         self.signin()
@@ -333,17 +334,17 @@ class TableEditor(AdminSeleniumTestCase):
         """Set up testing url and dispatch selenium webdriver."""
         super().setUp()
         self.browser.find_element_by_id('admin-editor-link').click()
-        self.wait_page_loading()
+        self.wait_tableeditor_loading()
 
-    def wait_page_loading(self):
-        super().wait_page_loading()
+    def wait_tableeditor_loading(self):
+        self.wait_page_loading()
         self.wait.until(EC.invisibility_of_element_located(
             (By.ID, 'load_jqGrid')
         ))
 
     def refresh_table_editor_page(self):
         self.browser.find_element_by_id('admin-editor-link').click()
-        self.wait_page_loading()
+        self.wait_tableeditor_loading()
 
     def trigger_autocomplete(self, selector):
         """Trigger jQ autocomplete widget."""
@@ -433,7 +434,7 @@ class TableEditor(AdminSeleniumTestCase):
         self.wait.until(EC.visibility_of_element_located(
             (By.CLASS_NAME, 'js-save-filters')
         )).click()
-        self.wait_page_loading()
+        self.wait_tableeditor_loading()
 
     def test_products_loaded(self):
         """TE should have all products."""
@@ -554,7 +555,7 @@ class TableEditor(AdminSeleniumTestCase):
         self.browser.refresh()
         self.open_filters()
         self.browser.find_element_by_class_name('js-drop-filters').click()
-        self.wait_page_loading()
+        self.wait_tableeditor_loading()
         self.check_filters_and_table_headers_equality()
 
     def test_non_existing_category_change(self):

@@ -1,6 +1,5 @@
-import time
-
 from django.test import LiveServerTestCase, override_settings
+from selenium.common.exceptions import InvalidElementStateException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,9 +11,18 @@ enable_russian_language = override_settings(
 )
 
 
-def wait(seconds=1):
-    """Simple wrapper on time.sleep() method."""
-    time.sleep(seconds)
+def try_again_on_stale_element(try_count):
+    def wrapper(func):
+        def wrapped(*args, **kwargs):
+            def try_(count):
+                try:
+                    return func(*args, **kwargs)
+                except InvalidElementStateException:
+                    if count >= 0:
+                        try_(count - 1)
+            return try_(try_count)
+        return wrapped
+    return wrapper
 
 
 def hover(browser, element):
@@ -36,7 +44,7 @@ class SeleniumTestCase(LiveServerTestCase):
         """Instantiate browser instance."""
         super(SeleniumTestCase, cls).setUpClass()
         cls.browser = Remote(
-            command_executor='http://se-selenium-hub:4444/wd/hub',
+            command_executor='http://se-selenium:4444/wd/hub',
             desired_capabilities=DesiredCapabilities.CHROME
         )
         cls.wait = WebDriverWait(cls.browser, 120)

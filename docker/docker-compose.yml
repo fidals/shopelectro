@@ -122,22 +122,23 @@ services:
   #     - 5555
   #     - 5900
 
-  se-selenium-hub:
+  se-selenium:
     image: selenium/standalone-chrome-debug:3.3.0
     restart: always
     ports:
-      - '4444'
+      - 4444
+      - 5900:5900  # VNC port. Password: secret
     networks:
       - se-backend
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
 
-  # @todo #158:60m доделать и использовать этот образ в CI
-  se-coala:
+  se-lint:
+    image: fidals/coala-ci
     build:
       context: .
       dockerfile: coala/Dockerfile
-    image: fidals/coala-ci
+    working_dir: $SRC_DIR
     volumes_from:
       - se-source
       - se-python

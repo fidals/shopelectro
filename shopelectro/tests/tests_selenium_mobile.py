@@ -30,7 +30,7 @@ class MobileSeleniumTestCase(LiveServerTestCase):
             },
         }
         cls.browser = webdriver.Remote(
-            command_executor='http://se-selenium-hub:4444/wd/hub',
+            command_executor='http://se-selenium:4444/wd/hub',
             desired_capabilities=capabilities
         )
         cls.wait = WebDriverWait(cls.browser, 120)
@@ -115,12 +115,12 @@ class Mobile(MobileSeleniumTestCase):
     def test_cart(self):
         """Cart should updated after Product buy."""
         def get_cart_price_and_size():
-            size = self.browser.find_element_by_class_name(  # Ignore PyFlakesBear
-                'js-cart-size'
-            )
-            price = self.browser.find_element_by_class_name(
-                'js-mobile-cart-price'
-            )
+            size = self.wait.until(EC.presence_of_element_located(
+                (By.CLASS_NAME, 'js-cart-size')
+            ))
+            price = self.wait.until(EC.presence_of_element_located(
+                (By.CLASS_NAME, 'js-mobile-cart-price')
+            ))
             return price, size
 
         def wait_updates():
@@ -130,6 +130,7 @@ class Mobile(MobileSeleniumTestCase):
             self.wait.until_not(EC.text_to_be_present_in_element_value(
                 (By.CLASS_NAME, 'js-mobile-cart-price'), ''
             ))
+
         product_vendor_code = Product.objects.first().vendor_code
         product_page = self.live_server_url + reverse('product', args=(product_vendor_code,))
         self.browser.get(product_page)
@@ -138,6 +139,7 @@ class Mobile(MobileSeleniumTestCase):
         self.wait.until(EC.visibility_of_element_located(
             (By.ID, 'btn-to-basket')
         )).click()
+
         wait_updates()
         new_price, new_size = get_cart_price_and_size()
 

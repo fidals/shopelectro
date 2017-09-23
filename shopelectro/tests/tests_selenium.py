@@ -50,6 +50,7 @@ def add_to_cart(browser, live_server_url):
     browser.find_element_by_class_name('btn-to-basket').click()
 
 
+@helpers.try_again_on_stale_element(3)
 def is_cart_empty(browser):
     show_cart_dropdown(browser)
     return browser.find_element_by_class_name('js-cart-is-empty').is_displayed()
@@ -341,7 +342,11 @@ class CategoryPage(helpers.SeleniumTestCase):
 
         before_products_count = self.browser.find_element_by_class_name(total_class).text
         self.browser.find_element_by_css_selector(self.filter_tag).click()
+        old_url = self.browser.current_url
         self.browser.find_element_by_class_name(self.apply_btn).click()
+        self.wait.until(EC.url_changes(old_url))
+        self.wait_page_loading()
+
         after_products_count = self.browser.find_element_by_class_name(total_class).text
         self.assertTrue(int(before_products_count) > int(after_products_count))
 
@@ -648,6 +653,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.wait.until(EC.staleness_of(add_one_more))
 
     def fill_and_submit_form(self):
+        @helpers.try_again_on_stale_element(3)
         def insert_value(id, keys):
             def expected_conditions(browser):
                 return browser.find_element_by_id(id).get_attribute('value')

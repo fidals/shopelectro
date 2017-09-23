@@ -18,8 +18,8 @@ build: build-dev-py static
 	@docker-compose -f docker-compose-production.yml build
 
 test: static
-	@docker-compose up -d se-python se-selenium-hub
-	@docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --keepdb --parallel
+	@docker-compose up -d se-python se-selenium
+	@docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
 	@docker-compose stop
 
 lint:

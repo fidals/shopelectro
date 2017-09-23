@@ -19,25 +19,27 @@ install:
   - cd docker
   - sudo docker-compose build > docker-build.log 2>&1
   - docker-compose run --rm se-nodejs bash -c "npm install && npm install -g gulp-cli && gulp build" > gulp-build.log 2>&1
-  - docker-compose exec se-python python manage.py migrate > django-migrate 2>&1
+  - docker-compose exec se-python python manage.py migrate > django-migrate.log 2>&1
   - docker-compose exec se-python python manage.py excel > django-excel.log 2>&1
   - docker-compose exec se-python python manage.py price > django-price.log 2>&1
   - sudo docker-compose exec se-python python manage.py collectstatic --noinput > django-collectstatic.log 2>&1
-  - sudo docker-compose up -d se-selenium-hub
+  - sudo docker-compose up -d se-selenium
 
 jobs:
   include:
-    - stage: unit tests
-      script: sudo docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
+    - stage: unit tests & lint
+      script: sudo docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel=6
       env:
         - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
-    - stage: unit tests
-      script: sudo docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
+    - stage: unit tests & lint
+      script: sudo docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel=6
       env:
         - DJANGO_SETTINGS_MODULE=shopelectro.settings.prod
-    - stage: lint code style
+    - stage: unit tests & lint
       script:
-        - docker-compose run se-coala
+        - sudo docker-compose run --rm se-lint
+      env:
+        - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
 
 after_failure:
   - docker-compose logs

@@ -1,7 +1,5 @@
 # https://github.com/coala/bear-docs/blob/master/README.rst#python
 
-# @todo #158:60m Настроить eslint
-
 [all]
 bears = InvalidLinkBear,SpaceConsistencyBear
 use_spaces = True
