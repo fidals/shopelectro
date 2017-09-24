@@ -5,13 +5,13 @@ import sys
 from django.core import management
 from django.core.management.base import BaseCommand, CommandError
 
-import pages
 import catalog
 import ecommerce
+import pages
 
 
 class Command(BaseCommand):
-    """Runs tests for project and for every refarm-* application."""
+    """Run tests for project and for every refarm-* application."""
 
     def handle(self, *args, **options):
         try:

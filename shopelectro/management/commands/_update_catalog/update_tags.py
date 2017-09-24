@@ -44,7 +44,6 @@ def fetch_tags(root: Element, config: XmlFile):
             'tags_data': tags_data,
         }
 
-
 tag_file = XmlFile(
     fetch_callback=fetch_tags,
     xml_path_pattern='**/webdata/**/properties/**/import*.xml',

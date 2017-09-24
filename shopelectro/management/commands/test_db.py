@@ -1,6 +1,5 @@
 """
-Create serialized data for tests.
-Store this data in json file.
+Create serialized data for tests and store this data in json file.
 
 Usage:
 - create db named `test`
@@ -9,7 +8,6 @@ Usage:
 - launch this command
 - now you have json file, that'll be used by our TDD tests
 """
-from functools import partial
 import os
 
 from django.conf import settings
@@ -182,7 +180,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_page():
-        """Create only one page with type=FLAT_PAGE"""
+        """Create only one page with type=FLAT_PAGE."""
         FlatPage.objects.create(
             slug='flat',
         )

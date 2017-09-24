@@ -1,4 +1,4 @@
-const helpers = (() => {
+const helpers = (() => {  // Ignore ESLintBear (no-unused-vars)
   const config = {
     regexpPhone: /(\+\d\s|\+\d)\(?\d{3}(\)|\)\s)?-?\d{1}-?\d{1}-?(\d{1}|\d{1}\s)-?\d{1}-?(\d{1}|\d{1}\s)-?\d{1}-?\d{1}/g,
     regexpEmail: /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,}$/,
@@ -28,14 +28,14 @@ const helpers = (() => {
   }
 
   function getUrlParam(name) {
-    const paramName = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    const paramName = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');  // Ignore ESLintBear (no-useless-escape)
     const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
     const results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
   function getUrlEndpointParam(name) {
-    const regex = new RegExp(`\/${name}\/(.+?)\/`);
+    const regex = new RegExp(`\/${name}\/(.+?)\/`);  // Ignore ESLintBear (no-useless-escape)
     const results = regex.exec(location.href);
     return results === null ? '' : decodeURIComponent(results[1]);
   }
@@ -51,7 +51,7 @@ const helpers = (() => {
   }
 
   function removeUrlEndpoint(name) {
-    const regex = new RegExp(`\/${name}\/(.+?)\/`);
+    const regex = new RegExp(`\/${name}\/(.+?)\/`);  // Ignore ESLintBear (no-useless-escape)
     return window.location.href.replace(regex, '');
   }
 

@@ -21,8 +21,8 @@ register = template.Library()
 def roots():
     return sorted(
         Category.objects
-            .select_related('page')
-            .get_cached_trees(),  # https://goo.gl/rFKiku
+        .select_related('page')
+        .get_cached_trees(),  # https://goo.gl/rFKiku
         key=lambda x: x.page.position
     )
 
@@ -41,9 +41,6 @@ def class_name(model):
 
 @register.simple_tag
 def time_to_call():
-    """
-    Return time when SE-manager will call the client based on current datetime.
-    """
     def is_weekend(t):
         return t.weekday() > 4
 

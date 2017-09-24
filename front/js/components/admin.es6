@@ -97,7 +97,7 @@ const customColModels = [
   },
 ];
 
-class SETableEditor extends TableEditor {
+class SETableEditor extends TableEditor {  // Ignore ESLintBear (no-undef)
   constructor(colModel) {
     super(colModel);
 
@@ -112,7 +112,7 @@ class SETableEditor extends TableEditor {
       'name',
       'category',
       'price',
-      'vendor_code',  
+      'vendor_code',
       'wholesale_small',
       'wholesale_medium',
       'wholesale_large',
@@ -120,7 +120,7 @@ class SETableEditor extends TableEditor {
   }
 }
 
-new AdminCommonPlugins();
-new AdminSidebar();
-const seColModel = new TableEditorColModel(customColModels);
+new AdminCommonPlugins();  // Ignore ESLintBear (no-undef)
+new AdminSidebar();  // Ignore ESLintBear (no-undef)
+const seColModel = new TableEditorColModel(customColModels);  // Ignore ESLintBear (no-undef)
 new SETableEditor(seColModel);

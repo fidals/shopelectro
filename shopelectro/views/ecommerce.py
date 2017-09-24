@@ -1,9 +1,3 @@
-"""
-Shopelectro's ecommerce views.
-
-NOTE: They all should be 'zero-logic'.
-All logic should live in respective applications.
-"""
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render

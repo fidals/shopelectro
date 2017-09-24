@@ -1,4 +1,4 @@
-const autocomplete = (() => {
+const autocomplete = (() => {  // Ignore ESLintBear (no-unused-vars)
   const config = {
     url: '/search/autocomplete/',
     searchInput: '.js-search-input',
@@ -15,7 +15,7 @@ const autocomplete = (() => {
    * @returns string
    */
   const highlight = (name, search) => {
-    const preparedSearch = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const preparedSearch = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');  // Ignore ESLintBear (no-useless-escape)
     const regexp = new RegExp(`(${preparedSearch.split(' ').join('|')})`, 'gi');
     return name.replace(regexp, '<b>$1</b>');
   };
@@ -34,13 +34,13 @@ const autocomplete = (() => {
     </div>`;
   };
 
-  const renderLastItem = (item) => {
+  const renderLastItem = item =>
     // Do not change string template here cause of issue.
     // https://github.com/Pixabay/JavaScript-autoComplete/issues/39
-    return `<div class="autocomplete-suggestion autocomplete-last-item">
+    `<div class="autocomplete-suggestion autocomplete-last-item">
        <a href="${item.url}">${item.name}</a>
-    </div>`;
-  };
+    </div>`
+  ;
 
   /**
    * Constructor args for autocomplete lib.
@@ -48,35 +48,33 @@ const autocomplete = (() => {
    * rendered before autocomplete will init
    * https://goodies.pixabay.com/javascript/auto-complete/demo.html
    */
-  const getAutoCompleteArgs = () => {
-    return {
-      selector: $(config.searchInput)[0],
-      source: (term, response) => {
-        $.getJSON(config.url, {term}, (searchedItems) => {
-          response(searchedItems);
-        });
-      },
-      renderItem: (item, term) => {
-        if (['category', 'product'].includes(item.type)) {
-          return renderSearchItem(item, term);
-        }
-
-        if (item.type === 'see_all') {
-          return renderLastItem(item);
-        }
-      },
-      onSelect: (event, term, item) => {
-        event.preventDefault();
-        const isRightClick = event.button === 2 || event.which === 3;
-        if (isRightClick) return;
-
-        window.location = $(item).find('a').attr('href');
+  const getAutoCompleteArgs = () => ({
+    selector: $(config.searchInput)[0],
+    source: (term, response) => {
+      $.getJSON(config.url, { term }, (searchedItems) => {
+        response(searchedItems);
+      });
+    },
+    renderItem: (item, term) => {  // Ignore ESLintBear (consistent-return)
+      if (['category', 'product'].includes(item.type)) {
+        return renderSearchItem(item, term);
       }
-    };
-  };
+
+      if (item.type === 'see_all') {
+        return renderLastItem(item);
+      }
+    },
+    onSelect: (event, term, item) => {
+      event.preventDefault();
+      const isRightClick = event.button === 2 || event.which === 3;
+      if (isRightClick) return;
+
+      window.location = $(item).find('a').attr('href');
+    },
+  });
 
   const init = () => {
-    new autoComplete(getAutoCompleteArgs());
+    new autoComplete(getAutoCompleteArgs());  // Ignore ESLintBear (no-undef)
   };
 
   init();

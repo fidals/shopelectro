@@ -2,19 +2,25 @@ migrate:
 	docker-compose exec se-python python manage.py migrate
 
 static:
-	docker-compose run se-nodejs bash -c "npm install && npm install -g gulp-cli && gulp build"
-	docker-compose exec se-python python manage.py excel
-	docker-compose exec se-python python manage.py price
-	docker-compose exec se-python python manage.py collectstatic --noinput
+	@docker-compose run --rm se-nodejs bash -c "\
+		npm install && \
+		npm install -g gulp-cli && \
+		gulp build"
+	@docker-compose run --rm se-python bash -c "\
+		python manage.py excel && \
+		python manage.py price && \
+		python manage.py collectstatic --noinput"
 
 build-dev-py:
-	docker-compose build --no-cache se-python
+	@docker-compose build --no-cache se-python
 
 build: build-dev-py static
-	docker-compose -f docker-compose-production.yml build
+	@docker-compose -f docker-compose-production.yml build
 
 test: static
-	docker-compose up -d se-selenium-hub
-	docker-compose up -d se-redis
-	docker-compose exec se-python python manage.py test --liveserver=se-python:8020-8030 --parallel
-	docker-compose stop
+	@docker-compose up -d se-python se-selenium
+	@docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
+	@docker-compose stop
+
+lint:
+	@docker run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala

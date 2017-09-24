@@ -4,7 +4,6 @@ import shutil
 import subprocess
 import time
 from contextlib import contextmanager
-from functools import lru_cache
 from itertools import chain
 from typing import Iterator, Dict
 from uuid import UUID
@@ -60,7 +59,8 @@ class XmlFile:
     def get_data(self) -> Iterator:
         """
         Get data from xml files.
-        (ex. files with products names or prices)
+
+        Example files with products names or prices.
         """
         return chain.from_iterable(
             self.fetch_callback(file, self)
@@ -82,11 +82,10 @@ def collect_errors(error_types: tuple):
     if errors:
         raise errors[0]
 
+
 @contextmanager
 def download_catalog(destination):
-    """
-    Download catalog's xml files and delete after handle them.
-    """
+    """Download catalog's xml files and delete after handle them."""
     wget_command = (
         'wget -r -P {} ftp://{}:{}@{}/webdata'
         ' 2>&1 | grep "время\|time\|Downloaded"'.format(

@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/fidals/shopelectro.svg?branch=master)](https://travis-ci.org/fidals/shopelectro)
 [![PDD status](http://www.0pdd.com/svg?name=yegor256/0pdd)](http://www.0pdd.com/p?name=fidals/shopelectro)
 
 # shopelectro
