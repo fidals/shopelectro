@@ -12,7 +12,7 @@ services:
     volumes:
       - $SRC_DIR # code volume
       - /opt/media/shopelectro/:$SRC_DIR/media/
-    command: sh -c "top > /dev/null"
+    command: sh -c "export TERM=xterm && top > /dev/null"
 
   se-python:
     build:
@@ -40,6 +40,7 @@ services:
       - se-postgres
       - se-rabbitmq
       - se-redis
+      - se-source
     ports:
       - $VIRTUAL_HOST_PORT
     volumes:
@@ -204,6 +205,7 @@ services:
       - se-source
     ports:
       - '$VIRTUAL_HOST_EXPOSE_PORT:80'
+      - '$VIRTUAL_HOST_DOCS_EXPOSE_PORT:86'
     networks:
       - se-frontend
     command: nginx -g 'daemon off;'
