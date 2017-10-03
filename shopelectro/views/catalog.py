@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.urls import reverse
 from django_user_agents.utils import get_user_agent
 
 from catalog.views import catalog
@@ -169,6 +170,15 @@ class CategoryPage(catalog.CategoryPage):
         page = context['page']
         page.get_template_render_context = partial(
             template_context, page, tags_metadata)
+
+        # patch canonical url for page.
+        # Using reverse(), not request.path to avoid "sorting" url option
+        page.get_absolute_url = lambda: reverse(
+            'category', kwargs=dict(
+                slug=page.slug,
+                **tags and dict(tags=self.kwargs.get('tags')) or {}
+            )
+        )
 
         products = all_products.get_offset(0, products_on_page)
 
