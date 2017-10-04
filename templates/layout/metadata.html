@@ -35,7 +35,7 @@
 <meta property="copyright" content="ShopElectro">
 <meta property="author" content="ShopElectro">
 
-<link rel="canonical" href="{{ page.get_absolute_url }}">
+<link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ page.get_absolute_url }}{% endif %}">
 <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 <link rel="android-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">

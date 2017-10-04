@@ -113,6 +113,17 @@ def merge_products_and_images(products):
 class CategoryPage(catalog.CategoryPage):
 
     def get_context_data(self, **kwargs):
+
+        def get_category_canonical_url(slug, tags):
+            # patch canonical url for page.
+            # Using reverse(), not request.path to avoid "sorting" url option
+            return reverse(
+                'category', kwargs=dict(
+                    slug=slug,
+                    **tags and dict(tags=tags) or {}
+                )
+            )
+
         """Add sorting options and view_types in context."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
         products_on_page = get_products_count(self.request)
@@ -171,15 +182,6 @@ class CategoryPage(catalog.CategoryPage):
         page.get_template_render_context = partial(
             template_context, page, tags_metadata)
 
-        # patch canonical url for page.
-        # Using reverse(), not request.path to avoid "sorting" url option
-        page.get_absolute_url = lambda: reverse(
-            'category', kwargs=dict(
-                slug=page.slug,
-                **tags and dict(tags=self.kwargs.get('tags')) or {}
-            )
-        )
-
         products = all_products.get_offset(0, products_on_page)
 
         return {
@@ -192,6 +194,9 @@ class CategoryPage(catalog.CategoryPage):
             'tags': tags,
             'view_type': view_type,
             'tags_metadata': tags_metadata,
+            'canonical_url': get_category_canonical_url(
+                slug=page.slug, tags=self.kwargs.get('tags')
+            ),
         }
 
 
