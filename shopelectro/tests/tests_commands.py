@@ -19,13 +19,6 @@ from shopelectro.management.commands._update_catalog import (
 )
 from shopelectro.models import Category, Product, Tag, TagGroup
 
-
-"""
-@todo # 179 Separate the UpdateProducts class tests into integration and unit tests.
- 1. Use the fixture files for unit tests to achieve stability.
- 2. Separately test downloading files from FTP.
-"""
-
 """
 @todo #179 Раздели тесты класса UpdateProducts на интеграционные и модульные.
  1. Используй файлы с фикстурами для модульных тестов, чтобы добиться стабильности.
