@@ -39,6 +39,28 @@ class CatalogPage(TestCase):
         for tag_name in tag_names:
             self.assertContains(response, tag_name)
 
+    """
+    @todo #172 Создаём тест для таких сценариев:
+    Сценарий 1. CategoryPage with tag
+      - открываем CategoryPage с тегом.
+        Например /catalog/categories/zariadnye-ustroistva-242/tags/robiton/
+      - проверяем на этой странице метатег canonical.
+        Его значением должен быть полный урл:
+        `<link rel="canonical" href="/catalog/categories/zariadnye-ustroistva-242/">`
+
+    Сценарий 2. CategoryPage with sorted tag
+      - открываем CategoryPage с тегом и параметром сортировки.
+        Например /catalog/categories/zariadnye-ustroistva-242/1/tags/robiton/
+      - проверяем на этой странице метатег canonical.
+        Его значением должен быть урл категории без страницы сортировки:
+        `<link rel="canonical" href="/catalog/categories/zariadnye-ustroistva-242/tags/robiton/">`
+    """
+    def test_category_page_canonical_meta_tag(self):
+        """Category contains all Product's tags."""
+        url = reverse('category', args=(self.category.page.slug, ))
+        response = self.client.get(url)
+        self.assertContains(response, url)
+
     def test_product_by_certain_tags(self):
         """Category page contains Product's related by certain tags."""
         first_tag, last_tag = Tag.objects.all().first(), Tag.objects.last()

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
+from django.urls import reverse
 from django_user_agents.utils import get_user_agent
 
 from catalog.views import catalog
@@ -112,6 +113,17 @@ def merge_products_and_images(products):
 class CategoryPage(catalog.CategoryPage):
 
     def get_context_data(self, **kwargs):
+
+        def get_category_canonical_url(slug, tags):
+            # patch canonical url for page.
+            # Using reverse(), not request.path to avoid "sorting" url option
+            return reverse(
+                'category', kwargs=dict(
+                    slug=slug,
+                    **tags and dict(tags=tags) or {}
+                )
+            )
+
         """Add sorting options and view_types in context."""
         context = super(CategoryPage, self).get_context_data(**kwargs)
         products_on_page = get_products_count(self.request)
@@ -182,6 +194,9 @@ class CategoryPage(catalog.CategoryPage):
             'tags': tags,
             'view_type': view_type,
             'tags_metadata': tags_metadata,
+            'canonical_url': get_category_canonical_url(
+                slug=page.slug, tags=self.kwargs.get('tags')
+            ),
         }
 
 
