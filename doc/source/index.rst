@@ -12,6 +12,7 @@ todo: fill index.rst `with trello task <https://trello.com/c/DcK5doUE/289-se-stb
 ==============================
 На локальной машине, для проверки.
 
+   #. Устанавливаем Python в соответствии с разрядностью используемой ОС: https://www.python.org/.
    #. Скачиваем код на локальную машину с помощью git clone или `просто архивом <https://github.com/fidals/shopelectro/archive/master.zip>`_ Ссылки на код и архив есть на странице проекта в github: https://github.com/fidals/shopelectro
    #. Открываем консоль, переходим в папку ``<project root>/doc/``
    #. Выполняем команду ``make html``. Должна работать в Windows, MacOS, Linux
