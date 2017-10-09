@@ -247,6 +247,19 @@ services:
     ports:
       - '6380:6379'
 
+  se-fixture-data:
+    image: alpine:latest
+    container_name: se-fixture-data
+    volumes_from:
+      - se-source
+    volumes:
+      - ../etc/se-fixtures-entrypoint.sh:/usr/bin/entrypoint.sh
+      - /opt/fixtures/shopelectro:/opt/fixtures
+      - /opt/database/shopelectro:/usr/app/src/database
+    entrypoint:
+      - sh
+      - /usr/bin/entrypoint.sh
+
 networks:
   se-backend:
   se-frontend:
