@@ -37,7 +37,10 @@
 {# seo guys desired this tag: http://prntscr.com/gt5jh1 #}
 <meta name="cmsmagazine" content="8a67cdaf9ded6448bd3626abd67b56e4">
 
-<link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ page.get_absolute_url }}{% endif %}">
+{# seo guys want just to skip canonical on several pages #}
+{% if not skip_canonical %}
+  <link rel="canonical" href="{{ page.get_absolute_url }}">
+{% endif %}
 <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 <link rel="android-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
