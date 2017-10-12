@@ -247,14 +247,20 @@ services:
     ports:
       - '6380:6379'
 
-  se-fixture-data:
+  # @todo #176 Реализуй скрипт для выгрузки боевых данных на локаль
+  # @todo #176 Реализуй систему резервного копирования
+
+  # Контейнер используется для резервного копирования (чтобы получить бекап прямо сейчас)
+  # Результат запуска контейнера - несколько архивов (database.tar.gz, media.tar.gz, static.tar.gz)
+  # в директории /opt/backups/shopelectro
+  se-backup-data:
     image: alpine:latest
-    container_name: se-fixture-data
+    container_name: se-backup-data
     volumes_from:
       - se-source
     volumes:
-      - ../etc/se-fixtures-entrypoint.sh:/usr/bin/entrypoint.sh
-      - /opt/fixtures/shopelectro:/opt/fixtures
+      - ../etc/se-backup-entrypoint.sh:/usr/bin/entrypoint.sh
+      - /opt/backups/shopelectro:/opt/backup
       - /opt/database/shopelectro:/usr/app/src/database
     entrypoint:
       - sh

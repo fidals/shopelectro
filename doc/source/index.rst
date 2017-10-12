@@ -34,6 +34,29 @@ todo: Create delivery
    docker-compose exec se-python bash -c "cd doc/ && make html"
 
 
+Как сделать бекап?
+==================
+
+(актуально только для production-окружения)
+
+Для этого у нас есть специальный контейнер - ``se-backup-data`` ::
+
+   cd <proj root>/docker
+   docker-compose -f docker-compose-production.yml up se-backup-data
+   # для удобства эта команда добавлена в Makefile:
+   # make backup
+
+В результате работы контейнер создаст несколько архивов в хост-системе:
+
+* ``/opt/backups/shopelectro/database.tar.gz`` - дамп базы данных
+* ``/opt/backups/shopelectro/media.tar.gz`` - дамп медиафайлов
+* ``/opt/backups/shopelectro/static.tar.gz`` - дамп статики
+
+Как развернуть боевые данные на локальной версии Shopelectro?
+=============================================================
+
+@todo #176 Описать процесс развертывания боевых данных на локали
+
 Инструкции к фичам
 ==================
 
