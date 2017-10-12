@@ -6,5 +6,5 @@
 for type in database media static
 do
     echo $type
-    tar -zcvf /opt/fixtures/$type.tar.gz -C /usr/app/src/$type .
+    tar -zcvf /opt/backup/$type.tar.gz -C /usr/app/src/$type .
 done
