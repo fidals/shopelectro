@@ -41,6 +41,11 @@ jobs:
         - sudo docker-compose run --rm se-lint
       env:
         - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
+    - stage: unit tests & lint
+      script:
+        - sudo docker-compose run --rm se-pdd
+      env:
+        - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
 
 after_failure:
   - docker-compose logs
