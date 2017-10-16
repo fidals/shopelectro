@@ -247,9 +247,9 @@ services:
     ports:
       - '6380:6379'
 
-  # Контейнер используется для резервного копирования (чтобы получить бекап прямо сейчас)
-  # Результат запуска контейнера - несколько архивов (database.tar.gz, media.tar.gz, static.tar.gz)
-  # в директории /opt/backups/shopelectro
+  # Контейнер при запуске создаёт бэкап.
+  # Бэкап - это несколько архивов: database.tar.gz, media.tar.gz, static.tar.gz
+  # в директории /opt/backup/shopelectro
   se-backup-data:
     image: alpine:latest
     container_name: se-backup-data
@@ -257,7 +257,7 @@ services:
       - se-source
     volumes:
       - ../etc/se-backup-entrypoint.sh:/usr/bin/entrypoint.sh
-      - /opt/backups/shopelectro:/opt/backup
+      - /opt/backup/shopelectro:/opt/backup
       - /opt/database/shopelectro:/usr/app/src/database
     entrypoint:
       - sh

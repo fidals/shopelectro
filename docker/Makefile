@@ -25,7 +25,7 @@ test: static
 backup:
 	@docker-compose -f docker-compose-production.yml up se-backup-data
 
-restore-backup-data:
+restore:
 	# @todo #176 Реализуй скрипт для выгрузки боевых данных на локаль, зависит от #190
 
 lint:
