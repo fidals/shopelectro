@@ -146,7 +146,7 @@ services:
     volumes_from:
       - se-source
       - se-python
-    command: pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* -f report.xml
+    command: pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
 
 networks:
   se-backend:
