@@ -12,10 +12,11 @@ todo: fill index.rst `with trello task <https://trello.com/c/DcK5doUE/289-se-se-
 ==============================
 На локальной машине, для проверки.
 
-   #. Скачиваем код на локальную машину с помощью git clone или `просто архивом <https://github.com/fidals/shopelectro/archive/master.zip>`_ Ссылки на код и архив есть на странице проекта в github: https://github.com/fidals/shopelectro
-   #. Открываем консоль, переходим в папку ``<project root>/doc/``
-   #. Выполняем команду ``make html``. Должна работать в Windows, MacOS, Linux
-   #. В папке ``<project root>/doc/build/html`` перегенерились файлы html с содержимым нашей доки. ``index.html`` - главная страница
+#. Устанавливаем Sphinx `по инструкции <http://www.sphinx-doc.org/en/stable/install.html#>`_. `Установка на Windows <https://github.com/fidals/shopelectro/blob/master/doc/source/installing_sphinx_for_windows.rst>`_.
+#. Скачиваем код на локальную машину с помощью git clone или `просто архивом <https://github.com/fidals/shopelectro/archive/master.zip>`_ Ссылки на код и архив есть на странице проекта в github: https://github.com/fidals/shopelectro
+#. Открываем консоль, переходим в папку ``<project root>/doc/``
+#. Выполняем команду ``make html``. Должна работать в Windows, MacOS, Linux
+#. В папке ``<project root>/doc/build/html`` перегенерились файлы html с содержимым нашей доки. ``index.html`` - главная страница
 
 Деплой
 ======
@@ -60,6 +61,29 @@ todo: Resolve ci bug with imagemin
    node node_modules/gifsicle/lib/install.js
 
 Если эти команды не помогли, вот `коммент с дополнительными инструкциями <https://github.com/fidals/shopelectro/issues/183#issuecomment-334427473>`_
+
+Как сделать бекап?
+==================
+
+(актуально только для production-окружения)
+
+Для этого у нас есть специальный контейнер - ``se-backup-data`` ::
+
+   cd <proj root>/docker
+   docker-compose -f docker-compose-production.yml up se-backup-data
+   # для удобства эта команда добавлена в Makefile:
+   # make backup
+
+В результате работы контейнер создаст несколько архивов в хост-системе:
+
+* ``/opt/backups/shopelectro/database.tar.gz`` - дамп базы данных
+* ``/opt/backups/shopelectro/media.tar.gz`` - дамп медиафайлов
+* ``/opt/backups/shopelectro/static.tar.gz`` - дамп статики
+
+Как развернуть боевые данные на локальной версии Shopelectro?
+=============================================================
+
+@todo #176 Описать процесс развертывания боевых данных на локали
 
 Инструкции к фичам
 ==================
