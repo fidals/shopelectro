@@ -26,7 +26,7 @@ backup:
 	@docker-compose -f docker-compose-production.yml up se-backup-data
 
 restore-backup-data:
-	# @todo #176 Реализуй скрипт для выгрузки боевых данных на локаль
+	# @todo #176 Реализуй скрипт для выгрузки боевых данных на локаль, зависит от #190
 
 lint:
 	@docker run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
