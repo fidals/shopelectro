@@ -6,7 +6,7 @@
 Shopelectro's documentation
 =======================================
 
-todo: fill index.rst `with trello task <https://trello.com/c/DcK5doUE/289-se-stb-rf-write-indexrst-with-template>`_
+todo: fill index.rst `with trello task <https://trello.com/c/DcK5doUE/289-se-se-rf-write-indexrst-with-template>`_
 
 Как сгенерировать документацию
 ==============================
@@ -23,17 +23,32 @@ todo: Create delivery
 
 Пока деплой происходит руками. Список команд для деплоя::
 
+*Алиасы*
+Для сокращения введём такие алиасы::
+
    # bash alias dc="docker-compose"
    # bash alias dcp="docker-compose -f docker-compose-production.yml"
+
+
+*На локали*::
+
    # in <proj root>/docker/
-   dcp build
+   dc build se-python && dcp build
+   dc push se-python && dcp push
+
+
+*На сервере*::
+
+   dcp pull se-python && dcp pull
+   dcp stop
+   dcp rm -f se-source  # bug with docker volumes
    dcp up -d
    dc run --rm se-nodejs bash -c "npm install && npm install -g gulp-cli && gulp build"
-   dc exec se-python python manage.py migrate
-   dc exec se-python python manage.py excel
-   dc exec se-python python manage.py price
-   dc exec se-python python manage.py collectstatic --noinput
-   dc exec se-python bash -c "cd doc/ && make html"
+   dcp exec se-python python manage.py migrate
+   dcp exec se-python python manage.py excel
+   dcp exec se-python python manage.py price
+   dcp exec se-python python manage.py collectstatic --noinput
+   dcp exec se-python bash -c "cd doc/ && make html"
 
 
 todo: Resolve ci bug with imagemin
