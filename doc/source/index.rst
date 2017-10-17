@@ -23,16 +23,28 @@ todo: Create delivery
 
 Пока деплой происходит руками. Список команд для деплоя::
 
+   # bash alias dc="docker-compose"
+   # bash alias dcp="docker-compose -f docker-compose-production.yml"
    # in <proj root>/docker/
-   docker-compose -f docker-compose-production.yml build
-   docker-compose -f docker-compose-production.yml up -d
-   docker-compose run --rm se-nodejs bash -c "npm install && npm install -g gulp-cli && gulp build"
-   docker-compose exec se-python python manage.py migrate
-   docker-compose exec se-python python manage.py excel
-   docker-compose exec se-python python manage.py price
-   docker-compose exec se-python python manage.py collectstatic --noinput
-   docker-compose exec se-python bash -c "cd doc/ && make html"
+   dcp build
+   dcp up -d
+   dc run --rm se-nodejs bash -c "npm install && npm install -g gulp-cli && gulp build"
+   dc exec se-python python manage.py migrate
+   dc exec se-python python manage.py excel
+   dc exec se-python python manage.py price
+   dc exec se-python python manage.py collectstatic --noinput
+   dc exec se-python bash -c "cd doc/ && make html"
 
+
+todo: Resolve ci bug with imagemin
+Сейчас nodejs контейнер падает при билде статики.
+Чтоб не падал, залазим в него ручками и ставим руками пару npm-пакетов::
+
+   node node_modules/optipng-bin/lib/install.js
+   node node_modules/jpegtran-bin/lib/install.js
+   node node_modules/gifsicle/lib/install.js
+
+Если эти команды не помогли, вот `коммент с дополнительными инструкциями <https://github.com/fidals/shopelectro/issues/183#issuecomment-334427473>`_
 
 Инструкции к фичам
 ==================
