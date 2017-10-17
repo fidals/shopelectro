@@ -141,6 +141,7 @@ class CategoryPage(catalog.CategoryPage):
         tags = self.kwargs.get('tags')
         tags_metadata = {
             'titles': '',
+            'raw': [],
         }
 
         if tags:
@@ -160,6 +161,7 @@ class CategoryPage(catalog.CategoryPage):
             )
 
             tags_metadata['titles'] = tags_titles
+            tags_metadata['raw'] = tags
 
         def template_context(page, tags):
             return {
