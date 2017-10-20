@@ -4,7 +4,6 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
-from django.urls import reverse
 from django_user_agents.utils import get_user_agent
 
 from catalog.views import catalog

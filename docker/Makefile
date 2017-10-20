@@ -22,5 +22,11 @@ test: static
 	@docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
 	@docker-compose stop
 
+backup:
+	@docker-compose -f docker-compose-production.yml up se-backup-data
+
+restore:
+	# @todo #176 Реализуй скрипт для выгрузки боевых данных на локаль, зависит от #190
+
 lint:
 	@docker run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
