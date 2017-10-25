@@ -305,3 +305,11 @@ CUSTOM_PAGES = {
         'name': 'Заказ принят',
     }
 }
+
+TAGS_URL_DELIMITER = '-or-'
+TAG_GROUPS_URL_DELIMITER = '-and-'
+
+TAGS_TITLE_DELIMITER = ' или '
+TAG_GROUPS_TITLE_DELIMITER = ' и '
+
+TAGS_ORDER = ['group__position', 'group__name', 'position', 'name']
