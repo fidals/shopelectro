@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.test import LiveServerTestCase, override_settings
 from selenium.common.exceptions import InvalidElementStateException
 from selenium.webdriver.common.action_chains import ActionChains
@@ -44,7 +45,7 @@ class SeleniumTestCase(LiveServerTestCase):
         """Instantiate browser instance."""
         super(SeleniumTestCase, cls).setUpClass()
         cls.browser = Remote(
-            command_executor='http://se-selenium:4444/wd/hub',
+            command_executor=settings.SELENIUM_URL,
             desired_capabilities=DesiredCapabilities.CHROME
         )
         cls.wait = WebDriverWait(cls.browser, 120)
