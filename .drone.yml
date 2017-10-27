@@ -1,0 +1,7 @@
+# @todo #178 Напиши конфиг для Drone CI
+
+pipeline:
+  build:
+    image: alpine
+    commands:
+      - echo "Hello!"
