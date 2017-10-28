@@ -52,6 +52,7 @@ services:
     build:
       context: ..
       dockerfile: docker/node/Dockerfile
+    image: fidals/se-nodejs:latest
     container_name: se-nodejs
     command: bash -c 'gulp watch || (npm install && npm install -g gulp-cli && gulp build && gulp watch)'
     volumes_from:
@@ -146,7 +147,7 @@ services:
     volumes_from:
       - se-source
       - se-python
-    command: pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* -f report.xml
+    command: pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
 
 networks:
   se-backend:
