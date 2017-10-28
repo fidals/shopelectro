@@ -1,3 +1,5 @@
+# @todo #208 Определи оптимальное количество параллельных тестов
+
 pipeline:
   pip-install:
     image: python
@@ -8,7 +10,7 @@ pipeline:
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
 
-  npm-build:
+  npm:
     image: node
     environment:
       - DEPS_DIR=/usr/app/deps
@@ -76,6 +78,6 @@ services:
     image: selenium/standalone-chrome-debug:3.3.0
     environment: # https://github.com/SeleniumHQ/docker-selenium/issues/392
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
-    shm_size: 1G
+    shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
