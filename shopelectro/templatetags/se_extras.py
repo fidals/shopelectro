@@ -105,7 +105,7 @@ def get_img_alt(entity: ImageMixin):
 @register.simple_tag
 def main_image_or_logo(page: Page):
     """Used for microdata."""
-    if page.main_image:
+    if hasattr(page, 'main_image') and page.main_image:
         return page.main_image.url
     else:
         return settings.STATIC_URL + 'images/logo.png'
@@ -114,7 +114,7 @@ def main_image_or_logo(page: Page):
 @register.inclusion_tag('catalog/product_feedbacks_icons.html')
 def icon_stars(rating=0):
     """Render set of rating icons based on 1 through 5 rating values."""
-    full_icons = math.floor(rating)
+    full_icons = int(math.floor(rating))
     half_icons = 0 if rating == int(rating) else 1
     empty_icons = 5 - full_icons - half_icons
 
