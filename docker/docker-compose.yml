@@ -52,7 +52,6 @@ services:
     build:
       context: ..
       dockerfile: docker/node/Dockerfile
-    image: fidals/se-nodejs:latest
     container_name: se-nodejs
     command: bash -c 'gulp watch || (npm install && npm install -g gulp-cli && gulp build && gulp watch)'
     volumes_from:
