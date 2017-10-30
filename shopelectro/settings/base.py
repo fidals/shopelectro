@@ -182,6 +182,8 @@ LOGGING = {
     },
 }
 
+SELENIUM_URL = os.environ.get('SELENIUM_URL', 'http://se-selenium:4444/wd/hub')
+
 SITE_CREATED = datetime(2013, 1, 1)
 
 LOCALHOST = 'http://127.0.0.1:8000/'

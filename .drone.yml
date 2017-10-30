@@ -1,7 +1,83 @@
-# @todo #178 Напиши конфиг для Drone CI
+# @todo #208 Определи оптимальное количество параллельных тестов
 
 pipeline:
-  build:
-    image: alpine
+  pip-install:
+    image: python
     commands:
-      - echo "Hello!"
+      - pip install -r requirements.txt
+      - rm -rf /usr/app/deps/site-packages
+      - mv /usr/local/lib/python3.6/site-packages /usr/app/deps
+    volumes:
+      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
+
+  npm:
+    image: node
+    environment:
+      - DEPS_DIR=/usr/app/deps
+    commands:
+      - npm install
+      - npm install -g gulp-cli
+      - gulp build
+    volumes:
+      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
+      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
+
+  test:
+    image: python
+    environment:
+      - TEST_ENV=true
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
+      - DATABASE_URL=postgres://postgres:test@postgres/test
+      - BROCKER_URL=amqp://rabbitmq:test@rabbitmq:5672/
+      - SELENIUM_URL=http://selenium:4444/wd/hub
+      - FTP_IP=${FTP_IP}
+      - FTP_USER=${FTP_USER}
+      - FTP_PASS=${FTP_PASS}
+    commands:
+      - python manage.py migrate
+      - python manage.py excel
+      - python manage.py price
+      - python manage.py collectstatic --noinput
+      - python manage.py test -v 3 --parallel --liveserver=test:8020-8030
+    volumes:
+      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
+    secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
+
+  notify:
+    image: plugins/slack
+    channel: drone
+    webhook: ${SLACK_WEBHOOK}
+    when:
+      status: [ success, failure ]
+    secrets: [ SLACK_WEBHOOK ]
+
+  pip-clean:
+    image: busybox
+    commands:
+      - rm -rf /site-packages/${DRONE_COMMIT_SHA}
+    volumes:
+      - /tmp/cache/drone/shopelectro/site-packages/:/site-packages/
+    when:
+      status: [ success, failure ]
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=test
+
+  rabbitmq:
+    image: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=test
+
+  selenium:
+    image: selenium/standalone-chrome-debug:3.3.0
+    environment: # https://github.com/SeleniumHQ/docker-selenium/issues/392
+      - DBUS_SESSION_BUS_ADDRESS=/dev/null
+    shm_size: 4G
+    volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
+      - /dev/shm:/dev/shm

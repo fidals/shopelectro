@@ -4,6 +4,7 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
+from django.conf import settings
 from django.test import LiveServerTestCase
 from django.urls import reverse
 from selenium import webdriver
@@ -30,7 +31,7 @@ class MobileSeleniumTestCase(LiveServerTestCase):
             },
         }
         cls.browser = webdriver.Remote(
-            command_executor='http://se-selenium:4444/wd/hub',
+            command_executor=settings.SELENIUM_URL,
             desired_capabilities=capabilities
         )
         cls.wait = WebDriverWait(cls.browser, 120)
