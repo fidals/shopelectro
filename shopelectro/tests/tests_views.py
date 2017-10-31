@@ -79,9 +79,9 @@ class CatalogPage(TestCase):
     def test_product_tag_linking(self):
         product = Product.objects.first()
         property_links = [
-            reverse('category', {
+            reverse('category', kwargs={
                 'slug': product.category.page.slug,
-                'tag': tag.slug,
+                'tags': tag.slug,
             }) for tag in product.tags.all()
         ]
         response = self.client.get(product.get_absolute_url())
