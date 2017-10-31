@@ -77,14 +77,19 @@ class CatalogPage(TestCase):
         self.assertContains(response, products_count)
 
     def test_product_tag_linking(self):
+        """
+        Product should contain links on CategoryTagPage for it's every tag.
+        """
         product = Product.objects.first()
+        self.assertGreater(product.tags.count(), 0)
+
         property_links = [
             reverse('category', kwargs={
                 'slug': product.category.page.slug,
                 'tags': tag.slug,
             }) for tag in product.tags.all()
         ]
-        response = self.client.get(product.get_absolute_url())
+        response = self.client.get(product.url)
         for link in property_links:
             self.assertContains(response, link)
 
