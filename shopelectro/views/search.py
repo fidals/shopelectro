@@ -1,56 +1,93 @@
-from django.conf import settings
-from django.shortcuts import _get_queryset
-from django.urls import reverse_lazy
+from collections import namedtuple
 
-from catalog.models import search as search_in_db
-from catalog.views import search
+from django.conf import settings
+
+from search import views as search_views, search as search_engine
 from pages.models import Page
 
-from shopelectro.views.helpers import MODEL_MAP
+from shopelectro.models import Product, Category
 
 
-class AdminAutocomplete(search.AdminAutocomplete):
-    """Override model_map for autocomplete."""
+# TODO - refactor it
+def search_entities_factory(fields, redirect_field=None):
+    """
+    Makes tuple of Search class instances. Elements depend on models to be
+    searched for.
+    :param fields: dictionary of lists of query lookups corresponding to models
+    :param redirect_field: query lookup for instant redirect to custom page
+    """
+    entities = namedtuple('SearchEntities', 'category, product, pages')
 
-    model_map = MODEL_MAP
-
-
-class Search(search.Search):
-    """Override model references to SE-specific ones."""
-
-    model_map = MODEL_MAP
-
-    def _search_product_by_id(self, term: str):
-        return (
-            _get_queryset(self.product).filter(vendor_code=term).first()
-            if term.isdecimal() else None
-        )
-
-
-class Autocomplete(search.Autocomplete):
-    """Override model references to SE-specific ones."""
-
-    product_lookups = ['name__icontains', 'vendor_code__contains']
-
-    search_url = reverse_lazy(
-        Page.CUSTOM_PAGES_URL_NAME,
-        kwargs={'page': 'search'}
+    entities.category = search_engine.Search(
+        name='category',
+        qs=Category.objects.all(),
+        fields=fields['category'],
     )
 
-    model_map = MODEL_MAP
+    entities.product = search_engine.Search(
+        name='product',
+        qs=Product.objects.all(),
+        fields=fields['product'],
+        redirect_field=redirect_field
+    )
+
+    entities.pages = search_engine.Search(
+        name='page',
+        qs=Page.objects.all(),
+        fields=fields['pages'],
+    )
+    return entities
+
+
+class Search(search_views.SearchView):
+    search_entity_objects = search_entities_factory({
+        'category': ['name'],
+        'product': ['name'],
+        'pages': ['name']
+    }, 'vendor_code')
+
+    redirect_search_entity = search_entity_objects.product
+    search_entities = [
+        search_entity_objects.category,
+        search_entity_objects.product,
+        search_entity_objects.pages
+    ]
+
+    redirect_field = 'vendor_code'
+
+
+class AdminAutocomplete(search_views.AdminAutocomplete):
+
+    search_entity_objects = search_entities_factory({
+        'category': ['name'],
+        'product': ['name'],
+        'pages': ['name']
+    })
+
+    search_entities = [
+        search_entity_objects.category,
+        search_entity_objects.product,
+        search_entity_objects.pages
+    ]
+
+
+class Autocomplete(search_views.Autocomplete):
+
+    search_entity_objects = search_entities_factory({
+        'category': ['name'],
+        'product': ['name', 'vendor_code'],
+        'pages': ['name']
+    })
+
+    search_entities = [
+        search_entity_objects.category,
+        search_entity_objects.product,
+        search_entity_objects.pages
+    ]
+
+    entity_fields = {
+        'category': ['name', 'url'],
+        'product': ['name', 'price', 'url']
+    }
+
     see_all_label = settings.SEARCH_SEE_ALL_LABEL
-
-    def search(self, term, limit, ordering=None):
-        """Perform a search on models. Return evaluated QuerySet."""
-        categories = search_in_db(
-            term, self.category, lookups=self.lookups,
-        )[:limit]
-
-        products = search_in_db(
-            term, self.product, self.product_lookups, ordering,
-        )
-
-        left_limit = limit - len(categories)
-        products = products[:left_limit]
-
-        return categories, products

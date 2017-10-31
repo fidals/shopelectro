@@ -10,8 +10,6 @@ from shopelectro.models import Product, Category
 # Sets CSRF-cookie to CBVs.
 set_csrf_cookie = method_decorator(ensure_csrf_cookie, name='dispatch')
 
-MODEL_MAP = {'product': Product, 'category': Category, 'page': Page}
-
 
 @require_POST
 def set_view_type(request):
