@@ -76,6 +76,18 @@ class CatalogPage(TestCase):
 
         self.assertContains(response, products_count)
 
+    def test_product_tag_linking(self):
+        product = Product.objects.first()
+        property_links = [
+            reverse('category', {
+                'slug': product.category.page.slug,
+                'tag': tag.slug,
+            }) for tag in product.tags.all()
+        ]
+        response = self.client.get(product.get_absolute_url())
+        for link in property_links:
+            self.assertContains(response, link)
+
 
 class SitemapXML(TestCase):
     """

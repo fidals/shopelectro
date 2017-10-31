@@ -108,7 +108,7 @@
                   <td class="table-td">{{ group }}:</td>
                   <td class="table-td">
                     {% for tag in tags %}
-                      {{ tag }}&#32;
+                      <a href="{% url "category" slug=product.category.page.slug tags=tag.slug %}">{{ tag }}</a>&#32;
                     {% endfor %}
                   </td>
                 </tr>
