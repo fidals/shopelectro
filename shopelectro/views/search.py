@@ -8,86 +8,81 @@ from pages.models import Page
 from shopelectro.models import Product, Category
 
 
-# TODO - refactor it
-def search_entities_factory(fields, redirect_field=None):
-    """
-    Makes tuple of Search class instances. Elements depend on models to be
-    searched for.
-    :param fields: dictionary of lists of query lookups corresponding to models
-    :param redirect_field: query lookup for instant redirect to custom page
-    """
-    entities = namedtuple('SearchEntities', 'category, product, pages')
-
-    entities.category = search_engine.Search(
-        name='category',
-        qs=Category.objects.all(),
-        fields=fields['category'],
-    )
-
-    entities.product = search_engine.Search(
-        name='product',
-        qs=Product.objects.all(),
-        fields=fields['product'],
-        redirect_field=redirect_field
-    )
-
-    entities.pages = search_engine.Search(
-        name='page',
-        qs=Page.objects.all(),
-        fields=fields['pages'],
-    )
-    return entities
-
-
 class Search(search_views.SearchView):
-    search_entity_objects = search_entities_factory({
-        'category': ['name'],
-        'product': ['name'],
-        'pages': ['name']
-    }, 'vendor_code')
+    def get_redirect_search_entity(self):
+        return next(s for s in self.search_entities if s.name == 'product')
 
-    redirect_search_entity = search_entity_objects.product
     search_entities = [
-        search_entity_objects.category,
-        search_entity_objects.product,
-        search_entity_objects.pages
+        search_engine.Search(
+            name='category',
+            qs=Category.objects.all(),
+            fields=['name'],
+        ),
+        search_engine.Search(
+            name='product',
+            qs=Product.objects.all(),
+            fields=['name'],
+            redirect_field='vendor_code'
+        ),
+        search_engine.Search(
+            name='page',
+            qs=Page.objects.all(),
+            fields=['name'],
+        )
     ]
 
     redirect_field = 'vendor_code'
 
 
-class AdminAutocomplete(search_views.AdminAutocomplete):
-
-    search_entity_objects = search_entities_factory({
-        'category': ['name'],
-        'product': ['name'],
-        'pages': ['name']
-    })
-
+class Autocomplete(search_views.AutocompleteView):
     search_entities = [
-        search_entity_objects.category,
-        search_entity_objects.product,
-        search_entity_objects.pages
-    ]
-
-
-class Autocomplete(search_views.Autocomplete):
-
-    search_entity_objects = search_entities_factory({
-        'category': ['name'],
-        'product': ['name', 'vendor_code'],
-        'pages': ['name']
-    })
-
-    search_entities = [
-        search_entity_objects.category,
-        search_entity_objects.product,
-        search_entity_objects.pages
+        search_engine.Search(
+            name='category',
+            qs=Category.objects.all(),
+            fields=['name', 'id']
+        ),
+        search_engine.Search(
+            name='product',
+            qs=Product.objects.all(),
+            fields=['name', 'id']
+        ),
+        search_engine.Search(
+            name='pages',
+            qs=Page.objects.all(),
+            fields=['name']
+        )
     ]
 
     entity_fields = {
         'category': ['name', 'url'],
-        'product': ['name', 'price', 'url']
+        'product': ['name', 'price', 'url'],
+        'pages': ['name'],
     }
 
     see_all_label = settings.SEARCH_SEE_ALL_LABEL
+
+
+class AdminAutocomplete(search_views.AdminAutocompleteView):
+    search_entities = [
+        search_engine.Search(
+            name='category',
+            qs=Category.objects.all(),
+            fields=['name']
+        ),
+        search_engine.Search(
+            name='product',
+            qs=Product.objects.all(),
+            fields=['name']
+        ),
+        search_engine.Search(
+            name='pages',
+            qs=Page.objects.all(),
+            fields=['name']
+        )
+    ]
+
+    entity_fields = {
+        'category': ['name'],
+        'product': ['name'],
+        'pages': ['name'],
+    }
