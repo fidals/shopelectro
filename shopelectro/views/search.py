@@ -17,17 +17,20 @@ class Search(search_views.SearchView):
             name='category',
             qs=Category.objects.all(),
             fields=['name'],
+            min_similarity=0.15,
         ),
         search_engine.Search(
             name='product',
             qs=Product.objects.all(),
             fields=['name'],
-            redirect_field='vendor_code'
+            redirect_field='vendor_code',
+            min_similarity=0.15,
         ),
         search_engine.Search(
             name='page',
             qs=Page.objects.all(),
             fields=['name'],
+            min_similarity=0.15,
         )
     ]
 
@@ -39,17 +42,20 @@ class Autocomplete(search_views.AutocompleteView):
         search_engine.Search(
             name='category',
             qs=Category.objects.all(),
-            fields=['name', 'id']
+            fields=['name', 'id'],
+            min_similarity=0.15,
         ),
         search_engine.Search(
             name='product',
             qs=Product.objects.all(),
-            fields=['name', 'id']
+            fields=['name', 'id'],
+            min_similarity=0.15,
         ),
         search_engine.Search(
             name='pages',
             qs=Page.objects.all(),
-            fields=['name']
+            fields=['name'],
+            min_similarity=0.15,
         )
     ]
 
@@ -67,20 +73,24 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
         search_engine.Search(
             name='category',
             qs=Category.objects.all(),
-            fields=['name']
+            fields=['name'],
+            min_similarity=0.15,
         ),
         search_engine.Search(
             name='product',
             qs=Product.objects.all(),
-            fields=['name']
+            fields=['name'],
+            min_similarity=0.15,
         ),
         search_engine.Search(
             name='pages',
             qs=Page.objects.all(),
-            fields=['name']
+            fields=['name'],
+            min_similarity=0.15,
         )
     ]
 
+    # TODO - remove this code doubling
     entity_fields = {
         'category': ['name'],
         'product': ['name'],

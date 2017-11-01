@@ -236,22 +236,77 @@ class TestSearch(TestCase):
     Test all search methods: search page and autocompletes
     """
     fixtures = ['dump.json']
+    TERM = 'Prod'
+    WRONG_TERM = 'Bugaga'  # it's short for trigram search testing
 
-    def test_search(self):
-        term = 'Product'
-        response = self.client.get('/search/' + f'?term={term}', follow=True)
+    def test_search_has_results(self):
+        """
+        Search page should contain at least one result for right term
+        """
+        term = self.TERM
+        response = self.client.get(
+            '/search/' + f'?term={term}',
+            follow=True
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, term)
+        self.assertContains(response, '<div class="search-result-item">')
 
-    def test_autocomplete(self):
-        term = 'Product'
-        response = self.client.get(reverse('autocomplete') + f'?term={term}')
+    def test_search_no_results(self):
+        """
+        Search page should contain no results for wrong term
+        """
+        term = self.WRONG_TERM
+        response = self.client.get(
+            '/search/' + f'?term={term}',
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '<div class="search-result-item">')
+
+    def test_autocomplete_has_results(self):
+        """
+        Autocomplete should contain at least one result for right term
+        """
+        term = self.TERM
+        response = self.client.get(
+            reverse('autocomplete') + f'?term={term}'
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(json_to_dict(response))
         self.assertContains(response, term)
 
-    def test_admin_autocomplete(self):
-        term, page_type = 'Product', 'product'
+    def test_autocomplete_no_results(self):
+        """
+        Autocomplete should contain no results for wrong term
+        """
+        term = self.TERM
+        response = self.client.get(
+            reverse('autocomplete') + f'?term={term}'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json_to_dict(response))
+        self.assertContains(response, term)
+
+    def test_admin_autocomplete_has_results(self):
+        """
+        Admin autocomplete should contain at least one result for right term
+        """
+        term = self.TERM
+        page_type = 'product'
+        response = self.client.get(
+            reverse('admin_autocomplete')
+            + f'?term={term}&pageType={page_type}'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json_to_dict(response))
+        self.assertContains(response, term)
+
+    def test_admin_autocomplete_no_results(self):
+        """
+        Admin autocomplete should contain no results for wrong term
+        """
+        term = self.TERM
+        page_type = 'product'
         response = self.client.get(
             reverse('admin_autocomplete')
             + f'?term={term}&pageType={page_type}'
