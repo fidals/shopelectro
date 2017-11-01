@@ -43,27 +43,24 @@ class Autocomplete(search_views.AutocompleteView):
             name='category',
             qs=Category.objects.all(),
             fields=['name', 'id'],
+            template_fields=['name'],
             min_similarity=0.15,
         ),
         search_engine.Search(
             name='product',
             qs=Product.objects.all(),
             fields=['name', 'id'],
+            template_fields=['name', 'price', 'url'],
             min_similarity=0.15,
         ),
         search_engine.Search(
             name='pages',
             qs=Page.objects.all(),
             fields=['name'],
+            template_fields=['name'],
             min_similarity=0.15,
         )
     ]
-
-    entity_fields = {
-        'category': ['name', 'url'],
-        'product': ['name', 'price', 'url'],
-        'pages': ['name'],
-    }
 
     see_all_label = settings.SEARCH_SEE_ALL_LABEL
 
@@ -89,10 +86,3 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
             min_similarity=0.15,
         )
     ]
-
-    # TODO - remove this code doubling
-    entity_fields = {
-        'category': ['name'],
-        'product': ['name'],
-        'pages': ['name'],
-    }
