@@ -77,9 +77,7 @@ class CatalogPage(TestCase):
         self.assertContains(response, products_count)
 
     def test_product_tag_linking(self):
-        """
-        Product should contain links on CategoryTagPage for it's every tag.
-        """
+        """Product should contain links on CategoryTagPage for it's every tag."""
         product = Product.objects.first()
         self.assertGreater(product.tags.count(), 0)
 
