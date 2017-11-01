@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from copy import deepcopy
 from functools import reduce
@@ -16,6 +17,9 @@ from shopelectro.management.commands._update_catalog.utils import (
     XmlFile, is_correct_uuid, NOT_SAVE_TEMPLATE, UUID, Data,
 )
 from shopelectro.models import Product, ProductPage, Tag
+
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_products(root: Element, config: XmlFile) -> Iterator:
@@ -148,7 +152,7 @@ def clean_data(data: Dict[UUID, Data]):
             for price_type in price_types
         )
         if not has:
-            print(NOT_SAVE_TEMPLATE.format(
+            logger.info(NOT_SAVE_TEMPLATE.format(
                 entity='Product',
                 name=product_data['name'],
                 field='price'
@@ -159,7 +163,7 @@ def clean_data(data: Dict[UUID, Data]):
         has = bool(product_data['vendor_code'])
 
         if not has:
-            print(NOT_SAVE_TEMPLATE.format(
+            logger.info(NOT_SAVE_TEMPLATE.format(
                 entity='Product',
                 name=product_data['name'],
                 field='vendor_code'
@@ -170,7 +174,7 @@ def clean_data(data: Dict[UUID, Data]):
     def has_uuid(uuid, product_data):
         has = is_correct_uuid(uuid)
         if not has:
-            print(NOT_SAVE_TEMPLATE.format(
+            logger.info(NOT_SAVE_TEMPLATE.format(
                 entity='Product',
                 name=product_data['name'],
                 field='uuid'
@@ -211,7 +215,7 @@ def report(recipients=None, message=None):
             html_message=message,
         )
 
-        print('Sent message to {}'.format(
+        logger.info('Sent message to {}'.format(
             reduce(lambda x, y: '{}, {}'.format(x, y), recipient_list)
         ))
 
@@ -223,7 +227,7 @@ def delete(data: Dict[UUID, Data]):
         shopelectro_product__uuid__in=uuids).delete()
     product_count, _ = Product.objects.exclude(
         uuid__in=uuids).delete()
-    print('{} products and {} pages were deleted.'.format(
+    logger.info('{} products and {} pages were deleted.'.format(
         product_count, page_count))
 
 
@@ -247,7 +251,7 @@ def update(data: Dict[UUID, Data]) -> QuerySet:
             save(product, field, value)
 
         product.save()
-    print('{} products were updated.'.format(products.count()))
+    logger.info('{} products were updated.'.format(products.count()))
     return products
 
 
@@ -271,7 +275,7 @@ def create(data: Dict[UUID, Data], updated_products: QuerySet) -> QuerySet:
 
     created_products = Product.objects.filter(uuid__in=uuids_for_create)
 
-    print('{} products were created.'.format(created_products.count()))
+    logger.info('{} products were created.'.format(created_products.count()))
     return created_products
 
 

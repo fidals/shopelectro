@@ -7,7 +7,6 @@ services:
     container_name: se-source
     volumes:
       - ./../:$SRC_DIR # code volume
-      - ./../../refarm-site/search:/root/.local/lib/python3.6/site-packages/search # code volume
     command: sh -c "top > /dev/null"
 
   se-python:
@@ -20,6 +19,7 @@ services:
       - ALLOWED_HOSTS=*
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DJANGO_LOG_LEVEL=$DJANGO_LOG_LEVEL
       - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
       - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
       - REDIS_PASSWORD=$REDIS_PASSWORD

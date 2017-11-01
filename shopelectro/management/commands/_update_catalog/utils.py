@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 import shutil
 import subprocess
@@ -13,6 +14,7 @@ import requests
 from django.conf import settings
 
 
+logger = logging.getLogger(__name__)
 Data = Dict[str, str]
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
@@ -99,7 +101,7 @@ def download_catalog(destination):
     subprocess.run(wget_command, shell=True)
     assert os.path.exists(os.path.join(
         destination, settings.FTP_IP)), 'Files do not downloaded...'
-    print('Download catalog - completed...')
+    logger.info('Download catalog - completed...')
 
     try:
         yield
