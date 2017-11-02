@@ -307,4 +307,4 @@ CUSTOM_PAGES = {
     }
 }
 
-ENV_TYPE = os.environ['SELENIUM_URL']
+ENV_TYPE = os.environ.get('ENV_TYPE', 'PROD')  # LOCAL | CI | PROD

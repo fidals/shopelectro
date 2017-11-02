@@ -67,22 +67,17 @@ class SeleniumTestCase(LiveServerTestCase):
         super(SeleniumTestCase, cls).tearDownClass()
 
     @contextmanager
-    def screen_fail(self, url=''):
+    def screen_fail(self, filename=''):
         """
         Save screen if WebDriverException occurred
-        :param url: used for screen filename. If empty, just random symbols is used
+        :param filename: result file have name 'screen_{filename}.png'
         :return:
         """
         try:
-            # TODO - disable it for CI
             yield
         except WebDriverException as e:
-            name_url = (
-                url.split('//')[1].replace('/', '-').replace(':', '-')
-                if url
-                else md5().hexdigest()[:6]
-            )
-            screen_b64 = e.screen or self.browser.get_screenshot_as_base64()
-            with open(f'screen_{name_url}.png', 'wb') as f:
-                f.write(base64.b64decode(screen_b64.encode('ascii')))
+            if settings.ENV_TYPE == 'LOCAL':
+                screen_b64 = e.screen or self.browser.get_screenshot_as_base64()
+                with open(f'screen__{filename}.png', 'wb') as f:
+                    f.write(base64.b64decode(screen_b64.encode('ascii')))
             raise e

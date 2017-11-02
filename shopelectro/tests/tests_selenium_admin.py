@@ -31,7 +31,7 @@ class AdminSeleniumTestCase(helpers.SeleniumTestCase):
 
     def signin(self):
         self.browser.delete_all_cookies()
-        with self.screen_fail(url=self.admin_page):
+        with self.screen_fail('sign_in_admin'):
             self.browser.get(self.admin_page)
         self.wait_page_loading()
         login_field = self.browser.find_element_by_id('id_username')
@@ -594,9 +594,10 @@ class TableEditor(AdminSeleniumTestCase):
                 (By.CSS_SELECTOR, 'button[data-target="#add-entity"]')
             ))
         ).click().perform()
-        self.wait.until(EC.visibility_of_element_located(
-            (By.ID, 'add-entity-form')
-        ))
+        with self.screen_fail('test_new_entity_creation'):
+            self.wait.until(EC.visibility_of_element_located(
+                (By.ID, 'add-entity-form')
+            ))
 
         self.browser.find_element_by_id('entity-name').send_keys(new_entity_text)
         for field in numeric_fields:

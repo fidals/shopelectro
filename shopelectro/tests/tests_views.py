@@ -245,7 +245,7 @@ class TestSearch(TestCase):
         """
         term = self.TERM
         response = self.client.get(
-            '/search/' + f'?term={term}',
+            f'/search/?term={term}',
             follow=True
         )
         self.assertEqual(response.status_code, 200)
@@ -257,7 +257,7 @@ class TestSearch(TestCase):
         """
         term = self.WRONG_TERM
         response = self.client.get(
-            '/search/' + f'?term={term}',
+            f'/search/?term={term}',
             follow=True
         )
         self.assertEqual(response.status_code, 200)
