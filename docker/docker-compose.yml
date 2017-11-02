@@ -7,6 +7,7 @@ services:
     container_name: se-source
     volumes:
       - ./../:$SRC_DIR # code volume
+      - ./../../refarm-site/search:/root/.local/lib/python3.6/site-packages/search # code volume
     command: sh -c "top > /dev/null"
 
   se-python:
@@ -124,7 +125,7 @@ services:
   #     - 5900
 
   se-selenium:
-    image: selenium/standalone-chrome-debug:3.3.0
+    image: selenium/standalone-chrome:3.6.0
     restart: always
     ports:
       - 4444

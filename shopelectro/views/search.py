@@ -43,13 +43,13 @@ class Autocomplete(search_views.AutocompleteView):
             name='category',
             qs=Category.objects.all(),
             fields=['name', 'id'],
-            template_fields=['name'],
+            template_fields=['name', 'url'],
             min_similarity=0.15,
         ),
         search_engine.Search(
             name='product',
             qs=Product.objects.all(),
-            fields=['name', 'id'],
+            fields=['name', 'id', 'vendor_code'],
             template_fields=['name', 'price', 'url'],
             min_similarity=0.15,
         ),
@@ -57,7 +57,7 @@ class Autocomplete(search_views.AutocompleteView):
             name='pages',
             qs=Page.objects.all(),
             fields=['name'],
-            template_fields=['name'],
+            template_fields=['name', 'url'],
             min_similarity=0.15,
         )
     ]

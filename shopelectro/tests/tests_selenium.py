@@ -1064,7 +1064,8 @@ class Search(helpers.SeleniumTestCase):
         first_item = self.autocomplete.find_element_by_css_selector(
             ':first-child')
         first_item.click()
-        self.wait.until(EC.url_contains('/catalog/categories/'))
+        with self.screen_fail():
+            self.wait.until(EC.url_contains('/catalog/categories/'))
 
         self.assertTrue('/catalog/categories/' in self.browser.current_url)
 

@@ -1,6 +1,10 @@
+import base64
+from contextlib import contextmanager
+from hashlib import md5
+
 from django.conf import settings
 from django.test import LiveServerTestCase, override_settings
-from selenium.common.exceptions import InvalidElementStateException
+from selenium.common.exceptions import InvalidElementStateException, WebDriverException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
@@ -51,10 +55,34 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.wait = WebDriverWait(cls.browser, 120)
         cls.browser.implicitly_wait(30)
         cls.browser.set_page_load_timeout(30)
-        cls.browser.maximize_window()
+        # Fresh created browser failes on maximizing window.
+        # This bug is won't fixed by selenium guys https://goo.gl/6Ttguf
+        # Ohh, so selenium is so selenium ...
+        # cls.browser.maximize_window()
 
     @classmethod
     def tearDownClass(cls):
         """Close selenium session."""
         cls.browser.quit()
         super(SeleniumTestCase, cls).tearDownClass()
+
+    @contextmanager
+    def screen_fail(self, url=''):
+        """
+        Save screen if WebDriverException occurred
+        :param url: used for screen filename. If empty, just random symbols is used
+        :return:
+        """
+        try:
+            # TODO - disable it for CI
+            yield
+        except WebDriverException as e:
+            name_url = (
+                url.split('//')[1].replace('/', '-').replace(':', '-')
+                if url
+                else md5().hexdigest()[:6]
+            )
+            screen_b64 = e.screen or self.browser.get_screenshot_as_base64()
+            with open(f'screen_{name_url}.png', 'wb') as f:
+                f.write(base64.b64decode(screen_b64.encode('ascii')))
+            raise e
