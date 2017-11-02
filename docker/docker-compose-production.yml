@@ -36,6 +36,7 @@ services:
       - SECRET_KEY=$SECRET_KEY
       - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+      - ENV_TYPE=$ENV_TYPE
     depends_on:
       - se-postgres
       - se-rabbitmq

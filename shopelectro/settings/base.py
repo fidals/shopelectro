@@ -306,3 +306,5 @@ CUSTOM_PAGES = {
         'name': 'Заказ принят',
     }
 }
+
+ENV_TYPE = os.environ['SELENIUM_URL']
