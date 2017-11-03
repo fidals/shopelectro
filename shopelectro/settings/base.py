@@ -244,6 +244,12 @@ FTP_USER = os.environ.get('FTP_USER', 'user')
 FTP_PASS = os.environ.get('FTP_PASS', 'pass')
 FTP_IP = os.environ.get('FTP_IP', '0.0.0.0')
 
+ENV_TYPE = os.environ.get('ENV_TYPE', 'PROD')  # LOCAL | CI | PROD
+
+# 'Prod' <-> 'Product #1 of Category #0 of Category #1' = 0.17
+# About trigram similarity: https://goo.gl/uYFcxN
+TRIGRAM_MIN_SIMILARITY = 0.15
+
 # Used in admin image uploads
 MODEL_TYPES = {
     'Product': {
@@ -306,5 +312,3 @@ CUSTOM_PAGES = {
         'name': 'Заказ принят',
     }
 }
-
-ENV_TYPE = os.environ.get('ENV_TYPE', 'PROD')  # LOCAL | CI | PROD
