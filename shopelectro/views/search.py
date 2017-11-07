@@ -10,6 +10,7 @@ class Search(search_views.SearchView):
     def get_redirect_search_entity(self):
         return next(s for s in self.search_entities if s.name == 'product')
 
+    # ignore CPDBear
     search_entities = [
         search_engine.Search(
             name='category',
@@ -36,6 +37,8 @@ class Search(search_views.SearchView):
 
 
 class Autocomplete(search_views.AutocompleteView):
+
+    # ignore CPDBear
     search_entities = [
         search_engine.Search(
             name='category',
@@ -64,6 +67,8 @@ class Autocomplete(search_views.AutocompleteView):
 
 
 class AdminAutocomplete(search_views.AdminAutocompleteView):
+
+    # ignore CPDBear
     search_entities = [
         search_engine.Search(
             name='category',

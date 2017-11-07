@@ -232,7 +232,7 @@ class ProductsWithoutContent(TestCase):
 
 
 class TestSearch(TestCase):
-    """Test all search methods: search page and autocompletes"""
+    """Test all search methods: search page and autocompletes."""
 
     fixtures = ['dump.json']
     TERM = 'Prod'
