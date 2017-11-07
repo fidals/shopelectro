@@ -1,5 +1,3 @@
-from collections import namedtuple
-
 from django.conf import settings
 
 from search import views as search_views, search as search_engine

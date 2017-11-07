@@ -233,6 +233,7 @@ class ProductsWithoutContent(TestCase):
 
 class TestSearch(TestCase):
     """Test all search methods: search page and autocompletes"""
+
     fixtures = ['dump.json']
     TERM = 'Prod'
     WRONG_TERM = 'Bugaga'  # it's short for trigram search testing
@@ -268,33 +269,31 @@ class TestSearch(TestCase):
         self.assertContains(response, term)
 
     def test_autocomplete_no_results(self):
-        """Autocomplete should contain no results for wrong term"""
-        term = self.TERM
+        """Autocomplete should contain no results for wrong term."""
+        term = self.WRONG_TERM
         response = self.client.get(
             reverse('autocomplete') + f'?term={term}'
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(json_to_dict(response))
-        self.assertContains(response, term)
+        self.assertNotContains(response, term)
 
     def test_admin_autocomplete_has_results(self):
         """Admin autocomplete should contain at least one result for right term."""
         term = self.TERM
         page_type = 'product'
-        response = self.client.get(
-            reverse('admin_autocomplete')+f'?term={term}&pageType={page_type}'
-        )
+        querystring = f'?term={term}&pageType={page_type}'
+        response = self.client.get(reverse('admin_autocomplete') + querystring)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(json_to_dict(response))
         self.assertContains(response, term)
 
     def test_admin_autocomplete_no_results(self):
         """Admin autocomplete should contain no results for wrong term."""
-        term = self.TERM
+        term = self.WRONG_TERM
         page_type = 'product'
-        response = self.client.get(
-            reverse('admin_autocomplete')+f'?term={term}&pageType={page_type}'
-        )
+        querystring = f'?term={term}&pageType={page_type}'
+        response = self.client.get(reverse('admin_autocomplete') + querystring)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(json_to_dict(response))
-        self.assertContains(response, term)
+        self.assertNotContains(response, term)

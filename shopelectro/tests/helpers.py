@@ -1,6 +1,5 @@
 import base64
 from contextlib import contextmanager
-from hashlib import md5
 
 from django.conf import settings
 from django.test import LiveServerTestCase, override_settings
@@ -69,7 +68,8 @@ class SeleniumTestCase(LiveServerTestCase):
     @contextmanager
     def screen_fail(self, filename=''):
         """
-        Save screen if WebDriverException occurred
+        Save screen if WebDriverException occurred.
+
         :param filename: result file have name 'screen_{filename}.png'
         :return:
         """
