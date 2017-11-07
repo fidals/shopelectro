@@ -275,7 +275,7 @@ class TestSearch(TestCase):
             reverse('autocomplete') + f'?term={term}'
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(json_to_dict(response))
+        self.assertFalse(json_to_dict(response))
         self.assertNotContains(response, term)
 
     def test_admin_autocomplete_has_results(self):
@@ -285,7 +285,7 @@ class TestSearch(TestCase):
         querystring = f'?term={term}&pageType={page_type}'
         response = self.client.get(reverse('admin_autocomplete') + querystring)
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(json_to_dict(response))
+        self.assertTrue(json_to_dict(response))
         self.assertContains(response, term)
 
     def test_admin_autocomplete_no_results(self):
