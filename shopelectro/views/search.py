@@ -16,20 +16,20 @@ class Search(search_views.SearchView):
             name='category',
             qs=Category.objects.all(),
             fields=['name'],
-            min_similarity=0.15,
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='product',
             qs=Product.objects.all(),
             fields=['name'],
             redirect_field='vendor_code',
-            min_similarity=0.15,
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='page',
             qs=Page.objects.all(),
             fields=['name'],
-            min_similarity=0.15,
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
     ]
 
@@ -74,18 +74,18 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
             name='category',
             qs=Category.objects.all(),
             fields=['name'],
-            min_similarity=0.15,
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='product',
             qs=Product.objects.all(),
             fields=['name'],
-            min_similarity=0.15,
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='pages',
             qs=Page.objects.all(),
             fields=['name'],
-            min_similarity=0.15,
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
     ]
