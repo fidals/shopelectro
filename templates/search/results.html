@@ -5,20 +5,20 @@
 {% block content %}
   <h1>Результаты поиска</h1>
 
-  {% for category in categories %}
+  {% for category_item in category %}
     <div class="search-result-item">
-      <a class="search-result-link" href="{{ category.url }}">
-        {{ category.name }}
+      <a class="search-result-link" href="{{ category_item.url }}">
+        {{ category_item.name }}
       </a>
       <p class="search-result-type">Категория</p>
     </div>
   {% endfor %}
 
-  {% for product in products %}
+  {% for product_item in product %}
     <div class="search-result-item">
-      <a class="search-result-link js-browse-product" href="{{ product.url }}">
-        <p>Арт. {{ product.vendor_code }}</p>
-        {{ product.name }}
+      <a class="search-result-link js-browse-product" href="{{ product_item.url }}">
+        <p>Арт. {{ product_item.vendor_code }}</p>
+        {{ product_item.name }}
       </a>
 
       <p class="search-result-type">Продукт</p>

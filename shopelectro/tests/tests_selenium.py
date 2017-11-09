@@ -943,7 +943,8 @@ class YandexMetrika(helpers.SeleniumTestCase):
             (By.CLASS_NAME, 'js-cart-remove')
         ))
         removed_el.click()
-        self.wait.until(EC.staleness_of(removed_el))
+        with self.screen_fail('test_delete_from_dropdown'):
+            self.wait.until(EC.staleness_of(removed_el))
 
         self.assertTrue('DELETE_PRODUCT' in self.reached_goals)
 
@@ -1035,7 +1036,8 @@ class Search(helpers.SeleniumTestCase):
     def fill_input(self, query=''):
         """Enter correct search term."""
         self.input.send_keys(query or self.QUERY)
-        self.wait.until(EC.visibility_of(self.autocomplete))
+        with self.screen_fail('fill_input'):
+            self.wait.until(EC.visibility_of(self.autocomplete))
 
     def clear_input(self):
         """Enter correct search term."""
@@ -1064,7 +1066,8 @@ class Search(helpers.SeleniumTestCase):
         first_item = self.autocomplete.find_element_by_css_selector(
             ':first-child')
         first_item.click()
-        self.wait.until(EC.url_contains('/catalog/categories/'))
+        with self.screen_fail('test_autocomplete_item_link'):
+            self.wait.until(EC.url_contains('/catalog/categories/'))
 
         self.assertTrue('/catalog/categories/' in self.browser.current_url)
 

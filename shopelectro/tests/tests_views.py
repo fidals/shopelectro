@@ -4,6 +4,7 @@ View tests.
 Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
+import json
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -12,6 +13,7 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.db.models import Q
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
@@ -37,8 +39,11 @@ def reverse_category_url(
 
     return reverse('category', kwargs=route_kwargs)
 
+def json_to_dict(response: HttpResponse) -> dict():
+    return json.loads(response.content)
 
-class CategoryPage(TestCase):
+
+class CatalogPage(TestCase):
 
     fixtures = ['dump.json']
 
@@ -136,6 +141,21 @@ class CategoryPage(TestCase):
         self.assertEqual(response.status_code, 200)
         tag_names = ', '.join([t.name for t in tags])
         self.assertContains(response, tag_names)
+
+    def test_product_tag_linking(self):
+        """Product should contain links on CategoryTagPage for it's every tag."""
+        product = Product.objects.first()
+        self.assertGreater(product.tags.count(), 0)
+
+        property_links = [
+            reverse('category', kwargs={
+                'slug': product.category.page.slug,
+                'tags': tag.slug,
+            }) for tag in product.tags.all()
+        ]
+        response = self.client.get(product.url)
+        for link in property_links:
+            self.assertContains(response, link)
 
 
 class SitemapXML(TestCase):
@@ -267,3 +287,71 @@ class ProductsWithoutContent(TestCase):
     def test_products_without_text(self):
         response = self.client.get(reverse('products_without_text'))
         self.assertEqual(response.status_code, 200)
+
+
+class TestSearch(TestCase):
+    """Test all search methods: search page and autocompletes."""
+
+    fixtures = ['dump.json']
+    TERM = 'Prod'
+    WRONG_TERM = 'Bugaga'  # it's short for trigram search testing
+
+    def test_search_has_results(self):
+        """Search page should contain at least one result for right term."""
+        term = self.TERM
+        response = self.client.get(
+            f'/search/?term={term}',
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<div class="search-result-item">')
+
+    def test_search_no_results(self):
+        """Search page should contain no results for wrong term."""
+        term = self.WRONG_TERM
+        response = self.client.get(
+            f'/search/?term={term}',
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '<div class="search-result-item">')
+
+    def test_autocomplete_has_results(self):
+        """Autocomplete should contain at least one result for right term."""
+        term = self.TERM
+        response = self.client.get(
+            reverse('autocomplete') + f'?term={term}'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json_to_dict(response))
+        self.assertContains(response, term)
+
+    def test_autocomplete_no_results(self):
+        """Autocomplete should contain no results for wrong term."""
+        term = self.WRONG_TERM
+        response = self.client.get(
+            reverse('autocomplete') + f'?term={term}'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(json_to_dict(response))
+        self.assertNotContains(response, term)
+
+    def test_admin_autocomplete_has_results(self):
+        """Admin autocomplete should contain at least one result for right term."""
+        term = self.TERM
+        page_type = 'product'
+        querystring = f'?term={term}&pageType={page_type}'
+        response = self.client.get(reverse('admin_autocomplete') + querystring)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json_to_dict(response))
+        self.assertContains(response, term)
+
+    def test_admin_autocomplete_no_results(self):
+        """Admin autocomplete should contain no results for wrong term."""
+        term = self.WRONG_TERM
+        page_type = 'product'
+        querystring = f'?term={term}&pageType={page_type}'
+        response = self.client.get(reverse('admin_autocomplete') + querystring)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(json_to_dict(response))
+        self.assertNotContains(response, term)
