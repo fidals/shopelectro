@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'mptt',
     'widget_tweaks',
     'sorl.thumbnail',
+    'django_select2',
     'images',
     'pages',
     'catalog',

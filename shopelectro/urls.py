@@ -36,6 +36,7 @@ admin_urls = [
     url(r'^get-tree-items/$', views.Tree.as_view()),
     url(r'^redirect-to-product/$', views.RedirectToProduct.as_view()),
     url(r'^table-editor-api/$', views.TableEditorAPI.as_view()),
+    url(r'^select2/', include('django_select2.urls')),
 ]
 
 catalog_urls = [
