@@ -32,7 +32,7 @@ cached_2h = cache_page(config.cached_time(hours=2))
 
 admin_urls = [
     url(r'^', se_admin.urls),
-    url(r'^autocomplete/$', views.AdminAutocomplete.as_view()),
+    url(r'^autocomplete/$', views.AdminAutocomplete.as_view(), name='admin_autocomplete'),
     url(r'^get-tree-items/$', views.Tree.as_view()),
     url(r'^redirect-to-product/$', views.RedirectToProduct.as_view()),
     url(r'^table-editor-api/$', views.TableEditorAPI.as_view()),

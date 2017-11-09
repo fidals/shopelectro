@@ -1,56 +1,91 @@
 from django.conf import settings
-from django.shortcuts import _get_queryset
-from django.urls import reverse_lazy
 
-from catalog.models import search as search_in_db
-from catalog.views import search
+from search import views as search_views, search as search_engine
 from pages.models import Page
 
-from shopelectro.views.helpers import MODEL_MAP
+from shopelectro.models import Product, Category
 
 
-class AdminAutocomplete(search.AdminAutocomplete):
-    """Override model_map for autocomplete."""
+class Search(search_views.SearchView):
+    def get_redirect_search_entity(self):
+        return next(s for s in self.search_entities if s.name == 'product')
 
-    model_map = MODEL_MAP
-
-
-class Search(search.Search):
-    """Override model references to SE-specific ones."""
-
-    model_map = MODEL_MAP
-
-    def _search_product_by_id(self, term: str):
-        return (
-            _get_queryset(self.product).filter(vendor_code=term).first()
-            if term.isdecimal() else None
+    # ignore CPDBear
+    search_entities = [
+        search_engine.Search(
+            name='category',
+            qs=Category.objects.all(),
+            fields=['name'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
+        ),
+        search_engine.Search(
+            name='product',
+            qs=Product.objects.all(),
+            fields=['name'],
+            redirect_field='vendor_code',
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
+        ),
+        search_engine.Search(
+            name='page',
+            qs=Page.objects.all(),
+            fields=['name'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
+    ]
+
+    redirect_field = 'vendor_code'
 
 
-class Autocomplete(search.Autocomplete):
-    """Override model references to SE-specific ones."""
+class Autocomplete(search_views.AutocompleteView):
 
-    product_lookups = ['name__icontains', 'vendor_code__contains']
+    # ignore CPDBear
+    search_entities = [
+        search_engine.Search(
+            name='category',
+            qs=Category.objects.all(),
+            fields=['name', 'id'],
+            template_fields=['name', 'url'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
+        ),
+        search_engine.Search(
+            name='product',
+            qs=Product.objects.all(),
+            fields=['name', 'id', 'vendor_code'],
+            template_fields=['name', 'price', 'url'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
+        ),
+        search_engine.Search(
+            name='pages',
+            qs=Page.objects.all(),
+            fields=['name'],
+            template_fields=['name', 'url'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
+        )
+    ]
 
-    search_url = reverse_lazy(
-        Page.CUSTOM_PAGES_URL_NAME,
-        kwargs={'page': 'search'}
-    )
-
-    model_map = MODEL_MAP
     see_all_label = settings.SEARCH_SEE_ALL_LABEL
 
-    def search(self, term, limit, ordering=None):
-        """Perform a search on models. Return evaluated QuerySet."""
-        categories = search_in_db(
-            term, self.category, lookups=self.lookups,
-        )[:limit]
 
-        products = search_in_db(
-            term, self.product, self.product_lookups, ordering,
+class AdminAutocomplete(search_views.AdminAutocompleteView):
+
+    # ignore CPDBear
+    search_entities = [
+        search_engine.Search(
+            name='category',
+            qs=Category.objects.all(),
+            fields=['name'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
+        ),
+        search_engine.Search(
+            name='product',
+            qs=Product.objects.all(),
+            fields=['name'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
+        ),
+        search_engine.Search(
+            name='pages',
+            qs=Page.objects.all(),
+            fields=['name'],
+            min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
-
-        left_limit = limit - len(categories)
-        products = products[:left_limit]
-
-        return categories, products
+    ]

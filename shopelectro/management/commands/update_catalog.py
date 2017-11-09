@@ -1,3 +1,4 @@
+import logging
 import time
 
 from django.core.management.base import BaseCommand
@@ -6,6 +7,8 @@ from django.conf import settings
 from shopelectro.management.commands._update_catalog import (
     utils, update_tags, update_products,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -32,5 +35,4 @@ class Command(BaseCommand):
                     update_tags.main(*args, **kwargs)
                 with collect_error():
                     update_products.main(*args, **kwargs)
-
-                print('Time elapsed {:.2f}.'.format(time.time() - start))
+                logger.info('Time elapsed {:.2f}.'.format(time.time() - start))

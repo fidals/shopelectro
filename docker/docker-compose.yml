@@ -19,6 +19,7 @@ services:
       - ALLOWED_HOSTS=*
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+      - DJANGO_LOG_LEVEL=$DJANGO_LOG_LEVEL
       - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
       - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
       - REDIS_PASSWORD=$REDIS_PASSWORD
@@ -32,6 +33,7 @@ services:
       - SECRET_KEY=$SECRET_KEY
       - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
+      - ENV_TYPE=$ENV_TYPE
     ports:
       - '$VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT'
       - $VIRTUAL_HOST_LIVESERVER_PORT
@@ -52,7 +54,6 @@ services:
     build:
       context: ..
       dockerfile: docker/node/Dockerfile
-    image: fidals/se-nodejs:latest
     container_name: se-nodejs
     command: bash -c 'gulp watch || (npm install && npm install -g gulp-cli && gulp build && gulp watch)'
     volumes_from:
@@ -124,7 +125,7 @@ services:
   #     - 5900
 
   se-selenium:
-    image: selenium/standalone-chrome-debug:3.3.0
+    image: selenium/standalone-chrome:3.6.0
     restart: always
     ports:
       - 4444

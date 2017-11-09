@@ -4,6 +4,7 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
+
 from django.conf import settings
 from django.urls import reverse
 from selenium.webdriver.common.action_chains import ActionChains
@@ -30,7 +31,8 @@ class AdminSeleniumTestCase(helpers.SeleniumTestCase):
 
     def signin(self):
         self.browser.delete_all_cookies()
-        self.browser.get(self.admin_page)
+        with self.screen_fail('sign_in_admin'):
+            self.browser.get(self.admin_page)
         self.wait_page_loading()
         login_field = self.browser.find_element_by_id('id_username')
         login_field.clear()
@@ -41,6 +43,10 @@ class AdminSeleniumTestCase(helpers.SeleniumTestCase):
         login_form = self.browser.find_element_by_id('login-form')
         login_form.submit()
         self.wait_page_loading()
+
+    @property
+    def admin_page(self):
+        raise NotImplemented()
 
     def setUp(self):
         self.signin()
@@ -326,15 +332,21 @@ class TableEditor(AdminSeleniumTestCase):
     @classmethod
     def setUpClass(cls):
         super(TableEditor, cls).setUpClass()
-        cls.admin_page = cls.live_server_url + reverse('admin:index')
         cls.autocomplete_text = 'Prod'
         cls.filter_wrapper_class = 'js-filter-wrapper'
 
     def setUp(self):
         """Set up testing url and dispatch selenium webdriver."""
         super().setUp()
+        self.wait.until(EC.presence_of_element_located(
+            (By.ID, 'admin-editor-link')
+        ))
         self.browser.find_element_by_id('admin-editor-link').click()
         self.wait_tableeditor_loading()
+
+    @property
+    def admin_page(self):
+        return self.live_server_url + reverse('admin:index')
 
     def wait_tableeditor_loading(self):
         self.wait_page_loading()
@@ -582,9 +594,10 @@ class TableEditor(AdminSeleniumTestCase):
                 (By.CSS_SELECTOR, 'button[data-target="#add-entity"]')
             ))
         ).click().perform()
-        self.wait.until(EC.visibility_of_element_located(
-            (By.ID, 'add-entity-form')
-        ))
+        with self.screen_fail('test_new_entity_creation'):
+            self.wait.until(EC.visibility_of_element_located(
+                (By.ID, 'add-entity-form')
+            ))
 
         self.browser.find_element_by_id('entity-name').send_keys(new_entity_text)
         for field in numeric_fields:
@@ -599,6 +612,9 @@ class TableEditor(AdminSeleniumTestCase):
 
         # Choose category from autocomplete dropdown & save new entity:
         autocomplete.find_element_by_class_name('ui-menu-item-wrapper').click()
+        self.wait.until(EC.element_to_be_clickable(
+            (By.ID, 'entity-save')
+        ))
         self.browser.find_element_by_id('entity-save').click()
 
         self.wait.until_not(EC.element_to_be_clickable((By.ID, 'entity-save')))

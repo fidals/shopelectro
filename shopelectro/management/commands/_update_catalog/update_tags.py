@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 from itertools import chain
 from typing import Iterator, Dict
@@ -9,6 +10,9 @@ from shopelectro.management.commands._update_catalog.utils import (
     XmlFile, is_correct_uuid, UUID, Data,
 )
 from shopelectro.models import Tag, TagGroup
+
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_tags(root: Element, config: XmlFile):
@@ -82,8 +86,8 @@ def create_or_update(data: Dict[UUID, Data]):
 
             created_tags_count += int(tag_created)
 
-    print('{} tag groups were created.'.format(created_groups_count))
-    print('{} tags were created.'.format(created_tags_count))
+    logger.info(f'{created_groups_count} tag groups were created.')
+    logger.info(f'{created_tags_count} tags were created.')
 
 
 @transaction.atomic
@@ -102,7 +106,7 @@ def delete(group_data: Dict[UUID, Data]):
     group_count, _ = TagGroup.objects.exclude(uuid__in=group_uuids).delete()
     tag_count, _ = Tag.objects.exclude(uuid__in=tag_uuids).delete()
 
-    print('{} tag groups and {} tags were deleted.'.format(group_count, tag_count))
+    logger.info(f'{group_count} tag groups and {tag_count} tags were deleted.')
 
 
 def prepare_data(group_data: Iterator) -> Dict[UUID, Data]:
