@@ -71,6 +71,7 @@ class CatalogPage(TestCase):
 
     def test_has_canonical_meta_tag(self):
         """Test that CategoryPage should contain canonical meta tag."""
+        # ignore CPDBear
         url = reverse_category_url(self.category)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -78,6 +79,7 @@ class CatalogPage(TestCase):
 
     def test_tags_page_has_no_canonical_meta_tag(self):
         """Test that CategoryTagsPage should not contain canonical meta tag."""
+        # ignore CPDBear
         url = reverse_category_url(self.category, self.tags)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -85,7 +87,7 @@ class CatalogPage(TestCase):
 
     def test_paginated_tags_page_has_no_canonical_meta_tag(self):
         """
-        Test CategoryTagsPage with canonical tags
+        Test CategoryTagsPage with canonical tags.
 
         CategoryTagsPage with pagination (and sorting) options
         should not contain canonical meta tag.
@@ -109,7 +111,7 @@ class CatalogPage(TestCase):
 
     def test_tag_titles_content_disjunction(self):
         """
-        Test CategoryTagsPage with canonical tags
+        Test CategoryTagsPage with canonical tags.
 
         CategoryTagsPage with tags "Напряжение 6В" и "Напряжение 24В"
         should contain tag_titles var content: "6В или 24В".
@@ -124,7 +126,7 @@ class CatalogPage(TestCase):
 
     def test_tag_titles_content_conjunction(self):
         """
-        Test CategoryTagsPage with canonical tags
+        Test CategoryTagsPage with canonical tags.
 
         CategoryTagsPage with tags "Напряжение 6В" и "Cила тока 1А" should
         contain tag_titles var content: "6В и 1А".
@@ -140,7 +142,7 @@ class CatalogPage(TestCase):
 
     def test_tags_var(self):
         """
-        Test CategoryTagsPage with canonical tags
+        Test CategoryTagsPage with canonical tags.
 
         CategoryTagsPage should contain "tags" template var tag=each(tags) is Tag
         class instance.
