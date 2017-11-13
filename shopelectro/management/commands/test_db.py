@@ -212,15 +212,18 @@ class Command(BaseCommand):
                 **generate_feedback_data(i)
             )
 
-    def create_templates(self):
-        template = '{{ page.name }}'
+    @staticmethod
+    def create_templates():
         page_template = PageTemplate.objects.create(
-            name='{} name.'.format(template),
-            h1='{} h1.'.format(template),
-            keywords='{} keywords.'.format(template),
-            description='{} description.'.format(template),
-            title='{} title.'.format(template),
-            seo_text='{} seotext.'.format(template)
+            name='{{ page.name }} name.',
+            h1='{{ page.name }}{{ tag_titles }} h1.',
+            keywords='{{ page.name }} keywords.',
+            description='{{ page.name }} description.',
+            title='{{ page.name }} title.',
+            seo_text=(
+                '{{ page.name }} seotext.'
+                '{% for tag in tags %}{{ tag.name }}, {% endfor %}'
+            )
         )
 
         se_models.ProductPage.objects.update(template=page_template)

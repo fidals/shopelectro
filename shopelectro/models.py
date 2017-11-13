@@ -1,5 +1,6 @@
 from itertools import chain, groupby
 from operator import attrgetter
+from typing import List, Tuple
 from uuid import uuid4
 
 from django.conf import settings
@@ -175,8 +176,8 @@ class TagGroup(models.Model):
 
 class TagQuerySet(models.QuerySet):
 
-    def get_group_tags_pairs(self):
-        ordering = ['group__position', 'group__name', 'position', 'name']
+    def get_group_tags_pairs(self) -> List[Tuple[TagGroup, List['Tag']]]:
+        ordering = settings.TAGS_ORDER
         distinct = [order.lstrip('-') for order in ordering]
 
         tags = (
@@ -195,20 +196,16 @@ class TagQuerySet(models.QuerySet):
         return group_tags_pair
 
 
-class TagManager(models.Manager):
+class TagManager(models.Manager.from_queryset(TagQuerySet)):
 
     def get_queryset(self):
-        return TagQuerySet(self.model, using=self._db)
+        return (
+            super().get_queryset()
+            .order_by(*settings.TAGS_ORDER)
+        )
 
     def get_group_tags_pairs(self):
         return self.get_queryset().get_group_tags_pairs()
-
-
-URL_TAGS_TYPE_DELIMITER = '-or-'
-URL_TAGS_GROUP_DELIMITER = '-and-'
-
-TITLE_TAGS_TYPE_DELIMITER = ' или '
-TITLE_TAGS_GROUP_DELIMITER = ' и '
 
 
 class Tag(models.Model):
@@ -239,9 +236,14 @@ class Tag(models.Model):
             )
         super(Tag, self).save(*args, **kwargs)
 
+    """
+    @todo #195 - refactor Tag.serialize_* methods
+     - they must take argument `List[Tag]` as well as `List[Tuple[TagGroup, Tag]]`
+     - they should be standalone functions, not static methods
+    """
     @staticmethod
     def serialize_tags(
-        pairs: list,
+        pairs: List[Tuple[TagGroup, 'Tag']],
         field_name: str,
         type_delimiter: str,
         group_delimiter: str
@@ -253,20 +255,26 @@ class Tag(models.Model):
         )
 
     @staticmethod
-    def serialize_url_tags(tags: list) -> str:
+    def serialize_url_tags(tags: List[Tuple[TagGroup, 'Tag']]) -> str:
         return Tag.serialize_tags(
-            tags, 'slug', URL_TAGS_TYPE_DELIMITER, URL_TAGS_GROUP_DELIMITER
+            pairs=tags,
+            field_name='slug',
+            type_delimiter=settings.TAGS_URL_DELIMITER,
+            group_delimiter=settings.TAG_GROUPS_URL_DELIMITER
         )
 
     @staticmethod
     def parse_url_tags(tags: str) -> list:
-        groups = tags.split(URL_TAGS_GROUP_DELIMITER)
+        groups = tags.split(settings.TAGS_URL_DELIMITER)
         return set(chain.from_iterable(
-            group.split(URL_TAGS_TYPE_DELIMITER) for group in groups
+            group.split(settings.TAG_GROUPS_URL_DELIMITER) for group in groups
         ))
 
     @staticmethod
     def serialize_title_tags(tags: list) -> str:
         return Tag.serialize_tags(
-            tags, 'name', TITLE_TAGS_TYPE_DELIMITER, TITLE_TAGS_GROUP_DELIMITER
+            pairs=tags,
+            field_name='name',
+            type_delimiter=settings.TAGS_TITLE_DELIMITER,
+            group_delimiter=settings.TAG_GROUPS_TITLE_DELIMITER
         )

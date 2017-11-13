@@ -7,6 +7,7 @@ services:
     container_name: se-source
     volumes:
       - ./../:$SRC_DIR # code volume
+      - /opt/media/shopelectro/:$SRC_DIR/media/
     command: sh -c "top > /dev/null"
 
   se-python:
@@ -34,6 +35,7 @@ services:
       - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
       - ENV_TYPE=$ENV_TYPE
+      - PYTHONUNBUFFERED=0
     ports:
       - '$VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT'
       - $VIRTUAL_HOST_LIVESERVER_PORT
@@ -72,7 +74,7 @@ services:
     networks:
       - se-backend
     volumes:
-      - /var/lib/postgresql/data
+      - /opt/database/shopelectro:/var/lib/postgresql/data
 
   se-rabbitmq:
     image: rabbitmq:management-alpine

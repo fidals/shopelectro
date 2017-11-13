@@ -17,8 +17,27 @@ from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
-from shopelectro.models import Category, Product, Tag
+from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
+
+
+CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
+
+
+def reverse_category_url(
+    category: Category, tags: TagQuerySet=None, sorting: int=None
+) -> str:
+    route_kwargs = {'slug': category.page.slug}
+
+    if tags:
+        # PyCharm's option:
+        # noinspection PyTypeChecker
+        tags_slug = Tag.serialize_url_tags(tags.get_group_tags_pairs())
+        route_kwargs['tags'] = tags_slug
+    if sorting is not None:
+        route_kwargs['sorting'] = sorting
+
+    return reverse('category', kwargs=route_kwargs)
 
 
 def json_to_dict(response: HttpResponse) -> dict():
@@ -31,6 +50,11 @@ class CatalogPage(TestCase):
 
     def setUp(self):
         self.category = Category.objects.root_nodes().select_related('page').first()
+        self.tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
+
+    def get_category_page(self, category=None, tags=None):
+        category = category or self.category
+        return self.client.get(reverse_category_url(category, tags))
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
@@ -45,42 +69,89 @@ class CatalogPage(TestCase):
         for tag_name in tag_names:
             self.assertContains(response, tag_name)
 
-    """
-    @todo #172 Создаём тест для таких сценариев:
-    Сценарий 1. CategoryPage with tag
-      - открываем CategoryPage с тегом.
-        Например /catalog/categories/zariadnye-ustroistva-242/tags/robiton/
-      - проверяем на этой странице метатег canonical.
-        Его значением должен быть полный урл:
-        `<link rel="canonical" href="/catalog/categories/zariadnye-ustroistva-242/">`
-
-    Сценарий 2. CategoryPage with sorted tag
-      - открываем CategoryPage с тегом и параметром сортировки.
-        Например /catalog/categories/zariadnye-ustroistva-242/1/tags/robiton/
-      - проверяем на этой странице метатег canonical.
-        Его значением должен быть урл категории без страницы сортировки:
-        `<link rel="canonical" href="/catalog/categories/zariadnye-ustroistva-242/tags/robiton/">`
-    """
-    def test_category_page_canonical_meta_tag(self):
-        """Category contains all Product's tags."""
-        url = reverse('category', args=(self.category.page.slug, ))
+    def test_has_canonical_meta_tag(self):
+        """Test that CategoryPage should contain canonical meta tag."""
+        url = reverse_category_url(self.category)
         response = self.client.get(url)
-        self.assertContains(response, url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, CANONICAL_HTML_TAG.format(path=url))
 
-    def test_product_by_certain_tags(self):
+    def test_tags_page_has_no_canonical_meta_tag(self):
+        """Test that CategoryTagsPage should not contain canonical meta tag."""
+        # ignore CPDBear
+        url = reverse_category_url(self.category, self.tags)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, CANONICAL_HTML_TAG.format(path=url))
+
+    def test_paginated_tags_page_has_no_canonical_meta_tag(self):
+        """
+        Test CategoryTagsPage with canonical tags.
+
+        CategoryTagsPage with pagination (and sorting) options
+        should not contain canonical meta tag.
+        """
+        # ignore CPDBear
+        url = reverse_category_url(self.category, self.tags, sorting=1)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, CANONICAL_HTML_TAG.format(path=url))
+
+    def test_contains_product_with_certain_tags(self):
         """Category page contains Product's related by certain tags."""
-        first_tag, last_tag = Tag.objects.all().first(), Tag.objects.last()
-        response = self.client.get(
-            reverse('category', args=(self.category.page.slug, )),
-            {'tags': [first_tag.id, last_tag.id]}
-        )
+        tags = self.tags
+        response = self.get_category_page(tags=tags)
 
         products_count = len(list(filter(
             lambda x: x.category.is_descendant_of(self.category),
-            Product.objects.filter(Q(tags=first_tag) | Q(tags=last_tag))
+            Product.objects.filter(Q(tags=tags[0]) | Q(tags=tags[1]))
         )))
 
         self.assertContains(response, products_count)
+
+    def test_tag_titles_content_disjunction(self):
+        """
+        Test CategoryTagsPage with canonical tags.
+
+        CategoryTagsPage with tags "Напряжение 6В" и "Напряжение 24В"
+        should contain tag_titles var content: "6В или 24В".
+        """
+        tag_group = TagGroup.objects.first()
+        tags = tag_group.tags.order_by(*settings.TAGS_ORDER).all()
+        response = self.get_category_page(tags=tags)
+        self.assertEqual(response.status_code, 200)
+        delimiter = settings.TAGS_TITLE_DELIMITER
+        tag_titles = delimiter.join(t.name for t in tags)
+        self.assertContains(response, tag_titles)
+
+    def test_tag_titles_content_conjunction(self):
+        """
+        Test CategoryTagsPage with canonical tags.
+
+        CategoryTagsPage with tags "Напряжение 6В" и "Cила тока 1А" should
+        contain tag_titles var content: "6В и 1А".
+        """
+        tag_groups = TagGroup.objects.order_by('position', 'name').all()
+        tag_ids = [g.tags.first().id for g in tag_groups]
+        tags = Tag.objects.filter(id__in=tag_ids)
+        response = self.get_category_page(tags=tags)
+        self.assertEqual(response.status_code, 200)
+        delimiter = settings.TAG_GROUPS_TITLE_DELIMITER
+        tag_titles = delimiter.join(t.name for t in tags)
+        self.assertContains(response, tag_titles)
+
+    def test_tags_var(self):
+        """
+        Test CategoryTagsPage with canonical tags.
+
+        CategoryTagsPage should contain "tags" template var tag=each(tags) is Tag
+        class instance.
+        """
+        tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
+        response = self.get_category_page(tags=tags)
+        self.assertEqual(response.status_code, 200)
+        tag_names = ', '.join([t.name for t in tags])
+        self.assertContains(response, tag_names)
 
     def test_product_tag_linking(self):
         """Product should contain links on CategoryTagPage for it's every tag."""

@@ -37,6 +37,7 @@ services:
       - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
       - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
       - ENV_TYPE=$ENV_TYPE
+      - PYTHONUNBUFFERED=0
     depends_on:
       - se-postgres
       - se-rabbitmq
