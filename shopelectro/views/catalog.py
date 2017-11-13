@@ -138,11 +138,8 @@ class CategoryPage(catalog.CategoryPage):
         )
 
         tags = self.kwargs.get('tags')
-        tags_metadata = {
-            'titles': '',
-            'raw': [],
-        }
 
+        tag_titles = ''
         if tags:
             slugs = models.Tag.parse_url_tags(tags)
             tags = models.Tag.objects.filter(slug__in=slugs)
@@ -155,22 +152,20 @@ class CategoryPage(catalog.CategoryPage):
                 .distinct(sorting_option.lstrip('-'))
             )
 
-            tags_titles = models.Tag.serialize_title_tags(
+            tag_titles = models.Tag.serialize_title_tags(
                 tags.get_group_tags_pairs()
             )
 
-            tags_metadata['titles'] = tags_titles
-            tags_metadata['raw'] = tags
-
-        def template_context(page, tags):
+        def template_context(page, tag_titles, tags):
             return {
                 'page': page,
+                'tag_titles': tag_titles,
                 'tags': tags,
             }
 
         page = context['page']
         page.get_template_render_context = partial(
-            template_context, page, tags_metadata)
+            template_context, page, tag_titles, tags)
 
         products = all_products.get_offset(0, products_on_page)
 
@@ -183,7 +178,6 @@ class CategoryPage(catalog.CategoryPage):
             'sort': sorting,
             'tags': tags,
             'view_type': view_type,
-            'tags_metadata': tags_metadata,
             'skip_canonical': bool(tags),
         }
 
