@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
+from django_select2.forms import ModelSelect2Widget
+
 from pages.models import CustomPage, FlatPage, PageTemplate
 from generic_admin import inlines, models, sites
 
@@ -110,6 +112,20 @@ class ProductInline(inlines.ProductInline):
             'tags',
         )
     }),)
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'category':
+            kwargs['widget'] = ModelSelect2Widget(
+                model=se_models.Category,
+                search_fields=[
+                    'name__icontains',
+                    'pk__startswith',
+                ],
+            )
+        return super(ProductInline, self).formfield_for_dbfield(
+            db_field,
+            **kwargs,
+        )
 
 
 class CategoryPageAdmin(models.CategoryPageAdmin):
