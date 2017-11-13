@@ -84,7 +84,10 @@ class CatalogPage(TestCase):
         self.assertNotContains(response, CANONICAL_HTML_TAG.format(path=url))
 
     def test_paginated_tags_page_has_no_canonical_meta_tag(self):
-        """Test that CategoryTagsPage with pagination (and sorting) options should not contain canonical meta tag."""
+        """
+        Test that CategoryTagsPage with pagination (and sorting) options
+        should not contain canonical meta tag.
+        """
         url = reverse_category_url(self.category, self.tags, sorting=1)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
