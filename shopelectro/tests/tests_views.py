@@ -39,6 +39,7 @@ def reverse_category_url(
 
     return reverse('category', kwargs=route_kwargs)
 
+
 def json_to_dict(response: HttpResponse) -> dict():
     return json.loads(response.content)
 
@@ -69,24 +70,21 @@ class CatalogPage(TestCase):
             self.assertContains(response, tag_name)
 
     def test_has_canonical_meta_tag(self):
-        """CategoryPage should contain canonical meta tag"""
+        """Test that CategoryPage should contain canonical meta tag."""
         url = reverse_category_url(self.category)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, CANONICAL_HTML_TAG.format(path=url))
 
     def test_tags_page_has_no_canonical_meta_tag(self):
-        """CategoryTagsPage should not contain canonical meta tag"""
+        """Test that CategoryTagsPage should not contain canonical meta tag."""
         url = reverse_category_url(self.category, self.tags)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, CANONICAL_HTML_TAG.format(path=url))
 
     def test_paginated_tags_page_has_no_canonical_meta_tag(self):
-        """
-        CategoryTagsPage with pagination (and sorting) options
-        should not contain canonical meta tag
-        """
+        """Test that CategoryTagsPage with pagination (and sorting) options should not contain canonical meta tag."""
         url = reverse_category_url(self.category, self.tags, sorting=1)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -105,10 +103,7 @@ class CatalogPage(TestCase):
         self.assertContains(response, products_count)
 
     def test_tag_titles_content_disjunction(self):
-        """
-        CategoryTagsPage with tags "Напряжение 6В" и "Напряжение 24В"
-        should contain tag_titles var content: "6В или 24В"
-        """
+        """Test that CategoryTagsPage with tags "Напряжение 6В" и "Напряжение 24В" should contain tag_titles var content: "6В или 24В"."""
         tag_group = TagGroup.objects.first()
         tags = tag_group.tags.order_by(*settings.TAGS_ORDER).all()
         response = self.get_category_page(tags=tags)
@@ -118,10 +113,7 @@ class CatalogPage(TestCase):
         self.assertContains(response, tag_titles)
 
     def test_tag_titles_content_conjunction(self):
-        """
-        CategoryTagsPage with tags "Напряжение 6В" и "Cила тока 1А"
-        should contain tag_titles var content: "6В и 1А"
-        """
+        """Test that CategoryTagsPage with tags "Напряжение 6В" и "Cила тока 1А" should contain tag_titles var content: "6В и 1А\"."""
         tag_groups = TagGroup.objects.order_by('position', 'name').all()
         tag_ids = [g.tags.first().id for g in tag_groups]
         tags = Tag.objects.filter(id__in=tag_ids)
@@ -132,10 +124,7 @@ class CatalogPage(TestCase):
         self.assertContains(response, tag_titles)
 
     def test_tags_var(self):
-        """
-        CategoryTagsPage should contain "tags" template var
-        tag=each(tags) is Tag class instance
-        """
+        """Test that CategoryTagsPage should contain "tags" template var tag=each(tags) is Tag class instance."""
         tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
         response = self.get_category_page(tags=tags)
         self.assertEqual(response.status_code, 200)
