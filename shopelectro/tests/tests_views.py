@@ -71,7 +71,6 @@ class CatalogPage(TestCase):
 
     def test_has_canonical_meta_tag(self):
         """Test that CategoryPage should contain canonical meta tag."""
-        # ignore CPDBear
         url = reverse_category_url(self.category)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -92,6 +91,7 @@ class CatalogPage(TestCase):
         CategoryTagsPage with pagination (and sorting) options
         should not contain canonical meta tag.
         """
+        # ignore CPDBear
         url = reverse_category_url(self.category, self.tags, sorting=1)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
