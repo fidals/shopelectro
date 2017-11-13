@@ -85,7 +85,9 @@ class CatalogPage(TestCase):
 
     def test_paginated_tags_page_has_no_canonical_meta_tag(self):
         """
-        Test that CategoryTagsPage with pagination (and sorting) options
+        Test CategoryTagsPage with canonical tags
+
+        CategoryTagsPage with pagination (and sorting) options
         should not contain canonical meta tag.
         """
         url = reverse_category_url(self.category, self.tags, sorting=1)
@@ -106,7 +108,12 @@ class CatalogPage(TestCase):
         self.assertContains(response, products_count)
 
     def test_tag_titles_content_disjunction(self):
-        """Test that CategoryTagsPage with tags "Напряжение 6В" и "Напряжение 24В" should contain tag_titles var content: "6В или 24В"."""
+        """
+        Test CategoryTagsPage with canonical tags
+
+        CategoryTagsPage with tags "Напряжение 6В" и "Напряжение 24В"
+        should contain tag_titles var content: "6В или 24В".
+        """
         tag_group = TagGroup.objects.first()
         tags = tag_group.tags.order_by(*settings.TAGS_ORDER).all()
         response = self.get_category_page(tags=tags)
@@ -116,7 +123,12 @@ class CatalogPage(TestCase):
         self.assertContains(response, tag_titles)
 
     def test_tag_titles_content_conjunction(self):
-        """Test that CategoryTagsPage with tags "Напряжение 6В" и "Cила тока 1А" should contain tag_titles var content: "6В и 1А\"."""
+        """
+        Test CategoryTagsPage with canonical tags
+
+        CategoryTagsPage with tags "Напряжение 6В" и "Cила тока 1А" should
+        contain tag_titles var content: "6В и 1А".
+        """
         tag_groups = TagGroup.objects.order_by('position', 'name').all()
         tag_ids = [g.tags.first().id for g in tag_groups]
         tags = Tag.objects.filter(id__in=tag_ids)
@@ -127,7 +139,12 @@ class CatalogPage(TestCase):
         self.assertContains(response, tag_titles)
 
     def test_tags_var(self):
-        """Test that CategoryTagsPage should contain "tags" template var tag=each(tags) is Tag class instance."""
+        """
+        Test CategoryTagsPage with canonical tags
+
+        CategoryTagsPage should contain "tags" template var tag=each(tags) is Tag
+        class instance.
+        """
         tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
         response = self.get_category_page(tags=tags)
         self.assertEqual(response.status_code, 200)
