@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from pages.models import Page
 
-from shopelectro.models import Product, Category
+from shopelectro.models import Category, Product, Tag
 
 
 class AbstractSitemap(Sitemap):
@@ -35,6 +35,37 @@ class CategorySitemap(AbstractSitemap):
 
     def items(self):
         return Category.objects.filter(page__is_active=True)
+
+
+class CategoryWithTagsSitemap(AbstractSitemap):
+
+    def get_categories_with_tags(self):
+        """
+        Returns all categories with linked (TagGroup, Tags) pairs.
+
+        Currently, tags per category is limited to 1 tag (by SEO requirements).
+        So, for each tags group in each category we'll get 1 tag.
+        """
+        for category in Category.objects.filter(page__is_active=True):
+            products = Product.objects.get_by_category(category)
+            tags = Tag.objects.filter(products__in=products).distinct()
+            for group in tags.get_group_tags_pairs():
+                group_name, group_tags = group
+                for group_tag in group_tags:
+                    yield (category, (group_name, [group_tag]))
+
+    def items(self):
+        # `items` method can't return generator (by django design)
+        # so we moved items collection code to dedicated function
+        return list(self.get_categories_with_tags())
+
+    def location(self, item):
+        category, tags = item
+        tags_slug = Tag.serialize_url_tags([tags])
+        return reverse('category', kwargs={
+            'slug': category.page.slug,
+            'tags': tags_slug,
+        })
 
 
 class ProductSitemap(AbstractSitemap):

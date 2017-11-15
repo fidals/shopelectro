@@ -16,6 +16,7 @@ from shopelectro.admin import se_admin
 sitemaps = OrderedDict([
     ('index', sitemaps.IndexSitemap),
     ('category', sitemaps.CategorySitemap),
+    ('category-with-tags', sitemaps.CategoryWithTagsSitemap),
     ('products', sitemaps.ProductSitemap),
     ('site', sitemaps.PagesSitemap)
 ])
