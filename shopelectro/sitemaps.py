@@ -41,7 +41,7 @@ class CategoryWithTagsSitemap(AbstractSitemap):
 
     def get_categories_with_tags(self):
         """
-        Returns all categories with linked (TagGroup, Tags) pairs.
+        Return all categories with linked (TagGroup, Tags) pairs.
 
         Currently, tags per category is limited to 1 tag (by SEO requirements).
         So, for each tags group in each category we'll get 1 tag.
