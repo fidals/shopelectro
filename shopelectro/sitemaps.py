@@ -1,9 +1,11 @@
+from typing import Generator, Tuple
+
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
 from pages.models import Page
 
-from shopelectro.models import Category, Product, Tag
+from shopelectro.models import Category, Product, TagGroup, Tag
 
 
 class AbstractSitemap(Sitemap):
@@ -37,27 +39,29 @@ class CategorySitemap(AbstractSitemap):
         return Category.objects.filter(page__is_active=True)
 
 
+def get_categories_with_tags() -> Generator[
+    Tuple[Category, Tuple[TagGroup, Tag]], None, None
+]:
+    """
+    Return all unique Category+TagGroup pairs.
+
+    Currently, tags per category is limited to 1 tag (by SEO requirements).
+    So, for each tags group in each category we'll get 1 tag.
+    """
+    for category in Category.objects.filter(page__is_active=True):
+        products = Product.objects.get_by_category(category)
+        tags = Tag.objects.filter(products__in=products).distinct()
+        for group_name, group_tags in tags.get_group_tags_pairs():
+            for group_tag in group_tags:
+                yield category, (group_name, [group_tag])
+
+
 class CategoryWithTagsSitemap(AbstractSitemap):
-
-    def get_categories_with_tags(self):
-        """
-        Return all categories with linked (TagGroup, Tags) pairs.
-
-        Currently, tags per category is limited to 1 tag (by SEO requirements).
-        So, for each tags group in each category we'll get 1 tag.
-        """
-        for category in Category.objects.filter(page__is_active=True):
-            products = Product.objects.get_by_category(category)
-            tags = Tag.objects.filter(products__in=products).distinct()
-            for group in tags.get_group_tags_pairs():
-                group_name, group_tags = group
-                for group_tag in group_tags:
-                    yield (category, (group_name, [group_tag]))
 
     def items(self):
         # `items` method can't return generator (by django design)
         # so we moved items collection code to dedicated function
-        return list(self.get_categories_with_tags())
+        return list(get_categories_with_tags())
 
     def location(self, item):
         category, tags = item
