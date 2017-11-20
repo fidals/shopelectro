@@ -7,7 +7,7 @@
   {% breadcrumbs_with_siblings page %}
   <h1 class="category-title">{{ page.display_h1|capfirst }}</h1>
 
-  <div class="row">
+  <div class="row overflow-anchor-control">
     <div class="col-md-3 category-left-block">
       {% include 'catalog/category_children.html' with category=category tags=tags only %}
 
