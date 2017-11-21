@@ -1,26 +1,26 @@
-migrate:
-	docker-compose exec se-python python manage.py migrate
+dc=docker-compose
+d=docker
+dcp=docker-compose -f docker-compose-production.yml
 
+migrate:
+	$(dc) exec se-python python manage.py migrate
+
+# for local env
 static:
-	@docker-compose run --rm se-nodejs bash -c "\
+	$(dc) run --rm se-nodejs bash -c "\
 		npm install && \
 		npm install -g gulp-cli && \
 		gulp build"
-	@docker-compose run --rm se-python bash -c "\
-		python manage.py excel && \
-		python manage.py price && \
-		python manage.py collectstatic --noinput"
 
-build-dev-py:
-	@docker-compose build --no-cache se-python
-
-build: build-dev-py static
-	@docker-compose -f docker-compose-production.yml build
+# for local env
+build: static
+	$(dc) build se-python && $(dcp) build
+	$(dcp) push
 
 test: static
-	@docker-compose up -d se-python se-selenium
-	@docker-compose exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
-	@docker-compose stop
+	$(dc) up -d se-python se-selenium
+	$(dc) exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
+	$(dc) stop
 
 backup:
 	@docker-compose -f docker-compose-production.yml up se-backup-data
@@ -29,4 +29,22 @@ restore:
 	@bash ../etc/se-backup-restore.sh
 
 lint:
-	@docker run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
+	$(dc) up -d se-python
+	$(d) run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
+	$(dc) stop
+
+# @todo #117 run backup before deploy
+
+# for serv env
+deploy:
+	$(dcp) pull
+	$(dcp) stop
+	$(dcp) rm se-source
+	$(dcp) up -d
+	$(dcp) exec se-python python manage.py migrate
+	$(dcp) exec se-python python manage.py excel
+	$(dcp) exec se-python python manage.py price
+	# launch "collectstatic" not on local env because ManifestStaticStorage writes to db
+	$(dcp) exec se-python python manage.py collectstatic --noinput
+	$(dcp) exec se-python bash -c "cd doc/ && make html"
+	$(dcp) stop && $(dcp) up -d  # to make fresh collected static visible immediately
