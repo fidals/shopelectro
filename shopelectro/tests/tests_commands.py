@@ -125,26 +125,6 @@ class UpdateProducts(TestCase):
         self.assertEqual(updated_groups_count + create_count, TagGroup.objects.count())
         self.assertEqual(updated_tags_count + create_count, Tag.objects.count())
 
-    def test_delete_tags(self):
-        groups_count = 2
-
-        tag_data = {
-            str(group.uuid): {
-                'name': 'some name',
-                'tags': {
-                    tag.uuid: {'name': tag.name}
-                    for tag in Tag.objects.filter(group=group)
-                }
-            } for group in TagGroup.objects.all()[:groups_count]
-        }
-
-        tag_count = sum(len(data['tags']) for data in tag_data.values())
-
-        update_tags.delete(tag_data)
-
-        self.assertEqual(Tag.objects.count(), tag_count)
-        self.assertEqual(TagGroup.objects.count(), groups_count)
-
 
 class GeneratePrices(TestCase):
 
