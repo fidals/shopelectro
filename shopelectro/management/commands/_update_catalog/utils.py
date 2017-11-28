@@ -15,7 +15,8 @@ from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
-Data = Dict[str, str]
+UUID_TYPE = str
+Data = Dict[str, Dict[str, dict]]
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
 

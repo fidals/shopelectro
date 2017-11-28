@@ -3,6 +3,16 @@
 sudo mkdir -p /opt/backup/shopelectro/
 sudo chown -R `whoami` /opt/
 
+# @todo #232 - DB restore error on local env.
+#  How to reproduce:
+#  - launch this script
+#  - restart se-python container
+#
+#  Traceback message:
+#  ```
+#  django.db.utils.OperationalError: FATAL:  could not open relation mapping file "global/pg_filenode.map": Permission denied
+#  ```
+
 for type in database media static
 do
     while true; do
