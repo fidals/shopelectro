@@ -16,6 +16,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.translation import ugettext as _
 
 from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
@@ -315,6 +316,10 @@ class TestSearch(TestCase):
             follow=True
         )
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, _('Product'))
+        # search page should contain not only results.
+        # But markup, menu links and so on.
+        self.assertContains(response, '<title>')
         self.assertContains(response, '<div class="search-result-item">')
 
     def test_search_no_results(self):

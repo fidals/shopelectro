@@ -1,27 +1,18 @@
 {% extends 'layout/inner_page.html' %}
 
+{% load pages_extras %}
 {% load static %}
 
 {% block content %}
-  <h1>Результаты поиска</h1>
+  {% include 'pages/breadcrumbs.html' %}
+  {% include 'pages/page_h1.html' with page=page only %}
 
-  {% for category_item in category %}
+  {% for item in items %}
     <div class="search-result-item">
-      <a class="search-result-link" href="{{ category_item.url }}">
-        {{ category_item.name }}
+      <a class="search-result-link" href="{{ item.url }}">
+        {{ item.name }}
       </a>
-      <p class="search-result-type">Категория</p>
-    </div>
-  {% endfor %}
-
-  {% for product_item in product %}
-    <div class="search-result-item">
-      <a class="search-result-link js-browse-product" href="{{ product_item.url }}">
-        <p>Арт. {{ product_item.vendor_code }}</p>
-        {{ product_item.name }}
-      </a>
-
-      <p class="search-result-type">Продукт</p>
+      <p class="search-result-type">{{ item|verbose_type }}</p>
     </div>
   {% endfor %}
 {% endblock %}
