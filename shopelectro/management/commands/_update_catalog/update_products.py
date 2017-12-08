@@ -3,7 +3,7 @@ from collections import defaultdict
 from copy import deepcopy
 from functools import reduce
 from itertools import chain
-from typing import Iterator, Dict
+from typing import Dict, Iterator, List
 from xml.etree.ElementTree import Element
 
 from django.conf import settings
@@ -243,12 +243,21 @@ def update(data: Dict[UUID, Data]) -> QuerySet:
         else:
             setattr(product, field, value)
 
+    def merge(left: List, right: List) -> List:
+        """Merge two arrays with order preserving."""
+        return left + [e for e in right if e not in left]
+
     products = Product.objects.filter(uuid__in=data)
 
     for product in products:
         product_data = data[str(product.uuid)]
         for field, value in product_data.items():
-            save(product, field, value)
+            if field != 'tags':
+                save(product, field, value)
+            else:
+                # Dirty patch for preserving tags, appended from admin.
+                # Still waiting 1C throwing out.
+                product.tags = merge(list(product.tags.all()), value)
 
         product.save()
     logger.info('{} products were updated.'.format(products.count()))

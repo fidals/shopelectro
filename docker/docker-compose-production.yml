@@ -60,6 +60,7 @@ services:
     restart: always
     environment:
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
+      - DJANGO_LOG_LEVEL=$DJANGO_LOG_LEVEL
       - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_DEV_NAME
       - REDIS_PASSWORD=$REDIS_PASSWORD
       - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0

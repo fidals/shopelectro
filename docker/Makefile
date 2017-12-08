@@ -39,7 +39,7 @@ lint:
 deploy:
 	$(dcp) pull
 	$(dcp) stop
-	$(dcp) rm se-source
+	$(dcp) rm -f se-source
 	$(dcp) up -d
 	$(dcp) exec se-python python manage.py migrate
 	$(dcp) exec se-python python manage.py excel
