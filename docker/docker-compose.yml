@@ -9,7 +9,7 @@ services:
       - ./../:$SRC_DIR # code volume
       - /opt/media/shopelectro/:$SRC_DIR/media/
       # leaved it here as example of code mounting for debugging
-      - $REFARM_SRC/search:/root/.local/lib/python3.6/site-packages/search
+      # - $REFARM_SRC/search:/root/.local/lib/python3.6/site-packages/search
     command: sh -c "top > /dev/null"
 
   se-python:
