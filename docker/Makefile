@@ -33,10 +33,8 @@ lint:
 	$(d) run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
 	$(dc) stop
 
-# @todo #117 run backup before deploy
-
 # for serv env
-deploy:
+deploy: backup
 	$(dcp) pull
 	$(dcp) stop
 	$(dcp) rm -f se-source
