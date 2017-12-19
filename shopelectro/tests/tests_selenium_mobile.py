@@ -70,6 +70,12 @@ class Mobile(MobileSeleniumTestCase):
             (By.CLASS_NAME, 'js-mobile-menu-toggler')
         )).click()
 
+    def submit_search(self):
+        self.wait.until(EC.element_to_be_clickable(
+            (By.CLASS_NAME, 'mm-btn')
+        )).click()
+        self.wait.until(EC.url_contains('/search/'))
+
     def test_ui(self):
         """
         Test mobile ui.
@@ -82,7 +88,7 @@ class Mobile(MobileSeleniumTestCase):
         self.toogle_menu()
         self.assertTrue(self.search_input.is_displayed())
 
-    def test_search(self):
+    def test_search_autocomplete(self):
         """Autocomplete in mobile search should work."""
         self.toogle_menu()
         self.search_input.send_keys('Cate')
@@ -92,6 +98,16 @@ class Mobile(MobileSeleniumTestCase):
         # last autocomplete item has no contains data
         for item in suggestions[:-1]:
             self.assertTrue(item.get_attribute('data-val') == 'Cate')
+
+    def test_search_submit(self):
+        """Mobile search form has submit button."""
+        self.toogle_menu()
+        self.search_input.send_keys('Cate')
+        self.submit_search()
+        result, *_ = self.wait.until(EC.visibility_of_any_elements_located(
+            (By.CLASS_NAME, 'search-result-link')
+        ))
+        self.assertIn('Cate', result.text)
 
     def test_catalog(self):
         """Catalog should expand on click on fa fa-chevron icons."""
