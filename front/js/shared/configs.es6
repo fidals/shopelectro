@@ -86,6 +86,7 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
   }
 
   function initMmenu() {
+    // Mmenu documentation: http://mmenu.frebsite.nl/
     $menu = DOM.$mobileMenu.mmenu({
       extensions: [
         'border-offset', 'shadow-page',
@@ -109,6 +110,16 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
     }, {
       offCanvas: {
         pageSelector: '#desktop-wrapper',
+      },
+      searchfield: {
+        form: {
+          action: '/search/',
+          method: 'get',
+        },
+        input: {
+          name: 'term'
+        },
+        submit: true,
       },
     });
   }
