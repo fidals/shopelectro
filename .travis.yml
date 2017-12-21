@@ -47,4 +47,3 @@ after_failure:
   - cat django-excel.log
   - cat django-price.log
   - cat django-collectstatic.log
-  - cat sphinx-doc.log
