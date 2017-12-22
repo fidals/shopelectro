@@ -15,7 +15,6 @@ static:
 # for local env
 build: static
 	$(dc) build se-python && $(dcp) build
-	$(dcp) push
 
 test: static
 	$(dc) up -d se-python se-selenium
@@ -32,6 +31,14 @@ lint:
 	$(dc) up -d se-python
 	$(d) run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
 	$(dc) stop
+
+# start dev environment
+dev: static
+    $(dc) pull
+    $(dc) up -d se-python
+    $(dc) exec se-python python manage.py migrate
+    $(dc) exec se-python python manage.py collectstatic --noinput
+    $(dc) stop && $(dc) up -d  # to make fresh collected static visible immediately
 
 # for serv env
 deploy: backup
