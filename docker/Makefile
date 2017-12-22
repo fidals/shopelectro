@@ -41,7 +41,7 @@ dev: static
     $(dc) stop && $(dc) up -d  # to make fresh collected static visible immediately
 
 # for serv env
-deploy: backup
+deploy: backup static
 	$(dcp) pull
 	$(dcp) stop
 	$(dcp) rm -f se-source
@@ -51,5 +51,4 @@ deploy: backup
 	$(dcp) exec se-python python manage.py price
 	# launch "collectstatic" not on local env because ManifestStaticStorage writes to db
 	$(dcp) exec se-python python manage.py collectstatic --noinput
-	$(dcp) exec se-python bash -c "cd doc/ && make html"
 	$(dcp) stop && $(dcp) up -d  # to make fresh collected static visible immediately
