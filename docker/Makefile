@@ -41,7 +41,7 @@ dev: static
     $(dc) stop && $(dc) up -d  # to make fresh collected static visible immediately
 
 # for serv env
-deploy: backup static
+deploy: backup
 	$(dcp) pull
 	$(dcp) stop
 	$(dcp) rm -f se-source
