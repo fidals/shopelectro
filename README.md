@@ -22,8 +22,8 @@ bash alias dcp="docker-compose -f docker-compose-production.yml"
 ```bash
 git clone git@github.com:fidals/shopelectro.git
 cd shopelectro/docker/
-cp .env.dist .env
-# кладём свои значения в `.env`. См ниже
+# cp .env.dist .env - только в первый раз
+# меняем значения из `.env` на свои собственные. См ниже
 make dev
 
 # optional
@@ -31,7 +31,14 @@ dc exec se-python python manage.py excel
 dc exec se-python python manage.py price
 ```
 
-Проверяем адрес 127.0.0.1:8010 - загружается сайт
+*Файл .env*
+После копирования из `.env.dist` заполняем файл `.env` или случайными значениями, или выданными.
+Примеры:
+- Генерим случайные: Django secret key, пароли к локальным базам
+- Запрашиваем у Архитектора: Пароль к FTP и почтовому серву 
+
+Проверяем адрес `http://127.0.0.1:8010` - загружается сайт.
+Вместо порта `8010` может быть другой - константа `VIRTUAL_HOST_EXPOSE_PORT` в файле `.env`. 
 
 ### На сервере
 
