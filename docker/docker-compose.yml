@@ -52,6 +52,9 @@ services:
       - $DEPS_DIR # contains refarm-site modules
     volumes_from:
       - se-source
+
+    # @todo #229 if Validate `.env` is full
+    #  Is full means '.env` contains all keynames from `.env.dist`
     command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
 
   se-nodejs:

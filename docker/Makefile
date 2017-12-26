@@ -8,13 +8,17 @@ migrate:
 # for local env
 static:
 	$(dc) run --rm se-nodejs bash -c "\
-		npm install && \
 		npm install -g gulp-cli && \
+		# we use `--no-optional` because some optional npm dependencies fail on install
+		npm install --no-optional && \
 		gulp build"
 
+# full version of this recipe will be developed in #248
 # for local env
-build: static
-	$(dc) build se-python && $(dcp) build
+build:
+	$(dc) build --no-cache se-python  # fetch <DEPS>/refarm-site/front/ dir$(dc) build --no-cache se-python
+	$(dc) pull
+	$(MAKE) static
 
 test: static
 	$(dc) up -d se-python se-selenium
@@ -33,12 +37,12 @@ lint:
 	$(dc) stop
 
 # start dev environment
-dev: static
-    $(dc) pull
-    $(dc) up -d se-python
-    $(dc) exec se-python python manage.py migrate
-    $(dc) exec se-python python manage.py collectstatic --noinput
-    $(dc) stop && $(dc) up -d  # to make fresh collected static visible immediately
+dev: build
+	$(dc) up -d se-python
+	$(dc) exec se-python python manage.py migrate
+	# launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
+	$(dc) exec se-python python manage.py collectstatic --noinput
+	$(dc) stop && $(dc) up -d  # to make fresh collected static visible immediately
 
 # for serv env
 deploy: backup
@@ -49,6 +53,6 @@ deploy: backup
 	$(dcp) exec se-python python manage.py migrate
 	$(dcp) exec se-python python manage.py excel
 	$(dcp) exec se-python python manage.py price
-	# launch "collectstatic" not on local env because ManifestStaticStorage writes to db
+	# launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(dcp) exec se-python python manage.py collectstatic --noinput
 	$(dcp) stop && $(dcp) up -d  # to make fresh collected static visible immediately
