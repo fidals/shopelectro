@@ -81,7 +81,7 @@ pipeline:
       - docker-compose run --rm stb-pdd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /root/prog/stroyprombeton/docker/.env:/drone/src/github.com/fidals/stroyprombeton/commit/${DRONE_COMMIT_SHA}/docker/.env
+      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
     when:
       branch:
        exclude: master
@@ -134,3 +134,4 @@ services:
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
+
