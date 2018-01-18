@@ -35,9 +35,12 @@
           <delivery>true</delivery>
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
-          {% if product.page.display_description and not utm == 'GM' %}
-            <description>{{ product.page.display_description }}</description>
-          {% endif %}
+          {% comment "Description in an issue #257" %}
+            {% if product.page.display_description and not utm == 'GM' %}
+              <description>{{ product.page.display_description }}</description>
+            {% endif %}
+          {% endcomment %}
+          <description></description>
           {% if not utm == 'GM' %}
             <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>
           {% endif %}
