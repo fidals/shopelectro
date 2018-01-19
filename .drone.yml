@@ -76,6 +76,19 @@ pipeline:
     when:
       branch: master
 
+  lint:
+    image: docker/compose:1.17.1
+    commands:
+      - cd docker
+      - docker-compose run --rm se-lint
+      - docker-compose run --rm se-pdd
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
+    when:
+      branch:
+       exclude: master
+
   docker-push:
     image: docker:latest
     environment:
@@ -124,3 +137,4 @@ services:
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
+
