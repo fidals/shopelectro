@@ -8,7 +8,6 @@ Disallow: /*-or-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
-Disallow: /*?utm_source=*
 Disallow: /*?keyword=*
 Clean-param: from&utm_source&utm_medium&utm_campaign&block&keyword&position&k50id /
 
@@ -20,7 +19,6 @@ Disallow: /*-or-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
-Disallow: /*?utm_source=*
 Disallow: /*?keyword=*
 Clean-param: from&utm_source&utm_medium&utm_campaign&block&keyword&position&k50id /
 
@@ -32,7 +30,6 @@ Disallow: /*-or-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
-Disallow: /*?utm_source=*
 Disallow: /*?keyword=*
 Clean-param: from&utm_source&utm_medium&utm_campaign&block&keyword&position&k50id /
 
