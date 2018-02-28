@@ -1,5 +1,7 @@
-# Shopelectro site documentation
+[![PDD status](http://www.0pdd.com/svg?name=fidals/shopelectro)](http://www.0pdd.com/p?name=fidals/shopelectro)
 
+
+# Shopelectro site documentation
 todo: fill README.md [with trello task](https://trello.com/c/DcK5doUE/289-se-se-rf-write-indexrst-with-template)
 
 ## Команда
