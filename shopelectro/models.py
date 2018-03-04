@@ -1,6 +1,6 @@
 from itertools import chain, groupby
 from operator import attrgetter
-from typing import List, Tuple
+from typing import List, Tuple, TypeVar
 from uuid import uuid4
 
 from django.conf import settings
@@ -244,36 +244,37 @@ class Tag(models.Model):
         ))
 
 
-"""
-@todo #195 - refactor Tag.serialize_* methods
- - they must take argument `List[Tag]` as well as `List[Tuple[TagGroup, Tag]]`
- - they should be standalone functions, not static methods
-"""
+TagsTypeVar = TypeVar('TagsTypeVar', List[Tuple[TagGroup, List[Tag]]], List[Tag])
+
 def serialize_tags(
-    pairs: List[Tuple[TagGroup, 'Tag']],
+    tags_var: TagsTypeVar,
     field_name: str,
     type_delimiter: str,
-    group_delimiter: str
+    group_delimiter: str,
 ) -> str:
-    _, tags_by_group = zip(*pairs)
+    if isinstance(tags_var[0], Tag):
+        tags_by_group = tuple([tags_var])
+    else:
+        _, tags_by_group = zip(*tags_var)
+
     return group_delimiter.join(
         type_delimiter.join(getattr(tag, field_name) for tag in tags)
         for tags in tags_by_group
     )
 
 
-def serialize_url_tags(tags: List[Tuple[TagGroup, 'Tag']]) -> str:
-    return Tag.serialize_tags(
-        pairs=tags,
+def serialize_url_tags(tags_var: TagsTypeVar) -> str:
+    return serialize_tags(
+        tags_var=tags_var,
         field_name='slug',
         type_delimiter=settings.TAGS_URL_DELIMITER,
         group_delimiter=settings.TAG_GROUPS_URL_DELIMITER
     )
 
 
-def serialize_title_tags(tags: list) -> str:
-    return Tag.serialize_tags(
-        pairs=tags,
+def serialize_title_tags(tags_var: TagsTypeVar) -> str:
+    return serialize_tags(
+        tags_var=tags_var,
         field_name='name',
         type_delimiter=settings.TAGS_TITLE_DELIMITER,
         group_delimiter=settings.TAG_GROUPS_TITLE_DELIMITER
