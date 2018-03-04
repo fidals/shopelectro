@@ -236,33 +236,6 @@ class Tag(models.Model):
             )
         super(Tag, self).save(*args, **kwargs)
 
-    """
-    @todo #195 - refactor Tag.serialize_* methods
-     - they must take argument `List[Tag]` as well as `List[Tuple[TagGroup, Tag]]`
-     - they should be standalone functions, not static methods
-    """
-    @staticmethod
-    def serialize_tags(
-        pairs: List[Tuple[TagGroup, 'Tag']],
-        field_name: str,
-        type_delimiter: str,
-        group_delimiter: str
-    ) -> str:
-        _, tags_by_group = zip(*pairs)
-        return group_delimiter.join(
-            type_delimiter.join(getattr(tag, field_name) for tag in tags)
-            for tags in tags_by_group
-        )
-
-    @staticmethod
-    def serialize_url_tags(tags: List[Tuple[TagGroup, 'Tag']]) -> str:
-        return Tag.serialize_tags(
-            pairs=tags,
-            field_name='slug',
-            type_delimiter=settings.TAGS_URL_DELIMITER,
-            group_delimiter=settings.TAG_GROUPS_URL_DELIMITER
-        )
-
     @staticmethod
     def parse_url_tags(tags: str) -> list:
         groups = tags.split(settings.TAGS_URL_DELIMITER)
@@ -270,11 +243,38 @@ class Tag(models.Model):
             group.split(settings.TAG_GROUPS_URL_DELIMITER) for group in groups
         ))
 
-    @staticmethod
-    def serialize_title_tags(tags: list) -> str:
-        return Tag.serialize_tags(
-            pairs=tags,
-            field_name='name',
-            type_delimiter=settings.TAGS_TITLE_DELIMITER,
-            group_delimiter=settings.TAG_GROUPS_TITLE_DELIMITER
-        )
+
+"""
+@todo #195 - refactor Tag.serialize_* methods
+ - they must take argument `List[Tag]` as well as `List[Tuple[TagGroup, Tag]]`
+ - they should be standalone functions, not static methods
+"""
+def serialize_tags(
+    pairs: List[Tuple[TagGroup, 'Tag']],
+    field_name: str,
+    type_delimiter: str,
+    group_delimiter: str
+) -> str:
+    _, tags_by_group = zip(*pairs)
+    return group_delimiter.join(
+        type_delimiter.join(getattr(tag, field_name) for tag in tags)
+        for tags in tags_by_group
+    )
+
+
+def serialize_url_tags(tags: List[Tuple[TagGroup, 'Tag']]) -> str:
+    return Tag.serialize_tags(
+        pairs=tags,
+        field_name='slug',
+        type_delimiter=settings.TAGS_URL_DELIMITER,
+        group_delimiter=settings.TAG_GROUPS_URL_DELIMITER
+    )
+
+
+def serialize_title_tags(tags: list) -> str:
+    return Tag.serialize_tags(
+        pairs=tags,
+        field_name='name',
+        type_delimiter=settings.TAGS_TITLE_DELIMITER,
+        group_delimiter=settings.TAG_GROUPS_TITLE_DELIMITER
+    )
