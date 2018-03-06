@@ -40,7 +40,7 @@ class CategorySitemap(AbstractSitemap):
 
 
 def get_categories_with_tags() -> Generator[
-    Tuple[Category, Tuple[TagGroup, Tag]], None, None
+    Tuple[Category, Tag], None, None
 ]:
     """
     Return all unique Category+TagGroup pairs.
@@ -53,7 +53,7 @@ def get_categories_with_tags() -> Generator[
         tags = Tag.objects.filter(products__in=products).distinct()
         for group_name, group_tags in tags.get_group_tags_pairs():
             for group_tag in group_tags:
-                yield category, (group_name, [group_tag])
+                yield category, group_tag
 
 
 class CategoryWithTagsSitemap(AbstractSitemap):
@@ -64,11 +64,10 @@ class CategoryWithTagsSitemap(AbstractSitemap):
         return list(get_categories_with_tags())
 
     def location(self, item):
-        category, tags = item
-        tags_slug = Tag.serialize_url_tags([tags])
+        category, tag = item
         return reverse('category', kwargs={
             'slug': category.page.slug,
-            'tags': tags_slug,
+            'tags': tag.slug,
         })
 
 
