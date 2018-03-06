@@ -18,7 +18,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet
+from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet, serialize_tags_to_url
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 
@@ -33,7 +33,7 @@ def reverse_category_url(
     if tags:
         # PyCharm's option:
         # noinspection PyTypeChecker
-        tags_slug = Tag.serialize_url_tags(tags.get_group_tags_pairs())
+        tags_slug = serialize_tags_to_url(tags)
         route_kwargs['tags'] = tags_slug
     if sorting is not None:
         route_kwargs['sorting'] = sorting
