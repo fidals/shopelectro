@@ -263,7 +263,7 @@ def serialize_tags(
     )
 
 
-def serialize_url_tags(tags_var: TagsTypeVar) -> str:
+def serialize_tags_to_url(tags_var: TagsTypeVar) -> str:
     return serialize_tags(
         tags_var=tags_var,
         field_name='slug',
@@ -272,7 +272,7 @@ def serialize_url_tags(tags_var: TagsTypeVar) -> str:
     )
 
 
-def serialize_title_tags(tags_var: TagsTypeVar) -> str:
+def serialize_tags_to_title(tags_var: TagsTypeVar) -> str:
     return serialize_tags(
         tags_var=tags_var,
         field_name='name',
