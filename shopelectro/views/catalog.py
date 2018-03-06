@@ -152,9 +152,7 @@ class CategoryPage(catalog.CategoryPage):
                 .distinct(sorting_option.lstrip('-'))
             )
 
-            tag_titles = models.serialize_tags_to_title(
-                tags.get_group_tags_pairs()
-            )
+            tag_titles = models.serialize_tags_to_title(tags)
 
         def template_context(page, tag_titles, tags):
             return {
