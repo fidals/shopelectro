@@ -146,12 +146,24 @@ class GeneratePrices(TestCase):
         return os.path.join(settings.ASSETS_DIR, filename)
 
     @classmethod
-    def get_price_xml_node(cls):
-        return ElementTree.parse(cls.get_price_file_path('priceru.xml'))
+    def get_price_node(cls, filename):
+        return ElementTree.parse(cls.get_price_file_path(filename))
+
+    @classmethod
+    def get_price_shop_node(cls, filename):
+        return cls.get_price_node(filename).getroot().find('shop')
+
+    @classmethod
+    def get_price_categories_node(cls, filename):
+        return cls.get_price_shop_node(filename).find('categories')
+
+    @classmethod
+    def get_price_offers_node(cls, filename):
+        return cls.get_price_shop_node(filename).find('offers')
 
     def test_prices_exists(self):
         """Price command should generate various price-list files."""
-        price_file_min_size = 10 ** 4  # ~10kb
+        price_file_min_size = 10 ** 3  # ~1kb
 
         for name in price.Command.TARGETS.values():
             file_name = self.get_price_file_path(name)
@@ -160,9 +172,23 @@ class GeneratePrices(TestCase):
             self.assertGreaterEqual(size, price_file_min_size)
 
     def test_categories_in_price(self):
-        categories_in_price = self.get_price_xml_node().getroot().find('shop').find('categories')
+        categories_in_price = self.get_price_categories_node('priceru.xml')
         self.assertEqual(len(categories_in_price), Category.objects.count())
 
+    def test_categories_in_yandex_price(self):
+        categories_in_yandex_price = self.get_price_categories_node('yandex.yml')
+        self.assertEqual(
+            len(categories_in_yandex_price),
+            Category.objects.get_categories_tree_with_pictures().count()
+        )
+
     def test_products_in_price(self):
-        products_in_price = self.get_price_xml_node().getroot().find('shop').find('offers')
+        products_in_price = self.get_price_offers_node('priceru.xml')
         self.assertEqual(len(products_in_price), Product.objects.count())
+
+    def test_products_in_yandex_price(self):
+        products_in_yandex_price = self.get_price_offers_node('yandex.yml')
+        self.assertEqual(
+            len(products_in_yandex_price),
+            Product.objects.filter(page__images__isnull=False).distinct().count()
+        )
