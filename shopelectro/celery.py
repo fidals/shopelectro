@@ -62,8 +62,13 @@ task_routes = {
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
+
+BROCKER_URL = (
+    f'amqp://{os.environ["RABBITMQ_DEFAULT_USER"]}:{os.environ["RABBITMQ_DEFAULT_PASS"]}'
+    f'@{os.environ["RABBITMQ_URL"]}:{os.environ["RABBITMQ_PORT"]}/'
+)
 app.conf.update(
-    broker_url=os.environ.get('BROCKER_URL', 'amqp://'),
+    broker_url=BROCKER_URL,
     broker_heartbeat=30,
     task_acks_late=True,
     task_default_queue='default',

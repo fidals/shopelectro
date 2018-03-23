@@ -66,7 +66,8 @@ class Command(BaseCommand):
         self.save_dump()
 
     def prepare_db(self):
-        assert settings.DATABASES['default']['NAME'] == 'test'
+        is_test_db = settings.DATABASES['default']['NAME'] == 'test'
+        assert is_test_db, 'To create fixtures you have to create a database named "test".'
         call_command('migrate')
         self.purge_tables()
 

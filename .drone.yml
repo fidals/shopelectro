@@ -27,8 +27,14 @@ pipeline:
     environment:
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
-      - DATABASE_URL=postgres://postgres:test@postgres/test
-      - BROCKER_URL=amqp://rabbitmq:test@rabbitmq:5672/
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_URL=postgres
+      - POSTGRES_DB=test
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=test
+      - RABBITMQ_URL=rabbitmq
+      - RABBITMQ_PORT=5672
       - SELENIUM_URL=http://selenium:4444/wd/hub
       - FTP_IP=${FTP_IP}
       - FTP_USER=${FTP_USER}
@@ -51,30 +57,25 @@ pipeline:
       status: [ success, failure ]
     secrets: [ SLACK_WEBHOOK ]
 
-  pip-clean:
-    image: busybox
+  lint:
+    image: docker/compose:1.17.1
     commands:
-      - rm -rf /site-packages/${DRONE_COMMIT_SHA}
+      - cd docker
+      - docker-compose run --rm lint
+      - docker-compose run --rm pdd
     volumes:
-      - /tmp/cache/drone/shopelectro/site-packages/:/site-packages/
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
     when:
-      status: [ success, failure ]
-
-  npm-clean:
-    image: busybox
-    commands:
-      - rm -rf /drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules/*
-    volumes:
-      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
-    when:
-      status: [ success, failure ]
+      branch:
+       exclude: master
 
   docker-build:
     image: docker/compose:1.17.1
     commands:
-      - cd docker
-      - docker-compose build --no-cache se-nodejs se-python
-      - docker-compose -f docker-compose-production.yml build --no-cache se-source se-python
+      - cd docker/build
+      # Build python images with sources and static files
+      - docker-compose build --no-cache nodejs python-dev python-prod
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # in case if "Push Hooks" is enabled in Drone settings GUI
@@ -84,19 +85,6 @@ pipeline:
     when:
       branch: master
 
-  lint:
-    image: docker/compose:1.17.1
-    commands:
-      - cd docker
-      - docker-compose run --rm se-lint
-      - docker-compose run --rm se-pdd
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
-    when:
-      branch:
-       exclude: master
-
   docker-push:
     image: docker:latest
     environment:
@@ -105,7 +93,6 @@ pipeline:
     commands:
       - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
       - docker push fidals/se-nodejs:dev
-      - docker push fidals/se-source:prod
       - docker push fidals/se:dev
       - docker push fidals/se:prod
     volumes:
@@ -124,6 +111,24 @@ pipeline:
       status: [ success, failure ]
       branch: master
     secrets: [ SLACK_WEBHOOK ]
+
+  pip-clean:
+    image: busybox
+    commands:
+      - rm -rf /site-packages/${DRONE_COMMIT_SHA}
+    volumes:
+      - /tmp/cache/drone/shopelectro/site-packages/:/site-packages/
+    when:
+      status: [ success, failure ]
+
+  npm-clean:
+    image: busybox
+    commands:
+      - rm -rf /drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules/*
+    volumes:
+      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
+    when:
+      status: [ success, failure ]
 
 services:
   postgres:
@@ -146,4 +151,3 @@ services:
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
-

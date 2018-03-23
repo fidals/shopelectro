@@ -1,60 +1,75 @@
 dc=docker-compose
 d=docker
-dcp=docker-compose -f docker-compose-production.yml
+dcb=$(dc) -f build/docker-compose.yml
+dcp=$(dc) -f docker-compose-production.yml
+
+# @todo #269 Create docs for build system.
+
+.PHONY: migrate create-env build-static watch-static build test backup restore
+.PHONY: lint dev build-production-static deploy
 
 migrate:
-	$(dc) exec se-python python manage.py migrate
+	$(dc) run --rm app python manage.py migrate
 
-# for local env
-static:
-	$(dc) pull se-nodejs
-	$(dc) run --rm se-nodejs bash -c "\
-		npm install -g gulp-cli && \
-		# we use `--no-optional` because some optional npm dependencies fail on install
-		npm install --no-optional && \
-		gulp build"
+create-env:
+	@bash ./create-env.sh
 
-# full version of this recipe will be developed in #248
-# for local env
+build-static:
+	$(dc) run --rm nodejs gulp build
+
+watch-static:
+	$(dc) run --rm nodejs gulp watch
+
 build:
-	$(dc) build --no-cache se-python  # fetch <DEPS>/refarm-site/front/ dir
-	$(dc) pull
-	$(MAKE) static
+	# Build nodejs image and static files
+	$(dcb) build --no-cache nodejs
+	$(MAKE) build-static
+	# Build python image with sources and static files
+	$(dcb) build --no-cache python-dev
 
-test: static
-	$(dc) up -d se-python se-selenium
-	$(dc) exec se-python python manage.py test -v 3 --liveserver=se-python:8020-8030 --parallel
+test: build-static
+	$(dc) up -d app selenium
+	$(dc) exec app python manage.py test -v 3 --liveserver=app:8020-8030 --parallel
 	$(dc) stop
-
-backup:
-	@docker-compose -f docker-compose-production.yml up se-backup-data
-
-restore:
-	@bash ../etc/se-backup-restore.sh
 
 lint:
-	$(dc) up -d se-python
-	$(d) run --rm --volumes-from se-python --workdir=/usr/app/src -it coala/base coala
+	$(dc) up -d app
+	$(dc) run --rm lint
 	$(dc) stop
 
-# start dev environment
-dev:
-	$(dc) pull se-python
-	$(dc) up -d se-python
-	$(dc) exec se-python python manage.py migrate
-	# launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
-	$(dc) exec se-python python manage.py collectstatic --noinput
-	$(dc) stop && $(dc) up -d  # to make fresh collected static visible immediately
+deploy-dev:
+	$(MAKE) create-env
+	$(dc) pull
+	$(MAKE) build-static
+	# Create admin user with login/pass: admin/asdfjkl;
+	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
+	$(dc) exec app bash -c "\
+		python manage.py migrate && \
+		python manage.py loaddata shopelectro/fixtures/admin.json && \
+		python manage.py loaddata shopelectro/fixtures/dump.json && \
+		python manage.py collectstatic --noinput"
+	$(dc) stop app
+	$(dc) up -d app
 
-# for serv env
+# for production environment
+backup:
+	$(dcp) up backup-data
+
+restore:
+	@bash ../etc/backup-restore.sh
+
+build-production-static:
+	$(dcp) exec app python manage.py excel
+	$(dcp) exec app python manage.py price
+
 deploy: backup
 	$(dcp) pull
 	$(dcp) stop
-	$(dcp) rm -f se-source
-	$(dcp) up -d
-	$(dcp) exec se-python python manage.py migrate
-	$(dcp) exec se-python python manage.py excel
-	$(dcp) exec se-python python manage.py price
-	# launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
-	$(dcp) exec se-python python manage.py collectstatic --noinput
-	$(dcp) stop && $(dcp) up -d  # to make fresh collected static visible immediately
+	$(dcp) rm -f app
+	$(dcp) up -d app
+	$(dcp) exec app python manage.py migrate
+	$(MAKE) -j build-production-static
+	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
+	$(dcp) exec app python manage.py collectstatic --noinput
+	# to make fresh collected static visible immediately
+	$(dcp) stop && $(dcp) up -d

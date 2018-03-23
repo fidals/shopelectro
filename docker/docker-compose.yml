@@ -2,103 +2,68 @@ version: '2'
 
 services:
 
-  se-source:
-    image: busybox
-    container_name: se-source
-    volumes:
-      - ./../:$SRC_DIR # code volume
-      - /opt/media/shopelectro/:$SRC_DIR/media/
-      # leaved it here as example of code mounting for debugging
-      # - $REFARM_SRC/search:/root/.local/lib/python3.6/site-packages/search
-    command: sh -c "top > /dev/null"
-
-  se-python:
-    build:
-      context: ..
-      dockerfile: docker/python/dev/Dockerfile
+  app:
     image: fidals/se:dev
-    container_name: se-python
+    env_file:
+      - env_files/app
+      - env_files/credentials
+      - env_files/paths
+      - env_files/ports
     environment:
       - ALLOWED_HOSTS=*
       - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
-      - DJANGO_LOG_LEVEL=$DJANGO_LOG_LEVEL
-      - DATABASE_URL=postgres://$DB_USER:$DB_PASS@se-postgres/$DB_NAME
-      - BROCKER_URL=amqp://$RABBITMQ_DEFAULT_USER:$RABBITMQ_DEFAULT_PASS@se-rabbitmq:5672/
-      - REDIS_PASSWORD=$REDIS_PASSWORD
-      - REDIS_LOCATION_DEFAULT=redis://se-redis:6379/0
-      - REDIS_LOCATION_SESSION=redis://se-redis:6379/1
-      - REDIS_LOCATION_THUMBNAIL=redis://se-redis:6379/2
-      - REDIS_LOCATION_USER_AGENT=redis://se-redis:6379/3
-      - FTP_USER=$FTP_USER
-      - FTP_PASS=$FTP_PASS
-      - FTP_IP=$FTP_IP
-      - SECRET_KEY=$SECRET_KEY
-      - YANDEX_SHOP_PASS=$YANDEX_SHOP_PASS
-      - EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD
-      - ENV_TYPE=$ENV_TYPE
       - PYTHONUNBUFFERED=0
     ports:
       - '$VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT'
       - $VIRTUAL_HOST_LIVESERVER_PORT
     depends_on:
-      - se-postgres
-      - se-rabbitmq
-      - se-redis
+      - postgres
+      - rabbitmq
+      - redis
     networks:
       - se-backend
       - se-frontend
     volumes:
-      - $DEPS_DIR # contains refarm-site modules
-    volumes_from:
-      - se-source
-
-    # @todo #229 if Validate `.env` is full
-    #  Is full means '.env` contains all keynames from `.env.dist`
+      - ./../:$SRC_DIR
+      # contains refarm-site modules
+      - $DEPS_DIR
+      # Thus, you can work with apps related to the refarm-site
+      # - $REFARM_SRC/search:/root/.local/lib/python3.6/site-packages/search
     command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
 
-  se-nodejs:
-    build:
-      context: ..
-      dockerfile: docker/node/Dockerfile
+  nodejs:
     image: fidals/se-nodejs:dev
-    container_name: se-nodejs
-    command: bash -c 'gulp watch || (gulp build && gulp watch)'
     volumes_from:
-      - se-source
-      - se-python
-    environment:
-      - DEPS_DIR=$DEPS_DIR
+      - app
+    env_file:
+      - env_files/paths
 
-  se-postgres:
+  postgres:
     image: postgres:9.5
     restart: always
-    container_name: se-postgres
-    environment:
-      POSTGRES_DB: $DB_NAME
-      POSTGRES_PASSWORD: $DB_PASS
+    env_file:
+      - env_files/credentials
     networks:
       - se-backend
     volumes:
-      - /opt/database/shopelectro:/var/lib/postgresql/data
+      - ./../database:/var/lib/postgresql/data
 
-  se-rabbitmq:
+  rabbitmq:
     image: rabbitmq:management-alpine
     restart: always
-    container_name: se-rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: $RABBITMQ_DEFAULT_USER
-      RABBITMQ_DEFAULT_PASS: $RABBITMQ_DEFAULT_PASS
+    env_file:
+      - env_files/credentials
     networks:
       - se-backend
     ports:
       - '5673:5672'
       - '15673:15672'
 
-  se-redis:
+  redis:
     image: redis:alpine
-    container_name: se-redis
     restart: always
+    env_file:
+      - env_files/credentials
     command: redis-server /data/redis.conf --requirepass $REDIS_PASSWORD
     volumes:
       - ../etc/redis/redis.conf:/data/redis.conf
@@ -107,32 +72,7 @@ services:
     ports:
       - '6380:6379'
 
-  # TODO:
-  # Selenium Grid stuff (can't get it to work)
-
-  # selenium-hub:
-  #   image: selenium/hub:3.2.0
-  #   restart: always
-  #   networks:
-  #     - se-backend
-  #   ports:
-  #     - '4444:4444'
-
-  # selenium-chrome:
-  #   image: selenium/node-chrome:3.2.0
-  #   restart: always
-  #   depends_on:
-  #     - selenium-hub
-  #   environment:
-  #     - HUB_PORT_4444_TCP_ADDR=selenium-hub
-  #     - HUB_PORT_4444_TCP_PORT=4444
-  #   networks:
-  #     - se-backend
-  #   ports:
-  #     - 5555
-  #     - 5900
-
-  se-selenium:
+  selenium:
     image: selenium/standalone-chrome:3.6.0
     restart: always
     ports:
@@ -140,25 +80,27 @@ services:
       - 5900:5900  # VNC port. Password: secret
     networks:
       - se-backend
-    volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
+    # https://github.com/SeleniumHQ/docker-selenium#running-the-images
+    volumes:
       - /dev/shm:/dev/shm
 
-  se-lint:
+  lint:
     image: fidals/coala-ci
+    env_file:
+      - env_files/paths
     working_dir: $SRC_DIR
     volumes_from:
-      - se-source
-      - se-python
+      - app
 
-  se-pdd:
+  pdd:
     image: fidals/pdd-ci
+    env_file:
+      - env_files/paths
     working_dir: $SRC_DIR
     volumes_from:
-      - se-source
-      - se-python
+      - app
     command: pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
 
 networks:
   se-backend:
   se-frontend:
-
