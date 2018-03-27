@@ -18,7 +18,7 @@ pipeline:
       - pwd
       - ls
     volumes:
-      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
+      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
 
   gulp-build:
     image: node:slim
@@ -71,9 +71,9 @@ pipeline:
   npm-clean:
     image: busybox
     commands:
-      - rm -rf /drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules/*
+      - rm -rf /drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules/*
     volumes:
-      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
+      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
     when:
       status: [ success, failure ]
 
