@@ -15,8 +15,6 @@ pipeline:
     commands:
       - npm install
       - npm install -g gulp-cli
-      - pwd
-      - ls
     volumes:
       - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
 
