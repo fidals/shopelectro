@@ -116,9 +116,9 @@ pipeline:
       {{else}}
         build <{{ build.link }}|{{ repo.owner}}/{{ repo.name }}> ({{ build.branch }}) by {{ build.author }} failed. Fix me please.
       {{/success}}
-    when:
-      status: [ success, failure ]
-      branch: master
+#    when:
+#      status: [ success, failure ]
+#      branch: master
     secrets: [ SLACK_WEBHOOK ]
 
 services:
