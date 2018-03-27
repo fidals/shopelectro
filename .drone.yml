@@ -119,7 +119,7 @@ pipeline:
 #    when:
 #      status: [ success, failure ]
 #      branch: master
-    secrets: [ SLACK_WEBHOOK ]
+    secrets: [ TELEGRAM_TOKEN ]
 
 services:
   postgres:
