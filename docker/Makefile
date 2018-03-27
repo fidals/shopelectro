@@ -7,6 +7,7 @@ migrate:
 
 # for local env
 static:
+	$(dc) pull se-nodejs
 	$(dc) run --rm se-nodejs bash -c "\
 		npm install -g gulp-cli && \
 		# we use `--no-optional` because some optional npm dependencies fail on install
@@ -38,6 +39,7 @@ lint:
 
 # start dev environment
 dev: build
+	$(dc) pull se-python
 	$(dc) up -d se-python
 	$(dc) exec se-python python manage.py migrate
 	# launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db

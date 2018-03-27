@@ -11,7 +11,7 @@ pipeline:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
 
   npm:
-    image: node
+    image: node:slim
     environment:
       - DEPS_DIR=/usr/app/deps
     commands:
@@ -60,11 +60,21 @@ pipeline:
     when:
       status: [ success, failure ]
 
+  npm-clean:
+    image: busybox
+    commands:
+      - rm -rf /drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules/*
+    volumes:
+      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
+    when:
+      status: [ success, failure ]
+
   docker-build:
     image: docker/compose:1.17.1
     commands:
       - cd docker
-      - docker-compose -f docker-compose.yml build --no-cache se-python
+      - docker-compose build --no-cache se-nodejs
+      - docker-compose build --no-cache se-python
       - docker-compose -f docker-compose-production.yml build --no-cache se-source
       - docker-compose -f docker-compose-production.yml build --no-cache se-python
     volumes:
@@ -96,6 +106,7 @@ pipeline:
       - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
     commands:
       - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
+      - docker push fidals/se-nodejs:dev
       - docker push fidals/se-source:prod
       - docker push fidals/se:dev
       - docker push fidals/se:prod
