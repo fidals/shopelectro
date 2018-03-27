@@ -10,19 +10,13 @@ pipeline:
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
 
-  npm-install:
-    image: node:slim
-    commands:
-      - npm install
-      - npm install -g gulp-cli
-    volumes:
-      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
-
-  gulp-build:
+  npm:
     image: node:slim
     environment:
       - DEPS_DIR=/usr/app/deps
     commands:
+      - npm install
+      - npm install -g gulp-cli
       - gulp build
     volumes:
       - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
