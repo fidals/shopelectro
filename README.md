@@ -1,17 +1,15 @@
-# Shopelectro's documentation
+# Shopelectro site documentation
 
 todo: fill README.md [with trello task](https://trello.com/c/DcK5doUE/289-se-se-rf-write-indexrst-with-template)
 
 ## Команда
 [Линк на роли в команде](https://docs.google.com/document/d/1N-K7m4GFDTS2WtJndP2BGCRzdvNe6PXsd7vVpGil1Vc/edit#) разработки сайтов.
 
-## Деплой
+## Разворачиваем проект
 
-todo: Create delivery
+Инструкции для быстрой развёртки проекта для разработки.
+Подробности смотрите Makefile и drone.yml.
 
-Пока деплой происходит руками. Ниже список команд для деплоя.
-
-### Алиасы
 Для сокращения введём такие алиасы::
 
 ```bash
@@ -19,7 +17,7 @@ bash alias dc="docker-compose"
 bash alias dcp="docker-compose -f docker-compose-production.yml"
 ```
 
-### На локали
+### Для разработки
 Разворачиваем среду разработки
 
 ```bash
@@ -43,7 +41,9 @@ dc exec se-python python manage.py price
 Проверяем адрес `http://127.0.0.1:8010` - загружается сайт.
 Вместо порта `8010` может быть другой - константа `VIRTUAL_HOST_EXPOSE_PORT` в файле `.env`. 
 
-### На сервере
+### Для деплоя
+Этот раздел полезен только Архитекторам.
+Пока деплой на сервер делаем руками.
 
 ```bash
 make deploy

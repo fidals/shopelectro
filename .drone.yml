@@ -73,10 +73,8 @@ pipeline:
     image: docker/compose:1.17.1
     commands:
       - cd docker
-      - docker-compose build --no-cache se-nodejs
-      - docker-compose build --no-cache se-python
-      - docker-compose -f docker-compose-production.yml build --no-cache se-source
-      - docker-compose -f docker-compose-production.yml build --no-cache se-python
+      - docker-compose build --no-cache se-nodejs se-python
+      - docker-compose -f docker-compose-production.yml build --no-cache se-source se-python
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # in case if "Push Hooks" is enabled in Drone settings GUI
