@@ -7,6 +7,7 @@ migrate:
 
 # for local env
 static:
+	$(dc) pull se-nodejs
 	$(dc) run --rm se-nodejs bash -c "\
 		npm install -g gulp-cli && \
 		# we use `--no-optional` because some optional npm dependencies fail on install
@@ -16,7 +17,7 @@ static:
 # full version of this recipe will be developed in #248
 # for local env
 build:
-	$(dc) build --no-cache se-python  # fetch <DEPS>/refarm-site/front/ dir$(dc) build --no-cache se-python
+	$(dc) build --no-cache se-python  # fetch <DEPS>/refarm-site/front/ dir
 	$(dc) pull
 	$(MAKE) static
 
@@ -37,7 +38,8 @@ lint:
 	$(dc) stop
 
 # start dev environment
-dev: build
+dev:
+	$(dc) pull se-python
 	$(dc) up -d se-python
 	$(dc) exec se-python python manage.py migrate
 	# launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
