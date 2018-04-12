@@ -80,3 +80,7 @@ N.B.: Некоторые данные (например, медиафайлы) �
 # Инструкции к фичам
 - [Retail Tags](https://github.com/fidals/shopelectro/blob/master/doc/tags.md)
 - [SEO Templates](https://github.com/fidals/shopelectro/blob/master/doc/seo_templates.md)
+
+## Новый год
+- Как добавляли - https://github.com/fidals/shopelectro/pull/224
+- Как удаляли - https://github.com/fidals/shopelectro/pull/278
