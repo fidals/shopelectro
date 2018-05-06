@@ -1,5 +1,7 @@
-# Shopelectro site documentation
+[![PDD status](http://www.0pdd.com/svg?name=fidals/shopelectro)](http://www.0pdd.com/p?name=fidals/shopelectro)
 
+
+# Shopelectro site documentation
 todo: fill README.md [with trello task](https://trello.com/c/DcK5doUE/289-se-se-rf-write-indexrst-with-template)
 
 ## Команда
@@ -80,3 +82,7 @@ N.B.: Некоторые данные (например, медиафайлы) �
 # Инструкции к фичам
 - [Retail Tags](https://github.com/fidals/shopelectro/blob/master/doc/tags.md)
 - [SEO Templates](https://github.com/fidals/shopelectro/blob/master/doc/seo_templates.md)
+
+## Новый год
+- Как добавляли - https://github.com/fidals/shopelectro/pull/224
+- Как удаляли - https://github.com/fidals/shopelectro/pull/278
