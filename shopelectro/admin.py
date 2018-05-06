@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_select2.forms import ModelSelect2Widget
 
-from ecommerce.models import Order, Position
+from ecommerce.models import Position
 from pages.models import CustomPage, FlatPage, PageTemplate
 from generic_admin import inlines, mixins, models, sites
 
@@ -238,17 +238,17 @@ class OrderAdmin(mixins.PermissionsControl):
 
     add = False
     inlines = [PositionInline]
-    list_display = ['name', 'email', 'phone', 'city', 'paid']
-    search_fields = ['name', 'email', 'phone', 'city']
+    list_display = ['name', 'email', 'phone', 'address', 'city', 'payment_type', 'paid']
+    search_fields = ['name', 'email', 'phone']
     list_display_links = ['name']
 
 se_admin = SEAdminSite(name='se_admin')
 se_admin.register(CustomPage, models.CustomPageAdmin)
 se_admin.register(FlatPage, models.FlatPageAdmin)
 se_admin.register(PageTemplate, models.CustomPageTemplateAdmin)
-se_admin.register(Order, OrderAdmin)
 
 se_admin.register(se_models.CategoryPage, CategoryPageAdmin)
+se_admin.register(se_models.Order, OrderAdmin)
 se_admin.register(se_models.ProductPage, ProductPageAdmin)
 se_admin.register(se_models.ProductFeedback, ProductFeedbackPageAdmin)
 se_admin.register(se_models.TagGroup, TagGroupAdmin)
