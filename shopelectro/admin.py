@@ -8,8 +8,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_select2.forms import ModelSelect2Widget
 
+from ecommerce.models import Order, Position
 from pages.models import CustomPage, FlatPage, PageTemplate
-from generic_admin import inlines, models, sites
+from generic_admin import inlines, models, mixins, sites
 
 from shopelectro import models as se_models
 from shopelectro.views.admin import TableEditor
@@ -128,6 +129,11 @@ class ProductInline(inlines.ProductInline):
         )
 
 
+class PositionInline(admin.StackedInline):
+
+    model = Position
+
+
 class CategoryPageAdmin(models.CategoryPageAdmin):
 
     add = False
@@ -228,10 +234,17 @@ class TagAdmin(admin.ModelAdmin):
     custom_group.short_description = _('Group')
 
 
+class OrderAdmin(mixins.PermissionsControl):
+
+    add = False
+    inlines = [PositionInline]
+
+
 se_admin = SEAdminSite(name='se_admin')
 se_admin.register(CustomPage, models.CustomPageAdmin)
 se_admin.register(FlatPage, models.FlatPageAdmin)
 se_admin.register(PageTemplate, models.CustomPageTemplateAdmin)
+se_admin.register(Order, OrderAdmin)
 
 se_admin.register(se_models.CategoryPage, CategoryPageAdmin)
 se_admin.register(se_models.ProductPage, ProductPageAdmin)
