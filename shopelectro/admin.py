@@ -103,7 +103,7 @@ class ProductInline(inlines.ProductInline):
     fieldsets = ((None, {
         'classes': ('primary-chars', ),
         'fields': (
-            ('name', 'id'),
+            ('name', 'id', 'vendor_code'),
             ('category', 'correct_category_id'),
             ('price', 'in_stock'),
             'is_popular',
