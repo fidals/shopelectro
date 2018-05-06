@@ -10,7 +10,7 @@ from django_select2.forms import ModelSelect2Widget
 
 from ecommerce.models import Order, Position
 from pages.models import CustomPage, FlatPage, PageTemplate
-from generic_admin import inlines, models, mixins, sites
+from generic_admin import inlines, mixins, models, sites
 
 from shopelectro import models as se_models
 from shopelectro.views.admin import TableEditor
@@ -238,7 +238,9 @@ class OrderAdmin(mixins.PermissionsControl):
 
     add = False
     inlines = [PositionInline]
-
+    list_display = ['name', 'email', 'phone', 'city', 'paid']
+    search_fields = ['name', 'email', 'phone', 'city']
+    list_display_links = ['name']
 
 se_admin = SEAdminSite(name='se_admin')
 se_admin.register(CustomPage, models.CustomPageAdmin)
