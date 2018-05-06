@@ -8,17 +8,36 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+from mptt.querysets import TreeQuerySet
 from unidecode import unidecode
 
 from catalog.models import (
-    AbstractProduct, AbstractCategory
+    AbstractCategory,
+    AbstractProduct,
+    CategoryManager,
 )
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, SyncPageMixin
 
 
+class SECategoryQuerySet(TreeQuerySet):
+    def get_categories_tree_with_pictures(self) -> 'SECategoryQuerySet':
+        categories_with_pictures = (
+            self
+            .filter(products__page__images__isnull=False)
+            .distinct()
+        )
+
+        return categories_with_pictures.get_ancestors(include_self=True)
+
+
+class SECategoryManager(CategoryManager.from_queryset(SECategoryQuerySet)):
+    pass
+
+
 class Category(AbstractCategory, SyncPageMixin):
 
+    objects = SECategoryManager()
     uuid = models.UUIDField(default=uuid4, editable=False)
 
     @classmethod

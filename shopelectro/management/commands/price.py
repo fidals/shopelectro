@@ -67,23 +67,45 @@ class Command(BaseCommand):
             )
             return product
 
-        def filter_categories():
+        def filter_categories(utm):
             categories_to_exclude = (
                 Category.objects
                 .filter(name__in=cls.IGNORED_CATEGORIES)
                 .get_descendants(include_self=True)
             )
 
-            return Category.objects.exclude(id__in=categories_to_exclude)
+            result_categories = Category.objects.exclude(id__in=categories_to_exclude)
 
-        def prepare_products(categories_):
+            if utm == 'YM':
+                """
+                Yandex Market feed requires items in some categories to have pictures
+                To simplify filtering we are excluding all categories
+                which don't contain at least one product with picture
+                """
+                result_categories = result_categories.get_categories_tree_with_pictures()
+
+            return result_categories
+
+        def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
             products_except_others = (
                 Product.objects
                 .select_related('page')
                 .prefetch_related('category')
+                .prefetch_related('page__images')
                 .filter(category__in=categories_, price__gt=0)
             )
+
+            if utm == 'YM':
+                """
+                Yandex Market feed requires items in some categories to have pictures
+                To simplify filtering we are excluding all products without pictures
+                """
+                products_except_others = (
+                    products_except_others
+                    .filter(page__images__isnull=False)
+                    .distinct()
+                )
 
             result_products = [
                 put_crumbs(put_utm(product))
@@ -93,11 +115,11 @@ class Command(BaseCommand):
             return result_products
 
         categories = (
-            filter_categories() if utm != 'SE78'
+            filter_categories(utm) if utm != 'SE78'
             else Category.objects.all()
         )
 
-        products = prepare_products(categories)
+        products = prepare_products(categories, utm)
 
         return {
             'base_url': settings.BASE_URL,
