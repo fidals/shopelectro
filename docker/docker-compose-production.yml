@@ -170,21 +170,21 @@ services:
     ports:
       - '6380:6379'
 
-  # Контейнер при запуске создаёт бэкап.
+  # Контейнер делает бэкапы по крону.
   # Бэкап - это несколько архивов: database.tar.gz, media.tar.gz, static.tar.gz
   # в директории /opt/backup/shopelectro
   backup-data:
-    image: alpine:latest
+    build:
+      context: ..
+      dockerfile: docker/cron/Dockerfile
     container_name: se-backup-data
     volumes_from:
       - app
     volumes:
-      - ../etc/backup-entrypoint.sh:/usr/bin/entrypoint.sh
+      - ../etc/backup/backup-entrypoint.sh:/usr/bin/entrypoint.sh
+      - ../etc/crontab:/etc/cron.d/crontab
       - /opt/backup/shopelectro:/opt/backup
       - /opt/database/shopelectro:/usr/app/src/database
-    entrypoint:
-      - sh
-      - /usr/bin/entrypoint.sh
 
 networks:
   se-backend:

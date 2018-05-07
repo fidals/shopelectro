@@ -58,16 +58,17 @@ deploy-dev:
 
 # for production environment
 backup:
-	$(dcp) up backup-data
+	(dcp) run --rm backup-data sh /usr/bin/entrypoint.sh
 
 restore:
-	@bash ../etc/backup-restore.sh
+	@bash ../etc/backup/backup-restore.sh
 
 generate-production-static-data:
 	$(dcp) exec app python manage.py excel
 	$(dcp) exec app python manage.py price
 
-deploy: backup
+# for serv env
+deploy:
 	$(dcp) pull
 	$(dcp) stop
 	$(dcp) rm -f app
