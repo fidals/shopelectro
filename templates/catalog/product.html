@@ -10,7 +10,7 @@
       <span itemprop="price">{{ product.price|humanize_price }}</span>
       <span itemprop="priceCurrency">RUB</span>
       <link itemprop="availability"
-            href="http://schema.org/{{ product.in_stock | yesno:'InStock, PreOrder' }}">
+            href="http://schema.org/{{ product.in_stock | yesno:'InStock,PreOrder' }}">
     </div>
 
     {% breadcrumbs_with_siblings page %}
