@@ -69,6 +69,26 @@ const helpers = (() => {  // Ignore ESLintBear (no-unused-vars)
     };
   }
 
+  /**
+   * Hide and show long description text.
+   */
+  function toggleText() {
+    const $this = $(this);
+    if ($this.hasClass('less')) {
+      $this.removeClass('less');
+      $this.html('Развернуть описание');
+      $this.prev().toggle();
+      $this.prev().prev().fadeToggle('fast');
+    } else {
+      $this.addClass('less');
+      $this.html('Свернуть');
+      $this.prev().prev().toggle();
+      $this.prev().fadeToggle('fast');
+    }
+
+    return false;
+  }
+
   return {
     debounce,
     getUrlParam,
@@ -78,5 +98,6 @@ const helpers = (() => {  // Ignore ESLintBear (no-unused-vars)
     removeQueryParam,
     removeUrlEndpoint,
     setDisabledState,
+    toggleText,
   };
 })();

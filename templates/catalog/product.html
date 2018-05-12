@@ -82,19 +82,7 @@
           <div class="product-desc">
             <h3 class="product-desc-title">Описание</h3>
             <p class="product-text">
-              {% autoescape off %}
-                {% if product.page.content|length > 150 %}
-                  <span class="short-content">
-                    {{ product.page.content|truncatechars_html:140 }}
-                  </span>
-                  <span class="more-content">
-                    {{ product.page.content }}
-                  </span>
-                  <a href="#" class="js-more-text">Развернуть описание</a>
-                {% else %}
-                  {{ product.page.content }}
-                {% endif %}
-              {% endautoescape %}
+              {% include 'layout/toggle_content.html' with content=product.page.content %}
             </p>
           </div>
         {% endif %}

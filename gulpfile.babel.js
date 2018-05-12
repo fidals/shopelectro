@@ -80,6 +80,8 @@ const path = {
         'front/js/vendors/jquery.mask.min.js',
         'front/js/vendors/jquery.bootstrap-touchspin.min.js',
         'front/js/vendors/autocomplete.min.js',
+        'front/js/vendors/bootstrap-select.js',
+        'front/js/vendors/jquery.fancybox.min.js',
       ],
 
       main: [
@@ -92,10 +94,11 @@ const path = {
         'front/js/components/autocomplete.es6',
       ],
 
+      index: [
+        'front/js/components/index.es6',
+      ],
+
       pages: [
-        'front/js/vendors/bootstrap-select.js',
-        'front/js/vendors/jquery.fancybox.min.js',
-        'front/js/shared/helpers.es6',
         'front/js/components/category.es6',
         'front/js/components/categoryFilters.es6',
         'front/js/components/product.es6',
@@ -171,6 +174,7 @@ gulp.task('build', () => {
       'js-admin-vendors',
       'js-common',
       'js-common-vendors',
+      'js-index',
       'js-pages',
       'js-ie-vendors',
       'styles-main',
@@ -264,6 +268,13 @@ gulp.task('js-common-vendors', () => {
 });
 
 // ================================================================
+// JS : Build common index js only.
+// ================================================================
+gulp.task('js-index', () => {
+  appJS(path.src.js.index, path.build.js, 'index');
+});
+
+// ================================================================
 // JS : Build all pages js.
 // ================================================================
 gulp.task('js-pages', () => {
@@ -345,6 +356,7 @@ gulp.task('watch', () => {
   ]);
   gulp.watch(path.watch.js, [
     'js-common',
+    'js-index',
     'js-pages',
     'js-admin',
   ]);
