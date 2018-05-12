@@ -31,7 +31,6 @@
     changeOneClickBtnState();
   };
 
-
   function setUpListeners() {
     mediator.subscribe('onOneClickBuy', successOrder);
 
