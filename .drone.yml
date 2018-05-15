@@ -115,15 +115,20 @@ pipeline:
     secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 
   docker-build-notify:
-    image: plugins/slack
-    channel: drone
-    webhook: ${SLACK_WEBHOOK}
-    template: >
-      *{{build.status}}* docker-compose build & push <{{ build.link }}|{{ repo.owner}}/{{ repo.name }}> ({{ build.branch }}) by {{ build.author }}
-    when:
-      status: [ success, failure ]
-      branch: master
-    secrets: [ SLACK_WEBHOOK ]
+    # http://plugins.drone.io/appleboy/drone-telegram/
+    image: appleboy/drone-telegram
+    token: ${TELEGRAM_TOKEN}
+    to: sharaban_build
+    message: >
+      {{#success build.status}}
+        build <{{ build.link }}|{{ repo.owner}}/{{ repo.name }}> ({{ build.branch }}) by {{ build.author }} succeeded. Good job.
+      {{else}}
+        build <{{ build.link }}|{{ repo.owner}}/{{ repo.name }}> ({{ build.branch }}) by {{ build.author }} failed. Fix me please.
+      {{/success}}
+#    when:
+#      status: [ success, failure ]
+#      branch: master
+    secrets: [ TELEGRAM_TOKEN ]
 
 services:
   postgres:
