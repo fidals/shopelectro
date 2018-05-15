@@ -290,6 +290,30 @@ class ProductPage(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+class ProductPageSchema(TestCase):
+
+    fixtures = ['dump.json']
+    schema_url = 'http://schema.org'
+
+    def test_available(self):
+        """Page of an product with stock > 0 has $schema_url/InStock link."""
+        self.assertContains(
+            self.client.get(
+                Product.objects.filter(in_stock__gt=0).first().url
+            ),
+            f'{self.schema_url}/InStock',
+        )
+
+    def test_not_available(self):
+        """Page of an product with stock = 0 has $schema_url/PreOrder link."""
+        self.assertContains(
+            self.client.get(
+                Product.objects.filter(in_stock=0).first().url
+            ),
+            f'{self.schema_url}/PreOrder',
+        )
+
+
 class ProductsWithoutContent(TestCase):
 
     def test_products_without_images(self):
