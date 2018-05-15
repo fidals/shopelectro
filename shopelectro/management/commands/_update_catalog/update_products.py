@@ -59,9 +59,14 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
 
 def fetch_prices(root: Element, config) -> Iterator:
     def get_prices(prices_el):
-        def get_(price_el: Element):
+        def get_(price_el: Element) -> float:
             return float(price_el.find(config.xpaths['price']).text)
-        return sorted(map(get_, prices_el.findall(config.xpaths['prices'])))
+        def multiply(price: float) -> float:
+            return price * settings.PRICE_MULTIPLIER
+        return sorted(
+            multiply(get_(price))
+            for price in prices_el.findall(config.xpaths['prices'])
+        )
     product_price_els = root.findall(config.xpaths['product_prices'])
     for prices_el in product_price_els:
         product_uuid = prices_el.find(config.xpaths['product_uuid']).text
