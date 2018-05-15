@@ -12,6 +12,18 @@ generate-production-static-data deploy
 migrate:
 	$(dc) run --rm app python manage.py migrate
 
+fixtures:
+	$(dc) run --rm app bash -c "\
+		python manage.py loaddata shopelectro/fixtures/admin.json \
+		&& python manage.py loaddata shopelectro/fixtures/dump.json \
+	"
+
+prices:
+	$(dc) exec app python manage.py price
+
+excel:
+	$(dc) exec app python manage.py excel
+
 create-env:
 	@bash ./create-env.sh
 
@@ -20,6 +32,9 @@ build-static:
 
 watch-static:
 	$(dc) run --rm nodejs gulp watch
+
+collectstatic:
+	$(dc) exec app python manage.py collectstatic --noinput
 
 build:
 	# Build nodejs image and static files
@@ -30,7 +45,7 @@ build:
 
 test: build-static
 	$(dc) up -d app selenium
-	$(dc) exec app python manage.py test -v 3 --liveserver=app:8020-8030 --parallel
+	$(dc) exec app python manage.py test -v 3 --liveserver=app:8020-8030 --parallel=2
 	$(dc) stop
 
 lint:
@@ -49,7 +64,8 @@ deploy-dev:
 		python manage.py migrate \
 		&& python manage.py loaddata shopelectro/fixtures/admin.json \
 		&& python manage.py loaddata shopelectro/fixtures/dump.json \
-		&& python manage.py collectstatic --noinput"
+		&& python manage.py collectstatic --noinput \
+	"
 	$(dc) stop app
 	$(dc) up -d app
 

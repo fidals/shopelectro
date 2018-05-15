@@ -2,3 +2,4 @@
 DEPS_DIR=/usr/local/lib/python3.6/site-packages
 # Identify the source folder
 SRC_DIR=/usr/app/src
+POSTGRES_DATA_DIR=./../database
