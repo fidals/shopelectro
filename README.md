@@ -30,8 +30,8 @@ cd shopelectro/docker/
 make dev
 
 # optional
-dc exec se-python python manage.py excel
-dc exec se-python python manage.py price
+dc exec app python manage.py excel
+dc exec app python manage.py price
 ```
 
 *Файл .env*
@@ -74,7 +74,7 @@ make backup
 Для восстановления базы данных и медиафайлов достаточно запустить ``make restore`` - специальный скрипт скачает последний бекап с сервера (для доступа используются public+private ключи, в процессе восстановления всё опционально, можно выбрать то что нужно загрузить) и разместит данные директориях из которых их забирает production-версия контейнеров, т.е.:
 
 * `/opt/database/shopelectro` - база данных, используется как volume контейнера se-postgres
-* `/opt/media/shopelectro` - медиафайлы, используется как volume контейнера se-source
+* `/opt/media/shopelectro` - медиафайлы, используется как volume контейнера se-python
 * `/opt/static/shopelectro` - статика, не подключается как volume, нужно скопировать вручную в директорию с статикой
 
 N.B.: Некоторые данные (например, медиафайлы) могут иметь большой размер. На момент написания этой заметки, архив с медиафайлами Shopelectro весил ~4GB.

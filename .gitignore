@@ -16,5 +16,12 @@ pricelist.xlsx
 priceru.xml
 yandex.yml
 docker/.env
+docker/.env
+docker/env_files/*
+!docker/env_files/*.dist
 celerybeat-schedule
 package-lock.json
+.vscode/
+database/
+report.xml
+.DS_store

@@ -159,13 +159,12 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# It is fake-url. Correct url will be created on `docker-compose up` stage from `docker/.env`
-DATABASE_URL = 'postgres://user:pass@db_name/table'
+DATABASE_URL = (
+    f'postgres://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}'
+    f'@{os.environ["POSTGRES_URL"]}/{os.environ["POSTGRES_DB"]}'
+)
 DATABASES = {
-    'default': dj_database_url.config(
-        env='DATABASE_URL',
-        default=DATABASE_URL,
-    )
+    'default': dj_database_url.parse(DATABASE_URL),
 }
 
 LOGGING = {
@@ -208,7 +207,7 @@ LOGGING = {
     },
 }
 
-SELENIUM_URL = os.environ.get('SELENIUM_URL', 'http://se-selenium:4444/wd/hub')
+SELENIUM_URL = os.environ.get('SELENIUM_URL', 'http://selenium:4444/wd/hub')
 
 SITE_CREATED = datetime(2013, 1, 1)
 

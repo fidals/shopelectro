@@ -18,12 +18,21 @@ YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
 USE_CELERY = True
 
-REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')
+REDIS_URL = os.environ['REDIS_URL']
+REDIS_PORT = os.environ['REDIS_PORT']
+REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
+
+REDIS_DSN = f'redis://{REDIS_URL}:{REDIS_PORT}/'
+
+REDIS_LOCATION_DEFAULT = os.environ['REDIS_LOCATION_DEFAULT']
+REDIS_LOCATION_SESSION = os.environ['REDIS_LOCATION_SESSION']
+REDIS_LOCATION_THUMBNAIL = os.environ['REDIS_LOCATION_THUMBNAIL']
+REDIS_LOCATION_USER_AGENT = os.environ['REDIS_LOCATION_USER_AGENT']
 
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_LOCATION_DEFAULT', 'redis://127.0.0.1:6379/0'),
+        'LOCATION': f'{REDIS_DSN}{REDIS_LOCATION_DEFAULT}',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
@@ -32,7 +41,7 @@ CACHES = {
     },
     'sessions': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_LOCATION_SESSION', 'redis://127.0.0.1:6379/1'),
+        'LOCATION': f'{REDIS_DSN}{REDIS_LOCATION_SESSION}',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
@@ -41,7 +50,7 @@ CACHES = {
     },
     'thumbnail': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_LOCATION_THUMBNAIL', 'redis://127.0.0.1:6379/2'),
+        'LOCATION': f'{REDIS_DSN}{REDIS_LOCATION_THUMBNAIL}',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': REDIS_PASSWORD,
@@ -49,7 +58,7 @@ CACHES = {
     },
     'user_agents': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_LOCATION_USER_AGENT', 'redis://127.0.0.1:6379/3'),
+        'LOCATION': f'{REDIS_DSN}{REDIS_LOCATION_USER_AGENT}',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': REDIS_PASSWORD,
