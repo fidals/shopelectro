@@ -5,8 +5,9 @@ dcp=$(dc) -f docker-compose-production.yml
 
 # @todo #269 Create docs for build system.
 
-.PHONY: migrate create-env build-static watch-static build test backup restore
-.PHONY: lint dev build-production-static deploy
+.PHONY: migrate create-env build-static watch-static \
+build test backup restore \
+generate-production-static-data deploy
 
 migrate:
 	$(dc) run --rm app python manage.py migrate
@@ -40,14 +41,18 @@ lint:
 deploy-dev:
 	$(MAKE) create-env
 	$(dc) pull
+	$(dc) up -d app
 	$(MAKE) build-static
 	# Create admin user with login/pass: admin/asdfjkl;
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(dc) exec app bash -c "\
-		python manage.py migrate && \
-		python manage.py loaddata shopelectro/fixtures/admin.json && \
-		python manage.py loaddata shopelectro/fixtures/dump.json && \
-		python manage.py collectstatic --noinput"
+		python manage.py migrate \
+		&& python manage.py loaddata shopelectro/fixtures/admin.json \
+		&& python manage.py loaddata shopelectro/fixtures/dump.json \
+		&& python manage.py excel \
+		&& python manage.py price \
+		&& python manage.py collectstatic --noinput\
+    "
 	$(dc) stop app
 	$(dc) up -d app
 
@@ -58,7 +63,7 @@ backup:
 restore:
 	@bash ../etc/backup-restore.sh
 
-build-production-static:
+generate-production-static-data:
 	$(dcp) exec app python manage.py excel
 	$(dcp) exec app python manage.py price
 
@@ -68,7 +73,7 @@ deploy: backup
 	$(dcp) rm -f app
 	$(dcp) up -d app
 	$(dcp) exec app python manage.py migrate
-	$(MAKE) -j build-production-static
+	$(MAKE) -j generate-production-static-data
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(dcp) exec app python manage.py collectstatic --noinput
 	# to make fresh collected static visible immediately

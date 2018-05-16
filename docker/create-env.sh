@@ -43,7 +43,11 @@ function create_env_files {
 Are you ready to continue and build a new .env? [y/n]: " yn
         if [[ $yn != "y" ]]
         then
-            exit 1
+            # Give user possibility to refuse on .env generation,
+            # but exit with zero code.
+            # It's useful for `make deploy-dev`, for example.
+            echo "Skip .env file creation"
+            exit 0
         fi
     fi
 
