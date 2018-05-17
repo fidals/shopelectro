@@ -49,16 +49,13 @@ deploy-dev:
 		python manage.py migrate \
 		&& python manage.py loaddata shopelectro/fixtures/admin.json \
 		&& python manage.py loaddata shopelectro/fixtures/dump.json \
-		&& python manage.py excel \
-		&& python manage.py price \
-		&& python manage.py collectstatic --noinput\
-    "
+		&& python manage.py collectstatic --noinput"
 	$(dc) stop app
 	$(dc) up -d app
 
 # for production environment
 backup:
-	(dcp) run --rm backup-data sh /usr/bin/entrypoint.sh
+	$(dcp) run --rm backup-data sh /usr/bin/entrypoint.sh
 
 restore:
 	@bash ../etc/backup/backup-restore.sh
@@ -67,7 +64,6 @@ generate-production-static-data:
 	$(dcp) exec app python manage.py excel
 	$(dcp) exec app python manage.py price
 
-# for serv env
 deploy:
 	$(dcp) pull
 	$(dcp) stop

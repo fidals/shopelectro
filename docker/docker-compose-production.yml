@@ -182,7 +182,7 @@ services:
       - app
     volumes:
       - ../etc/backup/backup-entrypoint.sh:/usr/bin/entrypoint.sh
-      - ../etc/crontab:/etc/cron.d/crontab
+      - ../etc/backup/crontab:/etc/cron.d/crontab
       - /opt/backup/shopelectro:/opt/backup
       - /opt/database/shopelectro:/usr/app/src/database
 
