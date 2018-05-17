@@ -64,7 +64,7 @@
     try {
       yaCounter20644114.reachGoal(goal);
     } catch(e) {
-      console.error("AdBlock blocked yaCounter")
+      console.error(`AdBlock blocked yaCounter: ${e}`);
     }
   }
 
