@@ -57,7 +57,8 @@ class SeleniumTestCase(LiveServerTestCase):
         # Fresh created browser failes on maximizing window.
         # This bug is won't fixed by selenium guys https://goo.gl/6Ttguf
         # Ohh, so selenium is so selenium ...
-        # cls.browser.maximize_window()
+        # UPD 19.05.18: Seems it works, so we enable it to reduce amount of errors
+        cls.browser.maximize_window()
 
     @classmethod
     def tearDownClass(cls):
