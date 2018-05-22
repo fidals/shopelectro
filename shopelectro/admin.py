@@ -136,7 +136,7 @@ class PositionInline(admin.StackedInline):
 
 class CategoryPageAdmin(models.CategoryPageAdmin):
 
-    add = False
+    add = True
     delete = False
     inlines = [CategoryInline, inlines.ImageInline]
 
