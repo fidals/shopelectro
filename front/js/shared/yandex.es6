@@ -57,7 +57,18 @@
   }
 
   function reachGoal(goal) {
-    yaCounter20644114.reachGoal(goal);
+    /**
+     * AdBlock-like services can block an yaCounter, so to prevent
+     * interrupting of user session put reachGoal to try/catch.
+     */
+    try {
+      yaCounter20644114.reachGoal(goal);
+    } catch(e) {
+      console.error(
+        'YaCounter did not loaded. Perhaps the reason for this maybe ' +
+        `AdBlock. Traceback: ${e}`
+      );
+    }
   }
 
   /**
