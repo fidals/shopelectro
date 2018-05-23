@@ -599,9 +599,14 @@ class TableEditor(AdminSeleniumTestCase):
                 (By.ID, 'add-entity-form')
             ))
 
-        self.browser.find_element_by_id('entity-name').send_keys(new_entity_text)
+        name_el = self.browser.find_element_by_id('entity-name')
+        name_el.click()
+        name_el.send_keys(new_entity_text)
+
         for field in numeric_fields:
-            self.browser.find_element_by_id(field).send_keys(123)
+            field_el = self.browser.find_element_by_id(field)
+            field_el.click()
+            field_el.send_keys(123)
 
         # Check is autocomplete works for category search by manual triggering it:
         self.browser.find_element_by_id('entity-category').send_keys('Category #0')

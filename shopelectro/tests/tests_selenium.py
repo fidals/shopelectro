@@ -1038,19 +1038,25 @@ class Search(helpers.SeleniumTestCase):
     def fill_input(self, query=''):
         """Enter correct search term."""
         self.input.send_keys(query or self.QUERY)
-        with self.screen_fail('fill_input'):
-            self.wait.until(EC.visibility_of(self.autocomplete))
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'autocomplete-suggestions')
+        ))
 
     def clear_input(self):
         """Enter correct search term."""
         self.input.send_keys(
             Keys.BACKSPACE * len(self.input.get_attribute('value'))
         )
-        self.wait.until_not(EC.visibility_of(self.autocomplete))
+        self.wait.until_not(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'autocomplete-suggestions')
+        ))
 
     def search(self):
         self.browser.find_element_by_class_name('search-form').submit()
         self.wait.until(EC.url_contains('/search/'))
+        self.wait.until(EC.visibility_of_element_located(
+            (By.TAG_NAME, 'h1')
+        ))
 
     def test_autocomplete_can_expand_and_collapse(self):
         self.fill_input()
@@ -1100,10 +1106,6 @@ class Search(helpers.SeleniumTestCase):
 
         self.assertIn(str(product_vendor_code), test_vendor_code)
 
-    # @todo #SEARCH-TEST Fix a Search.test_search_have_results test.
-    #  From time to time the test_search_have_results raise an TimeoutException error.
-    #  You can find error traceback here: https://ci.fidals.com/fidals/shopelectro/152
-    @unittest.expectedFailure(TimeoutException)
     def test_search_have_results(self):
         """Search results page should contain links on relevant pages."""
         self.fill_input()
