@@ -92,7 +92,7 @@ class Mobile(MobileSeleniumTestCase):
         """Autocomplete in mobile search should work."""
         self.toogle_menu()
         self.search_input.send_keys('Cate')
-        suggestions = self.wait.until(EC.presence_of_all_elements_located(
+        suggestions = self.wait.until(EC.visibility_of_any_elements_located(
             (By.CLASS_NAME, 'autocomplete-suggestion')
         ))
         # last autocomplete item has no contains data

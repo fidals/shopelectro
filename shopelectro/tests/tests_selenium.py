@@ -1038,15 +1038,18 @@ class Search(helpers.SeleniumTestCase):
     def fill_input(self, query=''):
         """Enter correct search term."""
         self.input.send_keys(query or self.QUERY)
-        with self.screen_fail('fill_input'):
-            self.wait.until(EC.visibility_of(self.autocomplete))
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'autocomplete-suggestions')
+        ))
 
     def clear_input(self):
         """Enter correct search term."""
         self.input.send_keys(
             Keys.BACKSPACE * len(self.input.get_attribute('value'))
         )
-        self.wait.until_not(EC.visibility_of(self.autocomplete))
+        self.wait.until_not(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'autocomplete-suggestions')
+        ))
 
     def search(self):
         self.browser.find_element_by_class_name('search-form').submit()
