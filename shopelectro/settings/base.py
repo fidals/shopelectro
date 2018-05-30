@@ -293,7 +293,10 @@ INTERNAL_IPS = (
 
 TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3884, 3959, 2764]
 
-PRICE_MULTIPLIER = 0.99
+# reduce product prices by PRICE_REDUCER to divide
+# the retail-related site (shopelector) from the wholesale-related site (se78)
+# in web search engines
+PRICE_REDUCER = 1
 
 SHOP = {
     'id': '69886',
