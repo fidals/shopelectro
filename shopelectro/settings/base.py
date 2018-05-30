@@ -293,9 +293,8 @@ INTERNAL_IPS = (
 
 TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3884, 3959, 2764]
 
-# reduce product prices by PRICE_REDUCER to divide
-# the retail-related site (shopelector) from the wholesale-related site (se78)
-# in web search engines
+# Reduce retail product prices by PRICE_REDUCER.
+# It is required to make prices on shopelectro.ru and se78.ru unique.
 PRICE_REDUCER = 1
 
 SHOP = {
