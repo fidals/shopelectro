@@ -399,7 +399,7 @@ class TestSearch(TestCase):
         self.assertFalse(json_to_dict(response))
         self.assertNotContains(response, term)
 
-    def assert_content_uniq(self, content, key):
+    def assert_content_uniqueness(self, content, key):
         str_content = str(content)
         self.assertTrue(str_content.find(key) == str_content.rfind(key))
 
@@ -410,11 +410,11 @@ class TestSearch(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        self.assert_content_uniq(response.content, self.product.name)
+        self.assert_content_uniqueness(response.content, self.product.name)
 
     def test_autocomplete_has_no_model_pages(self):
         """Autocomplete does not contain page with type=MODEL_TYPE and duplicated content."""
         response = self.client.get(f'{reverse("autocomplete")}?term={self.product.name}')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(json_to_dict(response))
-        self.assert_content_uniq(response.content, self.product.name)
+        self.assert_content_uniqueness(response.content, self.product.name)
