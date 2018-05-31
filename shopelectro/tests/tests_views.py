@@ -332,6 +332,9 @@ class TestSearch(TestCase):
     TERM = 'Prod'
     WRONG_TERM = 'Bugaga'  # it's short for trigram search testing
 
+    def setUp(self):
+        self.product = Product.objects.filter(category__children__isnull=True).first()
+
     def test_search_has_results(self):
         """Search page should contain at least one result for right term."""
         term = self.TERM
@@ -395,3 +398,23 @@ class TestSearch(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(json_to_dict(response))
         self.assertNotContains(response, term)
+
+    def assert_content_uniq(self, content, key):
+        str_content = str(content)
+        self.assertTrue(str_content.find(key) == str_content.rfind(key))
+
+    def test_search_has_no_model_pages(self):
+        """Search page does not contain page with type=MODEL_TYPE and duplicated content."""
+        response = self.client.get(
+            f'/search/?term={self.product.name}',
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assert_content_uniq(response.content, self.product.name)
+
+    def test_autocomplete_has_no_model_pages(self):
+        """Autocomplete does not contain page with type=MODEL_TYPE and duplicated content."""
+        response = self.client.get(f'{reverse("autocomplete")}?term={self.product.name}')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json_to_dict(response))
+        self.assert_content_uniq(response.content, self.product.name)
