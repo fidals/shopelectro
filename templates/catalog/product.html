@@ -38,9 +38,9 @@
             </thead>
             <tbody>
             <tr>
-              <td>{{ product.wholesale_small }} руб</td>
-              <td>{{ product.wholesale_medium }} руб</td>
-              <td>{{ product.wholesale_large }} руб</td>
+              <td>{{ product.wholesale_small|floatformat:2 }} руб</td>
+              <td>{{ product.wholesale_medium|floatformat:2 }} руб</td>
+              <td>{{ product.wholesale_large|floatformat:2 }} руб</td>
             </tr>
             </tbody>
           </table>
