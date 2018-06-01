@@ -61,11 +61,13 @@ def fetch_prices(root: Element, config) -> Iterator:
     def get_prices(prices_el):
         def get_(price_el: Element) -> float:
             return float(price_el.find(config.xpaths['price']).text)
+        def prepare_retail_(price: float):
+            return round(price - settings.PRICE_REDUCER)
         *prices, retail_price = sorted(
             get_(price)
             for price in prices_el.findall(config.xpaths['prices'])
         )
-        return prices + [retail_price - settings.PRICE_REDUCER]
+        return prices + [prepare_retail_(retail_price)]
     product_price_els = root.findall(config.xpaths['product_prices'])
     for prices_el in product_price_els:
         product_uuid = prices_el.find(config.xpaths['product_uuid']).text
