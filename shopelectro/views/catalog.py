@@ -1,7 +1,8 @@
 from functools import partial
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden
+from django.core.paginator import Paginator
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
@@ -15,11 +16,11 @@ from shopelectro import models
 from shopelectro.views.helpers import set_csrf_cookie
 
 PRODUCTS_ON_PAGE_PC = 48
-PRODUCTS_ON_PAGE_MOB = 10
+PRODUCTS_ON_PAGE_MOB = 12
 
 
 def get_products_count(request):
-    """Get Products count for response context depends on the `user_agent`."""
+    """Calculate max products list size from request. List size depends on device type."""
     mobile_view = get_user_agent(request).is_mobile
     return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
 
@@ -113,16 +114,20 @@ class CategoryPage(catalog.CategoryPage):
 
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
-        context = super(CategoryPage, self).get_context_data(**kwargs)
-        products_on_page = get_products_count(self.request)
-
-        # tile is default view_type
+        context = super().get_context_data(**kwargs)
+        products_on_page = int(self.request.GET.get(
+            'step', get_products_count(self.request),
+        ))
+        page_number = int(self.request.GET.get('page', 1))
         view_type = self.request.session.get('view_type', 'tile')
-
-        category = context['category']
-
         sorting = int(self.kwargs.get('sorting', 0))
         sorting_option = config.category_sorting(sorting)
+        category = context['category']
+        if (
+            page_number < 1 or
+            products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS
+        ):
+            raise Http404('Page does not exist.')
 
         all_products = (
             models.Product.objects
@@ -165,14 +170,21 @@ class CategoryPage(catalog.CategoryPage):
         page.get_template_render_context = partial(
             template_context, page, tag_titles, tags)
 
-        products = all_products.get_offset(0, products_on_page)
+        paginated_page = Paginator(all_products, products_on_page).page(page_number)
+        total_products = all_products.count()
+        products = paginated_page.object_list
+        if not products:
+            raise Http404('Page without products does not exist.')
 
         return {
             **context,
             'product_image_pairs': merge_products_and_images(products),
             'group_tags_pairs': group_tags_pairs,
-            'total_products': all_products.count(),
+            'total_products': total_products,
+            'products_count': (page_number - 1) * products_on_page + products.count(),
+            'paginated_page': paginated_page,
             'sorting_options': config.category_sorting(),
+            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
             'sort': sorting,
             'tags': tags,
             'view_type': view_type,
@@ -180,7 +192,7 @@ class CategoryPage(catalog.CategoryPage):
         }
 
 
-def load_more(request, category_slug, offset=0, sorting=0, tags=None):
+def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     """
     Load more products of a given category.
 
@@ -188,14 +200,25 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
     :param request: HttpRequest object
     :param category_slug: Slug for a given category
     :param offset: used for slicing QuerySet.
-    :return:
+    :return: products list in html format
     """
-    products_on_page = get_products_count(request)
-
+    products_on_page = limit or get_products_count(request)
+    offset = int(offset)
+    if offset < 0:
+        return HttpResponseBadRequest('The offset is wrong. An offset should be greater than or equal to 0.')
+    if products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS:
+        return HttpResponseBadRequest(
+            'The limit number is wrong. List of available numbers:'
+            f' {", ".join(map(str, settings.CATEGORY_STEP_MULTIPLIERS))}'
+        )
+    # increment page number because:
+    # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
+    # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
+    page_number = (offset // products_on_page) + 1
     category = get_object_or_404(models.CategoryPage, slug=category_slug).model
     sorting_option = config.category_sorting(int(sorting))
 
-    products = (
+    all_products = (
         models.Product.objects
         .prefetch_related('page__images')
         .select_related('page')
@@ -207,19 +230,21 @@ def load_more(request, category_slug, offset=0, sorting=0, tags=None):
             slug__in=models.Tag.parse_url_tags(tags)
         )
 
-        products = (
-            products
+        all_products = (
+            all_products
             .filter(tags__in=tag_entities)
             # Use distinct because filtering by QuerySet tags,
             # that related with products by many-to-many relation.
             .distinct(sorting_option.lstrip('-'))
         )
 
-    products = products.get_offset(int(offset), products_on_page)
+    paginated_page = Paginator(all_products, products_on_page).page(page_number)
+    products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
 
     return render(request, 'catalog/category_products.html', {
         'product_image_pairs': merge_products_and_images(products),
+        'paginated_page': paginated_page,
         'view_type': view,
         'prods': products_on_page,
     })
