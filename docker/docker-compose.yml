@@ -46,7 +46,7 @@ services:
     networks:
       - se-backend
     volumes:
-      - ./../database:/var/lib/postgresql/data
+      - $POSTGRES_DATA_DIR:/var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:management-alpine
