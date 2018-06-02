@@ -1,4 +1,5 @@
 import logging
+import typing
 from collections import defaultdict
 from copy import deepcopy
 from functools import reduce
@@ -14,7 +15,7 @@ from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
 from shopelectro.management.commands._update_catalog.utils import (
-    XmlFile, is_correct_uuid, NOT_SAVE_TEMPLATE, UUID, Data,
+    XmlFile, is_correct_uuid, NOT_SAVE_TEMPLATE, UUID, Data, floor
 )
 from shopelectro.models import Product, ProductPage, Tag
 
@@ -57,23 +58,30 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         }
 
 
-def fetch_prices(root: Element, config) -> Iterator:
-    def get_prices(prices_el):
-        def get_(price_el: Element) -> float:
-            return float(price_el.find(config.xpaths['price']).text)
-        def prepare_retail_(price: float):
-            return round(price - settings.PRICE_REDUCER)
-        *prices, retail_price = sorted(
-            get_(price)
-            for price in prices_el.findall(config.xpaths['prices'])
+def fetch_prices(root: Element, config) -> typing.Iterator:
+    def get_price_values(prices_el):
+        return list(sorted(
+            float(price_el.find(config.xpaths['price']).text)
+            for price_el in prices_el.findall(config.xpaths['prices'])
+        ))
+    def multiply(prices: typing.List[float]):
+        *wholesale_prices, retail_price = prices
+        def floor_prices(prices, precision: floor):
+            return [
+                floor(price * multiplier, precision)
+                for price, multiplier in zip(prices, settings.PRICE_MULTIPLIERS)
+            ]
+        return (
+            floor_prices(wholesale_prices, precision=2)
+            + floor_prices([retail_price], precision=0)
         )
-        return prices + [prepare_retail_(retail_price)]
+
     product_price_els = root.findall(config.xpaths['product_prices'])
     for prices_el in product_price_els:
         product_uuid = prices_el.find(config.xpaths['product_uuid']).text
         prices = dict(zip(
             config.extra_options['price_types'],
-            get_prices(prices_el)
+            multiply(get_price_values(prices_el))
         ))
         yield product_uuid, prices
 
