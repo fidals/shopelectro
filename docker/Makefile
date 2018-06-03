@@ -98,8 +98,8 @@ prepare-deploy:
 deploy:
 	$(dcp) pull
 	$(dcp) stop
-	$(dcp) rm -f app && $(dcp) up -d app
-	$(dcp) rm -f nginx && $(dcp) up -d nginx
+	$(dcp) rm -f app nginx
+	$(dcp) up -d app nginx
 	$(dcp) exec app python manage.py migrate
 	$(MAKE) -j generate-production-static-data
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
