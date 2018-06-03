@@ -9,6 +9,8 @@ dcp=$(dc) -f docker-compose-production.yml
 build test backup restore \
 generate-production-static-data deploy
 
+
+# --- Dev section ---
 migrate:
 	$(dc) run --rm app python manage.py migrate
 
@@ -53,6 +55,8 @@ lint:
 	$(dc) run --rm lint
 	$(dc) stop
 
+
+# --- Deploy section ---
 deploy-dev:
 	$(MAKE) create-env
 	$(dc) pull
@@ -79,6 +83,15 @@ restore:
 generate-production-static-data:
 	$(dcp) exec app python manage.py excel
 	$(dcp) exec app python manage.py price
+
+prepare-deploy:
+	rm -rf front/build
+	$(dc) stop app && $(dc) rm -f app
+	$(dcp) stop app && $(dcp) rm -f app
+	$(MAKE) build-static
+	$(d) rmi fidals/se:dev fidals/se:prod
+	$(dcb) build --no-cache python-dev python-prod
+	$(d) push fidals/se:dev fidals/se:prod
 
 deploy:
 	$(dcp) pull
