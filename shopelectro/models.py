@@ -298,15 +298,15 @@ def serialize_tags_to_title(tags: TagQuerySet) -> str:
     )
 
 
-class PageExcludeModelTManager(TreeManager):
+class ExcludedModelTPageManager(TreeManager):
 
     def get_queryset(self):
         return super().get_queryset().exclude(type=Page.MODEL_TYPE)
 
 
-class PageExcludeModelT(Page):
+class ExcludedModelTPage(Page):
 
     class Meta(Page.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
-    objects = PageExcludeModelTManager()
+    objects = ExcludedModelTPageManager()

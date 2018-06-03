@@ -415,9 +415,11 @@ class TestSearch(TestCase):
         response = self.client.get(
             f'{reverse("autocomplete")}?term={self.QUOTED_SIGNLE_RESULT_TERM}'
         )
-        result = list(filter(lambda d: d['type'] == 'category', json_to_dict(response)))
-        self.assertTrue(
-            len(result) == 1
+        self.assertFalse(
+            list(filter(
+                lambda r: r['type'] != 'category' and r['type'] != 'see_all',
+                json_to_dict(response)
+            ))
         )
 
     def test_admin_autocomplete_has_no_model_pages(self):
