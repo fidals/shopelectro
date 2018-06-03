@@ -4,14 +4,11 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from helpers.SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-import unittest
-
 from django.conf import settings
 from django.core import mail
 from django.db.models import Count
 from django.test import override_settings
 from django.urls import reverse
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC, ui
@@ -24,7 +21,7 @@ from shopelectro.tests import helpers
 
 def make_backcall(browser):
     """Trigger backcall modal. Fill it and submit."""
-    wait = ui.WebDriverWait(browser, 120)
+    wait = ui.WebDriverWait(browser, 60)
     browser.find_element_by_class_name('js-backcall-order').click()
     wait.until(EC.visibility_of_element_located(
         (By.ID, 'back-call-modal-label')
@@ -39,7 +36,7 @@ def make_backcall(browser):
 
 
 def show_cart_dropdown(browser):
-    wait = ui.WebDriverWait(browser, 120)
+    wait = ui.WebDriverWait(browser, 60)
     cart_parent = browser.find_element_by_class_name('basket-parent')
     helpers.hover(browser, cart_parent)
     wait.until(EC.visibility_of_element_located(
@@ -59,7 +56,7 @@ def is_cart_empty(browser):
 
 
 def wait_page_loading(browser):
-    ui.WebDriverWait(browser, 120).until(
+    ui.WebDriverWait(browser, 60).until(
         EC.visibility_of_element_located(
             (By.CLASS_NAME, 'content')
         )
@@ -649,24 +646,23 @@ class OrderPage(helpers.SeleniumTestCase):
             ).click()
 
     def perform_operations_on_cart(self):
-        self.browser.find_element_by_id('id_payment_type_0').click()
-        add_one_more = self.browser.find_element_by_xpath(self.add_product)
-        add_one_more.click()
+        self.click((By.ID, 'id_payment_type_0'))
+        add_one_more = self.click((By.XPATH, self.add_product))
         self.wait.until(EC.staleness_of(add_one_more))
 
     def fill_and_submit_form(self):
         @helpers.try_again_on_stale_element(3)
-        def insert_value(id, keys):
+        def insert_value(id, keys, expected_keys=''):
             def expected_conditions(browser):
                 return browser.find_element_by_id(id).get_attribute('value')
-            self.browser.find_element_by_id(id).send_keys(keys)
+            self.send_keys_and_wait(keys, (By.ID, id), expected_keys=expected_keys)
             self.wait.until(expected_conditions)
 
         insert_value('id_name', 'Name')
         insert_value('id_city', 'Санкт-Петербург')
-        insert_value('id_phone', '2222222222')
+        insert_value('id_phone', '2222222222', expected_keys='+7 (222) 222 22 22')
         insert_value('id_email', 'test@test.test')
-        self.browser.find_element_by_id('submit-order').click()
+        self.click((By.ID, 'submit-order'))
         self.wait.until(EC.url_to_be(self.success_order_url))
 
     def test_table_is_presented_if_there_is_some_products(self):
@@ -755,15 +751,12 @@ class OrderPage(helpers.SeleniumTestCase):
         final_price = self.browser.find_element_by_id('cart-page-sum').text[:-5]
 
         self.fill_and_submit_form()
+        self.assertEqual(len(mail.outbox), 1)
         sent_mail_body = mail.outbox[0].body
 
         self.assertIn('Наличные', sent_mail_body)
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
         self.assertIn('test@test.test', sent_mail_body)
-        self.assertInHTML(
-            '<strong style="font-weight:bold">Санкт-Петербург</strong>',
-            sent_mail_body
-        )
         for code in clean_codes:
             self.assertInHTML(
                 '<td align="left"'
@@ -844,6 +837,8 @@ class SitePage(helpers.SeleniumTestCase):
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class YandexMetrika(helpers.SeleniumTestCase):
 
+    CART_LOCATOR = (By.CLASS_NAME, 'js-go-to-cart')
+
     def setUp(self):
         server = self.live_server_url
         product_vendor_code = Product.objects.first().vendor_code
@@ -886,18 +881,13 @@ class YandexMetrika(helpers.SeleniumTestCase):
     def buy_product(self):
         self.browser.get(self.product_page)
         wait_page_loading(self.browser)
-        self.browser.find_element_by_id('btn-to-basket').click()
+        self.click((By.ID, 'btn-to-basket'))
         self.wait.until_not(EC.text_to_be_present_in_element(
             (By.CLASS_NAME, 'js-mobile-cart-price'), '0'
         ))
 
-    def get_cart(self):
-        return self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'js-go-to-cart')
-        ))
-
     def go_to_cart(self):
-        self.get_cart().click()
+        self.click(self.CART_LOCATOR)
         self.wait.until(EC.url_to_be(self.order_page_url))
 
     def test_download_header_price(self):
@@ -918,7 +908,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
     def test_browse_product_goal_on_index_page(self):
         """User browses to product's page from Index page."""
         self.prevent_default('click', '.js-browse-product')
-        self.browser.find_element_by_class_name('js-browse-product').click()
+        self.click((By.CLASS_NAME, 'js-browse-product'))
 
         self.assertTrue('PROD_BROWSE' in self.reached_goals)
 
@@ -941,10 +931,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
         """User removes Product from Cart dropdown."""
         self.browser.get(self.product_page)
         self.buy_product()
-        removed_el = self.wait.until(EC.element_to_be_clickable(
-            (By.CLASS_NAME, 'js-cart-remove')
-        ))
-        removed_el.click()
+        removed_el = self.click((By.CLASS_NAME, 'js-cart-remove'))
         with self.screen_fail('test_delete_from_dropdown'):
             self.wait.until(EC.staleness_of(removed_el))
 
@@ -984,16 +971,17 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.assertTrue('FULL_BUY_SEND' in self.reached_goals)
         self.assertTrue('CMN_BUY_SEND' in self.reached_goals)
 
-    def test_cart_open(self):
-        """User navigates to Cart."""
+    def test_cart_page_open(self):
         self.buy_product()
         self.prevent_default('click', '.js-go-to-cart')
-        self.get_cart().click()
+        self.click(self.CART_LOCATOR)
+        self.wait_page_loaded()
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
         self.prevent_default('click', '.btn-to-order')
         show_cart_dropdown(self.browser)
-        self.browser.find_element_by_class_name('btn-to-order').click()
+        self.click((By.CLASS_NAME, 'btn-to-order'))
+        self.wait_page_loaded()
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
     def test_select_phone(self):
@@ -1015,6 +1003,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
 class Search(helpers.SeleniumTestCase):
 
     QUERY = 'Cate'
+    INPUT_LOCATOR = (By.CLASS_NAME, 'js-search-input')
 
     def setUp(self):
         self.browser.get(self.live_server_url)
@@ -1032,7 +1021,7 @@ class Search(helpers.SeleniumTestCase):
     @property
     def input(self):
         return self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'js-search-input')
+            self.INPUT_LOCATOR
         ))
 
     def fill_input(self, query=''):
@@ -1071,9 +1060,7 @@ class Search(helpers.SeleniumTestCase):
     def test_autocomplete_item_link(self):
         """First autocomplete item should link on category page by click."""
         self.fill_input()
-        first_item = self.autocomplete.find_element_by_css_selector(
-            ':first-child')
-        first_item.click()
+        self.click((By.CSS_SELECTOR, '.autocomplete-suggestions :first-child'))
         with self.screen_fail('test_autocomplete_item_link'):
             self.wait.until(EC.url_contains('/catalog/categories/'))
 
@@ -1086,10 +1073,8 @@ class Search(helpers.SeleniumTestCase):
         `See all` item links on search results page.
         """
         self.fill_input()
-        last_item = self.autocomplete.find_element_by_class_name(
-            'autocomplete-last-item')
-        last_item.click()
-        self.wait.until(EC.url_contains('/search/'))
+        self.click((By.CLASS_NAME, 'autocomplete-last-item'))
+        self.wait_page_loaded()
 
         self.assertTrue('/search/' in self.browser.current_url)
 

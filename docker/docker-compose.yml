@@ -73,28 +73,31 @@ services:
       - '6380:6379'
 
   selenium:
-    image: selenium/standalone-chrome-debug:3.6.0
+    image: selenium/standalone-chrome-debug:3.10.0
     restart: always
     ports:
       - 4444:4444
       # VNC port. Password: secret
       - 5900:5900
     environment:
+      - DBUS_SESSION_BUS_ADDRESS=/dev/null
       - SCREEN_WIDTH=1366
       - SCREEN_HEIGHT=768
     networks:
       - se-backend
     # https://github.com/SeleniumHQ/docker-selenium#running-the-images
+    shm_size: 4G
     volumes:
       - /dev/shm:/dev/shm
 
+  # @todo #300:120m Resurrect coala.
   lint:
     image: fidals/coala-ci
     env_file:
       - env_files/paths
     working_dir: $SRC_DIR
-    volumes_from:
-      - app
+#    volumes:
+#      - ./../:$SRC_DIR
 
   pdd:
     image: fidals/pdd-ci

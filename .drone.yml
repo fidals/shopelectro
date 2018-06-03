@@ -39,23 +39,16 @@ pipeline:
       - FTP_IP=${FTP_IP}
       - FTP_USER=${FTP_USER}
       - FTP_PASS=${FTP_PASS}
+      - PRICE_MULTIPLIERS=1, 1, 1, 1
     commands:
       - python manage.py migrate
       - python manage.py excel
       - python manage.py price
       - python manage.py collectstatic --noinput
-      - python manage.py test -v 3 --parallel --liveserver=test:8020-8030
+      - python manage.py test --parallel --liveserver=test:8020-8030
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
-
-  test-notify:
-    image: plugins/slack
-    channel: drone
-    webhook: ${SLACK_WEBHOOK}
-    when:
-      status: [ success, failure ]
-    secrets: [ SLACK_WEBHOOK ]
 
   lint:
     image: docker/compose:1.17.1
@@ -101,17 +94,6 @@ pipeline:
       branch: master
     secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 
-  docker-build-notify:
-    image: plugins/slack
-    channel: drone
-    webhook: ${SLACK_WEBHOOK}
-    template: >
-      *{{build.status}}* docker-compose build & push <{{ build.link }}|{{ repo.owner}}/{{ repo.name }}> ({{ build.branch }}) by {{ build.author }}
-    when:
-      status: [ success, failure ]
-      branch: master
-    secrets: [ SLACK_WEBHOOK ]
-
   pip-clean:
     image: busybox
     commands:
@@ -145,9 +127,11 @@ services:
       - RABBITMQ_DEFAULT_PASS=test
 
   selenium:
-    image: selenium/standalone-chrome-debug:3.3.0
+    image: selenium/standalone-chrome-debug:3.10.0
     environment: # https://github.com/SeleniumHQ/docker-selenium/issues/392
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
+      - SCREEN_WIDTH=1366
+      - SCREEN_HEIGHT=768
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
