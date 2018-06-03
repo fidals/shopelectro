@@ -84,20 +84,22 @@ generate-production-static-data:
 	$(dcp) exec app python manage.py excel
 	$(dcp) exec app python manage.py price
 
+# drone should do this in working flow.
+# But if drone don't do this for some reasons,
+# you can run this recipe from local machine.
 prepare-deploy:
 	rm -rf front/build
-	$(dc) stop app && $(dc) rm -f app
-	$(dcp) stop app && $(dcp) rm -f app
+	$(dc) stop app && $(dcp) stop app
+	$(dc) rm -f app && $(dcp) rm -f app
 	$(MAKE) build-static
-	$(d) rmi fidals/se:dev fidals/se:prod
 	$(dcb) build --no-cache python-dev python-prod
-	$(d) push fidals/se:dev fidals/se:prod
+	$(dcb) push python-dev python-prod
 
 deploy:
 	$(dcp) pull
 	$(dcp) stop
-	$(dcp) rm -f app
-	$(dcp) up -d app
+	$(dcp) rm -f app nginx
+	$(dcp) up -d app nginx
 	$(dcp) exec app python manage.py migrate
 	$(MAKE) -j generate-production-static-data
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db

@@ -3,7 +3,8 @@
 
 
 # Shopelectro site documentation
-todo: fill README.md [with trello task](https://trello.com/c/DcK5doUE/289-se-se-rf-write-indexrst-with-template)
+Репозиторий интернет-магазина shopelectro.
+Разрабатываем [по методологии PDD](http://fidals.com/dev).
 
 ## Команда
 [Линк на роли в команде](https://docs.google.com/document/d/1N-K7m4GFDTS2WtJndP2BGCRzdvNe6PXsd7vVpGil1Vc/edit#) разработки сайтов.
