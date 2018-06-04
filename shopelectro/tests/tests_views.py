@@ -417,8 +417,8 @@ class TestSearch(TestCase):
         )
         self.assertFalse(
             list(filter(
-                lambda r: r['type'] != 'category' and r['type'] != 'see_all',
-                json_to_dict(response)
+                lambda r: r['type'] not in ['category', 'see_all'],
+                json_to_dict(response),
             ))
         )
 
