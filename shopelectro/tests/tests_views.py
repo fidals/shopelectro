@@ -9,8 +9,9 @@ from functools import partial
 from itertools import chain
 from operator import attrgetter
 from xml.etree import ElementTree as ET
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
@@ -330,6 +331,8 @@ class TestSearch(TestCase):
 
     fixtures = ['dump.json']
     TERM = 'Prod'
+    SIGNLE_RESULT_TERM = '#0'
+    QUOTED_SIGNLE_RESULT_TERM = quote(SIGNLE_RESULT_TERM)
     WRONG_TERM = 'Bugaga'  # it's short for trigram search testing
 
     def test_search_has_results(self):
@@ -395,3 +398,34 @@ class TestSearch(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(json_to_dict(response))
         self.assertNotContains(response, term)
+
+    def test_search_has_no_model_pages(self):
+        """Search page does not contain page with type=MODEL_TYPE and duplicated content."""
+        response = self.client.get(
+            f'/search/?term={self.QUOTED_SIGNLE_RESULT_TERM}',
+            follow=True,
+        )
+        result_links = BeautifulSoup(
+            response.content.decode('utf-8'), 'html.parser'
+        ).find_all(class_='search-result-link')
+        self.assertTrue(len(result_links) == 1)
+
+    def test_autocomplete_has_no_model_pages(self):
+        """Autocomplete does not contain page with type=MODEL_TYPE and duplicated content."""
+        response = self.client.get(
+            f'{reverse("autocomplete")}?term={self.QUOTED_SIGNLE_RESULT_TERM}'
+        )
+        self.assertFalse(
+            list(filter(
+                lambda r: r['type'] not in ['category', 'see_all'],
+                json_to_dict(response),
+            ))
+        )
+
+    def test_admin_autocomplete_has_no_model_pages(self):
+        """Admin autocomplete does not contain page with type=MODEL_TYPE and duplicated content."""
+        response = self.client.get(
+            f'{reverse("admin_autocomplete")}'
+            f'?term={self.QUOTED_SIGNLE_RESULT_TERM}&pageType=category'
+        )
+        self.assertTrue(len(json_to_dict(response)) == 1)

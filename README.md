@@ -1,8 +1,10 @@
+[![Build Status](https://ci.fidals.com/api/badges/fidals/shopelectro/status.svg)](https://ci.fidals.com/fidals/shopelectro)
 [![PDD status](http://www.0pdd.com/svg?name=fidals/shopelectro)](http://www.0pdd.com/p?name=fidals/shopelectro)
 
 
 # Shopelectro site documentation
-todo: fill README.md [with trello task](https://trello.com/c/DcK5doUE/289-se-se-rf-write-indexrst-with-template)
+Репозиторий интернет-магазина shopelectro.
+Разрабатываем [по методологии PDD](http://fidals.com/dev).
 
 ## Команда
 [Линк на роли в команде](https://docs.google.com/document/d/1N-K7m4GFDTS2WtJndP2BGCRzdvNe6PXsd7vVpGil1Vc/edit#) разработки сайтов.
@@ -41,7 +43,13 @@ dc exec app python manage.py price
 - Запрашиваем у Архитектора: Пароль к FTP и почтовому серву 
 
 Проверяем адрес `http://127.0.0.1:8010` - загружается сайт.
-Вместо порта `8010` может быть другой - константа `VIRTUAL_HOST_EXPOSE_PORT` в файле `.env`. 
+Вместо порта `8010` может быть другой - константа `VIRTUAL_HOST_EXPOSE_PORT` в файле `.env`.
+
+**Админка**
+Адрес: /admin/
+
+Логин/пароль:
+admin/asdfjkl;
 
 ### Для деплоя
 Этот раздел полезен только Архитекторам.
