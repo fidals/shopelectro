@@ -8,6 +8,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+from mptt.models import TreeManager
 from mptt.querysets import TreeQuerySet
 from unidecode import unidecode
 
@@ -17,7 +18,7 @@ from catalog.models import (
     CategoryManager,
 )
 from ecommerce.models import Order as ecOrder
-from pages.models import CustomPage, ModelPage, SyncPageMixin
+from pages.models import CustomPage, ModelPage, Page, SyncPageMixin
 
 
 class SECategoryQuerySet(TreeQuerySet):
@@ -295,3 +296,17 @@ def serialize_tags_to_title(tags: TagQuerySet) -> str:
         type_delimiter=settings.TAGS_TITLE_DELIMITER,
         group_delimiter=settings.TAG_GROUPS_TITLE_DELIMITER
     )
+
+
+class ExcludedModelTPageManager(TreeManager):
+
+    def get_queryset(self):
+        return super().get_queryset().exclude(type=Page.MODEL_TYPE)
+
+
+class ExcludedModelTPage(Page):
+
+    class Meta(Page.Meta):  # Ignore PycodestyleBear (E303)
+        proxy = True
+
+    objects = ExcludedModelTPageManager()
