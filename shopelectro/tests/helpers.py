@@ -1,11 +1,15 @@
 import base64
+import re
 from contextlib import contextmanager
 
 from django.conf import settings
 from django.test import LiveServerTestCase, override_settings
 from selenium.common.exceptions import InvalidElementStateException, WebDriverException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from seleniumrequests import Remote  # We use this instead of standard selenium
 
@@ -51,9 +55,9 @@ class SeleniumTestCase(LiveServerTestCase):
             command_executor=settings.SELENIUM_URL,
             desired_capabilities=DesiredCapabilities.CHROME
         )
-        cls.wait = WebDriverWait(cls.browser, 120)
-        cls.browser.implicitly_wait(30)
-        cls.browser.set_page_load_timeout(30)
+        cls.wait = WebDriverWait(cls.browser, 30)
+        cls.browser.implicitly_wait(15)
+        cls.browser.set_page_load_timeout(15)
         # Fresh created browser failes on maximizing window.
         # This bug is won't fixed by selenium guys https://goo.gl/6Ttguf
         # Ohh, so selenium is so selenium ...
@@ -82,3 +86,41 @@ class SeleniumTestCase(LiveServerTestCase):
                 with open(f'screen__{filename}.png', 'wb') as f:
                     f.write(base64.b64decode(screen_b64.encode('ascii')))
             raise e
+
+    # @todo #300:60m Use or create clear selenium.WebElement behaviour system.from
+    #  Currently we return element from click method.
+    #  It's not clear design decision. Use or create your own behaviour system.
+    #  Some pipeline like WebElement or custom one.
+    #  Maybe page objects pattern will be helpful:
+    #  http://selenium-python.readthedocs.io/page-objects.html
+    def click(self, click_locator) -> WebElement:
+        """Click on element in safe way and return element we clicked on."""
+        dom_element = self.wait.until(
+            EC.element_to_be_clickable(click_locator)
+        )
+        dom_element.click()
+        return dom_element
+
+    def send_keys_and_wait(self, keys: str, locator, expected_keys=''):
+        """
+        Safely send keys to element with given locator.
+
+        :param keys: should consist of letters, digits and spaces. No special symbols
+        """
+        # `keys` should not contain special symbols.
+        # For example backspace characters don't appear in input field.
+        assert re.match(r'[\w\d\s\-_]+', keys, re.I | re.U), \
+            'Form text should not contain special symbols'
+        el = self.wait.until(EC.visibility_of_element_located(locator))
+        el.clear()
+        str_keys = str(keys)
+        el.send_keys(str_keys)
+        self.wait.until(
+            EC.text_to_be_present_in_element_value(
+                locator, expected_keys or str_keys
+            )
+        )
+
+    def wait_page_loaded(self):
+        """Wait while current page is fully loaded."""
+        self.wait.until(EC.visibility_of_all_elements_located((By.TAG_NAME, 'html')))

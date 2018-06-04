@@ -1,5 +1,6 @@
 import glob
 import logging
+import math
 import os
 import shutil
 import subprocess
@@ -19,6 +20,16 @@ UUID_TYPE = str
 Data = Dict[str, Dict[str, dict]]
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
                     ' saved'
+
+
+def floor(x: float, precision=0) -> float:
+    """
+    The same behaviour as `math.floor`, but with precision
+
+    >>> floor(1.234, precision=2)  # result: 1.23
+    """
+    k = 10**precision
+    return math.floor(x * k) / k
 
 
 def is_correct_uuid(uuid_):

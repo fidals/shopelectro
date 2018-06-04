@@ -293,7 +293,9 @@ INTERNAL_IPS = (
 
 TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3884, 3959, 2764]
 
-PRICE_MULTIPLIER = 0.99
+# Reduce retail product prices by PRICE_REDUCER.
+# It is required to make prices on shopelectro.ru and se78.ru unique.
+PRICE_REDUCER = 1
 
 SHOP = {
     'id': '69886',
@@ -346,3 +348,5 @@ TAGS_TITLE_DELIMITER = ' или '
 TAG_GROUPS_TITLE_DELIMITER = ' и '
 
 TAGS_ORDER = ['group__position', 'group__name', 'position', 'name']
+
+PRICE_MULTIPLIERS = [float(p) for p in os.getenv('PRICE_MULTIPLIERS').split(', ')]
