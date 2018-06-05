@@ -22,28 +22,37 @@ bash alias dcp="docker-compose -f docker-compose-production.yml"
 ```
 
 ### Для разработки
-Разворачиваем среду разработки
 
+**Готовим код к работе**
 ```bash
 git clone git@github.com:fidals/shopelectro.git
 cd shopelectro/docker/
-# cp .env.dist .env - только в первый раз
-# меняем значения из `.env` на свои собственные. См ниже
-make dev
+# this command will ask you to fill some files.
+# See this instruction below to get out how to do it.
+make deploy-dev
 
 # optional
 dc exec app python manage.py excel
 dc exec app python manage.py price
 ```
 
-*Файл .env*
-После копирования из `.env.dist` заполняем файл `.env` или случайными значениями, или выданными.
-Примеры:
+**Файлы env**
+`make deploy-dev` создаст файлы для окружения (env) со стандартными значениями.
+А затем попросит заполнить их.
+Пару рекомендаций по заполнению:
 - Генерим случайные: Django secret key, пароли к локальным базам
 - Запрашиваем у Архитектора: Пароль к FTP и почтовому серву 
 
 Проверяем адрес `http://127.0.0.1:8010` - загружается сайт.
 Вместо порта `8010` может быть другой - константа `VIRTUAL_HOST_EXPOSE_PORT` в файле `.env`.
+
+**Установка refarm-site**
+Сайт использует refarm-site как внешнюю зависимость.
+Интерфейс refarm-site нестабилен,
+поэтому иногда при разработке фичи сайта
+нужно поправить код refarm-site вместе с кодом сайта.
+Для этого можно установить его как зависимость для разработки (`pip -e`).
+И примонтировать внутрь контейнера app.
 
 **Админка**
 Адрес: /admin/
