@@ -26,7 +26,7 @@ pipeline:
     image: python
     environment:
       - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
       - POSTGRES_URL=postgres

@@ -40,14 +40,6 @@ services:
       - env_files/credentials
       - env_files/paths
       - env_files/ports
-    environment:
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.dev
-      - POSTGRES_DB=$STAGE_DB_NAME
-      - REDIS_LOCATION_DEFAULT=$REDIS_STAGE_LOCATION_DEFAULT
-      - REDIS_LOCATION_SESSION=$REDIS_STAGE_LOCATION_SESSION
-      - REDIS_LOCATION_THUMBNAIL=$REDIS_STAGE_LOCATION_THUMBNAIL
-      - REDIS_LOCATION_USER_AGENT=$REDIS_STAGE_LOCATION_USER_AGENT
-      - SECRET_KEY=$STAGE_SECRET_KEY
     depends_on:
       - postgres
       - rabbitmq
