@@ -22,3 +22,5 @@ DATABASES = {
 }
 
 EMAIL_HOST_PASSWORD = 'so_secret_pass'
+
+PRICE_MULTIPLIERS = [1.0, 1.0, 1.0, 1.0]

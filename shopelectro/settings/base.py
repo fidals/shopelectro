@@ -348,5 +348,3 @@ TAGS_TITLE_DELIMITER = ' или '
 TAG_GROUPS_TITLE_DELIMITER = ' и '
 
 TAGS_ORDER = ['group__position', 'group__name', 'position', 'name']
-
-PRICE_MULTIPLIERS = [float(p) for p in os.getenv('PRICE_MULTIPLIERS').split(', ')]
