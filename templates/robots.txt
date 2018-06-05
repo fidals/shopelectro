@@ -1,14 +1,19 @@
 User-agent: *{% if debug %}
 Disallow: /
 {% else %}
+User-agent: *
 Disallow: /search/
 Disallow: /search-results/
 Disallow: /service/
 Disallow: /*-or-*
+Disallow: /*-and-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
+Disallow: /*?utm_source=*
 Disallow: /*?keyword=*
+Disallow: /*?from=market
+Disallow: /*?from=priceru
 Clean-param: from&utm_source&utm_medium&utm_campaign&block&keyword&position&k50id /
 
 User-agent: Yandex
@@ -16,10 +21,14 @@ Disallow: /search/
 Disallow: /search-results/
 Disallow: /service/
 Disallow: /*-or-*
+Disallow: /*-and-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
+Disallow: /*?utm_source=*
 Disallow: /*?keyword=*
+Disallow: /*?from=market
+Disallow: /*?from=priceru
 Clean-param: from&utm_source&utm_medium&utm_campaign&block&keyword&position&k50id /
 
 User-agent: Googlebot
@@ -27,10 +36,14 @@ Disallow: /search/
 Disallow: /search-results/
 Disallow: /service/
 Disallow: /*-or-*
+Disallow: /*-and-*
 Disallow: /*.txt$
 Disallow: /*?k50id=*
 Disallow: /*?block=*
+Disallow: /*?utm_source=*
 Disallow: /*?keyword=*
+Disallow: /*?from=market
+Disallow: /*?from=priceru
 Clean-param: from&utm_source&utm_medium&utm_campaign&block&keyword&position&k50id /
 
 User-agent: Googlebot-image
