@@ -39,7 +39,6 @@ function create_env_files {
     do
         new_file $file
     done
-    new_file ../shopelectro/settings/local.py.dist
 
     if ! $QUITE
     then
@@ -57,22 +56,16 @@ Are you ready to continue and build a new env and config files? [y/n]: " yn
         fi
     fi
 
-    if [[ ! -f ".env" ]]
-    then
-        echo "generate .env file"
-        local env_doc=\
+    local env_doc=\
 $'# Both .env and env_files/ are needed because of docker-compose realization.
 # See good explanation here:
 # https://github.com/docker/compose/issues/4223#issuecomment-280077263\n'
-        echo "$env_doc" > .env
+    echo "$env_doc" > .env
 
-        for file in ${new_files[@]}
-        do
-            cat $file >> .env
-        done
-    else
-        echo ".env file already exists skip it's creation"
-    fi
+    for file in ${new_files[@]}
+    do
+        cat $file >> .env
+    done
 }
 
 if [[ -f ".env" ]]

@@ -59,6 +59,7 @@ lint:
 # --- Deploy section ---
 deploy-dev:
 	$(MAKE) create-env
+	$(MAKE) create-config
 	$(dc) pull
 	$(dc) up -d app
 	$(MAKE) build-static
