@@ -15,10 +15,3 @@ REDIS_URL=redis
 REDIS_PORT=6379
 RABBITMQ_URL=rabbitmq
 RABBITMQ_PORT=5672
-
-# -- App business logic --
-# every product price will be multiplied on this value
-# during import from 1C.
-# Multipliers are related to prices in this order:
-# big/medium/small/retail. First three are wholesale prices.
-PRICE_MULTIPLIERS=0.98, 0.98, 0.98, 0.99

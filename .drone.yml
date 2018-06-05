@@ -39,7 +39,6 @@ pipeline:
       - FTP_IP=${FTP_IP}
       - FTP_USER=${FTP_USER}
       - FTP_PASS=${FTP_PASS}
-      - PRICE_MULTIPLIERS=1, 1, 1, 1
     commands:
       - python manage.py migrate
       - python manage.py excel
