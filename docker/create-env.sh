@@ -24,8 +24,8 @@ function join_by { local IFS="$1"; shift; echo "$*"; }
 
 function create_env_files {
     new_files=()
-    for file in env_files/*.dist
-    do
+    function new_file {
+        file=$1
         new_file=${file%.dist}
         new_files+=( "$new_file" )
 
@@ -33,7 +33,13 @@ function create_env_files {
         then
             cp $file $new_file
         fi
+    }
+
+    for file in env_files/*.dist
+    do
+        new_file $file
     done
+    new_file ../shopelectro/settings/local.py.dist
 
     if ! $QUITE
     then
@@ -63,19 +69,15 @@ $'# Both .env and env_files/ are needed because of docker-compose realization.
     done
 }
 
-if [[ -f ".env" ]]
+if ! $QUITE
 then
-    if ! $QUITE
+    file_names=$(join_by , ${new_files[@]})
+    read -p \
+"Going to rewrite following all env and some django config files:
+Continue? [y/n]: " yn
+    if [[ $yn == "y" ]]
     then
-        read -p "Env file already exists. Remove it? [y/n]: " yn
-        if [[ $yn = "y" ]]
-        then
-            rm .env
-        fi
-    else
-        rm .env
+        create_env_files
     fi
 fi
-
-create_env_files
 exit 0
