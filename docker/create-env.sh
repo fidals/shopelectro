@@ -24,8 +24,8 @@ function join_by { local IFS="$1"; shift; echo "$*"; }
 
 function create_env_files {
     new_files=()
-    function new_file {
-        file=$1
+    for file in env_files/*.dist
+    do
         new_file=${file%.dist}
         new_files+=( "$new_file" )
 
@@ -33,11 +33,6 @@ function create_env_files {
         then
             cp $file $new_file
         fi
-    }
-
-    for file in env_files/*.dist
-    do
-        new_file $file
     done
 
     if ! $QUITE
