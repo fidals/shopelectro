@@ -1,6 +1,6 @@
 dc=docker-compose
 d=docker
-dcb=$(dc) -f build/docker-compose.yml
+dcb=$(dc) -f docker-compose-build.yml
 dcp=$(dc) -f docker-compose-production.yml
 
 # @todo #269 Create docs for build system.
