@@ -49,6 +49,7 @@ pipeline:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
 
+  # WIP
   lint:
     image: docker/compose:1.17.1
     commands:
