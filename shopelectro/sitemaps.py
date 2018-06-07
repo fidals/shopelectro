@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from pages.models import Page
 
-from shopelectro.models import Category, Product, TagGroup, Tag
+from shopelectro.models import Category, Product, Tag
 
 
 class AbstractSitemap(Sitemap):

@@ -59,8 +59,9 @@ class Command(BaseCommand):
 
     def set_collapse_controls(self):
         """
-        Collapse controls looks like this: http://prntscr.com/clf9xh .
+        Place collapse buttons above rows.
 
+        Collapse controls looks like this: http://prntscr.com/clf9xh. # Ignore InvalidLinkBear
         Doc link: https://goo.gl/nR5pLO
         """
         self.sheet.sheet_properties.outlinePr.summaryBelow = False

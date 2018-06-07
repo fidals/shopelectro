@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core import mail
 from django.db.models import Count
 from django.test import override_settings
-from django.urls import reverse
+from django.urls import reverse  # Ignore CPDBear
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC, ui
@@ -604,7 +604,7 @@ class OrderPage(helpers.SeleniumTestCase):
 
     @staticmethod
     def get_cell(pos, col):
-        # table columns mapping: http://prntscr.com/bsv5hp
+        # table columns mapping: http://prntscr.com/bsv5hp  # Ignore InvalidLinkBear
         cols = {
             'id': 1,
             'name': 3,
