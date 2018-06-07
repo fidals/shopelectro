@@ -5,23 +5,23 @@ services:
   python-dev:
     image: fidals/se:dev
     build:
-      context: ../../
+      context: ../
       dockerfile: docker/images/python/Dockerfile.dev
 
   python-prod:
     image: fidals/se:prod
     build:
-      context: ../../
+      context: ../
       dockerfile: docker/images/python/Dockerfile.prod
 
   nodejs:
     image: fidals/se-nodejs:dev
     build:
-      context: ../../
+      context: ../
       dockerfile: docker/images/node/Dockerfile
 
   nginx:
     image: fidals/se-nginx:prod
     build:
-      context: ../../
+      context: ../
       dockerfile: docker/images/nginx/Dockerfile
