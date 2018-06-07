@@ -349,4 +349,9 @@ TAG_GROUPS_TITLE_DELIMITER = ' и '
 
 TAGS_ORDER = ['group__position', 'group__name', 'position', 'name']
 
-PRICE_MULTIPLIERS = [float(p) for p in os.getenv('PRICE_MULTIPLIERS').split(', ')]
+# -- App business logic --
+# every product price will be multiplied on this value
+# during import from 1C.
+# Multipliers are related to prices in this order:
+# big/medium/small/retail. First three are wholesale prices.
+PRICE_MULTIPLIERS = 1.0, 1.0, 1.0, 1.0

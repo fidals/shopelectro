@@ -40,7 +40,7 @@ function create_env_files {
         file_names=$(join_by , ${new_files[@]})
         read -p \
 "Checkout $file_names and configure it.
-Are you ready to continue and build a new .env? [y/n]: " yn
+Are you ready to continue and build a new env files? [y/n]: " yn
         if [[ $yn != "y" ]]
         then
             # Give user possibility to refuse on .env generation,

@@ -1,3 +1,5 @@
+"""Settings especially for drone CI."""
+
 from .base import *
 
 
