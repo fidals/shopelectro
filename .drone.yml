@@ -1,53 +1,53 @@
 # @todo #208 Определи оптимальное количество параллельных тестов
 
 pipeline:
-  pip-install:
-    image: python
-    commands:
-      - pip install -r requirements.txt
-      - rm -rf /usr/app/deps/site-packages
-      - mv /usr/local/lib/python3.6/site-packages /usr/app/deps
-    volumes:
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
+  # pip-install:
+  #   image: python
+  #   commands:
+  #     - pip install -r requirements.txt
+  #     - rm -rf /usr/app/deps/site-packages
+  #     - mv /usr/local/lib/python3.6/site-packages /usr/app/deps
+  #   volumes:
+  #     - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
 
-  npm:
-    image: node:slim
-    environment:
-      - DEPS_DIR=/usr/app/deps
-    commands:
-      - npm install
-      - npm install -g gulp-cli
-      - gulp build
-    volumes:
-      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
+  # npm:
+  #   image: node:slim
+  #   environment:
+  #     - DEPS_DIR=/usr/app/deps
+  #   commands:
+  #     - npm install
+  #     - npm install -g gulp-cli
+  #     - gulp build
+  #   volumes:
+  #     - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
+  #     - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
 
-  test:
-    image: python
-    environment:
-      - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_URL=postgres
-      - POSTGRES_DB=test
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=test
-      - RABBITMQ_URL=rabbitmq
-      - RABBITMQ_PORT=5672
-      - SELENIUM_URL=http://selenium:4444/wd/hub
-      - FTP_IP=${FTP_IP}
-      - FTP_USER=${FTP_USER}
-      - FTP_PASS=${FTP_PASS}
-    commands:
-      - python manage.py migrate
-      - python manage.py excel
-      - python manage.py price
-      - python manage.py collectstatic --noinput
-      - python manage.py test --parallel --liveserver=test:8020-8030
-    volumes:
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
-    secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
+  # test:
+  #   image: python
+  #   environment:
+  #     - TEST_ENV=true
+  #     - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=test
+  #     - POSTGRES_URL=postgres
+  #     - POSTGRES_DB=test
+  #     - RABBITMQ_DEFAULT_USER=rabbitmq
+  #     - RABBITMQ_DEFAULT_PASS=test
+  #     - RABBITMQ_URL=rabbitmq
+  #     - RABBITMQ_PORT=5672
+  #     - SELENIUM_URL=http://selenium:4444/wd/hub
+  #     - FTP_IP=${FTP_IP}
+  #     - FTP_USER=${FTP_USER}
+  #     - FTP_PASS=${FTP_PASS}
+  #   commands:
+  #     - python manage.py migrate
+  #     - python manage.py excel
+  #     - python manage.py price
+  #     - python manage.py collectstatic --noinput
+  #     - python manage.py test --parallel --liveserver=test:8020-8030
+  #   volumes:
+  #     - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
+  #   secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
 
   # WIP
   lint:
