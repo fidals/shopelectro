@@ -49,7 +49,6 @@ pipeline:
   #     - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
   #   secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
 
-  # WIP
   lint:
     image: docker/compose:1.17.1
     commands:
@@ -59,9 +58,7 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
-    when:
-      branch:
-       exclude: master
+    branches: master
 
   docker-build:
     image: docker/compose:1.17.1
@@ -75,8 +72,8 @@ pipeline:
       - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
       # in case if "Pull Request Hooks" is enabled in Drone settings GUI
       - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/docker/.env
-    when:
-      branch: master
+    branches:
+       exclude: master
 
   docker-push:
     image: docker:latest
@@ -90,8 +87,8 @@ pipeline:
       - docker push fidals/se:prod
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      branch: master
+    branches:
+       exclude: master
     secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 
   pip-clean:
