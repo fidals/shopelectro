@@ -9,7 +9,7 @@ from functools import partial
 from itertools import chain
 from operator import attrgetter
 from xml.etree import ElementTree as ET
-from urllib.parse import urlparse, quote
+from urllib.parse import urlencode, urlparse, quote
 
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -26,11 +26,14 @@ from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
 
 
-def reverse_category_url(
-    category: Category, tags: TagQuerySet=None, sorting: int=None
+def reverse_catalog_url(
+    url: str,
+    route_kwargs: dict,
+    tags: TagQuerySet=None,
+    sorting: int=None,
+    query_string: dict=None,
 ) -> str:
-    route_kwargs = {'slug': category.page.slug}
-
+    query_string = f'?{urlencode(query_string)}' if query_string else ''
     if tags:
         # PyCharm's option:
         # noinspection PyTypeChecker
@@ -39,7 +42,11 @@ def reverse_category_url(
     if sorting is not None:
         route_kwargs['sorting'] = sorting
 
-    return reverse('category', kwargs=route_kwargs)
+    return f'{reverse(url, kwargs=route_kwargs)}{query_string}'
+
+
+def get_page_number(response):
+    return response.context['paginated_page'].number
 
 
 def json_to_dict(response: HttpResponse) -> dict():
@@ -47,6 +54,9 @@ def json_to_dict(response: HttpResponse) -> dict():
 
 
 class CatalogPage(TestCase):
+    """
+    @todo #302 Divide the CatalogPage test class into parts related to the features.
+    """
 
     fixtures = ['dump.json']
 
@@ -54,13 +64,21 @@ class CatalogPage(TestCase):
         self.category = Category.objects.root_nodes().select_related('page').first()
         self.tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
-    def get_category_page(self, category=None, tags=None):
+    def get_category_page(
+        self,
+        category: Category=None,
+        tags: TagQuerySet=None,
+        sorting: int=None,
+        query_string: dict=None,
+    ):
         category = category or self.category
-        return self.client.get(reverse_category_url(category, tags))
+        return self.client.get(reverse_catalog_url(
+            'category', {'slug': category.page.slug}, tags, sorting, query_string,
+        ))
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
-        response = self.client.get(reverse('category', args=(self.category.page.slug, )))
+        response = self.get_category_page()
 
         tags = set(chain.from_iterable(map(
             lambda x: x.tags.all(), Product.objects.get_by_category(self.category)
@@ -73,18 +91,22 @@ class CatalogPage(TestCase):
 
     def test_has_canonical_meta_tag(self):
         """Test that CategoryPage should contain canonical meta tag."""
-        url = reverse_category_url(self.category)
-        response = self.client.get(url)
+        response = self.get_category_page()
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, CANONICAL_HTML_TAG.format(path=url))
+        self.assertContains(
+            response,
+            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO']),
+        )
 
     def test_tags_page_has_no_canonical_meta_tag(self):
         """Test that CategoryTagsPage should not contain canonical meta tag."""
         # ignore CPDBear
-        url = reverse_category_url(self.category, self.tags)
-        response = self.client.get(url)
+        response = self.get_category_page(tags=self.tags)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, CANONICAL_HTML_TAG.format(path=url))
+        self.assertNotContains(
+            response,
+            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO']),
+        )
 
     def test_paginated_tags_page_has_no_canonical_meta_tag(self):
         """
@@ -94,10 +116,12 @@ class CatalogPage(TestCase):
         should not contain canonical meta tag.
         """
         # ignore CPDBear
-        url = reverse_category_url(self.category, self.tags, sorting=1)
-        response = self.client.get(url)
+        response = self.get_category_page(tags=self.tags, sorting=1)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, CANONICAL_HTML_TAG.format(path=url))
+        self.assertNotContains(
+            response,
+            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO'])
+        )
 
     def test_contains_product_with_certain_tags(self):
         """Category page contains Product's related by certain tags."""
@@ -169,6 +193,72 @@ class CatalogPage(TestCase):
         response = self.client.get(product.url)
         for link in property_links:
             self.assertContains(response, link)
+
+    def test_pagination_numbering(self):
+        page_number = 1
+        response = self.get_category_page(query_string={'page': page_number})
+        self.assertEqual(get_page_number(response), page_number)
+
+    def test_pagination_products_count(self):
+        """
+        @todo #302:30m Implement test case for pagination logic.
+         Products number changes in depend on page number.
+         If step=24 and page number=2, then products quantity is 48.
+         If step=24 and page number=2 and total products quantity is 40, then products quantity is 40.
+        """
+
+    def test_pagination_step(self):
+        """CategoryPage should contain `pagination_step` products count in list."""
+        pagination_step = 25
+        response = self.get_category_page(query_string={'step': pagination_step})
+        self.assertEqual(len(response.context['product_image_pairs']), pagination_step)
+
+
+class LoadMore(TestCase):
+
+    fixtures = ['dump.json']
+    DEFAULT_LIMIT = 48
+
+    def setUp(self):
+        self.category = Category.objects.root_nodes().select_related('page').first()
+
+    def load_more(
+        self,
+        category: Category=None,
+        tags: TagQuerySet=None,
+        offset: int=0,
+        # uncomment after implementation urls for load_more with pagination
+        # limit: int=0,
+        sorting: int=0,
+        query_string: dict=None,
+    ) -> HttpResponse:
+        category = category or self.category
+        route_kwargs = {
+            'category_slug': category.page.slug,
+            'offset': offset,
+            # uncomment after implementation urls for load_more with pagination
+            # 'limit': limit,
+        }
+        return self.client.get(reverse_catalog_url(
+            'load_more', route_kwargs, tags, sorting, query_string,
+        ))
+
+    def test_pagination_numbering_first_page(self):
+        self.assertEqual(get_page_number(self.load_more()), 1)
+
+    def test_pagination_numbering_last_page(self):
+        offset = Product.objects.get_by_category(self.category).count() - 1
+        self.assertEqual(
+            get_page_number(self.load_more(offset=offset)),
+            offset // self.DEFAULT_LIMIT + 1,
+        )
+
+    def test_pagination_numbering_rest_page(self):
+        offset = self.DEFAULT_LIMIT + 1
+        self.assertEqual(
+            get_page_number(self.load_more(offset=offset)),
+            2,
+        )
 
 
 class SitemapXML(TestCase):

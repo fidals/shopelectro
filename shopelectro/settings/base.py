@@ -295,6 +295,7 @@ INTERNAL_IPS = (
 )
 
 TOP_PRODUCTS = [291, 438, 1137, 2166, 2725, 2838, 3288, 3884, 3959, 2764]
+CATEGORY_STEP_MULTIPLIERS = [12, 15, 24, 25, 48, 50, 60, 100]
 
 # Reduce retail product prices by PRICE_REDUCER.
 # It is required to make prices on shopelectro.ru and se78.ru unique.
