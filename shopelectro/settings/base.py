@@ -159,6 +159,9 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# @todo #142 Drop `dj_database_url` dependency.
+#  This package helps to take postgres credentials from URI.
+#  Now we assemble this creds to URI, then parse them with dj_database_url.
 DATABASE_URL = (
     f'postgres://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}'
     f'@{os.environ["POSTGRES_URL"]}/{os.environ["POSTGRES_DB"]}'

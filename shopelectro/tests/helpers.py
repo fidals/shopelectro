@@ -58,7 +58,7 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.wait = WebDriverWait(cls.browser, 30)
         cls.browser.implicitly_wait(15)
         cls.browser.set_page_load_timeout(15)
-        # Fresh created browser failes on maximizing window.
+        # Fresh created browser failures on maximizing window.
         # This bug is won't fixed by selenium guys https://goo.gl/6Ttguf
         # Ohh, so selenium is so selenium ...
         # UPD 19.05.18: Seems it works, so we enable it to reduce number of errors

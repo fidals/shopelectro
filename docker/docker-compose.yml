@@ -14,7 +14,7 @@ services:
       - TEST_ENV=true
       - PYTHONUNBUFFERED=0
     ports:
-      - '$VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT'
+      - $VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT
       - $VIRTUAL_HOST_LIVESERVER_PORT
     depends_on:
       - postgres
@@ -56,8 +56,8 @@ services:
     networks:
       - se-backend
     ports:
-      - '5673:5672'
-      - '15673:15672'
+      - 5673:$RABBITMQ_PORT
+      - 15673:15672
 
   redis:
     image: redis:alpine
@@ -70,7 +70,7 @@ services:
     networks:
       - se-backend
     ports:
-      - '6380:6379'
+      - 6380:6379
 
   selenium:
     image: selenium/standalone-chrome-debug:3.10.0
