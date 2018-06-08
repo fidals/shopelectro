@@ -90,6 +90,7 @@ services:
     volumes:
       - /dev/shm:/dev/shm
 
+  # @todo #322 Resurrect coala eslint.
   lint:
     image: fidals/coala-ci
     working_dir: $SRC_DIR
