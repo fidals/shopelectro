@@ -18,6 +18,9 @@ services:
     image: fidals/se-nodejs:dev
     build:
       context: ../
+      args:
+        - deps_dir=$DEPS_DIR
+        - front_build_dir=$FRONT_BUILD_DIR
       dockerfile: docker/images/node/Dockerfile
 
   nginx:

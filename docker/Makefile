@@ -29,7 +29,7 @@ excel:
 create-env:
 	@bash ./create-env.sh
 
-create-env:
+create-config:
 	@bash ./create-config.sh
 
 build-static:
@@ -54,25 +54,22 @@ lint:
 restore:
 	@bash ../etc/stb-backup-restore.sh
 
-
-# ---------------------- Deploy section ----------------------
 deploy-dev:
 	$(MAKE) create-env
 	$(MAKE) create-config
 	$(dc) pull
 	$(dc) up -d app
 	$(MAKE) build-static
+	$(MAKE) migrate
 	# Create admin user with login/pass: admin/asdfjkl;
+	$(MAKE) fixtures
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
-	$(dc) exec app bash -c "\
-		python manage.py migrate \
-		&& python manage.py loaddata shopelectro/fixtures/admin.json \
-		&& python manage.py loaddata shopelectro/fixtures/dump.json \
-		&& python manage.py collectstatic --noinput \
-	"
+	$(MAKE) collectstatic
     # to make fresh collected static visible immediately
 	$(dc) stop app && $(dc) up -d app
 
+
+# ---------------------- Production deploy section ----------------------
 backup:
 	$(dcp) run --rm backup-data sh /usr/bin/entrypoint.sh
 
