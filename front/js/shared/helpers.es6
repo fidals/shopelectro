@@ -30,7 +30,7 @@ const helpers = (() => {  // Ignore ESLintBear (no-unused-vars)
   function getUrlParam(name) {
     const paramName = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');  // Ignore ESLintBear (no-useless-escape)
     const regex = new RegExp(`[\\?&]${paramName}=([^&#]*)`);
-    const results = regex.exec(location.search);
+    const results = regex.exec(window.location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 

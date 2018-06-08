@@ -22,7 +22,7 @@
   /**
    * Remove product with the given id from cart.
    */
-  function remove() {
+  function remove(event) {
     const productId = $(event.target).attr('data-id');
 
     server.removeFromCart(productId)

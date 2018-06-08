@@ -117,7 +117,7 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
           method: 'get',
         },
         input: {
-          name: 'term'
+          name: 'term',
         },
         submit: true,
       },
@@ -128,7 +128,7 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
     event.target.querySelector('.form-control').focus();
   }
 
-  function storePhoneNumber() {
+  function storePhoneNumber(event) {
     localStorage.setItem(labels.phone, $(event.target).val());
   }
 

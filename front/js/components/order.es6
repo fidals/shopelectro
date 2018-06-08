@@ -194,7 +194,7 @@
    * 2. Define payment type, if it is Yandex order make request and wait response with form.
    * 3. Submit this form.
    */
-  function submitOrder() {
+  function submitOrder(event) {
     event.preventDefault();
     const orderInfo = getOrderInfo();
 

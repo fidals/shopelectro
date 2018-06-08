@@ -39,8 +39,7 @@ const autocomplete = (() => {  // Ignore ESLintBear (no-unused-vars)
     // https://github.com/Pixabay/JavaScript-autoComplete/issues/39
     `<div class="autocomplete-suggestion autocomplete-last-item">
        <a href="${item.url}">${item.name}</a>
-    </div>`
-  ;
+    </div>`;
 
   /**
    * Constructor args for autocomplete lib.

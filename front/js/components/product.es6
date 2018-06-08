@@ -46,7 +46,7 @@
     DOM.$feedbackBtn.click(sendFeedback);
     DOM.$feedbackDelete.click(deleteFeedback);
     DOM.$phone.keyup(changeOneClickBtnState);
-    DOM.$ratingList.on('click', 'li', () => mediator.publish('onRate', event));
+    DOM.$ratingList.on('click', 'li', event => mediator.publish('onRate', event));
     DOM.$ratingFilter.on('click', '.js-filter-trigger', filterByRating);
     DOM.$more_text_toggle.on('click', helpers.toggleText);
   }
@@ -56,14 +56,16 @@
    */
   function fancyBoxStart() {
     $.fancybox(
-      DOM.$fancybox, {
+      DOM.$fancybox,
+      {
         index: DOM.$imageBig.attr('data-index'),
         helpers: {
           overlay: {
             locked: false,
           },
         },
-      });
+      },
+    );
 
     return false; // this return is required
   }
@@ -112,7 +114,7 @@
   }
 
   function successOrder() {
-    location.href = '/shop/order-success';
+    window.location.href = '/shop/order-success';
   }
 
   /**

@@ -9,6 +9,9 @@ pipeline:
       - mv /usr/local/lib/python3.6/site-packages /usr/app/deps
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
+    when:
+      event: [push, pull_request]
+      branch: master
 
   npm:
     image: node:slim
@@ -21,6 +24,10 @@ pipeline:
     volumes:
       - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
+    when:
+      event: [push, pull_request]
+      branch: master
+
   test:
     image: python
     environment:
@@ -47,6 +54,9 @@ pipeline:
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
+    when:
+      event: [push, pull_request]
+      branch: master
 
   lint-coala:
     image: fidals/coala-ci
@@ -107,6 +117,9 @@ pipeline:
       - /tmp/cache/drone/shopelectro/site-packages/:/site-packages/
     when:
       status: [ success, failure ]
+    when:
+      event: [push, pull_request]
+      branch: master
 
   npm-clean:
     image: busybox
@@ -116,6 +129,9 @@ pipeline:
       - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
     when:
       status: [ success, failure ]
+    when:
+      event: [push, pull_request]
+      branch: master
 
 services:
   postgres:
