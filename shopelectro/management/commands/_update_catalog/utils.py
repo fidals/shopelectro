@@ -24,7 +24,7 @@ NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' 
 
 def floor(x: float, precision=0) -> float:
     """
-    The same behaviour as `math.floor`, but with precision
+    The same behaviour as `math.floor`, but with precision.
 
     >>> floor(1.234, precision=2)  # result: 1.23
     """

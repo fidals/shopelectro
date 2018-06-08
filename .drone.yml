@@ -21,7 +21,6 @@ pipeline:
     volumes:
       - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
-
   test:
     image: python
     environment:
@@ -49,18 +48,23 @@ pipeline:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
 
-  lint:
-    image: docker/compose:1.17.1
+  lint-coala:
+    image: fidals/coala-ci
+    group: lint
     commands:
-      - cd docker
-      - docker-compose run --rm lint
-      - docker-compose run --rm pdd
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
+      - coala --ci -j 2
     when:
-      branch:
-       exclude: master
+      event: pull_request
+      branch: master
+
+  lint-pdd:
+    image: fidals/pdd-ci
+    group: lint
+    commands:
+      - pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
+    when:
+      event: pull_request
+      branch: master
 
   docker-build:
     image: docker/compose:1.17.1
@@ -75,6 +79,7 @@ pipeline:
       # in case if "Pull Request Hooks" is enabled in Drone settings GUI
       - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/docker/.env
     when:
+      event: push
       branch: master
 
   docker-push:
@@ -90,6 +95,7 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
+      event: push
       branch: master
     secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 

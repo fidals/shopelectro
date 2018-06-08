@@ -64,16 +64,17 @@ def fetch_prices(root: Element, config) -> typing.Iterator:
             float(price_el.find(config.xpaths['price']).text)
             for price_el in prices_el.findall(config.xpaths['prices'])
         ))
+
     def multiply(prices: typing.List[float]):
-        *wholesale_prices, retail_price = prices
         def floor_prices(prices, precision: floor):
             return [
                 floor(price * multiplier, precision)
                 for price, multiplier in zip(prices, settings.PRICE_MULTIPLIERS)
             ]
+        *wholesale_prices, retail_price = prices
         return (
-            floor_prices(wholesale_prices, precision=2)
-            + floor_prices([retail_price], precision=0)
+            floor_prices(wholesale_prices, precision=2) +
+            floor_prices([retail_price], precision=0)
         )
 
     product_price_els = root.findall(config.xpaths['product_prices'])

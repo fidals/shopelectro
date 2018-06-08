@@ -90,19 +90,16 @@ services:
     volumes:
       - /dev/shm:/dev/shm
 
-  # @todo #300:120m Resurrect coala.
+  # @todo #322 Resurrect coala eslint.
   lint:
     image: fidals/coala-ci
-    env_file:
-      - env_files/paths
     working_dir: $SRC_DIR
-#    volumes:
-#      - ./../:$SRC_DIR
+    command: coala
+    volumes_from:
+      - app
 
   pdd:
     image: fidals/pdd-ci
-    env_file:
-      - env_files/paths
     working_dir: $SRC_DIR
     volumes_from:
       - app

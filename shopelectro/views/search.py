@@ -1,7 +1,6 @@
 from django.conf import settings
 
 from search import views as search_views, search as search_engine
-from pages.models import Page
 
 from shopelectro.models import Category, Product, ExcludedModelTPage
 
