@@ -54,9 +54,7 @@ def json_to_dict(response: HttpResponse) -> dict():
 
 
 class CatalogPage(TestCase):
-    """
-    @todo #302 Divide the CatalogPage test class into parts related to the features.
-    """
+    """@todo #302 Divide the CatalogPage test class into parts related to the features."""
 
     fixtures = ['dump.json']
 
@@ -199,16 +197,16 @@ class CatalogPage(TestCase):
         response = self.get_category_page(query_string={'page': page_number})
         self.assertEqual(get_page_number(response), page_number)
 
-    def test_pagination_products_count(self):
+    def test_pagination_products_count(self):  # Ignore PyDocStyleBear
         """
         @todo #302:30m Implement test case for pagination logic.
          Products number changes in depend on page number.
          If step=24 and page number=2, then products quantity is 48.
-         If step=24 and page number=2 and total products quantity is 40, then products quantity is 40.
+         If step=24 and page number=2 and total products quantity is 40, then products quantity is 40.  # Ignore PycodestyleBear (E501)
         """
 
     def test_pagination_step(self):
-        """CategoryPage should contain `pagination_step` products count in list."""
+        """Category page contains `pagination_step` count of products in list."""
         pagination_step = 25
         response = self.get_category_page(query_string={'step': pagination_step})
         self.assertEqual(len(response.context['product_image_pairs']), pagination_step)

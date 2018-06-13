@@ -205,7 +205,9 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     products_on_page = limit or get_products_count(request)
     offset = int(offset)
     if offset < 0:
-        return HttpResponseBadRequest('The offset is wrong. An offset should be greater than or equal to 0.')
+        return HttpResponseBadRequest(
+            'The offset is wrong. An offset should be greater than or equal to 0.'
+        )
     if products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS:
         return HttpResponseBadRequest(
             'The limit number is wrong. List of available numbers:'
