@@ -24,7 +24,7 @@
   function orderCall() {
     const phone = DOM.$phone.val();
     const time = DOM.$timeToCall.val();
-    const url = location.href;
+    const url = window.location.href;
     const isPhoneValid = helpers.isPhoneValid(phone);
 
     if (!isPhoneValid) {

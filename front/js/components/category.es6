@@ -27,8 +27,13 @@
    */
   function setUpListeners() {
     mediator.subscribe('onViewTypeChange', updateViewType, server.sendViewType);
-    mediator.subscribe('onProductsLoad', updateProductsList, updateLoadedCount,
-      updateLoadMoreBtnState, configs.initTouchspin);
+    mediator.subscribe(
+      'onProductsLoad',
+      updateProductsList,
+      updateLoadedCount,
+      updateLoadMoreBtnState,
+      configs.initTouchspin,
+    );
     DOM.tileView.$.click(() => mediator.publish('onViewTypeChange', DOM.tileView.mode));
     DOM.listView.$.click(() => mediator.publish('onViewTypeChange', DOM.listView.mode));
 
@@ -72,9 +77,9 @@
     const tags = helpers.getUrlEndpointParam('tags');
     const selectedSorting = getSelectedSortingOption().attr('data-path').trim();
     if (tags === '') {
-      location.href = selectedSorting;
+      window.location.href = selectedSorting;
     } else {
-      location.href = `${selectedSorting}tags/${tags}/`;
+      window.location.href = `${selectedSorting}tags/${tags}/`;
     }
   }
 
@@ -92,9 +97,7 @@
    */
   function updateLoadedCount(_, products) {
     // Aggregate `js-products-showed-count` by `getLoadedProductsCount()`.
-    DOM.$productsOnPage.text(
-      getProductsOnPageCount() + getLoadedProductsCount(products),
-    );
+    DOM.$productsOnPage.text(getProductsOnPageCount() + getLoadedProductsCount(products));
   }
 
   /**
