@@ -51,9 +51,6 @@ lint:
 	$(dc) run --rm lint
 	$(dc) stop
 
-restore:
-	@bash ../etc/stb-backup-restore.sh
-
 deploy-dev:
 	$(MAKE) create-env
 	$(MAKE) create-config

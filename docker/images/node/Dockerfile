@@ -17,6 +17,7 @@ RUN apt-get update \
 
 COPY package.json package.json
 COPY gulpfile.babel.js gulpfile.babel.js
+COPY front/ front
 
 # we use `--no-optional` because some optional npm dependencies fail on install
 RUN npm install -g gulp-cli
