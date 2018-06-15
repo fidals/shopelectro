@@ -75,6 +75,8 @@ services:
   selenium:
     image: selenium/standalone-chrome:3.10.0
     restart: always
+    ports:
+      - 4444:4444
     environment:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
       - SCREEN_WIDTH=1366
