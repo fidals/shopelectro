@@ -1,4 +1,5 @@
 # @todo #208 Определи оптимальное количество параллельных тестов
+branches: master
 
 pipeline:
   pip-install:
@@ -11,7 +12,6 @@ pipeline:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
     when:
       event: [push, pull_request]
-      branch: master
 
   # @todo #345:60m Use ready image for drone npm step. stb2
   #  Image `fidals/se-nodejs:dev` already contains built static and node_modules.
@@ -29,7 +29,6 @@ pipeline:
       - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
     when:
       event: [push, pull_request]
-      branch: master
 
 
   test:
@@ -62,7 +61,6 @@ pipeline:
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
     when:
       event: [push, pull_request]
-      branch: master
 
   lint-coala:
     image: fidals/coala-ci
@@ -71,7 +69,6 @@ pipeline:
       - coala --ci -j 2
     when:
       event: pull_request
-      branch: master
 
   lint-pdd:
     image: fidals/pdd-ci
@@ -80,7 +77,6 @@ pipeline:
       - pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
     when:
       event: pull_request
-      branch: master
 
   docker-build:
     image: docker/compose:1.17.1
@@ -102,7 +98,6 @@ pipeline:
       - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
     when:
       event: push
-      branch: master
 
   docker-push:
     image: docker:latest
@@ -118,7 +113,6 @@ pipeline:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
       event: push
-      branch: master
     secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 
   pip-clean:
@@ -131,7 +125,6 @@ pipeline:
       status: [ success, failure ]
     when:
       event: [push, pull_request]
-      branch: master
 
   npm-clean:
     image: busybox
@@ -143,7 +136,6 @@ pipeline:
       status: [ success, failure ]
     when:
       event: [push, pull_request]
-      branch: master
 
 services:
   postgres:
@@ -152,12 +144,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=test
+    when:
+      event: [push, pull_request]
 
   rabbitmq:
     image: rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=rabbitmq
       - RABBITMQ_DEFAULT_PASS=test
+    when:
+      event: [push, pull_request]
 
   selenium:
     image: selenium/standalone-chrome-debug:3.10.0
@@ -168,3 +164,5 @@ services:
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
+    when:
+      event: [push, pull_request]
