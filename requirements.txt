@@ -1,6 +1,5 @@
 beautifulsoup4
 celery
-dj-database-url==0.4.1
 Django==1.10
 django-debug-toolbar
 django-redis
