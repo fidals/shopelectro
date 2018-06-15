@@ -13,24 +13,29 @@ pipeline:
       event: [push, pull_request]
       branch: master
 
+  # @todo #345:60m Use ready image for drone npm step. stb2
+  #  Image `fidals/se-nodejs:dev` already contains built static and node_modules.
   npm:
     image: node:slim
     environment:
       - DEPS_DIR=/usr/app/deps
+      - FRONT_BUILD_DIR=/usr/app/front/build
     commands:
       - npm install
       - npm install -g gulp-cli
       - gulp build
     volumes:
-      - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/node_modules
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
     when:
       event: [push, pull_request]
       branch: master
 
+
   test:
     image: python
     environment:
+      - FRONT_BUILD_DIR=/usr/app/front/build
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
       - POSTGRES_USER=postgres
@@ -50,9 +55,10 @@ pipeline:
       - python manage.py excel
       - python manage.py price
       - python manage.py collectstatic --noinput
-      - python manage.py test --parallel --liveserver=test:8020-8030
+      - python manage.py test --parallel --liveserver=test:8021-8029
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
     when:
       event: [push, pull_request]
@@ -78,6 +84,9 @@ pipeline:
 
   docker-build:
     image: docker/compose:1.17.1
+    environment:
+      - DEPS_DIR=/usr/app/deps
+      - FRONT_BUILD_DIR=/usr/app/front/build
     commands:
       - cd docker
       # Build python images with sources and static files
@@ -88,6 +97,9 @@ pipeline:
       - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
       # in case if "Pull Request Hooks" is enabled in Drone settings GUI
       - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/docker/.env
+      # for nodejs build
+      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
     when:
       event: push
       branch: master
