@@ -5,6 +5,7 @@ pipeline:
   pip-install:
     image: python
     commands:
+      - pwd
       - pip install -r requirements.txt
       - rm -rf /usr/app/deps/site-packages
       - mv /usr/local/lib/python3.6/site-packages /usr/app/deps
@@ -30,53 +31,52 @@ pipeline:
     when:
       event: [push, pull_request]
 
+  # test:
+  #   image: python
+  #   environment:
+  #     - FRONT_BUILD_DIR=/usr/app/front/build
+  #     - TEST_ENV=true
+  #     - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=test
+  #     - POSTGRES_URL=postgres
+  #     - POSTGRES_DB=test
+  #     - RABBITMQ_DEFAULT_USER=rabbitmq
+  #     - RABBITMQ_DEFAULT_PASS=test
+  #     - RABBITMQ_URL=rabbitmq
+  #     - RABBITMQ_PORT=5672
+  #     - SELENIUM_URL=http://selenium:4444/wd/hub
+  #     - FTP_IP=${FTP_IP}
+  #     - FTP_USER=${FTP_USER}
+  #     - FTP_PASS=${FTP_PASS}
+  #   commands:
+  #     - python manage.py migrate
+  #     - python manage.py excel
+  #     - python manage.py price
+  #     - python manage.py collectstatic --noinput
+  #     - python manage.py test --parallel --liveserver=test:8021-8029
+  #   volumes:
+  #     - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
+  #     - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
+  #   secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
+  #   when:
+  #     event: [push, pull_request]
 
-  test:
-    image: python
-    environment:
-      - FRONT_BUILD_DIR=/usr/app/front/build
-      - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_URL=postgres
-      - POSTGRES_DB=test
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=test
-      - RABBITMQ_URL=rabbitmq
-      - RABBITMQ_PORT=5672
-      - SELENIUM_URL=http://selenium:4444/wd/hub
-      - FTP_IP=${FTP_IP}
-      - FTP_USER=${FTP_USER}
-      - FTP_PASS=${FTP_PASS}
-    commands:
-      - python manage.py migrate
-      - python manage.py excel
-      - python manage.py price
-      - python manage.py collectstatic --noinput
-      - python manage.py test --parallel --liveserver=test:8021-8029
-    volumes:
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
-      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
-    secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
-    when:
-      event: [push, pull_request]
+  # lint-coala:
+  #   image: fidals/coala-ci
+  #   group: lint
+  #   commands:
+  #     - coala --ci -j 2
+  #   when:
+  #     event: pull_request
 
-  lint-coala:
-    image: fidals/coala-ci
-    group: lint
-    commands:
-      - coala --ci -j 2
-    when:
-      event: pull_request
-
-  lint-pdd:
-    image: fidals/pdd-ci
-    group: lint
-    commands:
-      - pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
-    when:
-      event: pull_request
+  # lint-pdd:
+  #   image: fidals/pdd-ci
+  #   group: lint
+  #   commands:
+  #     - pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
+  #   when:
+  #     event: pull_request
 
   docker-build:
     image: docker/compose:1.17.1
@@ -86,18 +86,17 @@ pipeline:
     commands:
       - cd docker
       # Build python images with sources and static files
+      - ls
+      - pwd
       - docker-compose -f docker-compose-build.yml build --no-cache nodejs python-dev python-prod
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      # in case if "Push Hooks" is enabled in Drone settings GUI
-      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
-      # in case if "Pull Request Hooks" is enabled in Drone settings GUI
-      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/docker/.env
       # for nodejs build
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
-      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/front/build
     when:
-      event: push
+      # event: push
+      event: pull_request
 
   docker-push:
     image: docker:latest
@@ -123,7 +122,6 @@ pipeline:
       - /tmp/cache/drone/shopelectro/site-packages/:/site-packages/
     when:
       status: [ success, failure ]
-    when:
       event: [push, pull_request]
 
   npm-clean:
@@ -134,35 +132,34 @@ pipeline:
       - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
     when:
       status: [ success, failure ]
-    when:
       event: [push, pull_request]
 
-services:
-  postgres:
-    image: postgres
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_DB=test
-    when:
-      event: [push, pull_request]
+# services:
+#   postgres:
+#     image: postgres
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=test
+#       - POSTGRES_DB=test
+#     when:
+#       event: [push, pull_request]
 
-  rabbitmq:
-    image: rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=test
-    when:
-      event: [push, pull_request]
+#   rabbitmq:
+#     image: rabbitmq
+#     environment:
+#       - RABBITMQ_DEFAULT_USER=rabbitmq
+#       - RABBITMQ_DEFAULT_PASS=test
+#     when:
+#       event: [push, pull_request]
 
-  selenium:
-    image: selenium/standalone-chrome-debug:3.10.0
-    environment: # https://github.com/SeleniumHQ/docker-selenium/issues/392
-      - DBUS_SESSION_BUS_ADDRESS=/dev/null
-      - SCREEN_WIDTH=1366
-      - SCREEN_HEIGHT=768
-    shm_size: 4G
-    volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
-      - /dev/shm:/dev/shm
-    when:
-      event: [push, pull_request]
+#   selenium:
+#     image: selenium/standalone-chrome-debug:3.10.0
+#     environment: # https://github.com/SeleniumHQ/docker-selenium/issues/392
+#       - DBUS_SESSION_BUS_ADDRESS=/dev/null
+#       - SCREEN_WIDTH=1366
+#       - SCREEN_HEIGHT=768
+#     shm_size: 4G
+#     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
+#       - /dev/shm:/dev/shm
+#     when:
+#       event: [push, pull_request]
