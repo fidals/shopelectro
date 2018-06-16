@@ -20,5 +20,8 @@ COPY gulpfile.babel.js gulpfile.babel.js
 
 # we use `--no-optional` because some optional npm dependencies fail on install
 RUN npm install -g gulp-cli
+# `npm install gulp-imagemin` don't install it's dependencies sometimes.
+# Took decision from SO: https://goo.gl/3uXZxw
+RUN npm install imagemin-jpegtran imagemin-svgo imagemin-gifsicle imagemin-optipng --save
 RUN npm install --no-optional
 RUN gulp build
