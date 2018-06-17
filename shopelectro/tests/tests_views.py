@@ -207,7 +207,7 @@ class CatalogPage(TestCase):
             'page': 1,
             'step': 24,
         })
-        self.assertEqual(self.get_products_count(response), 48)
+        self.assertEqual(self.get_products_count(response), 24)
         response = self.get_category_page(query_string={
             'page': 2,
             'step': 24,
