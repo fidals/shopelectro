@@ -205,10 +205,12 @@ class CatalogPage(TestCase):
         """Category page should have different count of products on different pages."""
         response = self.get_category_page(query_string={
             'page': 1,
+            'step': 24,
         })
         self.assertEqual(self.get_products_count(response), 48)
         response = self.get_category_page(query_string={
             'page': 2,
+            'step': 24,
         })
         self.assertEqual(self.get_products_count(response), 40)
 
