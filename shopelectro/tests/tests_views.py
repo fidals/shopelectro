@@ -73,6 +73,10 @@ class CatalogPage(TestCase):
         return self.client.get(reverse_catalog_url(
             'category', {'slug': category.page.slug}, tags, sorting, query_string,
         ))
+    
+    def get_products_count(self, response) -> int:
+        """Returns count of products on given page."""
+        return len(response.context['product_image_pairs'])
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
@@ -197,19 +201,22 @@ class CatalogPage(TestCase):
         response = self.get_category_page(query_string={'page': page_number})
         self.assertEqual(get_page_number(response), page_number)
 
-    def test_pagination_products_count(self):  # Ignore PyDocStyleBear
-        """
-        @todo #302:30m Implement test case for pagination logic.
-         Products number changes in depend on page number.
-         If step=24 and page number=2, then products quantity is 48.
-         If step=24 and page number=2 and total products quantity is 40, then products quantity is 40.  # Ignore PycodestyleBear (E501)
-        """
+    def test_pagination_products_count(self):
+        """Category page should have different count of products on different pages."""
+        response = self.get_category_page(query_string={
+            'page': 1,
+        })
+        self.assertEqual(self.get_products_count(response), 48)
+        response = self.get_category_page(query_string={
+            'page': 2,
+        })
+        self.assertEqual(self.get_products_count(response), 40)
 
     def test_pagination_step(self):
         """Category page contains `pagination_step` count of products in list."""
         pagination_step = 25
         response = self.get_category_page(query_string={'step': pagination_step})
-        self.assertEqual(len(response.context['product_image_pairs']), pagination_step)
+        self.assertEqual(self.get_products_count(response), pagination_step)
 
 
 class LoadMore(TestCase):
