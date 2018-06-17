@@ -89,7 +89,6 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # for nodejs build
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
       - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/front/build
     when:
       event: push
