@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 from datetime import datetime
 
-import dj_database_url
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
@@ -159,15 +157,17 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# @todo #142 Drop `dj_database_url` dependency.
-#  This package helps to take postgres credentials from URI.
-#  Now we assemble this creds to URI, then parse them with dj_database_url.
-DATABASE_URL = (
-    f'postgres://{os.environ["POSTGRES_USER"]}:{os.environ["POSTGRES_PASSWORD"]}'
-    f'@{os.environ["POSTGRES_URL"]}/{os.environ["POSTGRES_DB"]}'
-)
+DATABASE_URL = os.environ["POSTGRES_URL"]
+
 DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ["POSTGRES_DB"],
+        'USER': os.environ["POSTGRES_USER"],
+        'PASSWORD': os.environ["POSTGRES_PASSWORD"],
+        'HOST': os.environ["POSTGRES_URL"],
+        'PORT': '5432',
+    }
 }
 
 LOGGING = {
