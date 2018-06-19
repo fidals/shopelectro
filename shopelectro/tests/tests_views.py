@@ -73,13 +73,13 @@ class CatalogPage(TestCase):
         return self.client.get(reverse_catalog_url(
             'category', {'slug': category.page.slug}, tags, sorting, query_string,
         ))
-    
+
     def get_product_image_pairs_count(self, response) -> int:
-        """Returns count of product image pairs on given page."""
+        """Return count of product image pairs on given page."""
         return len(response.context['product_image_pairs'])
-    
+
     def get_products_count(self, response) -> int:
-        """Returns count of products on given page"""
+        """Return count of products on given page"""
         return response.context['products_count']
 
     def test_category_page_contains_all_tags(self):
@@ -206,7 +206,12 @@ class CatalogPage(TestCase):
         self.assertEqual(get_page_number(response), page_number)
 
     def test_pagination_products_count(self):
-        """Category page should have different count of already showed products on different pages."""
+        """
+        Test pagination products count.
+        
+        Category page should have different amount
+        of already showed products on different pages.
+        """
         response = self.get_category_page(query_string={
             'page': 1,
         })
