@@ -54,7 +54,7 @@ def json_to_dict(response: HttpResponse) -> dict():
 
 
 class CatalogPage(TestCase):
-    """ @todo #302 Divide the CatalogPage test class into parts related to the features."""
+    """@todo #302 Divide the CatalogPage test class into parts related to the features."""
 
     fixtures = ['dump.json']
 

@@ -30,7 +30,6 @@ pipeline:
     when:
       event: [push, pull_request]
 
-
   test:
     image: python
     environment:
@@ -89,13 +88,8 @@ pipeline:
       - docker-compose -f docker-compose-build.yml build --no-cache nodejs python-dev python-prod
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      # in case if "Push Hooks" is enabled in Drone settings GUI
-      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/commit/${DRONE_COMMIT_SHA}/docker/.env
-      # in case if "Pull Request Hooks" is enabled in Drone settings GUI
-      - /root/prog/shopelectro/docker/.env:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/docker/.env
       # for nodejs build
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
-      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/front/build
     when:
       event: push
 
@@ -123,7 +117,6 @@ pipeline:
       - /tmp/cache/drone/shopelectro/site-packages/:/site-packages/
     when:
       status: [ success, failure ]
-    when:
       event: [push, pull_request]
 
   npm-clean:
@@ -134,7 +127,6 @@ pipeline:
       - /tmp/cache/drone/shopelectro/node_modules:/drone/src/github.com/fidals/shopelectro/pull/${DRONE_PULL_REQUEST}/node_modules
     when:
       status: [ success, failure ]
-    when:
       event: [push, pull_request]
 
 services:
