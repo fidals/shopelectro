@@ -53,9 +53,8 @@ def json_to_dict(response: HttpResponse) -> dict():
     return json.loads(response.content)
 
 
-class CatalogPage(TestCase):  # Ignore PyDocStyleBear
-    """ @todo #302 Divide the CatalogPage test class into parts related to the features."""
-
+# @todo #302 Divide the CatalogPage test class into parts related to the features."""
+class CatalogPage(TestCase):
     fixtures = ['dump.json']
 
     def setUp(self):
