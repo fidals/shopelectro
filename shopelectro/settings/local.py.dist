@@ -22,3 +22,7 @@ DATABASES = {
 }
 
 EMAIL_HOST_PASSWORD = 'so_secret_pass'
+
+# to disable django connection pool.
+# See .base.CONN_MAX_AGE for details
+CONN_MAX_AGE = 0
