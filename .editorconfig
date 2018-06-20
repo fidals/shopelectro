@@ -9,11 +9,16 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
+[*.{js,es6}]
+indent_size = 2
+
+[*.{html,scss,less}]
+indent_size = 2
+
 [*.md]
 trim_trailing_whitespace = false
 
-
-[*.yaml]
+[*.{yml,yaml,json}]
 indent_style = space
 indent_size = 2
 
