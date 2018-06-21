@@ -1,5 +1,6 @@
 import base64
 import re
+import time
 from contextlib import contextmanager
 
 from django.conf import settings
@@ -64,6 +65,8 @@ class SeleniumTestCase(LiveServerTestCase):
         # This bug is won't fixed by selenium guys https://goo.gl/6Ttguf
         # Ohh, so selenium is so selenium ...
         # UPD 19.05.18: Seems it works, so we enable it to reduce number of errors
+        # UPD 21.06.18: It does not work all times. When serv is loaded, this mech breaks.
+        time.sleep(1.0)
         cls.browser.maximize_window()
 
     @classmethod
