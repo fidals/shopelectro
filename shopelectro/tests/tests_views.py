@@ -73,6 +73,14 @@ class CatalogPage(TestCase):
             'category', {'slug': category.page.slug}, tags, sorting, query_string,
         ))
 
+    def get_product_image_pairs_count(self, response) -> int:
+        """Return count of product image pairs on given page."""
+        return len(response.context['product_image_pairs'])
+
+    def get_products_count(self, response) -> int:
+        """Return count of products on given page"""
+        return response.context['products_count']
+
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
         response = self.get_category_page()
@@ -196,19 +204,27 @@ class CatalogPage(TestCase):
         response = self.get_category_page(query_string={'page': page_number})
         self.assertEqual(get_page_number(response), page_number)
 
-    def test_pagination_products_count(self):  # Ignore PyDocStyleBear
+    def test_pagination_products_count(self):
         """
-        @todo #302:30m Implement test case for pagination logic.
-         Products number changes in depend on page number.
-         If step=24 and page number=2, then products quantity is 48.
-         If step=24 and page number=2 and total products quantity is 40, then products quantity is 40.  # Ignore PycodestyleBear (E501)
+        Test pagination products count.
+        
+        Category page should have different amount
+        of already showed products on different pages.
         """
+        response = self.get_category_page(query_string={
+            'page': 1,
+        })
+        self.assertEqual(self.get_products_count(response), 48)
+        response = self.get_category_page(query_string={
+            'page': 2,
+        })
+        self.assertEqual(self.get_products_count(response), 96)
 
     def test_pagination_step(self):
         """Category page contains `pagination_step` count of products in list."""
         pagination_step = 25
         response = self.get_category_page(query_string={'step': pagination_step})
-        self.assertEqual(len(response.context['product_image_pairs']), pagination_step)
+        self.assertEqual(self.get_product_image_pairs_count(response), pagination_step)
 
 
 class LoadMore(TestCase):
