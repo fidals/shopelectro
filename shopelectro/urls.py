@@ -6,8 +6,8 @@ from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page
 
-from pages.models import Page
-from pages.views import robots, SitemapPage
+from pages.views import RobotsView, SitemapPage
+from pages.urls import custom_page_url
 
 from shopelectro import sitemaps, config, views
 from shopelectro.admin import se_admin
@@ -90,14 +90,14 @@ ecommerce_urls = [
     url(r'', include('ecommerce.urls')),
 ]
 
-url_name = Page.CUSTOM_PAGES_URL_NAME
 custom_pages = [
-    url(r'^(?P<page>)$', cached_2h(views.IndexPage.as_view()), name=url_name),
-    url(r'^(?P<page>search)/$', views.Search.as_view(), name=url_name),
-    url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view()), name=url_name),
-    url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view(), name=url_name),
-    url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view(), name=url_name),
-    url(r'^(?P<page>sitemap)/$', SitemapPage.as_view(), name=url_name),
+    custom_page_url(r'^(?P<page>)$', cached_2h(views.IndexPage.as_view())),
+    custom_page_url(r'^robots\.txt/$', RobotsView.as_view(in_db=True)),
+    custom_page_url(r'^(?P<page>search)/$', views.Search.as_view()),
+    custom_page_url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view())),
+    custom_page_url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view()),
+    custom_page_url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view()),
+    custom_page_url(r'^(?P<page>sitemap)/$', SitemapPage.as_view()),
 ]
 
 urlpatterns = [
@@ -105,7 +105,6 @@ urlpatterns = [
     url(r'^admin/', include(admin_urls)),
     url(r'^catalog/', include(catalog_urls)),
     url(r'^pages/', include('pages.urls')),
-    url(r'^robots\.txt$', robots),
     url(r'^save-feedback/$', views.save_feedback),
     url(r'^delete-feedback/$', views.delete_feedback),
     url(r'^set-view-type/$', views.set_view_type, name='set_view_type'),

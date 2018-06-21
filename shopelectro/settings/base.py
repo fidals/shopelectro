@@ -86,10 +86,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'shopelectro.urls'
 
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -166,10 +167,10 @@ CONN_MAX_AGE = None
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ["POSTGRES_DB"],
-        'USER': os.environ["POSTGRES_USER"],
-        'PASSWORD': os.environ["POSTGRES_PASSWORD"],
-        'HOST': os.environ["POSTGRES_URL"],
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ['POSTGRES_URL'],
         'PORT': '5432',
     }
 }
@@ -267,8 +268,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 587
 EMAIL_SENDER = 'info@shopelectro.ru'
-EMAIL_RECIPIENT = 'info@shopelectro.ru'
-SHOP_EMAIL = 'info@shopelectro.ru'
+EMAIL_RECIPIENTS = os.environ.get('EMAIL_RECIPIENTS', 'info@shopelectro.ru').split(',')
 
 # FTP configs
 FTP_USER = os.environ.get('FTP_USER', 'user')
@@ -316,6 +316,11 @@ SHOP = {
     'local_delivery_cost_threshold': 5000,
 }
 
+
+def get_robots_content():
+    with open(os.path.join(TEMPLATE_DIR, 'robots.txt')) as robots_file:
+        return robots_file.read()
+
 # used in data-migrations and tests
 CUSTOM_PAGES = {
     'index': {
@@ -346,7 +351,11 @@ CUSTOM_PAGES = {
     'order_success': {
         'slug': 'order-success',
         'name': 'Заказ принят',
-    }
+    },
+    'robots': {
+        'slug': 'robots',
+        'content': get_robots_content(),
+    },
 }
 
 TAGS_URL_DELIMITER = '-or-'
