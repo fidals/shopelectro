@@ -53,8 +53,28 @@ def json_to_dict(response: HttpResponse) -> dict():
     return json.loads(response.content)
 
 
-# @todo #302 Divide the CatalogPage test class into parts related to the features."""
-class CatalogPage(TestCase):
+class BaseCatalogTestCase(TestCase):
+
+    fixtures = ['dump.json']
+
+    def setUp(self):
+        self.category = Category.objects.root_nodes().select_related('page').first()
+        self.tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
+
+    def get_category_page(
+        self,
+        category: Category=None,
+        tags: TagQuerySet=None,
+        sorting: int=None,
+        query_string: dict=None,
+    ):
+        category = category or self.category
+        return self.client.get(reverse_catalog_url(
+            'category', {'slug': category.page.slug}, tags, sorting, query_string,
+        ))
+
+
+class CatalogTags(BaseCatalogTestCase):
     fixtures = ['dump.json']
 
     def setUp(self):
@@ -190,6 +210,9 @@ class CatalogPage(TestCase):
         response = self.client.get(product.url)
         for link in property_links:
             self.assertContains(response, link)
+
+
+class CatalogPagination(BaseCatalogTestCase):
 
     def test_pagination_numbering(self):
         page_number = 1
