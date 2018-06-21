@@ -67,7 +67,10 @@ class SeleniumTestCase(LiveServerTestCase):
         # UPD 19.05.18: Seems it works, so we enable it to reduce number of errors
         # UPD 21.06.18: It does not work all times. When serv is loaded, this mech breaks.
         time.sleep(1.0)
-        cls.browser.maximize_window()
+        try:
+            cls.browser.maximize_window()
+        except WebDriverException:
+            print('Failed to maximize window')
 
     @classmethod
     def tearDownClass(cls):
