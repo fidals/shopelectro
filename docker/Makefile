@@ -46,10 +46,15 @@ test: build-static
 	$(dc) exec app python manage.py test -v 3 --liveserver=app:8020-8030 --parallel
 	$(dc) stop
 
-lint:
-	$(dc) up -d app
+lint-code:
 	$(dc) run --rm lint
-	$(dc) stop
+
+lint-pdd:
+	$(dc) run --rm pdd
+
+lint:
+	$(MAKE) lint-code
+	$(MAKE) lint-pdd
 
 deploy-dev:
 	$(MAKE) create-env

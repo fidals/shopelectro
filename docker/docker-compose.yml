@@ -94,19 +94,18 @@ services:
     volumes:
       - /dev/shm:/dev/shm
 
-  # @todo #322 Resurrect coala eslint.
   lint:
     image: fidals/coala-ci
     working_dir: $SRC_DIR
     command: coala
-    volumes_from:
-      - app
+    volumes:
+      - ./../:$SRC_DIR
 
   pdd:
     image: fidals/pdd-ci
     working_dir: $SRC_DIR
-    volumes_from:
-      - app
+    volumes:
+      - ./../:$SRC_DIR
     command: pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
 
 networks:
