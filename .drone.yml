@@ -73,7 +73,15 @@ pipeline:
     image: fidals/pdd-ci
     group: lint
     commands:
-      - pdd --verbose --exclude=node_modules/**/* --exclude=static/**/* --exclude=media/**/* --exclude=doc/build/**/* -f report.xml
+      - pdd --verbose \
+        --exclude=node_modules/**/* --exclude=static/**/* \
+        --exclude=media/**/* --exclude=doc/build/**/* \
+        --exclude=.idea/**/* \
+        --exclude=front/build \
+        --exclude=front/images \
+        --exclude=**/*.pyc \
+        --exclude=**/*.jpg \
+        -f report.xml
     when:
       event: pull_request
 
