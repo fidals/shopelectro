@@ -75,11 +75,6 @@ class BaseCatalogTestCase(TestCase):
 
 
 class CatalogTags(BaseCatalogTestCase):
-    fixtures = ['dump.json']
-
-    def setUp(self):
-        self.category = Category.objects.root_nodes().select_related('page').first()
-        self.tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
