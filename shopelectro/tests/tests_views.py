@@ -14,6 +14,8 @@ from urllib.parse import urlencode, urlparse, quote
 
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.contrib.redirects.models import Redirect
+from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.http import HttpResponse
 from django.test import TestCase
@@ -529,7 +531,6 @@ class Redirects(TestCase):
 
     fixtures = ['dump.json']
 
-    @unittest.expectedFailure('rf#140 task will resurrect it')
     def test_redirect_on_existing_page(self):
         """DB based redirect from existing url should do, but should not avoid it."""
         # take some existing `url_from`
@@ -538,11 +539,6 @@ class Redirects(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # create redirect from `url_from` to another existing one - `url_to`
-        from django.contrib.redirects.models import Redirect
-        from django.contrib.sites.models import Site
-
-        # Site.objects.create(domain='shopelectro.ru', name='shopelectro')
-
         url_to = '/catalog/categories/category-0/'
         Redirect.objects.create(
             site=Site.objects.first(),
