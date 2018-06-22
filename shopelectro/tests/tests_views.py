@@ -14,13 +14,13 @@ from urllib.parse import urlencode, urlparse, quote
 
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.contrib.redirects.models import Redirect
 from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+from redirects.models import Redirect
 
 from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet, serialize_tags_to_url
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
@@ -545,4 +545,3 @@ class Redirects(TestCase):
         self.assertEqual(response.status_code, 301)
         response = self.client.get(url_from, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.url, url_from)
