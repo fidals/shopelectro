@@ -5,6 +5,7 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
+import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -516,3 +517,36 @@ class TestSearch(TestCase):
             f'?term={self.QUOTED_SIGNLE_RESULT_TERM}&pageType=category'
         )
         self.assertTrue(len(json_to_dict(response)) == 1)
+
+
+class Redirects(TestCase):
+
+    fixtures = ['dump.json']
+
+    @unittest.expectedFailure('rf#140 task will resurrect it')
+    def test_redirect_on_existing_page(self):
+        """DB based redirect from existing url should do, but should not avoid it."""
+        # take some existing `url_from`
+        url_from = '/catalog/categories/category-0/tags/6-v/'
+        response = self.client.get(url_from)
+        self.assertEqual(response.status_code, 200)
+
+        # create redirect from `url_from` to another existing one - `url_to`
+        from django.contrib.redirects.models import Redirect
+        from django.contrib.sites.models import Site
+
+        # Site.objects.create(domain='shopelectro.ru', name='shopelectro')
+
+        url_to = '/catalog/categories/category-0/'
+        Redirect.objects.create(
+            site=Site.objects.first(),
+            old_path=url_from,
+            new_path=url_to
+        )
+
+        # `url_from` should redirect to `url_to`
+        response = self.client.get(url_from)
+        self.assertEqual(response.status_code, 301)
+        response = self.client.get(url_from, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.url, url_from)
