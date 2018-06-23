@@ -215,6 +215,8 @@ LOGGING = {
 }
 
 SELENIUM_URL = os.environ.get('SELENIUM_URL', 'http://selenium:4444/wd/hub')
+SELENIUM_WAIT_SECONDS = int(os.environ.get('SELENIUM_WAIT_SECONDS', 60))
+SELENIUM_TIMEOUT_SECONDS = int(os.environ.get('SELENIUM_TIMEOUT_SECONDS', 30))
 
 SITE_CREATED = datetime(2013, 1, 1)
 
