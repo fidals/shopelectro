@@ -5,6 +5,7 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
+import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -13,11 +14,13 @@ from urllib.parse import urlencode, urlparse, quote
 
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+from redirects.models import Redirect
 
 from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet, serialize_tags_to_url
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
@@ -522,3 +525,29 @@ class TestSearch(TestCase):
             f'?term={self.QUOTED_SIGNLE_RESULT_TERM}&pageType=category'
         )
         self.assertTrue(len(json_to_dict(response)) == 1)
+
+
+class Redirects(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_redirect_on_existing_page(self):
+        """DB based redirect from existing url should do, but should not avoid it."""
+        # take some existing `url_from`
+        url_from = '/catalog/categories/category-0/tags/6-v/'
+        response = self.client.get(url_from)
+        self.assertEqual(response.status_code, 200)
+
+        # create redirect from `url_from` to another existing one - `url_to`
+        url_to = '/catalog/categories/category-0/'
+        Redirect.objects.create(
+            site=Site.objects.first(),
+            old_path=url_from,
+            new_path=url_to
+        )
+
+        # `url_from` should redirect to `url_to`
+        response = self.client.get(url_from)
+        self.assertEqual(response.status_code, 301)
+        response = self.client.get(url_from, follow=True)
+        self.assertEqual(response.status_code, 200)

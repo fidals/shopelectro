@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.messages',
-    'django.contrib.redirects',
     'django.contrib.sessions',
     'django.contrib.sitemaps',
     'django.contrib.sites',
@@ -66,6 +65,7 @@ INSTALLED_APPS = [
     'catalog',
     'search',
     'ecommerce',
+    'redirects',
     'shopelectro',
 ]
 
@@ -78,10 +78,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'redirects.middleware.RedirectFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'shopelectro.urls'

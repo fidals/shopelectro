@@ -30,7 +30,7 @@ services:
       # contains refarm-site modules
       - $DEPS_DIR
       # Thus, you can work with apps related to the refarm-site
-      # - $REFARM_SRC/search:/root/.local/lib/python3.6/site-packages/search
+      #- $REFARM_DIR/search:/root/.local/lib/python3.6/site-packages/search
     command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
 
   nodejs:
