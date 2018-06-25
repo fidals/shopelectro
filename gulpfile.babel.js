@@ -11,6 +11,12 @@ const $ = require('gulp-load-plugins')();
 const flexibility = require('postcss-flexibility')();
 const spawnSync = require('child_process').spawnSync;
 
+/*
+Note on deprecated deps (25.06.18):
+During `npm install` step you can see some warnings,
+related to deprecated deps. See issue #353 for more details.
+*/
+
 // ================================================================
 // Utils
 // ================================================================
