@@ -72,6 +72,17 @@ dc exec app python manage.py test -v 3 --liveserver=app:8021-8029 \
     stroyprombeton.tests.tests_selenium.CartTestCase.buy_on_product_page
 ``` 
 
+**Fixtures**
+Некоторые тесты используют fixtures.
+Это заранее подготовленные данные из базы.
+Подробнее о фикстурах [в документации Django](https://docs.djangoproject.com/en/1.11/topics/testing/tools/#fixture-loading).
+
+Наши фикстуры живут в папке `shopelectro/fixtures`
+Файл `shopelectro/fixtures/dump.json` сгенерирован специально для тестов.
+Если вам нужно добавить данных в тесты, пересоздайте этот файл с новыми данными и закоммитьте.
+Для пересоздания фикстур используйте команду `shopelectro/management/commands/test_db.py`
+Файл `dump.json` в контроле версий всегда должен соответстовать коду команды `test_db`. 
+
 **Админка**
 Адрес: /admin/
 
