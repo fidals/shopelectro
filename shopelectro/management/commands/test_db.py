@@ -67,8 +67,8 @@ class Command(BaseCommand):
 
     def prepare_db(self):
         # @todo #389:60m Set db name in `test_db` command. stb2
-        #   Set name instead of asserting.
-        #   You also should create/drop it with postgres driver.
+        #  Set name instead of asserting.
+        #  You also should create/drop it with postgres driver.
         is_test_db = settings.DATABASES['default']['NAME'] == 'test'
         assert is_test_db, 'To create fixtures you have to create a database named "test".'
         call_command('migrate')
