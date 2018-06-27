@@ -45,7 +45,7 @@
   },
   "babel": {
     "presets": [
-      "@babel/preset-env"
+      "env"
     ],
     "compact": "false"
   },
