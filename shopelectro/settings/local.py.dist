@@ -8,19 +8,7 @@ DEBUG = True
 # http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'shopelectro',
-        'USER': 'postgres',
-        'PASSWORD': '11',
-        'HOST': '',
-        'PORT': '',
-    },
-}
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
 EMAIL_HOST_PASSWORD = 'so_secret_pass'
 
 # to disable django connection pool.
