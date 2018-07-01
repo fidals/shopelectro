@@ -77,7 +77,7 @@ dc exec app python manage.py test -v 3 --liveserver=app:8021-8029 \
 Это заранее подготовленные данные из базы.
 Подробнее о фикстурах [в документации Django](https://docs.djangoproject.com/en/1.11/topics/testing/tools/#fixture-loading).
 
-Наши фикстуры живут в папке `shopelectro/fixtures`
+Наши фикстуры лежат в папке `shopelectro/fixtures`
 Файл `shopelectro/fixtures/dump.json` сгенерирован специально для тестов.
 Если вам нужно добавить данных в тесты, пересоздайте этот файл с новыми данными и закоммитьте.
 Для пересоздания фикстур используйте команду `shopelectro/management/commands/test_db.py`
