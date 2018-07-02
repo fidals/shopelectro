@@ -1,7 +1,7 @@
 from functools import partial
 
 from django.conf import settings
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -23,6 +23,13 @@ def get_products_count(request):
     """Calculate max products list size from request. List size depends on device type."""
     mobile_view = get_user_agent(request).is_mobile
     return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
+
+
+def get_paginated_page(objects, per_page, page_number):
+    try:
+        return Paginator(objects, per_page).page(page_number)
+    except:
+        raise Http404('Page does not exist')
 
 
 # CATALOG VIEWS
@@ -170,7 +177,7 @@ class CategoryPage(catalog.CategoryPage):
         page.get_template_render_context = partial(
             template_context, page, tag_titles, tags)
 
-        paginated_page = Paginator(all_products, products_on_page).page(page_number)
+        paginated_page = get_paginated_page(all_products, products_on_page, page_number)
         total_products = all_products.count()
         products = paginated_page.object_list
         if not products:
@@ -240,7 +247,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             .distinct(sorting_option.lstrip('-'))
         )
 
-    paginated_page = Paginator(all_products, products_on_page).page(page_number)
+    paginated_page = get_paginated_page(all_products, products_on_page, page_number)
     products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
 

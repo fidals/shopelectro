@@ -2,12 +2,6 @@
 {% load se_extras %}
 {% load user_agents %}
 
-{% comment %} @todo #302:60m Implement pagination buttons for seo purposes.
- reate buttons with django templates on backend and hide them with js on frontend.
- Load_more button should reniew canonical url for current page.
- See the parent task for details.
-{% endcomment %}
-
 {% for product, image in product_image_pairs %}
   <div class="product-card col-xs-6 col-md-4" productId="{{ product.id }}"
        itemscope itemtype="http://schema.org/Product">
