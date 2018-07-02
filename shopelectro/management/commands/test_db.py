@@ -128,13 +128,13 @@ class Command(BaseCommand):
                     image=ImageFile(open(file_path, mode='rb'))
                 )
                 # save files to media folder
-                file_src = open(file_path, mode='rb')
-                file_name = os.path.split(file_src.name)[-1]
-                file_dst_path = os.path.join(
-                    settings.MEDIA_ROOT,
-                    model_directory_path(image, file_name)
-                )
-                shutil.copyfile(file_src.name, file_dst_path)
+                with open(file_path, mode='rb') as file_src:
+                    file_name = os.path.basename(file_src.name)
+                    file_dst_path = os.path.join(
+                        settings.MEDIA_ROOT,
+                        model_directory_path(image, file_name)
+                    )
+                    shutil.copyfile(file_src.name, file_dst_path)
 
             create_image(file_path=self.FIRST_IMAGE, slug='deer')
             create_image(file_path=self.SECOND_IMAGE, slug='gold')
