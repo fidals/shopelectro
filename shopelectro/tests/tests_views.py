@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import override_settings, TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -223,9 +223,9 @@ class CatalogPagination(BaseCatalogTestCase):
             404,
         )
 
-    def assert_pagination_links(self, next, prev, page_number):
+    def assert_pagination_links(self, next_, prev, page_number):
         self.assertEqual(
-            get_page_number(self.client.get(next['href'])),
+            get_page_number(self.client.get(next_['href'])),
             page_number + 1,
         )
         self.assertEqual(
@@ -233,15 +233,16 @@ class CatalogPagination(BaseCatalogTestCase):
             page_number - 1,
         )
 
+    @override_settings(DEBUG=True, INTERNAL_IPS=[])
     def test_pagination_buttons(self):
         """Buttons forward to a previous and a next pagination pages."""
         page_number = 3
-        prev, next = BeautifulSoup(
+        prev, next_ = BeautifulSoup(
             self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
             'html.parser'
         ).find(class_='catalog-pagination').find_all('a')
 
-        self.assert_pagination_links(next, prev, page_number)
+        self.assert_pagination_links(next_, prev, page_number)
 
     def test_pagination_canonical(self):
         """Links forward to a previous and a next pagination pages."""
@@ -252,9 +253,9 @@ class CatalogPagination(BaseCatalogTestCase):
         )
 
         self.assert_pagination_links(
-            soup.find('link', attrs={'rel': 'next'}),
-            soup.find('link', attrs={'rel': 'prev'}),
-            page_number,
+            next_=soup.find('link', attrs={'rel': 'next'}),
+            prev=soup.find('link', attrs={'rel': 'prev'}),
+            page_number=page_number,
         )
 
 

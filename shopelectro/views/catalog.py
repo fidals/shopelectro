@@ -25,10 +25,10 @@ def get_products_count(request):
     return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
 
 
-def get_paginated_page(objects, per_page, page_number):
+def get_paginated_page_or_404(objects, per_page, page_number):
     try:
         return Paginator(objects, per_page).page(page_number)
-    except:
+    except InvalidPage:
         raise Http404('Page does not exist')
 
 
@@ -177,7 +177,7 @@ class CategoryPage(catalog.CategoryPage):
         page.get_template_render_context = partial(
             template_context, page, tag_titles, tags)
 
-        paginated_page = get_paginated_page(all_products, products_on_page, page_number)
+        paginated_page = get_paginated_page_or_404(all_products, products_on_page, page_number)
         total_products = all_products.count()
         products = paginated_page.object_list
         if not products:
@@ -247,7 +247,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             .distinct(sorting_option.lstrip('-'))
         )
 
-    paginated_page = get_paginated_page(all_products, products_on_page, page_number)
+    paginated_page = get_paginated_page_or_404(all_products, products_on_page, page_number)
     products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
 
