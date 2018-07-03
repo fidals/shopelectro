@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'catalog',
     'search',
     'ecommerce',
-    'redirects',
+    'refarm_redirects',
     'shopelectro',
 ]
 
@@ -81,7 +81,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'redirects.middleware.RedirectFallbackMiddleware',
+    'refarm_redirects.middleware.RedirectFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'shopelectro.urls'
