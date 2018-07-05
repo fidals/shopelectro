@@ -10,6 +10,7 @@ Usage:
 """
 import os
 import shutil
+
 from django.conf import settings
 from django.core.files.images import ImageFile
 from django.core.management import call_command
@@ -121,14 +122,14 @@ class Command(BaseCommand):
     def create_products(self, categories, tags):
         def create_images(page: Page):
             def create_image(file_path, slug):
-                # product "/catalog/products/2/" contains image
-                image = Image.objects.create(
-                    model=page,
-                    slug=slug,
-                    image=ImageFile(open(file_path, mode='rb'))
-                )
                 # save files to media folder
                 with open(file_path, mode='rb') as file_src:
+                    # product "/catalog/products/2/" contains image
+                    image = Image.objects.create(
+                        model=page,
+                        slug=slug,
+                        image=ImageFile(file_src)
+                    )
                     file_name = os.path.basename(file_src.name)
                     file_dst_path = os.path.join(
                         settings.MEDIA_ROOT,
