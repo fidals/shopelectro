@@ -235,7 +235,7 @@ class CatalogPagination(BaseCatalogTestCase):
 
     @override_settings(DEBUG=True, INTERNAL_IPS=[])
     def test_pagination_buttons(self):
-        """Buttons forward to a previous and a next pagination pages."""
+        """Each button forward to a previous and a next pagination pages."""
         page_number = 3
         prev, next_ = BeautifulSoup(
             self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
@@ -245,7 +245,7 @@ class CatalogPagination(BaseCatalogTestCase):
         self.assert_pagination_links(next_, prev, page_number)
 
     def test_pagination_canonical(self):
-        """Links forward to a previous and a next pagination pages."""
+        """Canonical links forward to a previous and a next pagination pages."""
         page_number = 3
         soup = BeautifulSoup(
             self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),

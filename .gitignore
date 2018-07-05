@@ -23,5 +23,5 @@ celerybeat-schedule
 package-lock.json
 .vscode/
 database/
-report.xml
+*report.xml
 .DS_store
