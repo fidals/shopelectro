@@ -534,7 +534,7 @@ class Redirects(TestCase):
     # will be resurrected at rf#140
     @unittest.expectedFailure
     def test_redirect_from_existing_page(self):
-        """Refarm-site's custom redirects app should redirect from existing url too."""
+        """`refarm-site.redirects` app should redirect from existing url too."""
         # take some existing `url_from`
         # @todo #360:30m Remove hardcoded fixture data.
         #  Replace `url_from` and `url_to` with urls, generated from db.
