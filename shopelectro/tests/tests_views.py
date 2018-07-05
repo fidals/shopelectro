@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import override_settings, TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -215,6 +215,48 @@ class CatalogPagination(BaseCatalogTestCase):
         pagination_step = 25
         response = self.get_category_page(query_string={'step': pagination_step})
         self.assertEqual(len(response.context['product_image_pairs']), pagination_step)
+
+    def test_pagination_404(self):
+        """Category page returns 404 for a nonexistent page number."""
+        self.assertEqual(
+            self.get_category_page(query_string={'page': 1000}).status_code,
+            404,
+        )
+
+    def assert_pagination_links(self, next_, prev, page_number):
+        self.assertEqual(
+            get_page_number(self.client.get(next_['href'])),
+            page_number + 1,
+        )
+        self.assertEqual(
+            get_page_number(self.client.get(prev['href'])),
+            page_number - 1,
+        )
+
+    @override_settings(DEBUG=True, INTERNAL_IPS=[])
+    def test_pagination_buttons(self):
+        """Each button forward to a previous and a next pagination pages."""
+        page_number = 3
+        prev, next_ = BeautifulSoup(
+            self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
+            'html.parser'
+        ).find(class_='catalog-pagination').find_all('a')
+
+        self.assert_pagination_links(next_, prev, page_number)
+
+    def test_pagination_canonical(self):
+        """Canonical links forward to a previous and a next pagination pages."""
+        page_number = 3
+        soup = BeautifulSoup(
+            self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
+            'html.parser'
+        )
+
+        self.assert_pagination_links(
+            next_=soup.find('link', attrs={'rel': 'next'}),
+            prev=soup.find('link', attrs={'rel': 'prev'}),
+            page_number=page_number,
+        )
 
 
 class LoadMore(TestCase):

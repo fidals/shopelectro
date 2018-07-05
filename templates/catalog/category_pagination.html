@@ -1,0 +1,20 @@
+{% comment %}
+@todo #302:30m Implement JS for pagination buttons.
+ Hide pagination buttons and reniew a canonical url for current page with the help of JS.
+{% endcomment %}
+{% if DEBUG %}
+  <div class="hidden catalog-pagination">
+    <span>
+      {% if paginated_page.has_previous %}
+        <a href="{% if paginated_page.previous_page_number == 1 %}{{ request.path }}{% else %}{{ request.path }}?page={{ paginated_page.previous_page_number }}{% endif %}">
+          Предыдущая страница {{ paginated_page.previous_page_number }}
+        </a>
+      {% endif %}
+      {% if paginated_page.has_next %}
+        <a href="{{ request.path }}?page={{ paginated_page.next_page_number }}">
+          Следующая страница {{ paginated_page.next_page_number }}
+        </a>
+      {% endif %}
+    </span>
+  </div>
+{% endif %}
