@@ -127,6 +127,25 @@ pipeline:
       status: [ success, failure ]
       event: [push, pull_request]
 
+  docker-up:
+    image: docker/compose:1.17.1
+    commands:
+      - cd docker
+      - cp drone_env/* env_files/
+      - cp drone_env/.env .
+      - docker-compose up -d app
+      # @todo #396:60m Do drone check `docker-up` service.
+      #  Let drone check if started service is available.
+      #  Some code draft:
+      #  `- if [[ $(curl -Is http://127.0.0.1:8010 | head -1 | grep 200) = '' ]]; then echo 'service '; fi`
+      - docker-compose stop
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # for nodejs build
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/front/build
+    when:
+      event: [push, pull_request]
+
   npm-clean:
     image: busybox
     commands:

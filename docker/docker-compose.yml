@@ -62,8 +62,8 @@ services:
     networks:
       - se-backend
     ports:
-      - 5673:$RABBITMQ_PORT
-      - 15673:15672
+      - 5675:$RABBITMQ_PORT
+      - 15675:15672
 
   redis:
     image: redis:alpine
@@ -76,7 +76,7 @@ services:
     networks:
       - se-backend
     ports:
-      - 6380:6379
+      - 6382:6379
 
   selenium:
     image: selenium/standalone-chrome:3.10.0
