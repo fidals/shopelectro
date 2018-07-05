@@ -1,5 +1,6 @@
 # Docs here: https://docs.docker.com/compose/environment-variables/#/the-env-file
 
+COMPOSE_PROJECT_NAME=shopelectro
 # It may affect on app logic. Valid values: LOCAL | CI | PROD
 ENV_TYPE=LOCAL
 
