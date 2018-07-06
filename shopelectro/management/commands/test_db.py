@@ -9,13 +9,14 @@ Usage:
 - now you have json file, that'll be used by our TDD tests
 """
 import os
+import shutil
 
 from django.conf import settings
 from django.core.files.images import ImageFile
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from images.models import Image
+from images.models import Image, model_directory_path
 from pages.models import Page, FlatPage, PageTemplate
 from pages.utils import save_custom_pages, init_redirects_app
 
@@ -66,6 +67,9 @@ class Command(BaseCommand):
         self.save_dump()
 
     def prepare_db(self):
+        # @todo #389:60m Set db name in `test_db` command. stb2
+        #  Set name instead of asserting.
+        #  You also should create/drop it with postgres driver.
         is_test_db = settings.DATABASES['default']['NAME'] == 'test'
         assert is_test_db, 'To create fixtures you have to create a database named "test".'
         call_command('migrate')
@@ -118,11 +122,20 @@ class Command(BaseCommand):
     def create_products(self, categories, tags):
         def create_images(page: Page):
             def create_image(file_path, slug):
-                Image.objects.create(
-                    model=page,
-                    slug=slug,
-                    image=ImageFile(open(file_path, mode='rb'))
-                )
+                # save files to media folder
+                with open(file_path, mode='rb') as file_src:
+                    # product "/catalog/products/2/" contains image
+                    image = Image.objects.create(
+                        model=page,
+                        slug=slug,
+                        image=ImageFile(file_src)
+                    )
+                    file_name = os.path.basename(file_src.name)
+                    file_dst_path = os.path.join(
+                        settings.MEDIA_ROOT,
+                        model_directory_path(image, file_name)
+                    )
+                    shutil.copyfile(file_src.name, file_dst_path)
 
             create_image(file_path=self.FIRST_IMAGE, slug='deer')
             create_image(file_path=self.SECOND_IMAGE, slug='gold')
