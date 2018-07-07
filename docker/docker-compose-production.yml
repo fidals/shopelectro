@@ -20,7 +20,7 @@ services:
     ports:
       - $VIRTUAL_HOST_PORT
     volumes:
-      - $SRC_DIR_PROD/shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
       # contains refarm-site modules
       - $DEPS_DIR
       # source code volume
@@ -43,7 +43,7 @@ services:
     depends_on:
       - app
     volumes:
-      - $SRC_DIR_PROD/shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     networks:
       - se-backend
     command: celery -A shopelectro beat -l info
@@ -59,7 +59,7 @@ services:
     depends_on:
       - app
     volumes:
-      - $SRC_DIR_PROD/shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     networks:
       - se-backend
     command: celery -A shopelectro worker -E -n worker.default@%%h -l info -Q default
@@ -77,7 +77,7 @@ services:
     networks:
       - se-backend
     volumes:
-      - $SRC_DIR_PROD/shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     command: celery -A shopelectro worker -E -n worker.mail@%%h -l info -Q mail
 
   celery-command-worker:
@@ -91,7 +91,7 @@ services:
     depends_on:
       - app
     volumes:
-      - $SRC_DIR_PROD/shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     networks:
       - se-backend
     command: celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
