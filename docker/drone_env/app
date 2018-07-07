@@ -1,0 +1,18 @@
+# Docs here: https://docs.docker.com/compose/environment-variables/#/the-env-file
+
+COMPOSE_PROJECT_NAME=drone_shopelectro
+# It may affect on app logic. Valid values: LOCAL | CI | PROD
+ENV_TYPE=LOCAL
+
+# App related settings
+DJANGO_SETTINGS_MODULE=shopelectro.settings.local
+DJANGO_LOG_LEVEL=INFO
+SECRET_KEY=secret-key
+STAGE_SECRET_KEY=another-secret-key
+
+# URL to required services
+POSTGRES_URL=postgres
+REDIS_URL=redis
+REDIS_PORT=6379
+RABBITMQ_URL=rabbitmq
+RABBITMQ_PORT=5672
