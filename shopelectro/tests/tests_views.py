@@ -5,6 +5,7 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
+import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -13,6 +14,8 @@ from urllib.parse import urlencode, urlparse, quote
 
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.contrib.redirects.models import Redirect
+from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.http import HttpResponse
 from django.test import override_settings, TestCase
@@ -564,3 +567,29 @@ class TestSearch(TestCase):
             f'?term={self.QUOTED_SIGNLE_RESULT_TERM}&pageType=category'
         )
         self.assertTrue(len(json_to_dict(response)) == 1)
+
+
+class Redirects(TestCase):
+
+    fixtures = ['dump.json']
+
+    # will be resurrected at rf#140
+    @unittest.expectedFailure
+    def test_redirect_from_existing_page(self):
+        """`refarm-site.redirects` app should redirect from existing url too."""
+        # take some existing `url_from`
+        # @todo #360:30m Remove hardcoded fixture data.
+        #  Replace `url_from` and `url_to` with urls, generated from db.
+        #  It'll be much more short and clear.
+        url_from = '/catalog/categories/category-0/tags/6-v/'
+        # create redirect from `url_from` to another existing one - `url_to`
+        url_to = '/catalog/categories/category-0/'
+        Redirect.objects.create(
+            site=Site.objects.first(),
+            old_path=url_from,
+            new_path=url_to
+        )
+
+        # `url_from` should redirect to `url_to`
+        response = self.client.get(url_from)
+        self.assertEqual(response.status_code, 301)
