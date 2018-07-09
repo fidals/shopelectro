@@ -5,7 +5,6 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
-import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -573,8 +572,6 @@ class Redirects(TestCase):
 
     fixtures = ['dump.json']
 
-    # will be resurrected at rf#140
-    @unittest.expectedFailure
     def test_redirect_from_existing_page(self):
         """`refarm-site.redirects` app should redirect from existing url too."""
         # take some existing `url_from`

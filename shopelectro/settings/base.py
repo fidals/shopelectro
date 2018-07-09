@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'django_select2',
     'images',
+    'refarm_redirects',
     'pages',
     'catalog',
     'search',
@@ -78,10 +79,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'refarm_redirects.middleware.RedirectAllMiddleware',
 ]
 
 ROOT_URLCONF = 'shopelectro.urls'
