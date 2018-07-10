@@ -353,7 +353,7 @@ CUSTOM_PAGES = {
         'name': 'Заказ принят',
     },
     'robots': {
-        'slug': 'robots',
+        'slug': 'robots.txt',
         'content': get_robots_content(),
     },
 }
