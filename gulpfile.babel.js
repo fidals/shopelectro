@@ -11,6 +11,12 @@ const $ = require('gulp-load-plugins')();
 const flexibility = require('postcss-flexibility')();
 const spawnSync = require('child_process').spawnSync;
 
+console.log(`
+You've seen warning because of deprecated deps during npm install.
+It's recursive deps of actual packages, that we are using.
+So, it's nothing we can do.
+`)
+
 // ================================================================
 // Utils
 // ================================================================
