@@ -8,7 +8,6 @@
     $btnToCartCategoryPage: $('.js-product-to-cart'),
     $cartHeader: $('.js-cart-header'),
     goToCartLink: '.js-go-to-cart',
-    $removeFromCart: $('.js-remove'),
     $goToProductLink: $('.js-browse-product'),
     $downloadPrice: $('.js-download-price'),
     $downloadPriceInFooter: $('.js-download-price-footer'),
@@ -19,8 +18,13 @@
     fullEmail: 'info@shopelectro.ru',
   };
 
+  window.dataLayer = window.dataLayer || [];
+  let yaTracker = new YATracker(window.dataLayer, 'RUB');
+
   const init = () => {
     setUpListeners();
+    // e-commerce container
+    // https://yandex.ru/support/metrika/data/e-commerce.html
   };
 
   function setUpListeners() {
@@ -28,27 +32,38 @@
       reachGoal('CMN_BUY_SEND');
       reachGoal('FAST_BUY_SEND');
     });
-    mediator.subscribe('onOrderSend', () => {
+    mediator.subscribe('onOrderSend', (_, products) => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FULL_BUY_SEND');
+      // Use a dummy order's id, because we do not wait complete processing of
+      // purchase request.
+      yaTracker.purchase(products, {id: 'DummyId'});
     });
-    mediator.subscribe('onProductRemove', () => reachGoal('DELETE_PRODUCT'));
+    mediator.subscribe('onProductAdd', (_, id, count) => {
+      yaTracker.add([{id: id, quantity: count}]);
+    });
+    mediator.subscribe('onProductRemove', (_, id) => {
+      reachGoal('DELETE_PRODUCT');
+      yaTracker.remove([{id: id}]);
+    });
+    mediator.subscribe('onProductDetail', (_, id) => {
+      yaTracker.detail([{id: id}]);
+    });
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
 
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));
-    DOM.$removeFromCart.click(() => reachGoal('DELETE_PRODUCT'));
     DOM.$cartHeader.on('click', DOM.goToCartLink, () => reachGoal('CART_OPEN'));
     DOM.$backcallModal.click(() => reachGoal('BACK_CALL_OPEN'));
     DOM.$goToProductLink.click(() => reachGoal('PROD_BROWSE'));
     DOM.$downloadPrice.click(() => reachGoal('PRICE_HEADER'));
     DOM.$downloadPriceInFooter.click(() => reachGoal('PRICE_FOOTER'));
     DOM.$btnToCartProductPage
-      .click(() => {
+      .click((event) => {
         reachGoal('PUT_IN_CART_FROM_PRODUCT');
         reachGoal('CMN_PUT_IN_CART');
       });
     DOM.$btnToCartCategoryPage
-      .click(() => {
+      .click((event) => {
         reachGoal('PUT_IN_CART_FROM_CATEGORY');
         reachGoal('CMN_PUT_IN_CART');
       });
@@ -101,6 +116,8 @@
       reachGoal('COPY_MAIL');
     }
   }
+
+  function
 
   init();
 })();

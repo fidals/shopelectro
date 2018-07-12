@@ -28,7 +28,7 @@
     server.removeFromCart(productId)
       .then((data) => {
         mediator.publish('onCartUpdate', data);
-        mediator.publish('onProductRemove');
+        mediator.publish('onProductRemove', productId);
       });
   }
 

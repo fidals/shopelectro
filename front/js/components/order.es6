@@ -46,7 +46,12 @@
       'onCartUpdate', renderTable, fillSavedInputs,
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete,
     );
-    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
+    $(DOM.fullForm).submit(() => {
+      let products = $(DOM.productCount).map((_, e) => {
+        return {quantity: $(e).val(), id: $(e).attr('productId')}
+      }).get();
+      mediator.publish('onOrderSend', products);
+    });
 
     /**
      * Bind events to parent's elements, because of dynamic elements.
@@ -128,6 +133,7 @@
     server.removeFromCart(productId)
       .then((data) => {
         mediator.publish('onCartUpdate', data);
+        mediator.publish('onProductRemove', productId);
       });
   }
 
