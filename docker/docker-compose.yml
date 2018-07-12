@@ -23,8 +23,6 @@ services:
     networks:
       - se-backend
       - se-frontend
-    volumes_from:
-      - nodejs
     volumes:
       - ./../:$SRC_DIR
       # contains refarm-site modules
@@ -36,11 +34,11 @@ services:
   nodejs:
     image: fidals/se-nodejs:dev
     volumes:
-      - $FRONT_BUILD_DIR
       # Volumes for refarm-site's front development
-      #- ../gulpfile.babel.js:/usr/app/src_front/gulpfile.babel.js
-      #- ../package.json:/usr/app/src_front/package.json
-      #- ../front:/usr/app/src_front/front
+      - ../gulpfile.babel.js:/usr/app/src/gulpfile.babel.js
+      - ../package.json:/usr/app/src/package.json
+      - ../front:/usr/app/src/front
+      - ../front/build:/usr/app/src/build
     env_file:
       - env_files/paths
 

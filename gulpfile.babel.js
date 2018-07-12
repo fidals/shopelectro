@@ -56,7 +56,7 @@ const plugins = [
   }),
 ];
 
-const buildDir = process.env.FRONT_BUILD_DIR;
+const buildDir = 'build';
 const ecommercePaths = getAppSrcPaths('ecommerce');
 const genericAdminPaths = getAppSrcPaths('generic_admin');
 

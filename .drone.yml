@@ -19,21 +19,19 @@ pipeline:
     image: node:slim
     environment:
       - DEPS_DIR=/usr/app/deps
-      - FRONT_BUILD_DIR=/usr/app/front/build
     commands:
       - npm install
       - npm install -g gulp-cli
       - gulp build
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
-      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/usr/app/front/build
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/build
     when:
       event: [push, pull_request]
 
   test:
     image: python
     environment:
-      - FRONT_BUILD_DIR=/usr/app/front/build
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
       - POSTGRES_USER=postgres
@@ -89,7 +87,6 @@ pipeline:
     image: docker/compose:1.17.1
     environment:
       - DEPS_DIR=/usr/app/deps
-      - FRONT_BUILD_DIR=/usr/app/front/build
     commands:
       - cd docker
       # Build python images with sources and static files

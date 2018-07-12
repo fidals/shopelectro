@@ -6,4 +6,3 @@ REFARM_DIR=/path/to_my/refarm_site
 SRC_DIR=/usr/app/src
 # Set smth like `/var/fidals/se_db`, if you use VirtualBox
 POSTGRES_DATA_DIR=./../database
-FRONT_BUILD_DIR=/usr/app/front/build
