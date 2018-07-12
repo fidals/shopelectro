@@ -58,12 +58,12 @@
     DOM.$downloadPrice.click(() => reachGoal('PRICE_HEADER'));
     DOM.$downloadPriceInFooter.click(() => reachGoal('PRICE_FOOTER'));
     DOM.$btnToCartProductPage
-      .click((event) => {
+      .click(() => {
         reachGoal('PUT_IN_CART_FROM_PRODUCT');
         reachGoal('CMN_PUT_IN_CART');
       });
     DOM.$btnToCartCategoryPage
-      .click((event) => {
+      .click(() => {
         reachGoal('PUT_IN_CART_FROM_CATEGORY');
         reachGoal('CMN_PUT_IN_CART');
       });
@@ -116,8 +116,6 @@
       reachGoal('COPY_MAIL');
     }
   }
-
-  function
 
   init();
 })();
