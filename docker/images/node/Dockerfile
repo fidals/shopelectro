@@ -3,7 +3,6 @@ FROM node:slim
 ARG deps_dir
 ENV DEPS_DIR=$deps_dir
 
-# Also this directory differs from $SRC_DIR to avoid `node_modules/` volumes conflicts.
 WORKDIR /usr/app/src/
 
 RUN apt-get update \

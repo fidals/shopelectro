@@ -6,4 +6,3 @@ SRC_DIR_PROD=/home/andre/prog/shopelectro
 
 REFARM_DIR=../../refarm-site
 POSTGRES_DATA_DIR=/var/fidals/se_db
-=/usr/app/front/build
