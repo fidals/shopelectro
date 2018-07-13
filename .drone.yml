@@ -173,10 +173,13 @@ services:
 
   selenium:
     image: selenium/standalone-chrome-debug:3.10.0
-    environment: # https://github.com/SeleniumHQ/docker-selenium/issues/392
+    environment:
+      # https://github.com/SeleniumHQ/docker-selenium/issues/392
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
       - SCREEN_WIDTH=1366
       - SCREEN_HEIGHT=768
+      - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
+      - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
