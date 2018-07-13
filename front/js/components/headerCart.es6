@@ -24,11 +24,12 @@
    */
   function remove(event) {
     const productId = $(event.target).attr('data-id');
+    const productCount = $(event.target).attr('data-count');
 
     server.removeFromCart(productId)
       .then((data) => {
         mediator.publish('onCartUpdate', data);
-        mediator.publish('onProductRemove', productId);
+        mediator.publish('onProductRemove', [productId, productCount]);
       });
   }
 

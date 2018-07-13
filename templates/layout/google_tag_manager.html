@@ -24,6 +24,36 @@
 {% else %}
   {% if is_head_tag %}
     <script>
+      var gaObj = (function() {
+        var results = [];
+
+        var fn = function(action, params) {
+          results.push([action, params]);
+          console.log('GA:', JSON.stringify([action, params]));
+        };
+
+        return {
+          fn: fn,
+          results: results,
+        }
+      }());
+      var ga = gaObj.fn;
+
+      window.dataLayer = (function() {
+        var results = [];
+
+        var push = function() {
+          var args = Array.from(arguments);
+          results.push(args);
+          console.log('YA:', JSON.stringify(args));
+        };
+
+        return {
+          push: push,
+          results: results,
+        }
+      }());
+
       var yaCounter20644114 = (function() {
         var goals = [];
 

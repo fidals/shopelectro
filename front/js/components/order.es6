@@ -55,8 +55,8 @@
           name: $el.find('.js-product-link').text(),
           quantity: $el.find('.js-prod-count').val(),
         }
-      }).get()
-      mediator.publish('onOrderSend', productsData);
+      }).get();
+      mediator.publish('onOrderSend', [productsData]);
     });
 
 
@@ -64,7 +64,9 @@
      * Bind events to parent's elements, because of dynamic elements.
      */
     DOM.$order.on('click', DOM.submit, submitOrder);
-    DOM.$order.on('click', DOM.remove, event => removeProduct(getElAttr(event, 'productId')));
+    DOM.$order.on('click', DOM.remove, event => removeProduct(
+      getElAttr(event, 'productId'), getElAttr(event, 'productCount'),
+    ));
     DOM.$order.on('change', DOM.productCount, helpers.debounce(changeProductCount, 250));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
   }
@@ -136,11 +138,11 @@
   /**
    * Remove Product from Cart.
    */
-  function removeProduct(productId) {
+  function removeProduct(productId, count) {
     server.removeFromCart(productId)
       .then((data) => {
         mediator.publish('onCartUpdate', data);
-        mediator.publish('onProductRemove', productId);
+        mediator.publish('onProductRemove', [productId, count]);
       });
   }
 

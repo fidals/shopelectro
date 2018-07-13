@@ -19,7 +19,7 @@
   };
 
   // @todo #129 Implement tracking of certain actions on front-end for YA and GA.
-  //  Actions: one-click purchase, clearing of cart.
+  //  Actions: one-click purchase, changing products count on order page.
   //  See the parent issue for a detail.
 
   // Sync container for yaTracker
@@ -52,9 +52,9 @@
     mediator.subscribe('onProductAdd', (_, id, count) => {
       yaTracker.add([{id: id, quantity: count}]);
     });
-    mediator.subscribe('onProductRemove', (_, id) => {
+    mediator.subscribe('onProductRemove', (_, id, count) => {
       reachGoal('DELETE_PRODUCT');
-      yaTracker.remove([{id: id, quantity: 1}]);
+      yaTracker.remove([{id: id, quantity: count}]);
     });
     mediator.subscribe('onProductDetail', (_, id) => yaTracker.detail([{id: id}]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));

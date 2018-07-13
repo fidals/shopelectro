@@ -25,7 +25,7 @@
   };
 
   const productId = DOM.$addToCart.attr('data-id');
-  mediator.publish('onProductDetail', productId);
+  if (productId) mediator.publish('onProductDetail', productId);
 
   const init = () => {
     setUpListeners();
