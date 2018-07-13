@@ -29,59 +29,59 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  test:
-    image: python
-    environment:
-      - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_URL=postgres
-      - POSTGRES_DB=test
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=test
-      - RABBITMQ_URL=rabbitmq
-      - RABBITMQ_PORT=5672
-      - SELENIUM_URL=http://selenium:4444/wd/hub
-      - FTP_IP=${FTP_IP}
-      - FTP_USER=${FTP_USER}
-      - FTP_PASS=${FTP_PASS}
-    commands:
-      - python manage.py migrate
-      - python manage.py excel
-      - python manage.py price
-      - python manage.py collectstatic --noinput
-      - python manage.py test --parallel --liveserver=test:8021-8029
-    volumes:
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
-      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/build
-    secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
-    when:
-      event: [push, pull_request]
+  # test:
+  #   image: python
+  #   environment:
+  #     - TEST_ENV=true
+  #     - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=test
+  #     - POSTGRES_URL=postgres
+  #     - POSTGRES_DB=test
+  #     - RABBITMQ_DEFAULT_USER=rabbitmq
+  #     - RABBITMQ_DEFAULT_PASS=test
+  #     - RABBITMQ_URL=rabbitmq
+  #     - RABBITMQ_PORT=5672
+  #     - SELENIUM_URL=http://selenium:4444/wd/hub
+  #     - FTP_IP=${FTP_IP}
+  #     - FTP_USER=${FTP_USER}
+  #     - FTP_PASS=${FTP_PASS}
+  #   commands:
+  #     - python manage.py migrate
+  #     - python manage.py excel
+  #     - python manage.py price
+  #     - python manage.py collectstatic --noinput
+  #     - python manage.py test --parallel --liveserver=test:8021-8029
+  #   volumes:
+  #     - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
+  #     - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/build
+  #   secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
+  #   when:
+  #     event: [push, pull_request]
 
-  lint-coala:
-    image: fidals/coala-ci
-    group: lint
-    commands:
-      - coala --ci -j 2
-    when:
-      event: pull_request
+  # lint-coala:
+  #   image: fidals/coala-ci
+  #   group: lint
+  #   commands:
+  #     - coala --ci -j 2
+  #   when:
+  #     event: pull_request
 
-  lint-pdd:
-    image: fidals/pdd-ci
-    group: lint
-    commands:
-      - pdd --verbose
-        --exclude=node_modules/**/* --exclude=static/**/*
-        --exclude=media/**/* --exclude=doc/build/**/*
-        --exclude=.idea/**/*
-        --exclude=front/build
-        --exclude=front/images
-        --exclude=**/*.pyc
-        --exclude=**/*.jpg
-        -f report.xml
-    when:
-      event: pull_request
+  # lint-pdd:
+  #   image: fidals/pdd-ci
+  #   group: lint
+  #   commands:
+  #     - pdd --verbose
+  #       --exclude=node_modules/**/* --exclude=static/**/*
+  #       --exclude=media/**/* --exclude=doc/build/**/*
+  #       --exclude=.idea/**/*
+  #       --exclude=front/build
+  #       --exclude=front/images
+  #       --exclude=**/*.pyc
+  #       --exclude=**/*.jpg
+  #       -f report.xml
+  #   when:
+  #     event: pull_request
 
   docker-build:
     image: docker/compose:1.17.1
@@ -95,8 +95,8 @@ pipeline:
       - /var/run/docker.sock:/var/run/docker.sock
       # for nodejs build
       - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/front/build
-    when:
-      event: push
+    # when:
+    #   event: push
 
   docker-push:
     image: docker:latest
