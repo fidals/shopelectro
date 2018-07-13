@@ -18,8 +18,17 @@
     fullEmail: 'info@shopelectro.ru',
   };
 
+  // @todo #129 Implement tracking of certain actions on front-end for YA and GA.
+  //  Actions: one-click purchase, clearing of cart.
+  //  See the parent issue for a detail.
+
+  // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
+  // Load ecommerce plugin for gaTracker
+  ga('require', 'ecommerce');
+
   let yaTracker = new YATracker(window.dataLayer, 'RUB');
+  let gaTracker = new GATracker(ga, 'ecommerce');
 
   const init = () => {
     setUpListeners();
@@ -38,17 +47,16 @@
       // Use a dummy order's id, because we do not wait complete processing of
       // purchase request.
       yaTracker.purchase(products, {id: 'DummyId'});
+      gaTracker.purchase({id: 'DummyId'}, products);
     });
     mediator.subscribe('onProductAdd', (_, id, count) => {
       yaTracker.add([{id: id, quantity: count}]);
     });
     mediator.subscribe('onProductRemove', (_, id) => {
       reachGoal('DELETE_PRODUCT');
-      yaTracker.remove([{id: id}]);
+      yaTracker.remove([{id: id, quantity: 1}]);
     });
-    mediator.subscribe('onProductDetail', (_, id) => {
-      yaTracker.detail([{id: id}]);
-    });
+    mediator.subscribe('onProductDetail', (_, id) => yaTracker.detail([{id: id}]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
 
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));

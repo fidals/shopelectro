@@ -5,6 +5,7 @@
     $order: $('.js-order-contain'),
     $yandexFormWrapper: $('#yandex-form-wrapper'),
     yandexForm: '#yandex-form',
+    productRows: '.div-table-row',
     submit: '#submit-order',
     fullForm: '#order-form-full',
     productCount: '.js-prod-count',
@@ -47,11 +48,17 @@
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete,
     );
     $(DOM.fullForm).submit(() => {
-      let products = $(DOM.productCount).map((_, e) => {
-        return {quantity: $(e).val(), id: $(e).attr('productId')}
-      }).get();
-      mediator.publish('onOrderSend', products);
+      let productsData = $(DOM.productRows).map((_, el) => {
+        let $el = $(el);
+        return {
+          id: $el.attr('data-table-id'),
+          name: $el.find('.js-product-link').text(),
+          quantity: $el.find('.js-prod-count').val(),
+        }
+      }).get()
+      mediator.publish('onOrderSend', productsData);
     });
+
 
     /**
      * Bind events to parent's elements, because of dynamic elements.
