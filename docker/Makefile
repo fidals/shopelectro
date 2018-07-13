@@ -36,7 +36,7 @@ build-static:
 	$(dc) run --rm nodejs gulp build
 
 watch-static:
-	$(dc) run --rm nodejs gulp watch
+	$(dc) run --rm nodejs
 
 collectstatic:
 	$(dc) exec app python manage.py collectstatic --noinput
