@@ -17,9 +17,10 @@ RUN npm install -g gulp-cli
 # `npm install gulp-imagemin` don't install it's dependencies sometimes.
 # Took decision from SO: https://goo.gl/3uXZxw
 RUN npm install imagemin-jpegtran imagemin-svgo imagemin-gifsicle imagemin-optipng --save
-RUN npm install --no-optional
 
 COPY package.json package.json
+RUN npm install --no-optional
+
 COPY gulpfile.babel.js gulpfile.babel.js
 COPY front/ front
 
