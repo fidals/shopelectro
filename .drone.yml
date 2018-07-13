@@ -54,7 +54,7 @@ pipeline:
       - python manage.py test --parallel --liveserver=test:8021-8029
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
-      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/build
+      - /tmp/cache/drone/shopelectro/front_build/${DRONE_COMMIT_SHA}:/drone/src/github.com/fidals/shopelectro/front/build
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
     when:
       event: [push, pull_request]
