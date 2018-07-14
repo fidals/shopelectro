@@ -19,7 +19,7 @@
   };
 
   // @todo #129 Implement tracking of certain actions on front-end for YA and GA.
-  //  Actions: one-click purchase, changing products count on order page.
+  //  Actions: one-click purchase, changing products count on the onProductAddorder page.
   //  See the parent issue for a detail.
 
   // Sync container for yaTracker
@@ -32,8 +32,6 @@
 
   const init = () => {
     setUpListeners();
-    // e-commerce container
-    // https://yandex.ru/support/metrika/data/e-commerce.html
   };
 
   function setUpListeners() {
@@ -49,6 +47,7 @@
       yaTracker.purchase(products, {id: 'DummyId'});
       gaTracker.purchase({id: 'DummyId'}, products);
     });
+    // We receive an onProductAdd event from a category and a product pages
     mediator.subscribe('onProductAdd', (_, id, count) => {
       yaTracker.add([{id: id, quantity: count}]);
     });

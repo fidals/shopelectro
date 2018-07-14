@@ -24,7 +24,7 @@
 {% else %}
   {% if is_head_tag %}
     <script>
-      var gaObj = (function() {
+      var gaContext = (function() {
         var results = [];
 
         var fn = function(action, params) {
@@ -37,7 +37,7 @@
           results: results,
         }
       }());
-      var ga = gaObj.fn;
+      var ga = gaContext.fn;
 
       window.dataLayer = (function() {
         var results = [];
