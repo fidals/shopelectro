@@ -1,4 +1,4 @@
-from django.test import override_settings, TestCase
+from django.test import TestCase
 
 from shopelectro.models import Category
 from shopelectro.templatetags.se_extras import roots
