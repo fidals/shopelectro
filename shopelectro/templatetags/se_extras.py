@@ -20,10 +20,13 @@ register = template.Library()
 @register.simple_tag
 def roots():
     return sorted(
-        Category.objects
-        .select_related('page')
-        .get_cached_trees(),  # https://goo.gl/rFKiku
-        key=lambda x: x.page.position
+        filter(
+            lambda x: x.page.is_active,
+            Category.objects  # https://goo.gl/rFKiku
+            .select_related('page')
+            .get_cached_trees()
+        ),
+        key=lambda x: x.page.position,
     )
 
 
