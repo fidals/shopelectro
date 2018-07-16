@@ -1,5 +1,5 @@
 beautifulsoup4
-celery==4.1.0
+celery==4.2.0
 Django==1.10
 django-debug-toolbar
 django-redis
