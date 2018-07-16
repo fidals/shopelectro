@@ -19,7 +19,7 @@
   };
 
   // @todo #129 Implement tracking of certain actions on front-end for YA and GA.
-  //  Actions: one-click purchase, changing products count on the onProductAddorder page.
+  //  Actions: one-click purchase, changing products count on the order page.
   //  See the parent issue for a detail.
 
   // Sync container for yaTracker
