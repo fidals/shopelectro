@@ -32,6 +32,9 @@ create-env:
 create-config:
 	@bash ./create-config.sh
 
+npm-install:
+	$(dcb) build --no-cache nodejs
+
 build-static:
 	$(dc) run --rm nodejs gulp build
 

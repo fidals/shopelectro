@@ -152,7 +152,7 @@ ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'front/build'),
+    os.path.join(BASE_DIR, 'build'),
     ASSETS_DIR,
 ]
 
