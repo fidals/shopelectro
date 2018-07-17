@@ -12,10 +12,6 @@ RUN apt-get update \
     && apt-get -y --purge autoremove \
     && rm -rf /var/lib/apt/lists/*
 
-COPY package.json package.json
-COPY gulpfile.babel.js gulpfile.babel.js
-COPY front/ front
-
 # we use `--no-optional` because some optional npm dependencies fail on install
 RUN npm install -g gulp-cli
 # `npm install gulp-imagemin` don't install it's dependencies sometimes.
