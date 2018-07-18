@@ -8,8 +8,6 @@ pipeline:
       - pip install -r requirements.txt
       - rm -rf /usr/app/deps/site-packages
       - mv /usr/local/lib/python3.6/site-packages /usr/app/deps
-    volumes:
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}:/usr/app/deps
     when:
       event: [push, pull_request]
 
