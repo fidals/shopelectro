@@ -52,7 +52,7 @@ pipeline:
       - SELENIUM_WAIT_SECONDS=120
     commands:
       - ls /drone/deps
-      - mv /drone/deps /usr/local/lib/python3.6/site-packages
+      - mv /drone/deps/* /usr/local/lib/python3.6/site-packages
       - python manage.py migrate
       - python manage.py excel
       - python manage.py price
