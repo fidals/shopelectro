@@ -25,7 +25,12 @@
   // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
   // Load ecommerce plugin for gaTracker
-  ga('require', 'ecommerce');
+  try {
+    ga('require', 'ecommerce');
+  } catch (e) {
+    let ga = console.error;
+    console.error(`GaTracker did not load. Traceback: ${e}`);
+  }
 
   let yaTracker = new YATracker(window.dataLayer, 'RUB');
   let gaTracker = new GATracker(ga, 'ecommerce');
