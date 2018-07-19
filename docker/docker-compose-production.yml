@@ -48,6 +48,23 @@ services:
       - se-backend
     command: celery -A shopelectro beat -l info
 
+  celery-command-worker:
+    image: fidals/se:prod
+    container_name: se-celery-command-worker
+    restart: always
+    env_file:
+      - env_files/app
+      - env_files/credentials
+      - env_files/paths
+    depends_on:
+      - app
+      - celery-beat
+    networks:
+      - se-backend
+    volumes_from:
+      - app
+    command: celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
+
   celery-default-worker:
     image: fidals/se:prod
     container_name: se-celery-default-worker
@@ -58,10 +75,10 @@ services:
       - env_files/paths
     depends_on:
       - app
-    volumes:
-      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     networks:
       - se-backend
+    volumes:
+      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     command: celery -A shopelectro worker -E -n worker.default@%%h -l info -Q default
 
   celery-mail-worker:
@@ -74,27 +91,11 @@ services:
       - env_files/paths
     depends_on:
       - app
-    networks:
-      - se-backend
     volumes:
       - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+    networks:
+      - se-backend
     command: celery -A shopelectro worker -E -n worker.mail@%%h -l info -Q mail
-
-  celery-command-worker:
-    image: fidals/se:prod
-    container_name: se-celery-command-worker
-    restart: always
-    env_file:
-      - env_files/app
-      - env_files/credentials
-      - env_files/paths
-    depends_on:
-      - app
-    volumes:
-      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
-    networks:
-      - se-backend
-    command: celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
 
   nginx:
     image: fidals/se-nginx:prod
