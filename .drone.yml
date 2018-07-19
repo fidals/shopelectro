@@ -51,7 +51,7 @@ pipeline:
       - SELENIUM_TIMEOUT_SECONDS=120
       - SELENIUM_WAIT_SECONDS=120
     commands:
-      - cp -r .build/ front/build
+      - cp -r /drone/src/github.com/fidals/shopelectro/build/ front/
       - cp -r /drone/deps/* /usr/local/lib/python3.6/site-packages
       - python manage.py migrate
       - python manage.py excel
