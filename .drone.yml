@@ -91,7 +91,7 @@ pipeline:
     environment:
       - DEPS_DIR=/usr/app/deps
     commands:
-      - cp ./build ./front/build
+      - cp -r /drone/src/github.com/fidals/shopelectro/build/ front/
       - cd docker
       # Build python images with sources and static files
       - docker-compose -f docker-compose-build.yml build --no-cache nodejs python-dev python-prod
@@ -120,7 +120,7 @@ pipeline:
   docker-up:
     image: docker/compose:1.17.1
     commands:
-      - cp ./build ./front/build
+      - cp -r /drone/src/github.com/fidals/shopelectro/build/ front/
       - cd docker
       - cp drone_env/* env_files/
       - cp drone_env/.env .
