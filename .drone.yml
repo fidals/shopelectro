@@ -20,8 +20,9 @@ pipeline:
     environment:
       - DEPS_DIR=/usr/app/deps
     commands:
-      - npm install
       - npm install -g gulp-cli
+      - cat package.json
+      - npm install --no-optional
       - gulp build
     volumes:
       - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/app/deps
