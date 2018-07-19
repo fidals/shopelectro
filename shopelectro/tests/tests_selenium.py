@@ -4,8 +4,6 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from helpers.SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-import unittest
-
 from django.conf import settings
 from django.core import mail
 from django.db.models import Count
