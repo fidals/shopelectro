@@ -51,14 +51,13 @@ pipeline:
       - SELENIUM_TIMEOUT_SECONDS=120
       - SELENIUM_WAIT_SECONDS=120
     commands:
+      - ls /drone/deps
       - mv /drone/deps /usr/local/lib/python3.6/site-packages
       - python manage.py migrate
       - python manage.py excel
       - python manage.py price
       - python manage.py collectstatic --noinput
       - python manage.py test --parallel --liveserver=test:8021-8029
-    volumes:
-      - /tmp/cache/drone/shopelectro/site-packages/${DRONE_COMMIT_SHA}/site-packages:/usr/local/lib/python3.6/site-packages
     secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
     when:
       event: [push, pull_request]
