@@ -21,7 +21,6 @@ pipeline:
       - DEPS_DIR=/usr/app/deps
     commands:
       - npm install -g gulp-cli
-      - cat package.json
       - npm install --no-optional
       - gulp build
     volumes:
