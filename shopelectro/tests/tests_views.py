@@ -346,7 +346,6 @@ class RobotsPage(TestCase):
     def setUp(self):
         self.response = self.client.get('/robots.txt')
 
-    @unittest.skip('Will be resurrected at se#420')
     def test_robots_success(self):
         self.assertEqual(self.response.status_code, 200)
 
