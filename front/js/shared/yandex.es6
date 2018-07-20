@@ -49,8 +49,9 @@
       reachGoal('FULL_BUY_SEND');
       // Use a dummy order's id, because we do not wait complete processing of
       // purchase request.
-      yaTracker.purchase(products, {id: 'DummyId'});
-      gaTracker.purchase({id: 'DummyId'}, products);
+      let orderData = {id: 'DummyId'};
+      yaTracker.purchase(products, orderData);
+      gaTracker.purchase(products, orderData);
     });
     // We receive an onProductAdd event from a category and a product pages
     mediator.subscribe('onProductAdd', (_, id, count) => {
