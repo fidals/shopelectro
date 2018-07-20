@@ -8,6 +8,7 @@
     $btnToCartCategoryPage: $('.js-product-to-cart'),
     $cartHeader: $('.js-cart-header'),
     goToCartLink: '.js-go-to-cart',
+    $removeFromCart: $('.js-remove'),
     $goToProductLink: $('.js-browse-product'),
     $downloadPrice: $('.js-download-price'),
     $downloadPriceInFooter: $('.js-download-price-footer'),
@@ -65,6 +66,7 @@
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
 
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));
+    DOM.$removeFromCart.click(() => reachGoal('DELETE_PRODUCT'));
     DOM.$cartHeader.on('click', DOM.goToCartLink, () => reachGoal('CART_OPEN'));
     DOM.$backcallModal.click(() => reachGoal('BACK_CALL_OPEN'));
     DOM.$goToProductLink.click(() => reachGoal('PROD_BROWSE'));
