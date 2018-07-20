@@ -159,9 +159,11 @@
     };
 
     const { id, count } = buyInfo();
-
     server.addToCart(id, count)
-      .then(data => mediator.publish('onCartUpdate', data));
+      .then((data) => {
+        mediator.publish('onCartUpdate', data);
+        mediator.publish('onProductAdd', [id, count]);
+      });
   }
 
   init();

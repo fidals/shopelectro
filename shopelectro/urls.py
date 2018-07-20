@@ -6,7 +6,6 @@ from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page
 
-from pages.models import CustomPage
 from pages.views import RobotsView, SitemapPage
 from pages.urls import custom_page_url
 
@@ -93,10 +92,7 @@ ecommerce_urls = [
 
 custom_pages = [
     custom_page_url(r'^(?P<page>)$', cached_2h(views.IndexPage.as_view())),
-    custom_page_url(
-        r'^(?P<page>robots\.txt)$',
-        RobotsView.as_view(in_db=True, objects=CustomPage.objects.filter(slug='robots.txt'))
-    ),
+    custom_page_url(r'^(?P<page>robots\.txt)$', RobotsView.as_view()),
     custom_page_url(r'^(?P<page>search)/$', views.Search.as_view()),
     custom_page_url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view())),
     custom_page_url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view()),

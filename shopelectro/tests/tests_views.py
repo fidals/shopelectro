@@ -5,7 +5,6 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
-import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -346,7 +345,6 @@ class RobotsPage(TestCase):
     def setUp(self):
         self.response = self.client.get('/robots.txt')
 
-    @unittest.skip('Will be resurrected at se#420')
     def test_robots_success(self):
         self.assertEqual(self.response.status_code, 200)
 

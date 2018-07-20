@@ -5,6 +5,7 @@
     $order: $('.js-order-contain'),
     $yandexFormWrapper: $('#yandex-form-wrapper'),
     yandexForm: '#yandex-form',
+    productRows: '.div-table-row',
     submit: '#submit-order',
     fullForm: '#order-form-full',
     productCount: '.js-prod-count',
@@ -46,15 +47,28 @@
       'onCartUpdate', renderTable, fillSavedInputs,
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete,
     );
-    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
+    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend', [getProductsData()]));
 
     /**
      * Bind events to parent's elements, because of dynamic elements.
      */
     DOM.$order.on('click', DOM.submit, submitOrder);
-    DOM.$order.on('click', DOM.remove, event => removeProduct(getElAttr(event, 'productId')));
+    DOM.$order.on('click', DOM.remove, event => removeProduct(
+      getElAttr(event, 'productId'), getElAttr(event, 'productCount'),
+    ));
     DOM.$order.on('change', DOM.productCount, helpers.debounce(changeProductCount, 250));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
+  }
+
+  function getProductsData() {
+    return $(DOM.productRows).map((_, el) => {
+      let $el = $(el);
+      return {
+        id: $el.attr('data-table-id'),
+        name: $el.find('.js-product-link').text(),
+        quantity: $el.find('.js-prod-count').val(),
+      }
+    }).get()
   }
 
   /**
@@ -124,10 +138,11 @@
   /**
    * Remove Product from Cart.
    */
-  function removeProduct(productId) {
+  function removeProduct(productId, count) {
     server.removeFromCart(productId)
       .then((data) => {
         mediator.publish('onCartUpdate', data);
+        mediator.publish('onProductRemove', [productId, count]);
       });
   }
 

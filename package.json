@@ -46,7 +46,7 @@
   },
   "babel": {
     "presets": [
-      "env"
+        "env"
     ],
     "compact": "false"
   },

@@ -25,6 +25,7 @@
   };
 
   const productId = DOM.$addToCart.attr('data-id');
+  if (productId) mediator.publish('onProductDetail', productId);
 
   const init = () => {
     setUpListeners();
@@ -110,7 +111,10 @@
     };
 
     server.addToCart(id, count)
-      .then(data => mediator.publish('onCartUpdate', data));
+      .then(data => {
+        mediator.publish('onCartUpdate', data);
+        mediator.publish('onProductAdd', [id, count]);
+      });
   }
 
   function successOrder() {

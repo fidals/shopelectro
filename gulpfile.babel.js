@@ -91,6 +91,7 @@ const path = {
       ],
 
       main: [
+        ecommercePaths.trackers,
         'front/js/shared/*.es6',
         'front/js/components/orderCall.es6',
         'front/js/components/headerCart.es6',
