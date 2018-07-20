@@ -28,8 +28,8 @@
   try {
     ga('require', 'ecommerce');
   } catch (e) {
-    let ga = console.error;
-    console.error(`GaTracker did not load. Traceback: ${e}`);
+    var ga = console.error;
+    console.error(`GaTracker failed to load. Traceback: ${e}`);
   }
 
   let yaTracker = new YATracker(window.dataLayer, 'RUB');
