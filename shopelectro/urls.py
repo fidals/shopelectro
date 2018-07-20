@@ -6,7 +6,6 @@ from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page
 
-from pages.models import CustomPage
 from pages.views import RobotsView, SitemapPage
 from pages.urls import custom_page_url
 
