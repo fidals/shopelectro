@@ -3,7 +3,7 @@ branches: master
 
 workspace:
   base: /drone
-  path: src/github.com/fidals/shopelectro/
+  path: shopelectro/
 
 
 pipeline:
@@ -13,7 +13,6 @@ pipeline:
       - pip install -r requirements.txt
       - rm -rf /usr/app/deps/site-packages
       - mv /usr/local/lib/python3.6/site-packages /drone/deps
-      - ls /drone/deps
     when:
       event: [push, pull_request]
 
@@ -91,7 +90,7 @@ pipeline:
     environment:
       - DEPS_DIR=/usr/app/deps
     commands:
-      - cp -r /drone/src/github.com/fidals/shopelectro/build/ front/
+      - cp -r /drone/shopelectro/build/ front/
       - cd docker
       # Build python images with sources and static files
       - docker-compose -f docker-compose-build.yml build --no-cache nodejs python-dev python-prod
@@ -120,7 +119,7 @@ pipeline:
   docker-up:
     image: docker/compose:1.17.1
     commands:
-      - cp -r /drone/src/github.com/fidals/shopelectro/build/ front/
+      - cp -r /drone/shopelectro/build/ front/
       - cd docker
       - cp drone_env/* env_files/
       - cp drone_env/.env .
