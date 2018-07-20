@@ -93,10 +93,7 @@ ecommerce_urls = [
 
 custom_pages = [
     custom_page_url(r'^(?P<page>)$', cached_2h(views.IndexPage.as_view())),
-    custom_page_url(
-        r'^(?P<page>robots\.txt)$',
-        RobotsView.as_view(in_db=True, objects=CustomPage.objects.filter(slug='robots.txt'))
-    ),
+    custom_page_url(r'^(?P<page>robots\.txt)$', RobotsView.as_view()),
     custom_page_url(r'^(?P<page>search)/$', views.Search.as_view()),
     custom_page_url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view())),
     custom_page_url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view()),
