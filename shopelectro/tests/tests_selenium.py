@@ -4,8 +4,6 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from helpers.SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-import unittest
-
 from django.conf import settings
 from django.core import mail
 from django.db.models import Count
@@ -734,8 +732,6 @@ class OrderPage(helpers.SeleniumTestCase):
         update_count(self.remove_product)
         assert_count(4)
 
-    # @todo #360:30m Resurrect test `test_confirm_order`
-    @unittest.expectedFailure
     def test_confirm_order(self):
         """After filling the form we should be able to confirm an Order."""
         self.perform_operations_on_cart()
@@ -1095,8 +1091,6 @@ class Search(helpers.SeleniumTestCase):
 
         self.assertIn(str(product_vendor_code), test_vendor_code)
 
-    # @todo #360:15m Resurrect test `test_search_have_results`
-    @unittest.expectedFailure
     def test_search_have_results(self):
         """Search results page should contain links on relevant pages."""
         self.fill_input()

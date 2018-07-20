@@ -46,6 +46,9 @@ pipeline:
       - FTP_IP=${FTP_IP}
       - FTP_USER=${FTP_USER}
       - FTP_PASS=${FTP_PASS}
+      # Hardcoded env values because of drone secret's bug. See stb#263
+      - SELENIUM_TIMEOUT_SECONDS=120
+      - SELENIUM_WAIT_SECONDS=120
     commands:
       - python manage.py migrate
       - python manage.py excel
