@@ -6,6 +6,10 @@ workspace:
 
 
 pipeline:
+  # @todo #352:60m Use ready image for python in drone. stb2
+  #  - rm pip-install step
+  #  - refactor test step
+  #  - rm/modify docker-build step
   pip-install:
     image: python
     commands:
@@ -15,16 +19,21 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  # @todo #345:60m Use ready image for drone npm step. stb2
-  #  Image `fidals/se-nodejs:dev` already contains built static and node_modules.
   npm:
-    image: node:slim
+    image: docker/compose:1.17.1
     environment:
       - DEPS_DIR=/drone/deps
     commands:
-      - npm install
-      - npm install -g gulp-cli
-      - gulp build
+      - cd docker/
+      - cp drone_env/.env . && cp drone_env/* env_files/
+      # nodejs build is not in `docker-build` section,
+      # because we have this deps:
+      # build nodejs -> gulp build -> build python-prod
+      - docker-compose -f docker-compose-build.yml build nodejs
+      # Build python images with sources and static files
+      - docker-compose run --rm nodejs gulp build
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     when:
       event: [push, pull_request]
 
@@ -89,15 +98,13 @@ pipeline:
     environment:
       - DEPS_DIR=/drone/deps
     commands:
-      - cp -r /drone/shopelectro/build/ front/
       - cd docker
       # Build python images with sources and static files
-      - docker-compose -f docker-compose-build.yml build --no-cache nodejs python-dev python-prod
+      - docker-compose -f docker-compose-build.yml build --no-cache python-dev python-prod
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      # for nodejs build
     when:
-      event: push
+      event: [push, pull_request]
 
   docker-push:
     image: docker:latest

@@ -1,5 +1,5 @@
 # Identify the dependencies folder
-DEPS_DIR=/usr/local/lib/python3.6/site-packages
+DEPS_DIR=/drone/deps
 # Identify the source folder
 SRC_DIR=/usr/app/src
 SRC_DIR_PROD=/home/andre/prog/shopelectro
