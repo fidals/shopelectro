@@ -88,7 +88,7 @@ pipeline:
   docker-build:
     image: docker/compose:1.17.1
     environment:
-      - DEPS_DIR=/usr/app/deps
+      - DEPS_DIR=/drone/deps
     commands:
       - cp -r /drone/shopelectro/build/ front/
       - cd docker
