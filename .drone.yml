@@ -46,8 +46,8 @@ pipeline:
       - FTP_USER=${FTP_USER}
       - FTP_PASS=${FTP_PASS}
       # Hardcoded env values because of drone secret's bug. See stb#263
-      - SELENIUM_TIMEOUT_SECONDS=120
-      - SELENIUM_WAIT_SECONDS=120
+      - SELENIUM_TIMEOUT_SECONDS=180
+      - SELENIUM_WAIT_SECONDS=180
     commands:
       - cp -r /drone/shopelectro/build/ front/
       - cp -r /drone/deps/* /usr/local/lib/python3.6/site-packages
