@@ -4,7 +4,6 @@ Test catalog command, which call other commands like price and excel.
 Note: tests running pretty long.
 """
 import glob
-import logging
 import os
 import random
 import unittest
