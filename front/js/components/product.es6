@@ -111,7 +111,7 @@
     };
 
     server.addToCart(id, count)
-      .then(data => {
+      .then((data) => {
         mediator.publish('onCartUpdate', data);
         mediator.publish('onProductAdd', [id, count]);
       });

@@ -14,7 +14,7 @@ class Search(search_views.SearchView):
         search_engine.Search(
             name='category',
             qs=Category.objects.filter(page__is_active=True),
-            fields=['name'],
+            fields=['name'],  # Ignore CPDBear
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
