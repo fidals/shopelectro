@@ -35,7 +35,7 @@ services:
     image: fidals/se-nodejs:dev
     volumes:
       # Volumes for refarm-site's front development
-#      - ../gulpfile.babel.js:/usr/app/src/gulpfile.babel.js
+      - ../gulpfile.babel.js:/usr/app/src/gulpfile.babel.js
       - ../front:/usr/app/src/front
       - ../build:/usr/app/src/build
     env_file:
