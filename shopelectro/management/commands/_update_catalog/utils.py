@@ -14,8 +14,10 @@ from xml.etree import ElementTree
 import requests
 from django.conf import settings
 
+from shopelectro.exception import DownloadFilesError
 
 logger = logging.getLogger(__name__)
+DOWNLOAD_FILES_TIMEOUT = 5.0
 UUID_TYPE = str
 Data = Dict[str, Dict[str, dict]]
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
@@ -110,7 +112,11 @@ def download_catalog(destination):
         )
     )
 
-    subprocess.run(wget_command, shell=True)
+    try:
+        subprocess.run(wget_command, timeout=DOWNLOAD_FILES_TIMEOUT, shell=True)
+    except subprocess.TimeoutExpired as e:
+        raise DownloadFilesError(str(e))
+
     assert os.path.exists(os.path.join(
         destination, settings.FTP_IP)), 'Files do not downloaded...'
     logger.info('Download catalog - completed...')
