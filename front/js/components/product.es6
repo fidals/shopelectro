@@ -78,7 +78,10 @@
     server.oneClickBuy(productId, DOM.$counter.val(), DOM.$phone.val())
       .then(() => {
         mediator.publish('onOneClickBuy');
-        window.location.href = '/shop/order-success';
+        // Wait handling of onOneClickBuy
+        setTimeout(() => {
+          window.location.href = '/shop/order-success';
+        }, 100);
       });
   }
 
