@@ -1,9 +1,10 @@
 from functools import partial
 
+from django import http
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
-from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
@@ -29,7 +30,7 @@ def get_paginated_page_or_404(objects, per_page, page_number):
     try:
         return Paginator(objects, per_page).page(page_number)
     except InvalidPage:
-        raise Http404('Page does not exist')
+        raise http.Http404('Page does not exist')
 
 
 # CATALOG VIEWS
@@ -45,10 +46,21 @@ class ProductPage(catalog.ProductPage):
 
     queryset = (
         models.Product.objects
-        .filter(category__isnull=False)
+        .filter(category__isnull=False, page__is_active=True)
         .prefetch_related('product_feedbacks', 'page__images')
         .select_related('page')
     )
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except http.Http404 as error404:
+            # @todo #273 Render 404, that is recommending products for a deleted product.
+            #  1. Find a product with page__is_active=False
+            #  2. If the product exists then render 404 with products of its category
+            raise error404
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super(ProductPage, self).get_context_data(**kwargs)
@@ -77,7 +89,7 @@ class IndexPage(pages_views.CustomPageView):
 
         top_products = (
             models.Product.objects
-            .filter(id__in=settings.TOP_PRODUCTS)
+            .filter(id__in=settings.TOP_PRODUCTS, page__is_active=True)
             .prefetch_related('category')
             .select_related('page')
         )
@@ -134,7 +146,7 @@ class CategoryPage(catalog.CategoryPage):
             page_number < 1 or
             products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS
         ):
-            raise Http404('Page does not exist.')
+            raise http.Http404('Page does not exist.')
 
         all_products = (
             models.Product.objects
@@ -181,7 +193,7 @@ class CategoryPage(catalog.CategoryPage):
         total_products = all_products.count()
         products = paginated_page.object_list
         if not products:
-            raise Http404('Page without products does not exist.')
+            raise http.Http404('Page without products does not exist.')
 
         return {
             **context,
@@ -212,11 +224,11 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     products_on_page = limit or get_products_count(request)
     offset = int(offset)
     if offset < 0:
-        return HttpResponseBadRequest(
+        return http.HttpResponseBadRequest(
             'The offset is wrong. An offset should be greater than or equal to 0.'
         )
     if products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS:
-        return HttpResponseBadRequest(
+        return http.HttpResponseBadRequest(
             'The limit number is wrong. List of available numbers:'
             f' {", ".join(map(str, settings.CATEGORY_STEP_MULTIPLIERS))}'
         )
@@ -265,29 +277,29 @@ def save_feedback(request):
         return {arg: request.POST.get(arg, '') for arg in args}
 
     product_id = request.POST.get('id')
-    product = models.Product.objects.filter(id=product_id).first()
+    product = models.Product.objects.filter(id=product_id, page__is_active=True).first()
     if not (product_id and product):
-        return HttpResponse(status=422)
+        return http.HttpResponse(status=422)
 
     fields = ['rating', 'name', 'dignities', 'limitations', 'general']
     feedback_data = get_keys_from_post(*fields)
 
     models.ProductFeedback.objects.create(product=product, **feedback_data)
-    return HttpResponse('ok')
+    return http.HttpResponse('ok')
 
 
 @require_POST
 def delete_feedback(request):
     if not request.user.is_authenticated:
-        return HttpResponseForbidden('Not today, sly guy...')
+        return http.HttpResponseForbidden('Not today, sly guy...')
 
     feedback_id = request.POST.get('id')
     feedback = models.ProductFeedback.objects.filter(id=feedback_id).first()
     if not (feedback_id and feedback):
-        return HttpResponse(status=422)
+        return http.HttpResponse(status=422)
 
     feedback.delete()
-    return HttpResponse('Feedback with id={} was deleted.'.format(feedback_id))
+    return http.HttpResponse('Feedback with id={} was deleted.'.format(feedback_id))
 
 
 class ProductsWithoutImages(catalog.ProductsWithoutImages):

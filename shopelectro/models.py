@@ -18,7 +18,7 @@ from catalog.models import (
     CategoryManager,
 )
 from ecommerce.models import Order as ecOrder
-from pages.models import CustomPage, ModelPage, Page, SyncPageMixin
+from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
 
 
 class SECategoryQuerySet(TreeQuerySet):
@@ -298,7 +298,7 @@ def serialize_tags_to_title(tags: TagQuerySet) -> str:
     )
 
 
-class ExcludedModelTPageManager(TreeManager):
+class ExcludedModelTPageManager(PageManager):
 
     def get_queryset(self):
         return super().get_queryset().exclude(type=Page.MODEL_TYPE)
