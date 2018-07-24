@@ -237,12 +237,11 @@ def report(recipients=None, message=None):
 @transaction.atomic
 def delete(data: Dict[UUID, Data]):
     uuids = list(data)
-    page_count, _ = ProductPage.objects.exclude(
-        shopelectro_product__uuid__in=uuids).delete()
-    product_count, _ = Product.objects.exclude(
-        uuid__in=uuids).delete()
-    logger.info('{} products and {} pages were deleted.'.format(
-        product_count, page_count))
+    pages_to_deactive = ProductPage.objects.exclude(
+        shopelectro_product__uuid__in=uuids)
+    pages_to_deactive.update(is_active=False)
+    deactive_count = pages_to_deactive.count()
+    logger.info(f'{deactive_count} products and {deactive_count} pages were deleted.')
 
 
 @transaction.atomic

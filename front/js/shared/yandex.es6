@@ -27,14 +27,14 @@
   window.dataLayer = window.dataLayer || [];
   // Load ecommerce plugin for gaTracker
   try {
-    ga('require', 'ecommerce');
+    ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
   } catch (e) {
-    var ga = console.error;
+    var ga = console.error;  // Ignore ESLintBear (no-var)
     console.error(`GaTracker failed to load. Traceback: ${e}`);
   }
 
-  let yaTracker = new YATracker(window.dataLayer, 'RUB');
-  let gaTracker = new GATracker(ga, 'ecommerce');
+  const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
+  const gaTracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
 
   const init = () => {
     setUpListeners();
@@ -50,19 +50,19 @@
       reachGoal('FULL_BUY_SEND');
       // Use a dummy order's id, because we do not wait complete processing of
       // purchase request.
-      let orderData = {id: 'DummyId'};
+      const orderData = { id: 'DummyId' };
       yaTracker.purchase(products, orderData);
       gaTracker.purchase(products, orderData);
     });
     // We receive an onProductAdd event from a category and a product pages
     mediator.subscribe('onProductAdd', (_, id, count) => {
-      yaTracker.add([{id: id, quantity: count}]);
+      yaTracker.add([{ id, quantity: count }]);
     });
     mediator.subscribe('onProductRemove', (_, id, count) => {
       reachGoal('DELETE_PRODUCT');
-      yaTracker.remove([{id: id, quantity: count}]);
+      yaTracker.remove([{ id, quantity: count }]);
     });
-    mediator.subscribe('onProductDetail', (_, id) => yaTracker.detail([{id: id}]));
+    mediator.subscribe('onProductDetail', (_, id) => yaTracker.detail([{ id }]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
 
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));

@@ -112,7 +112,7 @@ class Command(BaseCommand):
         def write_product_rows():
             """Write products lines."""
             sheet = self.sheet
-            products = Product.objects.filter(category=category)
+            products = Product.objects.filter(category=category, page__is_active=True)
             for product in products.iterator():
                 product_start = 'A' + self.CURRENT_ROW
                 sheet[product_start] = product.name

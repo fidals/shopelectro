@@ -93,7 +93,7 @@ class Command(BaseCommand):
                 .select_related('page')
                 .prefetch_related('category')
                 .prefetch_related('page__images')
-                .filter(category__in=categories_, price__gt=0)
+                .filter(category__in=categories_, price__gt=0, page__is_active=True)
             )
 
             if utm == 'YM':

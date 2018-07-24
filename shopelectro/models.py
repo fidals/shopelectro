@@ -8,7 +8,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from mptt.models import TreeManager
 from mptt.querysets import TreeQuerySet
 from unidecode import unidecode
 
@@ -18,7 +17,12 @@ from catalog.models import (
     CategoryManager,
 )
 from ecommerce.models import Order as ecOrder
-from pages.models import CustomPage, ModelPage, Page, SyncPageMixin
+from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
+
+# @todo #273 Create a custom manager for the Product model.
+#  Currently we have code dupliactions for such filter:
+#  Product.objects.filter(page__is_active=True)
+#  Filter Product's queryset in initial method.
 
 
 class SECategoryQuerySet(TreeQuerySet):
@@ -298,7 +302,7 @@ def serialize_tags_to_title(tags: TagQuerySet) -> str:
     )
 
 
-class ExcludedModelTPageManager(TreeManager):
+class ExcludedModelTPageManager(PageManager):
 
     def get_queryset(self):
         return super().get_queryset().exclude(type=Page.MODEL_TYPE)

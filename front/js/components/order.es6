@@ -53,22 +53,20 @@
      * Bind events to parent's elements, because of dynamic elements.
      */
     DOM.$order.on('click', DOM.submit, submitOrder);
-    DOM.$order.on('click', DOM.remove, event => removeProduct(
-      getElAttr(event, 'productId'), getElAttr(event, 'productCount'),
-    ));
+    DOM.$order.on('click', DOM.remove, event => removeProduct(getElAttr(event, 'productId'), getElAttr(event, 'productCount')));
     DOM.$order.on('change', DOM.productCount, helpers.debounce(changeProductCount, 250));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
   }
 
   function getProductsData() {
     return $(DOM.productRows).map((_, el) => {
-      let $el = $(el);
+      const $el = $(el);
       return {
         id: $el.attr('data-table-id'),
         name: $el.find('.js-product-link').text(),
         quantity: $el.find('.js-prod-count').val(),
-      }
-    }).get()
+      };
+    }).get();
   }
 
   /**
