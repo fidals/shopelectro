@@ -57,6 +57,7 @@ class ProductPage(catalog.ProductPage):
             # @todo #273 Render 404, that is recommending products for a deleted product.
             #  1. Find a product with page__is_active=False
             #  2. If the product exists then render 404 with products of its category
+            #  See the parent issue for details.
             raise error404
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
