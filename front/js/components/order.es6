@@ -226,7 +226,7 @@
     } else {
       var submitForm = DOM.fullForm;
     }
-    // Publish onOrderSend, before submitting an order
+    // Publish onOrderSend, before submit form
     mediator.publish('onOrderSend', [getProductsData()]);
     $(submitForm).submit();
   }
