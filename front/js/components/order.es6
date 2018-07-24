@@ -47,7 +47,6 @@
       'onCartUpdate', renderTable, fillSavedInputs,
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete,
     );
-    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend', [getProductsData()]));
 
     /**
      * Bind events to parent's elements, because of dynamic elements.
@@ -205,7 +204,8 @@
    * Before submit:
    * 1. Validate user's email and phone.
    * 2. Define payment type, if it is Yandex order make request and wait response with form.
-   * 3. Submit this form.
+   * 3. Publish onOrderSend event.
+   * 4. Submit this form.
    */
   function submitOrder(event) {
     event.preventDefault();
@@ -220,14 +220,15 @@
 
     const isYandex = () => !config.sePayments.includes(getSelectedPayment());
     if (isYandex()) {
+      var submitForm = DOM.yandexForm;
       server.sendYandexOrder(orderInfo)
-        .then((formData) => {
-          renderYandexForm(formData);
-          $(DOM.yandexForm).submit();
-        });
+        .then((formData) => renderYandexForm(formData));
     } else {
-      $(DOM.fullForm).submit();
+      var submitForm = DOM.fullForm;
     }
+    // Publish onOrderSend, before submitting an order
+    mediator.publish('onOrderSend', [getProductsData()]);
+    $(submitForm).submit();
   }
 
   /**
