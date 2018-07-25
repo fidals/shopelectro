@@ -26,7 +26,7 @@ bash alias dcp="docker-compose -f docker-compose-production.yml"
 
 ### Для разработки
 
-**Готовим код к работе**
+#### Готовим код к работе
 ```bash
 git clone git@github.com:fidals/shopelectro.git
 cd shopelectro/docker/
@@ -39,7 +39,7 @@ dc exec app python manage.py excel
 dc exec app python manage.py price
 ```
 
-**Файлы env**
+#### Файлы env
 `make deploy-dev` создаст файлы для окружения (env) со стандартными значениями.
 А затем попросит заполнить их.
 Пару рекомендаций по заполнению:
@@ -49,7 +49,7 @@ dc exec app python manage.py price
 Проверяем адрес `http://127.0.0.1:8010` - загружается сайт.
 Вместо порта `8010` может быть другой - переменная окружения (env var) `VIRTUAL_HOST_EXPOSE_PORT`.
 
-**Установка refarm-site**
+#### Установка refarm-site
 Сайт использует refarm-site как внешнюю зависимость.
 Интерфейс refarm-site нестабилен,
 поэтому иногда при разработке фичи сайта
@@ -58,11 +58,12 @@ dc exec app python manage.py price
 И примонтировать внутрь контейнера app.
 Смотрите на переменную окружения `REFARM_SITE`.
 
-**Makefile**
-`docker/Makefile` содержит все скрипты, которые мы используем для разработки.
+#### Makefile
+`docker/Makefile` - единственная и полная инструкция для работы с локальным dev-окружением.
+Содержит все скрипты, которые мы используем для разработки.
 Например: подготовка среды, запуск тестов, внутренних команд приложения.
 
-**Запускаем тесты**
+#### Запускаем тесты
 ```
 # запускаем все тесты.
 make test
@@ -72,7 +73,7 @@ dc exec app python manage.py test -v 3 --liveserver=app:8021-8029 \
     stroyprombeton.tests.tests_selenium.CartTestCase.buy_on_product_page
 ``` 
 
-**Fixtures**
+#### Fixtures
 Некоторые тесты используют fixtures.
 Это заранее подготовленные данные из базы.
 Подробнее о фикстурах [в документации Django](https://docs.djangoproject.com/en/1.11/topics/testing/tools/#fixture-loading).
@@ -83,7 +84,7 @@ dc exec app python manage.py test -v 3 --liveserver=app:8021-8029 \
 Для пересоздания фикстур используйте команду `shopelectro/management/commands/test_db.py`
 Файл `dump.json` в контроле версий всегда должен соответстовать коду команды `test_db`. 
 
-**Админка**
+#### Админка
 Адрес: /admin/
 
 Логин/пароль:
@@ -126,6 +127,13 @@ make backup
 * `/opt/static/shopelectro` - статика, не подключается как volume, нужно скопировать вручную в директорию с статикой
 
 N.B.: Некоторые данные (например, медиафайлы) могут иметь большой размер. На момент написания этой заметки, архив с медиафайлами Shopelectro весил ~4GB.
+
+# Continuous integration
+Выполняет две задачи:
+- Проверка. Тестит систему для каждого pull request'a, запускает линтеры для кода.
+- Сборка. Собирает систему для dev и prod после каждого пуша в мастер-ветку.
+
+[Как устроен CI внутри](CI.md). 
 
 # Инструкции к фичам
 - [Retail Tags](https://github.com/fidals/shopelectro/blob/master/doc/tags.md)
