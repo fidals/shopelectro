@@ -37,7 +37,7 @@ services:
       # Volumes for refarm-site's front development
       - ../gulpfile.babel.js:/usr/app/src/gulpfile.babel.js
       - ../front:/usr/app/src/front
-      - ../front/build:/usr/app/src/build
+      - ../build:/usr/app/src/build
     env_file:
       - env_files/paths
 
