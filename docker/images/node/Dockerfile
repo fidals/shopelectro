@@ -23,7 +23,7 @@ RUN npm install -g gulp-cli
 RUN npm install imagemin-jpegtran imagemin-svgo imagemin-gifsicle imagemin-optipng --save
 RUN npm install --no-optional
 
-RUN gulp build
+#RUN gulp build
 
 # Keeps track of changes if static files are built, otherwise builds them
 CMD bash -c "[ '$(ls -A /usr/app/src/build)' ] && gulp watch || (gulp build && gulp watch)"
