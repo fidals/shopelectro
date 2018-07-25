@@ -35,6 +35,7 @@ pipeline:
     environment:
       - DEPS_DIR=/drone/deps
     commands:
+      - rm -rf build/
       - cd docker/
       - cp drone_env/.env . && cp drone_env/* env_files/
       # nodejs build is not in `docker-build` section,
