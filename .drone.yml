@@ -35,7 +35,7 @@ pipeline:
     environment:
       - DEPS_DIR=/drone/deps
     commands:
-      - rm -rf build/
+      - rm -rf front/ build/
       - cd docker/
       - cp drone_env/.env . && cp drone_env/* env_files/
       # nodejs build is not in `docker-build` section,
@@ -46,8 +46,8 @@ pipeline:
       - docker-compose run --rm -v /drone/shopelectro/build:/usr/app/src/build nodejs gulp build
       - docker-compose run --rm nodejs ls -la build/
       - ls -la ..
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     when:
       event: [push, pull_request]
 
