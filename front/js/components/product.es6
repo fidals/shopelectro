@@ -33,8 +33,6 @@
   };
 
   function setUpListeners() {
-    mediator.subscribe('onOneClickBuy', successOrder);
-
     // Feedback events
     mediator.subscribe('onFeedbackSave', feedbackSavedResponse);
     mediator.subscribe('onFeedbackDelete', feedbackDeleteResponse);
@@ -72,13 +70,19 @@
   }
 
   /**
-   * Send product data & redirect page.
+   * Buy a product by an one click and redirect to the success page.
    */
   function oneClick() {
     helpers.setDisabledState(DOM.$oneClick, 'Ожидайте...');
 
     server.oneClickBuy(productId, DOM.$counter.val(), DOM.$phone.val())
-      .then(() => mediator.publish('onOneClickBuy'));
+      .then(() => {
+        mediator.publish('onOneClickBuy');
+        // Wait handling of onOneClickBuy
+        setTimeout(() => {
+          window.location.href = '/shop/order-success';
+        }, 100);
+      });
   }
 
   function changeOneClickBtnState() {
@@ -115,10 +119,6 @@
         mediator.publish('onCartUpdate', data);
         mediator.publish('onProductAdd', [id, count]);
       });
-  }
-
-  function successOrder() {
-    window.location.href = '/shop/order-success';
   }
 
   /**

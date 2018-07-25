@@ -216,18 +216,19 @@
       return;
     }
 
-    helpers.setDisabledState($(DOM.submit)); // disable button to prevent user's multiple clicks;
+    // disable button to prevent user's multiple clicks;
+    helpers.setDisabledState($(DOM.submit));
 
     const isYandex = () => !config.sePayments.includes(getSelectedPayment());
     if (isYandex()) {
+      var submitForm = DOM.yandexForm;
       server.sendYandexOrder(orderInfo)
-        .then((formData) => {
-          renderYandexForm(formData);
-          $(DOM.yandexForm).submit();
-        });
+        .then((formData) => renderYandexForm(formData));
     } else {
-      $(DOM.fullForm).submit();
+      var submitForm = DOM.fullForm;
     }
+    // Wait handling of onOrderSend
+    setTimeout(() => $(submitForm).submit(), 100);
   }
 
   /**
