@@ -46,8 +46,8 @@ pipeline:
       - docker-compose run --rm -v /drone/shopelectro/build:/usr/app/src/build nodejs gulp build
       - docker-compose run --rm nodejs ls -la build/
       - ls -la ..
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
     when:
       event: [push, pull_request]
 
