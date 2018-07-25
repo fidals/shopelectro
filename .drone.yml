@@ -41,10 +41,11 @@ pipeline:
       # nodejs build is not in `docker-build` section,
       # because we have this deps:
       # build nodejs -> gulp build -> build python-prod
-      - docker-compose -f docker-compose-build.yml build --no-cache nodejs
+      - docker-compose -f docker-compose-build.yml build nodejs
       # Build python images with sources and static files
-      - docker-compose run --rm nodejs gulp build
+      - docker-compose run --rm -v /drone/shopelectro/build:/usr/app/src/build nodejs gulp build
       - docker-compose run --rm nodejs ls -la build/
+      -
       - ls -la ..
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
