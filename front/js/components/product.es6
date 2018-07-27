@@ -8,6 +8,7 @@
     $oneClick: $('#btn-one-click-order'),
     $counter: $('#product-count'),
     $more_text_toggle: $('.js-more-text'),
+    $h1: $('.product-h1'),
 
     // Feedback DOM elements
     field: '.js-modal-field',
@@ -74,11 +75,11 @@
    */
   function oneClick() {
     helpers.setDisabledState(DOM.$oneClick, 'Ожидайте...');
-
-    server.oneClickBuy(productId, DOM.$counter.val(), DOM.$phone.val())
+    const productCount = DOM.$counter.val();
+    server.oneClickBuy(productId, productCount, DOM.$phone.val())
       .then(() => {
-        mediator.publish('onOneClickBuy');
-        // Wait handling of onOneClickBuy
+        mediator.publish('onOneClickBuy', [productId, productCount, DOM.$h1.text()]);
+        // Set timeout to wait handling of onOneClickBuy
         setTimeout(() => {
           window.location.href = '/shop/order-success';
         }, 100);
