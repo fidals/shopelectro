@@ -24,8 +24,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 
-# @todo #449:60m Resolve nested volumes collision
-#  How to reproduce collision.
+# @todo #449:60m Repair npm container reusing at drone.
+#  Second approach looks much more good in my taste.
+#
+#  1. Resolve volumes collision for `gulp build` step.
+#  How to reproduce collision:
 #  ```
 #  dc -f dc-volumes.yml run --rm dc
 #  /# docker-compose -f dc-volumes.yml run --rm inner \
@@ -35,4 +38,8 @@ services:
 #  /# ls
 #  ... no build dir
 #  ```
-#  Inside service
+#
+#  2. We can use "docker-compose" container only for `npm install`.
+#  But do gulp-build with standard drone mech.
+#  See this comment with code draft:
+#  https://github.com/fidals/shopelectro/pull/450#issuecomment-408243737
