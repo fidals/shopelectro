@@ -53,6 +53,9 @@
       yaTracker.purchase(products, orderData);
       gaTracker.purchase(products, orderData);
     });
+    mediator.subscribe('onCartClear', (_, products) => {
+      yaTracker.remove(products);
+    });
     // We receive an onProductAdd event from a category and a product pages
     mediator.subscribe('onProductAdd', (_, id, quantity) => {
       yaTracker.add([{ id, quantity }]);
@@ -60,9 +63,6 @@
     mediator.subscribe('onProductRemove', (_, id, quantity) => {
       reachGoal('DELETE_PRODUCT');
       yaTracker.remove([{ id, quantity }]);
-    });
-    mediator.subscribe('onCartClear', (_, products) => {
-      yaTracker.remove(products);
     });
     mediator.subscribe('onProductDetail', (_, id) => yaTracker.detail([{ id }]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
