@@ -74,7 +74,7 @@ pipeline:
       - SELENIUM_TIMEOUT_SECONDS=180
       - SELENIUM_WAIT_SECONDS=180
     commands:
-      - cp -r /drone/shopelectro/build/ front/
+      - cp -r /drone/shopelectro/front_build/ front_build/
       - cp -r /drone/deps/* /usr/local/lib/python3.6/site-packages
       - python manage.py migrate
       - python manage.py excel
@@ -101,7 +101,7 @@ pipeline:
         --exclude=node_modules/**/* --exclude=static/**/*
         --exclude=media/**/* --exclude=doc/build/**/*
         --exclude=.idea/**/*
-        --exclude=front/build
+        --exclude=front_build
         --exclude=front/images
         --exclude=**/*.pyc
         --exclude=**/*.jpg

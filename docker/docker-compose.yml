@@ -43,7 +43,7 @@ services:
 
       #- ../gulpfile.babel.js:/usr/app/src/gulpfile.babel.js
       - ../front:/usr/app/src/front
-      - ../build:/usr/app/src/build
+      - ../front_build:/usr/app/src/front_build
     env_file:
       - env_files/paths
 

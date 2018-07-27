@@ -56,7 +56,7 @@ const plugins = [
   }),
 ];
 
-const buildDir = 'build';
+const buildDir = 'front_build';
 const ecommercePaths = getAppSrcPaths('ecommerce');
 const genericAdminPaths = getAppSrcPaths('generic_admin');
 
