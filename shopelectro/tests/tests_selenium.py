@@ -1056,6 +1056,9 @@ class Search(helpers.SeleniumTestCase):
 
         # remove search term ...
         self.clear_input()
+        self.wait.until(EC.text_to_be_present_in_element(
+            (By.CLASS_NAME, 'js-search-input'), '')
+        )
         # ... and autocomplete collapse
         self.assertFalse(self.autocomplete.is_displayed())
 
