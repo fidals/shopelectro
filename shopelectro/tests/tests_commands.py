@@ -3,11 +3,13 @@ Test catalog command, which call other commands like price and excel.
 
 Note: tests running pretty long.
 """
+from collections import defaultdict
 import glob
 import os
 import random
 import unittest
 import uuid
+from unittest import mock
 from xml.etree import ElementTree
 
 from django.conf import settings
@@ -135,7 +137,7 @@ class GeneratePrices(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        call_command('price')
+        cls.call_command_patched('price')
         super(GeneratePrices, cls).setUpTestData()
 
     @classmethod
@@ -143,6 +145,17 @@ class GeneratePrices(TestCase):
         for file_name in price.Command.TARGETS.values():
             os.remove(cls.get_price_file_path(file_name))
         super(GeneratePrices, cls).tearDownClass()
+
+    @classmethod
+    def call_command_patched(self, name):
+        with mock.patch(
+            'shopelectro.management.commands.price.Command.IGNORED_CATEGORIES_BY_TARGET',
+            new_callable=mock.PropertyMock
+        ) as target:
+            target.return_value = defaultdict(list, {
+                'GM': ['Category #1 of #Category #0 of #Category #1']
+            })
+            call_command(name)
 
     @staticmethod
     def get_price_file_path(filename):
@@ -183,6 +196,22 @@ class GeneratePrices(TestCase):
         self.assertEqual(
             len(categories_in_yandex_price),
             Category.objects.get_categories_tree_with_pictures().count()
+        )
+
+    def test_categories_excluded_by_utm(self):
+        def find_category(categories, name):
+            for category in categories:
+                if category.text == name:
+                    return category
+            return None
+        excluded_name = 'Category #1 of #Category #0 of #Category #1'
+        categories_node = self.get_price_categories_node('gm.yml')
+
+        self.assertFalse(
+            find_category(
+                categories=categories_node.findall('category'),
+                name=excluded_name
+            )
         )
 
     def test_products_in_price(self):
