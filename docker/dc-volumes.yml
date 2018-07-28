@@ -1,0 +1,45 @@
+version: '2'
+
+# temporary file, describes docker volumes mapping problem.
+# Should be removed with the last pdd issue inside it.
+
+services:
+
+  dc:  # docker-compose in container
+    image: docker/compose:1.22.0
+    volumes:
+      - ./dc-volumes.yml:/dc-volumes.yml
+      # Map docker folder and socket according to this note:
+      # https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/
+      - /var/lib/docker:/var/lib/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+    entrypoint: sh
+
+  inner:  # moves volumes
+    image: busybox
+    volumes:
+      - /build:/build
+      - /var/lib/docker:/var/lib/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+# @todo #449:60m Repair npm container reusing at drone.
+#  Second approach looks much more good in my taste.
+#
+#  1. Resolve volumes collision for `gulp build` step.
+#  How to reproduce collision:
+#  ```
+#  dc -f dc-volumes.yml run --rm dc
+#  /# docker-compose -f dc-volumes.yml run --rm inner \
+#     sh -c "echo 'bugaga' > /build/bu && ls build/ && cat build/bu"
+#  bu
+#  bugaga
+#  /# ls
+#  ... no build dir
+#  ```
+#
+#  2. We can use "docker-compose" container only for `npm install`.
+#  But do gulp-build with standard drone mech.
+#  See this comment with code draft:
+#  https://github.com/fidals/shopelectro/pull/450#issuecomment-408243737
