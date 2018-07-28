@@ -141,7 +141,6 @@ pipeline:
   docker-up:
     image: docker/compose:1.17.1
     commands:
-      - cp -r /drone/shopelectro/build/ front/
       - cd docker
       - cp drone_env/* env_files/
       - cp drone_env/.env .
