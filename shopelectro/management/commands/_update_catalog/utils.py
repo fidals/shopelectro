@@ -17,7 +17,7 @@ from django.conf import settings
 from shopelectro.exception import DownloadFilesError
 
 logger = logging.getLogger(__name__)
-DOWNLOAD_FILES_TIMEOUT = 5.0
+DOWNLOAD_FILES_TIMEOUT = 15.0
 UUID_TYPE = str
 Data = Dict[str, Dict[str, dict]]
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
@@ -103,7 +103,7 @@ def collect_errors(error_types: tuple):
 def download_catalog(destination):
     """Download catalog's xml files and delete after handle them."""
     wget_command = (
-        'wget -r -P {} ftp://{}:{}@{}/webdata'
+        'wget -r -P {} ftp://{}:{}@{}/webdata/'
         ' 2>&1 | grep "время\|time\|Downloaded"'.format(
             destination,
             settings.FTP_USER,
