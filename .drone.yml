@@ -19,7 +19,7 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  npm-install:  # new `npm install`
+  nodejs-build:  # with `npm install` inside
     image: docker/compose:1.22.0
     environment:
       - DEPS_DIR=/drone/deps
@@ -32,20 +32,18 @@ pipeline:
       - docker-compose -f docker-compose-build.yml build nodejs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker:/var/lib/docker
     when:
       event: [push, pull_request]
 
-  # push with separated step, because docker-compose image in npm install
+  # push nodejs image with separated step, because docker-compose image in npm install
   # doesn't provide `docker` command
-  npm-push:
+  nodejs-push:
     image: docker:latest
     environment:
       - DOCKER_HUB_LOGIN=${DOCKER_HUB_LOGIN}
       - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
     commands:
       - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
-      - docker images | grep nodejs
       - docker push fidals/se-nodejs:dev
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -55,7 +53,7 @@ pipeline:
 
   gulp-build:
     image: fidals/se-nodejs:dev
-    pull: true
+    pull: false
     environment:
       - DEPS_DIR=/drone/deps
     commands:
@@ -141,7 +139,6 @@ pipeline:
       - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
     commands:
       - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
-#      - docker push fidals/se-nodejs:dev
       - docker push fidals/se:dev
       - docker push fidals/se:prod
     volumes:
