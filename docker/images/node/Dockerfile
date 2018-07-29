@@ -22,6 +22,8 @@ RUN npm install -g gulp-cli
 # Took decision from SO: https://goo.gl/3uXZxw
 RUN npm install imagemin-jpegtran imagemin-svgo imagemin-gifsicle imagemin-optipng --save
 RUN npm install --no-optional
+# durty hack for drone
+RUN cp -r node_modules/ ..
 
 RUN gulp build
 
