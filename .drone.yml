@@ -48,6 +48,7 @@ pipeline:
 
   gulp-build:
     image: fidals/nodejs:dev
+    pull: false
     environment:
       - DEPS_DIR=/drone/deps
     commands:
