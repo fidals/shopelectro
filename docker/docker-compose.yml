@@ -45,7 +45,7 @@ services:
       - ../front:/usr/app/src/front
       - ../build:/usr/app/src/build
       # TODO - add pdd issue about deps
-      - ../../refarm-site/:$DEPS_DIR/
+#      - ../../refarm-site/:$DEPS_DIR/
     env_file:
       - env_files/paths
 
