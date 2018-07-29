@@ -42,6 +42,7 @@ pipeline:
       # build nodejs -> gulp build -> build python-prod
       - docker-compose -f docker-compose-build.yml build nodejs
       - docker-compose push nodejs
+      - docker images | grep nodejs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker:/var/lib/docker
