@@ -41,6 +41,7 @@ pipeline:
       # because we have this deps:
       # build nodejs -> gulp build -> build python-prod
       - docker-compose -f docker-compose-build.yml build nodejs
+      - docker-compose push nodejs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker:/var/lib/docker
@@ -49,6 +50,7 @@ pipeline:
 
   gulp-build:
     image: fidals/se-nodejs:dev
+    pull: true
     environment:
       - DEPS_DIR=/drone/deps
     commands:
