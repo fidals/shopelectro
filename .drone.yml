@@ -19,39 +19,58 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  npm:  # old `npm install`
-    image: node:slim
-    environment:
-      - DEPS_DIR=/drone/deps
-    commands:
-      - npm install
-      - npm install -g gulp-cli
-      - gulp build
-    when:
-      event: [push, pull_request]
-
-# @todo #352:30m Fix volumes collision for new drone `npm install`.
-#  `docker-compose run --rm nodejs gulp build` don't create
-#  build dir at host folder.
-#  When collision is resolved, change old `npm install` for new one.
-
-#  npm:  # new `npm install`
-#    image: docker/compose:1.17.1
+#  npm:  # old `npm install`
+#    image: node:slim
 #    environment:
 #      - DEPS_DIR=/drone/deps
 #    commands:
-#      - cd docker/
-#      - cp drone_env/.env . && cp drone_env/* env_files/
-#      # nodejs build is not in `docker-build` section,
-#      # because we have this deps:
-#      # build nodejs -> gulp build -> build python-prod
-#      - docker-compose -f docker-compose-build.yml build nodejs
-#      # Build python images with sources and static files
-#      - docker-compose run --rm nodejs gulp build
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
+#      - npm install
+#      - npm install -g gulp-cli
+#      - gulp build
 #    when:
 #      event: [push, pull_request]
+
+  npm-install:  # new `npm install`
+    image: docker/compose:1.22.0
+    environment:
+      - DEPS_DIR=/drone/deps
+    commands:
+      - cd docker/
+      - cp drone_env/.env . && cp drone_env/* env_files/
+      # nodejs build is not in `docker-build` section,
+      # because we have this deps:
+      # build nodejs -> gulp build -> build python-prod
+      - docker-compose -f docker-compose-build.yml build nodejs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker:/var/lib/docker
+    when:
+      event: [push, pull_request]
+
+  npm-push:
+    image: docker:latest
+    environment:
+      - DOCKER_HUB_LOGIN=${DOCKER_HUB_LOGIN}
+      - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
+    commands:
+      - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
+      - docker push fidals/se-nodejs:dev
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      event: push
+    secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
+
+  gulp-build:
+    image: fidals/se-nodejs:dev
+    pull: true
+    environment:
+      - DEPS_DIR=/drone/deps
+    commands:
+      - mv ../node_modules .
+      - gulp build
+    when:
+      event: [push, pull_request]
 
   test:
     image: python
@@ -130,7 +149,7 @@ pipeline:
       - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
     commands:
       - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
-      - docker push fidals/se-nodejs:dev
+#      - docker push fidals/se-nodejs:dev
       - docker push fidals/se:dev
       - docker push fidals/se:prod
     volumes:
@@ -189,3 +208,4 @@ services:
       - /dev/shm:/dev/shm
     when:
       event: [push, pull_request]
+
