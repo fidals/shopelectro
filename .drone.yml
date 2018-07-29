@@ -43,6 +43,7 @@ pipeline:
       - docker-compose -f docker-compose-build.yml build nodejs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker:/var/lib/docker
     when:
       event: [push, pull_request]
 
