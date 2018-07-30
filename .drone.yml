@@ -35,22 +35,6 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  # push nodejs image with separated step, because docker-compose image in npm install
-  # doesn't provide `docker` command
-  nodejs-push:
-    image: docker:latest
-    environment:
-      - DOCKER_HUB_LOGIN=${DOCKER_HUB_LOGIN}
-      - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
-    commands:
-      - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
-      - docker push fidals/se-nodejs:dev
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: [push, pull_request]
-    secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
-
   gulp-build:
     image: fidals/se-nodejs:dev
     environment:
@@ -138,6 +122,7 @@ pipeline:
       - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
     commands:
       - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
+      - docker push fidals/se-nodejs:dev
       - docker push fidals/se:dev
       - docker push fidals/se:prod
     volumes:
