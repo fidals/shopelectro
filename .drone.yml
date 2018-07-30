@@ -42,7 +42,7 @@ pipeline:
     commands:
       - cd /usr/app/src/
       - gulp build
-      - cp -r build/ /drone/shopelectro
+      - cp -r front_build/ /drone/shopelectro
     when:
       event: [push, pull_request]
 
@@ -91,7 +91,7 @@ pipeline:
     commands:
       - pdd --verbose
         --exclude=node_modules/**/* --exclude=static/**/*
-        --exclude=media/**/* --exclude=doc/build/**/*
+        --exclude=media/**/*
         --exclude=.idea/**/*
         --exclude=front_build
         --exclude=front/images
@@ -106,10 +106,9 @@ pipeline:
     environment:
       - DEPS_DIR=/drone/deps
     commands:
-      - cp -r /drone/shopelectro/build/ front/
       - cd docker
       # Build python images with sources and static files
-      - docker-compose -f docker-compose-build.yml build --no-cache nodejs python-dev python-prod
+      - docker-compose -f docker-compose-build.yml build --no-cache python-dev python-prod
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
@@ -132,7 +131,7 @@ pipeline:
     secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 
   docker-up:
-    image: docker/compose:1.17.1
+    image: docker/compose:1.22.0
     commands:
       - cd docker
       - cp drone_env/* env_files/
