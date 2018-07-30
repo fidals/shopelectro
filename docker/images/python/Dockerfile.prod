@@ -5,6 +5,6 @@ RUN pip install gunicorn
 COPY ./etc/gunicorn.py /etc/
 # drone already built static to this folder at previous step.
 # See npm section of `.drone.yml` file
-COPY ./front/build ./front/build
+COPY ./front_build ./front_build
 # built frontend files are required
 RUN /bin/bash -c '[ "$(ls -A front/build)" ] || exit 1'
