@@ -17,7 +17,7 @@ from django.conf import settings
 from shopelectro.exception import DownloadFilesError
 
 logger = logging.getLogger(__name__)
-DOWNLOAD_FILES_TIMEOUT = 15.0
+DOWNLOAD_FILES_TIMEOUT = 40.0
 UUID_TYPE = str
 Data = Dict[str, Dict[str, dict]]
 NOT_SAVE_TEMPLATE = '{entity} with name="{name}" has no {field}. It\'ll not be' \
