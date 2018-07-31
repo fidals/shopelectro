@@ -42,8 +42,8 @@
       reachGoal('CMN_BUY_SEND');
       reachGoal('FAST_BUY_SEND');
       const productsData = {id, quantity, name};
-      yaTracker.purchase(productsData, orderData);
-      gaTracker.purchase(productsData, orderData);
+      yaTracker.purchase([productsData], orderData);
+      gaTracker.purchase([productsData], orderData);
     });
     mediator.subscribe('onOrderSend', (_, products) => {
       reachGoal('CMN_BUY_SEND');
