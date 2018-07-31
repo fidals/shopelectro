@@ -37,8 +37,18 @@
    * Remove everything from cart.
    */
   function clear() {
+    const productsData = $(DOM.removeFromCart).map((_, el) => {
+      const $el = $(el);
+      return {
+        id: $el.attr('data-id'),
+        quantity: $el.attr('data-count'),
+      }
+    }).get();
     server.flushCart()
-      .then(data => mediator.publish('onCartUpdate', data));
+      .then(data => {
+        mediator.publish('onCartUpdate', data);
+        mediator.publish('onCartClear', [productsData]);
+      });
   }
 
   /**

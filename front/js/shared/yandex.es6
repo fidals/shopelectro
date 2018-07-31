@@ -19,10 +19,6 @@
     fullEmail: 'info@shopelectro.ru',
   };
 
-  // @todo #129 Implement tracking of certain actions on front-end for YA and GA.
-  //  Actions: one-click purchase, changing products count on the order page.
-  //  See the parent issue for a detail.
-
   // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
   // Load ecommerce plugin for gaTracker
@@ -35,32 +31,38 @@
 
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
   const gaTracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+  const orderData = { id: 'DummyId' };
 
   const init = () => {
     setUpListeners();
   };
 
   function setUpListeners() {
-    mediator.subscribe('onOneClickBuy', () => {
+    mediator.subscribe('onOneClickBuy', (_, id, quantity, name) => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FAST_BUY_SEND');
+      const productsData = {id, quantity, name};
+      yaTracker.purchase([productsData], orderData);
+      gaTracker.purchase([productsData], orderData);
     });
     mediator.subscribe('onOrderSend', (_, products) => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FULL_BUY_SEND');
       // Use a dummy order's id, because we do not wait complete processing of
       // purchase request.
-      const orderData = { id: 'DummyId' };
       yaTracker.purchase(products, orderData);
       gaTracker.purchase(products, orderData);
     });
-    // We receive an onProductAdd event from a category and a product pages
-    mediator.subscribe('onProductAdd', (_, id, count) => {
-      yaTracker.add([{ id, quantity: count }]);
+    mediator.subscribe('onCartClear', (_, products) => {
+      yaTracker.remove(products);
     });
-    mediator.subscribe('onProductRemove', (_, id, count) => {
+    // We receive an onProductAdd event from a category and a product pages
+    mediator.subscribe('onProductAdd', (_, id, quantity) => {
+      yaTracker.add([{ id, quantity }]);
+    });
+    mediator.subscribe('onProductRemove', (_, id, quantity) => {
       reachGoal('DELETE_PRODUCT');
-      yaTracker.remove([{ id, quantity: count }]);
+      yaTracker.remove([{ id, quantity }]);
     });
     mediator.subscribe('onProductDetail', (_, id) => yaTracker.detail([{ id }]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));

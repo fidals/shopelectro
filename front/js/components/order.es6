@@ -64,7 +64,7 @@
       return {
         id: $el.attr('data-table-id'),
         name: $el.find('.js-product-link').text(),
-        quantity: $el.find('.js-prod-count').val(),
+        quantity: $el.find(DOM.productCount).val(),
       };
     }).get();
   }
@@ -144,14 +144,24 @@
       });
   }
 
+
   /**
    * Handle Product's count change in Cart with delay.
    */
   function changeProductCount(event) {
-    const productID = getElAttr(event, 'productId');
-    server.changeInCart(productID, event.target.value)
-      .then(data => mediator.publish('onCartUpdate', data));
+    const productId = getElAttr(event, 'productId');
+    const countDiff = event.target.value - getElAttr(event, 'productLastCount');
+    server.changeInCart(productId, event.target.value)
+      .then((data) => {
+        mediator.publish('onCartUpdate', data);
+        if (countDiff > 0) {
+          mediator.publish('onProductAdd', [productId, countDiff]);
+        } else {
+          mediator.publish('onProductRemove', [productId, Math.abs(countDiff)]);
+        }
+      });
   }
+
 
   /**
    * Return name (which is value) of a selected payment option.
@@ -242,7 +252,7 @@
    * Render table and form.
    * Fill in saved form data after.
    */
-  function renderTable(event, data) {
+  function renderTable(_, data) {
     DOM.$order.html(data.table);
   }
 
