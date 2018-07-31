@@ -40,9 +40,8 @@ pipeline:
     environment:
       - DEPS_DIR=/drone/deps
     commands:
-      - cd /usr/app/src/
+      - cp -r /usr/app/src/node_modules .
       - gulp build
-      - cp -r front_build/ /drone/shopelectro
     when:
       event: [push, pull_request]
 
