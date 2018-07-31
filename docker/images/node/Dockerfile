@@ -1,6 +1,5 @@
 FROM node:slim
 
-ARG deps_dir
 ENV DEPS_DIR=/usr/app/deps
 
 WORKDIR /usr/app/src/

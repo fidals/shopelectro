@@ -24,7 +24,8 @@ pipeline:
   gulp-build:
     image: fidals/se-nodejs:dev
     environment:
-      - DEPS_DIR=/drone/deps
+      # deps from nodejs image
+      - DEPS_DIR=/usr/app/deps
     commands:
       - cp -r /usr/app/src/node_modules .
       - gulp build
@@ -33,8 +34,6 @@ pipeline:
 
   python-build:
     image: docker/compose:1.22.0
-    environment:
-      - DEPS_DIR=/drone/deps
     commands:
       - cd docker/
       # Build python images with sources and static files
@@ -45,7 +44,7 @@ pipeline:
       event: push
 
   test:
-    image: python
+    image: fidals/se:dev
     environment:
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
@@ -65,7 +64,6 @@ pipeline:
       - SELENIUM_TIMEOUT_SECONDS=180
       - SELENIUM_WAIT_SECONDS=180
     commands:
-      - cp -r /drone/deps/* /usr/local/lib/python3.6/site-packages
       - python manage.py migrate
       - python manage.py excel
       - python manage.py price
