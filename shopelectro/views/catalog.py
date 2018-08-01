@@ -88,19 +88,18 @@ class ProductPage(catalog.ProductPage):
         self, request, **url_kwargs
     ) -> typing.Union[http.Http404, None]:
         """Try to render removed product's siblings on it's 404 page."""
-        product_inactive_qs = models.Product.objects.filter(
+        inactive_product = models.Product.objects.filter(
             **{self.slug_field: url_kwargs['product_vendor_code']},
             category__isnull=False,
             page__is_active=False
-        )
-        if product_inactive_qs:
-            product = product_inactive_qs.first()
+        ).first()
+        if inactive_product:
             related_products = models.Product.objects.filter(
-                category=product.category,
+                category=inactive_product.category,
                 page__is_active=True
-            )[10:]
-            self.object = product
-            context = self.get_context_data(object=product, **url_kwargs)
+            )[:10]
+            self.object = inactive_product
+            context = self.get_context_data(object=inactive_product, **url_kwargs)
             context.update(related_products=related_products)
             return render(request, 'catalog/product_404.html', context, status=404)
 
