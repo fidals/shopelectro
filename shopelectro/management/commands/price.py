@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 
 from django.conf import settings
@@ -27,6 +28,10 @@ class Command(BaseCommand):
         'Новогодние лазерные проекторы', 'MP3- колонки', 'Беспроводные звонки',
         'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
     ]
+
+    IGNORED_CATEGORIES_BY_TARGET = defaultdict(list, {
+        'GM': ['Усилители звука для слабослышащих'],
+    })
 
     def create_prices(self):
         for target in self.TARGETS.items():
@@ -71,6 +76,7 @@ class Command(BaseCommand):
             categories_to_exclude = (
                 Category.objects
                 .filter(name__in=cls.IGNORED_CATEGORIES)
+                .filter(name__in=cls.IGNORED_CATEGORIES_BY_TARGET[utm])
                 .get_descendants(include_self=True)
             )
 
