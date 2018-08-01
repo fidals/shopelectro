@@ -436,6 +436,18 @@ class ProductPage(TestCase):
         response = self.client.get(product.url)
         self.assertEqual(response.status_code, 404)
 
+    def test_related_products_on_404(self):
+        product = Product.objects.first()
+        product.page.is_active = False
+        product.save()  # saves product.page too
+
+        response = self.client.get(product.url)
+        sibling_product = product.category.products.last()
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(
+            sibling_product.name in str(response.content)
+        )
+
 
 class ProductPageSchema(TestCase):
 
