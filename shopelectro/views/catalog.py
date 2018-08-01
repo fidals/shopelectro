@@ -60,8 +60,8 @@ class ProductPage(catalog.ProductPage):
     slug_field = 'vendor_code'
 
     queryset = (
-        models.Product.objects
-        .filter(category__isnull=False, page__is_active=True)
+        models.Product.actives
+        .filter(category__isnull=False)
         .prefetch_related('product_feedbacks', 'page__images')
         .select_related('page')
     )
@@ -140,8 +140,8 @@ class IndexPage(pages_views.CustomPageView):
         tile_products = []
         if not mobile_view:
             top_products = (
-                models.Product.objects
-                .filter(id__in=settings.TOP_PRODUCTS, page__is_active=True)
+                models.Product.actives
+                .filter(id__in=settings.TOP_PRODUCTS)
                 .prefetch_related('category')
                 .select_related('page')
             )

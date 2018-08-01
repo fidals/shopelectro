@@ -19,11 +19,6 @@ from catalog.models import (
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
 
-# @todo #273 Create a custom manager for the Product model.
-#  Currently we have code dupliactions for such filter:
-#  Product.objects.filter(page__is_active=True)
-#  Filter Product's queryset in initial method.
-
 
 class SECategoryQuerySet(TreeQuerySet):
     def get_categories_tree_with_pictures(self) -> 'SECategoryQuerySet':
@@ -58,7 +53,19 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
+class ProductActiveManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super(ProductActiveManager, self)
+            .get_queryset()
+            .filter(page__is_active=True)
+        )
+
+
 class Product(AbstractProduct, SyncPageMixin):
+
+    # active products
+    actives = ProductActiveManager()
 
     category = models.ForeignKey(
         Category,

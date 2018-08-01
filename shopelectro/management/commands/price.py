@@ -98,11 +98,11 @@ class Command(BaseCommand):
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
             products_except_others = (
-                Product.objects
+                Product.actives
                 .select_related('page')
                 .prefetch_related('category')
                 .prefetch_related('page__images')
-                .filter(category__in=categories_, price__gt=0, page__is_active=True)
+                .filter(category__in=categories_, price__gt=0)
             )
 
             if utm == 'YM':
