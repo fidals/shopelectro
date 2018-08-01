@@ -90,7 +90,9 @@ pipeline:
     group: lint
     commands:
       - pdd --verbose
-        --exclude=node_modules/**/* --exclude=static/**/*
+        --exclude=node_modules/**/*
+        --exclude=static/**/*
+        --exclude=venv/**/*
         --exclude=media/**/*
         --exclude=.idea/**/*
         --exclude=front_build

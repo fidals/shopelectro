@@ -54,11 +54,25 @@ class ProductPage(catalog.ProductPage):
         try:
             self.object = self.get_object()
         except http.Http404 as error404:
-            # @todo #273 Render 404, that is recommending products for a deleted product.
-            #  1. Find a product with page__is_active=False
-            #  2. If the product exists then render 404 with products of its category
-            #  See the parent issue for details.
+            # TODO - move it to method
+            not_active_product = models.Product.objects.filter(
+                **{self.slug_field: kwargs['product_vendor_code']},
+                category__isnull=False,
+                page__is_active=False
+            )
+            if not_active_product:
+                product = not_active_product.first()
+                related_products = models.Product.objects.filter(
+                    category=product.category,
+                    page__is_active=True
+                )[10:]
+                self.object = product
+                context = super(ProductPage, self).get_context_data(object=product, **kwargs)
+                # context = self.get_context_data(object=product)
+                context.update(related_products=related_products)
+                return render(request, 'catalog/product_404.html', context, status=404)
             raise error404
+
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 

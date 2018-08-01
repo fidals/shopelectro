@@ -121,8 +121,9 @@ services:
       - --verbose
       - --exclude=node_modules/**/*
       - --exclude=static/**/*
+      - --exclude=venv/**/*
+      - --exclude=static/**/*
       - --exclude=media/**/*
-      - --exclude=doc/build/**/*
       - --exclude=.idea/**/*
       - --exclude=front/build
       - --exclude=front/images
