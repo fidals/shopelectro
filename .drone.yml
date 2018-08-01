@@ -41,7 +41,7 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
-      event: push
+      event: [push, pull_request]
 
   test:
     image: fidals/se:dev
