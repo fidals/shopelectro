@@ -216,10 +216,6 @@ LOGGING = {
     },
 }
 
-SELENIUM_URL = os.environ.get('SELENIUM_URL', 'http://selenium:4444/wd/hub')
-SELENIUM_WAIT_SECONDS = int(os.environ['SELENIUM_WAIT_SECONDS'])
-SELENIUM_TIMEOUT_SECONDS = int(os.environ['SELENIUM_TIMEOUT_SECONDS'])
-
 SITE_CREATED = datetime(2013, 1, 1)
 
 LOCALHOST = 'http://127.0.0.1:8000/'
