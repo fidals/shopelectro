@@ -7,4 +7,4 @@ COPY ./etc/gunicorn.py /etc/
 # See npm section of `.drone.yml` file
 COPY ./front_build ./front_build
 # built frontend files are required
-RUN /bin/bash -c '[ "$(ls -A front/build)" ] || exit 1'
+RUN /bin/bash -c '[ "$(ls -A front_build)" ] || exit 1'

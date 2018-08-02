@@ -1,7 +1,6 @@
 FROM node:slim
 
-ARG deps_dir
-ENV DEPS_DIR=$deps_dir
+ENV DEPS_DIR=/usr/app/deps
 
 WORKDIR /usr/app/src/
 
@@ -26,4 +25,4 @@ RUN npm install --no-optional
 RUN gulp build
 
 # Keeps track of changes if static files are built, otherwise builds them
-CMD bash -c "[ '$(ls -A /usr/app/src/build)' ] && gulp watch || (gulp build && gulp watch)"
+CMD bash -c "[ '$(ls -A /usr/app/src/front_build)' ] && gulp watch || (gulp build && gulp watch)"

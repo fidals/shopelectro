@@ -6,23 +6,9 @@ workspace:
 
 
 pipeline:
-  # @todo #352:60m Use ready image for python in drone. stb2
-  #  - rm pip-install step
-  #  - refactor test step
-  #  - rm/modify docker-build step
-  pip-install:
-    image: python
-    commands:
-      - pip install -r requirements.txt
-      - rm -rf /usr/app/deps/site-packages
-      - mv /usr/local/lib/python3.6/site-packages /drone/deps
-    when:
-      event: [push, pull_request]
 
   nodejs-build:  # with `npm install` inside
     image: docker/compose:1.22.0
-    environment:
-      - DEPS_DIR=/drone/deps
     commands:
       - cd docker/
       - cp drone_env/.env . && cp drone_env/* env_files/
@@ -38,16 +24,27 @@ pipeline:
   gulp-build:
     image: fidals/se-nodejs:dev
     environment:
-      - DEPS_DIR=/drone/deps
+      # deps from nodejs image
+      - DEPS_DIR=/usr/app/deps
     commands:
-      - cd /usr/app/src/
+      - cp -r /usr/app/src/node_modules .
       - gulp build
-      - cp -r front_build/ /drone/shopelectro
+    when:
+      event: [push, pull_request]
+
+  python-build:
+    image: docker/compose:1.22.0
+    commands:
+      - cd docker/
+      # Build python images with sources and static files
+      - docker-compose -f docker-compose-build.yml build python-dev python-prod
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     when:
       event: [push, pull_request]
 
   test:
-    image: python
+    image: fidals/se:dev
     environment:
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
@@ -67,7 +64,6 @@ pipeline:
       - SELENIUM_TIMEOUT_SECONDS=180
       - SELENIUM_WAIT_SECONDS=180
     commands:
-      - cp -r /drone/deps/* /usr/local/lib/python3.6/site-packages
       - python manage.py migrate
       - python manage.py excel
       - python manage.py price
@@ -102,19 +98,6 @@ pipeline:
         -f report.xml
     when:
       event: pull_request
-
-  docker-build:
-    image: docker/compose:1.17.1
-    environment:
-      - DEPS_DIR=/drone/deps
-    commands:
-      - cd docker
-      # Build python images with sources and static files
-      - docker-compose -f docker-compose-build.yml build --no-cache python-dev python-prod
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: push
 
   docker-push:
     image: docker:latest
