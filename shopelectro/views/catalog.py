@@ -1,3 +1,4 @@
+import typing
 from functools import partial
 
 from django import http
@@ -54,16 +55,22 @@ class ProductPage(catalog.ProductPage):
         try:
             self.object = self.get_object()
         except http.Http404 as error404:
-            # @todo #273 Render 404, that is recommending products for a deleted product.
-            #  1. Find a product with page__is_active=False
-            #  2. If the product exists then render 404 with products of its category
-            #  See the parent issue for details.
-            raise error404
+            response_404 = self.render_siblings_on_404(request, **kwargs)
+            if response_404:
+                return response_404
+            else:
+                raise error404
+
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super(ProductPage, self).get_context_data(**kwargs)
+        product = self.object
+        if not product.page.is_active:
+            # this context required to render 404 page
+            # with it's own logic
+            return context
 
         group_tags_pairs = (
             models.Tag.objects
@@ -76,6 +83,25 @@ class ProductPage(catalog.ProductPage):
             'price_bounds': config.PRICE_BOUNDS,
             'group_tags_pairs': group_tags_pairs
         }
+
+    def render_siblings_on_404(
+        self, request, **url_kwargs
+    ) -> typing.Union[http.Http404, None]:
+        """Try to render removed product's siblings on it's 404 page."""
+        inactive_product = models.Product.objects.filter(
+            **{self.slug_field: url_kwargs['product_vendor_code']},
+            category__isnull=False,
+            page__is_active=False
+        ).first()
+        if inactive_product:
+            related_products = models.Product.objects.filter(
+                category=inactive_product.category,
+                page__is_active=True
+            )[:10]
+            self.object = inactive_product
+            context = self.get_context_data(object=inactive_product, **url_kwargs)
+            context.update(related_products=related_products)
+            return render(request, 'catalog/product_404.html', context, status=404)
 
 
 # SHOPELECTRO-SPECIFIC VIEWS

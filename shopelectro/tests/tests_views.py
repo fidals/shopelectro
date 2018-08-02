@@ -436,6 +436,20 @@ class ProductPage(TestCase):
         response = self.client.get(product.url)
         self.assertEqual(response.status_code, 404)
 
+    def test_related_products_on_404(self):
+        """404 page of sometimes removed product should contain product's siblings."""
+        product = Product.objects.first()
+        product.page.is_active = False
+        product.save()  # saves product.page too
+
+        response = self.client.get(product.url)
+        # 404 page should show 10 siblings. We'll check the last one
+        sibling_product = product.category.products.all()[9]
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(
+            sibling_product.name in str(response.content)
+        )
+
 
 class ProductPageSchema(TestCase):
 
