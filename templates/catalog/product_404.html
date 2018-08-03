@@ -8,23 +8,9 @@
       <div class="message-404">
         <img alt="Запрашиваемая страница не найдена" src="{% static 'images/404.png' %}">
 
-        <h3 class="not-found-text">Товар не найден</h3>
+        <h1 class="not-found-text">Товар не найден</h1>
         <p class="page-404-info">
-          {% comment %}
-          @todo #444:60m Create styles for 404 products list.
-           ... and for text under h3.
-           Convert h3 on 404 page to h1 by the way.
-           See ancestor issues for details.
-          {% endcomment %}
-
-          Этого продукта больше нет в наличии.
-          Возможно вас заинтересуют похожие товары.
-          {% for product in related_products %}
-            <li>
-              <a href="{{ product.url }}">{{ product.name }}</a>,
-              <b>{{ product.price }} руб</b>
-            </li>
-          {% endfor %}
+        {% include 'layout/tile_products.html' %}
         <a class="main-link btn btn-blue" href="/">
           Вернуться на главную
         </a>

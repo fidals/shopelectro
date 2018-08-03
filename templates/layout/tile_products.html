@@ -3,11 +3,11 @@
 {% load static %}
 {% load thumbnail %}
 
-{% if prepared_top_products %}
+{% if prepared_tile_products %}
   <div itemscope itemtype="http://schema.org/Product" class="stuff-top">
-    <p class="stuff-top-title text-center">ТОП 10 ТОВАРОВ</p>
+    <p class="stuff-top-title text-center">{{ tile_title }}</p>
 
-    {% for product, image, root_category in prepared_top_products %}
+    {% for product, image, root_category in prepared_tile_products %}
       <div class="stuff-top-item">
         <a href="{{ product.url }}" class="stuff-top-img js-browse-product" itemprop="url">
           {% include 'index/product_thumbnail.html' with image=image dimensions='x174' only %}
