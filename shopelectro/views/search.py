@@ -19,7 +19,7 @@ class Search(search_views.SearchView):
         ),
         search_engine.Search(
             name='product',
-            qs=Product.active,
+            qs=Product.actives,
             fields=['name'],
             redirect_field='vendor_code',
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
@@ -48,7 +48,7 @@ class Autocomplete(search_views.AutocompleteView):
         ),
         search_engine.Search(
             name='product',
-            qs=Product.active,
+            qs=Product.actives,
             fields=['name', 'id', 'vendor_code'],
             template_fields=['name', 'price', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,

@@ -64,7 +64,6 @@ class ProductActiveManager(models.Manager):
 
 class Product(AbstractProduct, SyncPageMixin):
 
-    # active products
     actives = ProductActiveManager()
 
     category = models.ForeignKey(
