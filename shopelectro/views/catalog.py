@@ -121,11 +121,8 @@ class ProductPage(catalog.ProductPage):
             self.object = inactive_product
             context = self.get_context_data(
                 object=inactive_product,
-                prepared_tile_products=prepare_tile_products(related_products),
-                tile_title=(
-                    'Этого продукта больше нет в наличии. '
-                    'Возможно вас заинтересуют похожие товары:'
-                ),
+                tile_products=prepare_tile_products(related_products),
+                tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
             return render(request, 'catalog/product_404.html', context, status=404)
@@ -140,7 +137,7 @@ class IndexPage(pages_views.CustomPageView):
         context = super(IndexPage, self).get_context_data(**kwargs)
         mobile_view = get_user_agent(self.request).is_mobile
 
-        prepared_tile_products = []
+        tile_products = []
         if not mobile_view:
             top_products = (
                 models.Product.objects
@@ -148,13 +145,13 @@ class IndexPage(pages_views.CustomPageView):
                 .prefetch_related('category')
                 .select_related('page')
             )
-            prepared_tile_products = prepare_tile_products(top_products)
+            tile_products = prepare_tile_products(top_products)
 
         return {
             **context,
             'tile_title': 'ТОП 10 ТОВАРОВ',
             'category_tile': config.MAIN_PAGE_TILE,
-            'prepared_tile_products': prepared_tile_products,
+            'tile_products': tile_products,
         }
 
 
