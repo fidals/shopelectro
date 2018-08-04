@@ -15,7 +15,7 @@ pipeline:
       # nodejs build is not in `docker-build` section,
       # because we have this deps:
       # build nodejs -> gulp build -> build python-prod
-      - docker-compose -f docker-compose-build.yml build nodejs
+      - docker-compose -f docker-compose-build.yml build --no-cache nodejs
       # file "bu" was created during building ...
       - docker-compose run --rm nodejs ls -la
     volumes:
