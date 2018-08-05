@@ -64,6 +64,10 @@ class ProductActiveManager(models.Manager):
 
 class Product(AbstractProduct, SyncPageMixin):
 
+    # That's why we are needed to explicitly add objects manager here
+    # because of Django special managers behaviour.
+    # Se se#480 for details.
+    objects = models.Manager()
     actives = ProductActiveManager()
 
     category = models.ForeignKey(
