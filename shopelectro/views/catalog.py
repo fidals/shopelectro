@@ -184,7 +184,10 @@ class CategoryPage(catalog.CategoryPage):
             page_number < 1 or
             products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS
         ):
-            raise http.Http404('Page does not exist.')
+            raise http.Http404('Page does not exist.')  # Ignore CPDBear
+
+        # @todo #470:15m Implement a new method for a Product's manager to get all_products
+        #  as below.
 
         all_products = (
             models.Product.objects

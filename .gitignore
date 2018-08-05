@@ -24,3 +24,4 @@ package-lock.json
 database/
 *report.xml
 .DS_store
+*.orig
