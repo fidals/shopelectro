@@ -134,6 +134,7 @@ class UpdateProducts(TestCase):
 class GeneratePrices(TestCase):
 
     fixtures = ['dump.json']
+    CATEGORY_TO_EXCLUDE = 'Category #1 of #Category #0 of #Category #1'
 
     @classmethod
     def setUpTestData(cls):
@@ -147,13 +148,13 @@ class GeneratePrices(TestCase):
         super(GeneratePrices, cls).tearDownClass()
 
     @classmethod
-    def call_command_patched(self, name):
+    def call_command_patched(cls, name):
         with mock.patch(
             'shopelectro.management.commands.price.Command.IGNORED_CATEGORIES_BY_TARGET',
             new_callable=mock.PropertyMock
         ) as target:
             target.return_value = defaultdict(list, {
-                'GM': ['Category #1 of #Category #0 of #Category #1']
+                'GM': [cls.CATEGORY_TO_EXCLUDE]
             })
             call_command(name)
 
@@ -199,18 +200,27 @@ class GeneratePrices(TestCase):
         )
 
     def test_categories_excluded_by_utm(self):
+        """Price file should not contain it's excluded category."""
         def find_category(categories, name):
             for category in categories:
-                if category.text == name:
+                if category.text.strip() == name:
                     return category
             return None
-        excluded_name = 'Category #1 of #Category #0 of #Category #1'
+        included_name = 'Category #0 of #Category #0 of #Category #1'
         categories_node = self.get_price_categories_node('gm.yml')
 
-        self.assertFalse(
+        # check if find_category inner function is correct
+        self.assertIsNotNone(
             find_category(
                 categories=categories_node.findall('category'),
-                name=excluded_name
+                name=included_name
+            )
+        )
+        # check if category excluded
+        self.assertIsNone(
+            find_category(
+                categories=categories_node.findall('category'),
+                name=self.CATEGORY_TO_EXCLUDE
             )
         )
 
