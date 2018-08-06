@@ -136,7 +136,7 @@ N.B.: Некоторые данные (например, медиафайлы) �
 [Как устроен CI внутри](CI.md). 
 
 # Фичи
-- [Tracking aims](https://github.com/fidals/shopelectro/blob/master/doc/metrika.md)
+- [Tracking aims](https://github.com/fidals/shopelectro/blob/master/doc/tracking_aims.md)
 - [Retail Tags](https://github.com/fidals/shopelectro/blob/master/doc/tags.md)
 - [SEO Templates](https://github.com/fidals/shopelectro/blob/master/doc/seo_templates.md)
 

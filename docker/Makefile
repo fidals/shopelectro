@@ -55,6 +55,9 @@ lint-code:
 lint-pdd:
 	$(dc) run --rm pdd
 
+lint-pdd-verbose:
+	$(dc) run --rm pdd --verbose
+
 lint:
 	$(MAKE) lint-code
 	$(MAKE) lint-pdd
