@@ -76,7 +76,10 @@ class Command(BaseCommand):
         def filter_categories(utm):
             categories_to_exclude = (
                 Category.objects
-                .filter(Q(name__in=cls.IGNORED_CATEGORIES) | Q(name__in=cls.IGNORED_CATEGORIES_BY_TARGET[utm]))
+                .filter(
+                    Q(name__in=cls.IGNORED_CATEGORIES)
+                    | Q(name__in=cls.IGNORED_CATEGORIES_BY_TARGET[utm])
+                )
                 .get_descendants(include_self=True)
             )
 
