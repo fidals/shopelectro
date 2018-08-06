@@ -15,14 +15,10 @@ from catalog.models import (
     AbstractCategory,
     AbstractProduct,
     CategoryManager,
+    ProductManager,
 )
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
-
-# @todo #273 Create a custom manager for the Product model.
-#  Currently we have code dupliactions for such filter:
-#  Product.objects.filter(page__is_active=True)
-#  Filter Product's queryset in initial method.
 
 
 class SECategoryQuerySet(TreeQuerySet):
@@ -58,7 +54,22 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
+class ProductActiveManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super(ProductActiveManager, self)
+            .get_queryset()
+            .filter(page__is_active=True)
+        )
+
+
 class Product(AbstractProduct, SyncPageMixin):
+
+    # That's why we are needed to explicitly add objects manager here
+    # because of Django special managers behaviour.
+    # Se se#480 for details.
+    objects = ProductManager()
+    actives = ProductActiveManager()
 
     category = models.ForeignKey(
         Category,
