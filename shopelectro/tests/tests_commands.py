@@ -14,6 +14,7 @@ from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core.management import call_command
+from django.forms.models import model_to_dict
 from django.test import TestCase
 
 from shopelectro.management.commands import price
@@ -129,6 +130,20 @@ class UpdateProducts(TestCase):
 
         self.assertEqual(updated_groups_count + create_count, TagGroup.objects.count())
         self.assertEqual(updated_tags_count + create_count, Tag.objects.count())
+
+    def test_creation_deactivated_product(self):
+        """Creation of a decativated product does not fail."""
+        unactive_product = Product.objects.first()
+        unactive_product.page.is_active = False
+        unactive_product.page.save()
+
+        try:
+            Product.objects.create(**model_to_dict(
+                unactive_product,
+                ['name', 'price', 'vendor_code'],
+            ))
+        except Exception as error:
+            self.fail(f'Creation of existing product failed: {{ error }}')
 
 
 class GeneratePrices(TestCase):
