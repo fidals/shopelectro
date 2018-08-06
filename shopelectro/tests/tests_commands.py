@@ -132,7 +132,7 @@ class UpdateProducts(TestCase):
         self.assertEqual(updated_tags_count + create_count, Tag.objects.count())
 
     def test_creation_deactivated_product(self):
-        """Creation of a decativated product does not fail."""
+        """Creation of a deactivated product does not fail."""
         unactive_product = Product.objects.first()
         unactive_product.page.is_active = False
         unactive_product.page.save()
