@@ -24,20 +24,15 @@
 {% else %}
   {% if is_head_tag %}
     <script>
-      var gaContext = (function() {
+      var ga = (function() {
         var results = [];
 
         var fn = function(action, params) {
           results.push([action, params]);
           console.log('GA:', JSON.stringify([action, params]));
         };
-
-        return {
-          fn: fn,
-          results: results,
-        }
+        return fn;
       }());
-      var ga = gaContext.fn;
 
       window.dataLayer = (function() {
         var results = [];

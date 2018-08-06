@@ -9,7 +9,6 @@ import sequence from 'run-sequence';
 
 const $ = require('gulp-load-plugins')();
 const flexibility = require('postcss-flexibility')();
-const spawnSync = require('child_process').spawnSync;
 
 console.log(`
 You've seen warning because of deprecated deps during npm install.
@@ -239,7 +238,7 @@ function vendorJS(source, destination, fileName) {
     .pipe($.changed(path.build.js, { extension: '.js' }))
     .pipe($.concat(`${fileName}.js`))
     .pipe($.rename({ suffix: '.min' }))
-    .pipe($.uglify())
+    .pipe($.uglify({ mangle: { reserved: ['ga'] } }))
     .pipe(gulp.dest(destination));
 }
 
@@ -254,7 +253,12 @@ function appJS(source, destination, fileName) {
       compact: false,
     }))
     .pipe($.rename({ suffix: '.min' }))
-    .pipe($.if(env.production, $.uglify()))
+    .pipe($.if(
+      env.production,
+      $.uglify({
+        mangle: { reserved: ['ga'] },
+      })
+    ))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
     .pipe(gulp.dest(destination))
     .pipe($.livereload());

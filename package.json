@@ -37,7 +37,7 @@
     "gulp-postcss": "^6.3.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.4.0",
-    "gulp-uglify": "^2.1.0",
+    "gulp-uglify": "^3.0.1",
     "gulp.spritesmith": "^6.3.0",
     "less-plugin-glob": "^2.0.0",
     "postcss-csso": "^2.0.0",
