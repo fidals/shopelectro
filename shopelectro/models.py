@@ -15,6 +15,7 @@ from catalog.models import (
     AbstractCategory,
     AbstractProduct,
     CategoryManager,
+    ProductManager,
 )
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
@@ -67,7 +68,7 @@ class Product(AbstractProduct, SyncPageMixin):
     # That's why we are needed to explicitly add objects manager here
     # because of Django special managers behaviour.
     # Se se#480 for details.
-    objects = models.Manager()
+    objects = ProductManager()
     actives = ProductActiveManager()
 
     category = models.ForeignKey(
