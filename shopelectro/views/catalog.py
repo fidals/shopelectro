@@ -38,6 +38,21 @@ class CategoryTree(catalog.CategoryTree):
     category_model = models.Category
 
 
+def prepare_tile_products(products):
+    images = Image.objects.get_main_images_by_pages(
+        models.ProductPage.objects.filter(
+            shopelectro_product__in=products
+        )
+    )
+    categories = models.Category.objects.get_root_categories_by_products(
+        products
+    )
+    return [
+        (product, images.get(product.page), categories.get(product))
+        for product in products
+    ]
+
+
 @set_csrf_cookie
 class ProductPage(catalog.ProductPage):
     pk_url_kwarg = None
@@ -94,13 +109,22 @@ class ProductPage(catalog.ProductPage):
             page__is_active=False
         ).first()
         if inactive_product:
-            related_products = models.Product.objects.filter(
-                category=inactive_product.category,
-                page__is_active=True
-            )[:10]
+            related_products = (
+                models.Product.objects
+                .filter(
+                    category=inactive_product.category,
+                    page__is_active=True,
+                )
+                .prefetch_related('category')
+                .select_related('page')[:10]
+            )
             self.object = inactive_product
-            context = self.get_context_data(object=inactive_product, **url_kwargs)
-            context.update(related_products=related_products)
+            context = self.get_context_data(
+                object=inactive_product,
+                tile_products=prepare_tile_products(related_products),
+                tile_title='Возможно вас заинтересуют похожие товары:',
+                **url_kwargs,
+            )
             return render(request, 'catalog/product_404.html', context, status=404)
 
 
@@ -113,33 +137,21 @@ class IndexPage(pages_views.CustomPageView):
         context = super(IndexPage, self).get_context_data(**kwargs)
         mobile_view = get_user_agent(self.request).is_mobile
 
-        top_products = (
-            models.Product.objects
-            .filter(id__in=settings.TOP_PRODUCTS, page__is_active=True)
-            .prefetch_related('category')
-            .select_related('page')
-        )
-
-        images = Image.objects.get_main_images_by_pages(
-            models.ProductPage.objects.filter(
-                shopelectro_product__in=top_products
-            )
-        )
-
-        categories = models.Category.objects.get_root_categories_by_products(
-            top_products)
-
-        prepared_top_products = []
+        tile_products = []
         if not mobile_view:
-            prepared_top_products = [
-                (product, images.get(product.page), categories.get(product))
-                for product in top_products
-            ]
+            top_products = (
+                models.Product.objects
+                .filter(id__in=settings.TOP_PRODUCTS, page__is_active=True)
+                .prefetch_related('category')
+                .select_related('page')
+            )
+            tile_products = prepare_tile_products(top_products)
 
         return {
             **context,
+            'tile_title': 'ТОП 10 ТОВАРОВ',
             'category_tile': config.MAIN_PAGE_TILE,
-            'prepared_top_products': prepared_top_products,
+            'tile_products': tile_products,
         }
 
 
@@ -172,10 +184,14 @@ class CategoryPage(catalog.CategoryPage):
             page_number < 1 or
             products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS
         ):
-            raise http.Http404('Page does not exist.')
+            raise http.Http404('Page does not exist.')  # Ignore CPDBear
+
+        # @todo #470:15m Implement a new method for a Product's manager to get all_products
+        #  as below.
 
         all_products = (
             models.Product.objects
+            .filter(page__is_active=True)
             .prefetch_related('page__images')
             .select_related('page')
             .get_by_category(category, ordering=(sorting_option, ))
@@ -267,6 +283,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
 
     all_products = (
         models.Product.objects
+        .filter(page__is_active=True)
         .prefetch_related('page__images')
         .select_related('page')
         .get_by_category(category, ordering=(sorting_option,))
