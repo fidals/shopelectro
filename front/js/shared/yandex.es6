@@ -84,6 +84,8 @@
         reachGoal('PUT_IN_CART_FROM_CATEGORY');
         reachGoal('CMN_PUT_IN_CART');
       });
+    // @todo #473:60m Enable and test COPY_PHONE and COPY_MAIL.
+    //  It's ya.metrika aims.
     DOM.$copyPhoneTag.mouseup(reachCopyPhone);
     DOM.$copyEmailTag.mouseup(reachCopyEmail);
   }
