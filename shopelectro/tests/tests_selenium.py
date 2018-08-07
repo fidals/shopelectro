@@ -647,12 +647,19 @@ class OrderPage(helpers.SeleniumTestCase):
                 .format(i)
             ).click()
 
-    def perform_operations_on_cart(self):
-        self.click((By.ID, 'id_payment_type_0'))
+    def select_payment_type(self, payment_type='cash'):
+        # @todo #473:15m Move `payment_type` to dict or dataclass
+        input_item = self.browser.find_element_by_css_selector(
+            f'input[name="payment_type"][value="{payment_type}"]'
+        )
+        input_item.click()
+
+    def append_products_to_cart(self):
+        self.select_payment_type('cash')
         add_one_more = self.click((By.XPATH, self.add_product))
         self.wait.until(EC.staleness_of(add_one_more))
 
-    def fill_and_submit_form(self):
+    def fill_contacts_data(self):
         @helpers.try_again_on_stale_element(3)
         def insert_value(id, keys, expected_keys=''):
             def expected_conditions(browser):
@@ -664,8 +671,12 @@ class OrderPage(helpers.SeleniumTestCase):
         insert_value('id_city', 'Санкт-Петербург')
         insert_value('id_phone', '2222222222', expected_keys='+7 (222) 222 22 22')
         insert_value('id_email', 'test@test.test')
+
+    def submit_form(self, success_order_url=''):
+        # @todo #473:30m Move form processing methods to Ya.Data
+        success_order_url = success_order_url or self.success_order_url
         self.click((By.ID, 'submit-order'))
-        self.wait.until(EC.url_to_be(self.success_order_url))
+        self.wait.until(EC.url_to_be(success_order_url))
 
     def test_table_is_presented_if_there_is_some_products(self):
         """If there are some products in cart, we should see them in table on OrderPage."""
@@ -736,8 +747,9 @@ class OrderPage(helpers.SeleniumTestCase):
 
     def test_confirm_order(self):
         """After filling the form we should be able to confirm an Order."""
-        self.perform_operations_on_cart()
-        self.fill_and_submit_form()
+        self.append_products_to_cart()
+        self.fill_contacts_data()
+        self.submit_form()
         self.assertEqual(
             self.browser.current_url,
             self.live_server_url + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success', ))
@@ -749,10 +761,11 @@ class OrderPage(helpers.SeleniumTestCase):
             'order-table-product-id')
         clean_codes = [code.text for code in codes]
 
-        self.perform_operations_on_cart()
+        self.append_products_to_cart()
         final_price = self.browser.find_element_by_id('cart-page-sum').text[:-5]
 
-        self.fill_and_submit_form()
+        self.fill_contacts_data()
+        self.submit_form()
         self.assertEqual(len(mail.outbox), 1)
         sent_mail_body = mail.outbox[0].body
 
@@ -777,6 +790,13 @@ class OrderPage(helpers.SeleniumTestCase):
             .format(final_price),
             sent_mail_body
         )
+
+    def test_pay_with_yandex_kassa(self):
+        self.append_products_to_cart()
+        self.fill_contacts_data()
+        self.select_payment_type('AC')
+        self.submit_form(success_order_url=settings.YANDEX_KASSA_LINK)
+        self.assertEqual(self.browser.current_url, settings.YANDEX_KASSA_LINK)
 
 
 class SitePage(helpers.SeleniumTestCase):

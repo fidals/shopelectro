@@ -371,3 +371,6 @@ TAGS_ORDER = ['group__position', 'group__name', 'position', 'name']
 # Multipliers are related to prices in this order:
 # big/medium/small/retail. First three are wholesale prices.
 PRICE_MULTIPLIERS = 1.0, 1.0, 1.0, 1.0
+
+# default for local tests. Prod's one may differ
+YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
