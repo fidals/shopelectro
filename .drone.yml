@@ -43,77 +43,77 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  test:
-    image: fidals/se:dev
-    environment:
-      - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_URL=postgres
-      - POSTGRES_DB=test
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=test
-      - RABBITMQ_URL=rabbitmq
-      - RABBITMQ_PORT=5672
-      - SELENIUM_URL=http://selenium:4444/wd/hub
-      - FTP_IP=${FTP_IP}
-      - FTP_USER=${FTP_USER}
-      - FTP_PASS=${FTP_PASS}
-      # Hardcoded env values because of drone secret's bug. See stb#263
-      - SELENIUM_TIMEOUT_SECONDS=180
-      - SELENIUM_WAIT_SECONDS=180
-    commands:
-      - python manage.py migrate
-      - python manage.py excel
-      - python manage.py price
-      - python manage.py collectstatic --noinput
-      - python manage.py test --parallel --liveserver=test:8021-8029
-    secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
-    when:
-      event: [push, pull_request]
+  # test:
+  #   image: fidals/se:dev
+  #   environment:
+  #     - TEST_ENV=true
+  #     - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=test
+  #     - POSTGRES_URL=postgres
+  #     - POSTGRES_DB=test
+  #     - RABBITMQ_DEFAULT_USER=rabbitmq
+  #     - RABBITMQ_DEFAULT_PASS=test
+  #     - RABBITMQ_URL=rabbitmq
+  #     - RABBITMQ_PORT=5672
+  #     - SELENIUM_URL=http://selenium:4444/wd/hub
+  #     - FTP_IP=${FTP_IP}
+  #     - FTP_USER=${FTP_USER}
+  #     - FTP_PASS=${FTP_PASS}
+  #     # Hardcoded env values because of drone secret's bug. See stb#263
+  #     - SELENIUM_TIMEOUT_SECONDS=180
+  #     - SELENIUM_WAIT_SECONDS=180
+  #   commands:
+  #     - python manage.py migrate
+  #     - python manage.py excel
+  #     - python manage.py price
+  #     - python manage.py collectstatic --noinput
+  #     - python manage.py test --parallel --liveserver=test:8021-8029
+  #   secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
+  #   when:
+  #     event: [push, pull_request]
 
-  lint-coala:
-    image: fidals/coala-ci
-    group: lint
-    commands:
-      - coala --ci -j 2
-    when:
-      event: pull_request
+  # lint-coala:
+  #   image: fidals/coala-ci
+  #   group: lint
+  #   commands:
+  #     - coala --ci -j 2
+  #   when:
+  #     event: pull_request
 
-  lint-pdd:
-    image: fidals/pdd-ci
-    group: lint
-    commands:
-      - pdd --verbose
-        --exclude=node_modules/**/*
-        --exclude=static/**/*
-        --exclude=venv/**/*
-        --exclude=media/**/*
-        --exclude=.idea/**/*
-        --exclude=front_build
-        --exclude=front/images
-        --exclude=**/*.pyc
-        --exclude=**/*.jpg
-        -f report.xml
-    when:
-      event: pull_request
+  # lint-pdd:
+  #   image: fidals/pdd-ci
+  #   group: lint
+  #   commands:
+  #     - pdd --verbose
+  #       --exclude=node_modules/**/*
+  #       --exclude=static/**/*
+  #       --exclude=venv/**/*
+  #       --exclude=media/**/*
+  #       --exclude=.idea/**/*
+  #       --exclude=front_build
+  #       --exclude=front/images
+  #       --exclude=**/*.pyc
+  #       --exclude=**/*.jpg
+  #       -f report.xml
+  #   when:
+  #     event: pull_request
 
-  docker-push:
-    image: docker:latest
-    environment:
-      - DOCKER_HUB_LOGIN=${DOCKER_HUB_LOGIN}
-      - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
-    commands:
-      - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
-      - docker push fidals/se-nodejs:dev
-      - docker push fidals/se:dev
-      - docker push fidals/se:prod
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: push
-    secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
+  # docker-push:
+  #   image: docker:latest
+  #   environment:
+  #     - DOCKER_HUB_LOGIN=${DOCKER_HUB_LOGIN}
+  #     - DOCKER_HUB_PASSWORD=${DOCKER_HUB_PASSWORD}
+  #   commands:
+  #     - docker login -u $DOCKER_HUB_LOGIN -p $DOCKER_HUB_PASSWORD
+  #     - docker push fidals/se-nodejs:dev
+  #     - docker push fidals/se:dev
+  #     - docker push fidals/se:prod
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   when:
+  #     event: push
+  #   secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 
   docker-up:
     image: docker/compose:1.22.0
@@ -122,12 +122,24 @@ pipeline:
       - cp drone_env/* env_files/
       - cp drone_env/.env .
       - docker-compose up -d app
-      - docker-compose exec app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
+      - docker-compose exec -T app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      event: [push, pull_request]
+
+  docker-rm:
+    image: docker/compose:1.22.0
+    commands:
+      - cd docker
+      - cp drone_env/* env_files/
+      - cp drone_env/.env .
       - docker-compose logs app
       - docker-compose rm -fs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
+      status: [ success, failure ]
       event: [push, pull_request]
 
 services:
