@@ -122,11 +122,9 @@ pipeline:
       - cp drone_env/* env_files/
       - cp drone_env/.env .
       - docker-compose up -d app
-      # @todo #396:60m Do drone check `docker-up` service.
-      #  Let drone check if started service is available.
-      #  Some code draft:
-      #  `- if [[ $(curl -Is http://127.0.0.1:8010 | head -1 | grep 200) = '' ]]; then echo 'service '; fi`
-      - docker-compose stop
+      - docker-compose exec app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
+      - docker-compose logs app
+      - docker-compose rm -fs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
