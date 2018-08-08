@@ -814,7 +814,7 @@ class OrderPage(helpers.SeleniumTestCase):
         """
         success_page_domain = self.YA_KASSA_INNER_DOMAIN
         self.append_products_to_cart()
-        self.fill_contacts_data()
+        self.fill_contacts_data()  # Ignore CPDBear
         self.select_payment_type('AC')
         self.submit_form()
         self.wait.until(EC.url_contains(success_page_domain))
