@@ -41,7 +41,7 @@
     mediator.subscribe('onOneClickBuy', (_, id, quantity, name) => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FAST_BUY_SEND');
-      const productsData = {id, quantity, name};
+      const productsData = { id, quantity, name };
       yaTracker.purchase([productsData], orderData);
       gaTracker.purchase([productsData], orderData);
     });
