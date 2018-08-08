@@ -113,17 +113,16 @@ services:
     working_dir: $SRC_DIR
     volumes:
       - ./../:$SRC_DIR
-    command: pdd
     entrypoint:
       - pdd
-      - --verbose
+      - --exclude=venv/**/*
       - --exclude=node_modules/**/*
       - --exclude=static/**/*
       - --exclude=venv/**/*
       - --exclude=static/**/*
       - --exclude=media/**/*
       - --exclude=.idea/**/*
-      - --exclude=front/build
+      - --exclude=front_build
       - --exclude=front/images
       - --exclude=**/*.pyc
       - --exclude=**/*.jpg

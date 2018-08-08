@@ -973,6 +973,8 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.assertTrue('FULL_BUY_SEND' in self.reached_goals)
         self.assertTrue('CMN_BUY_SEND' in self.reached_goals)
 
+    # @todo #473:15m Resurrect test `test_cart_page_open`
+    @unittest.skip
     def test_cart_page_open(self):
         self.buy_product()
         self.prevent_default('click', '.js-go-to-cart')
