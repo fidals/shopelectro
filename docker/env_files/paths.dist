@@ -1,5 +1,5 @@
 # Identify the dependencies folder
-DEPS_DIR=/usr/local/lib/python3.6/site-packages
+DEPS_DIR=/usr/app/deps
 # Directory, where you cloned `refarm-site` repository
 REFARM_DIR=/path/to_my/refarm_site
 # Identify the source folder
