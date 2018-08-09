@@ -604,6 +604,9 @@ class ProductPage(helpers.SeleniumTestCase):
 @helpers.disable_celery
 class OrderPage(helpers.SeleniumTestCase):
 
+    # Ya.Kassa's domain with card processing UI
+    YA_KASSA_INNER_DOMAIN = 'money.yandex.ru'
+
     @staticmethod
     def get_cell(pos, col):
         # table columns mapping: http://prntscr.com/bsv5hp  # Ignore InvalidLinkBear
@@ -647,12 +650,19 @@ class OrderPage(helpers.SeleniumTestCase):
                 .format(i)
             ).click()
 
-    def perform_operations_on_cart(self):
-        self.click((By.ID, 'id_payment_type_0'))
+    def select_payment_type(self, payment_type='cash'):
+        # @todo #473:15m Move `payment_type` to dict or dataclass
+        input_item = self.browser.find_element_by_css_selector(
+            f'input[name="payment_type"][value="{payment_type}"]'
+        )
+        input_item.click()
+
+    def append_products_to_cart(self):
+        self.select_payment_type('cash')
         add_one_more = self.click((By.XPATH, self.add_product))
         self.wait.until(EC.staleness_of(add_one_more))
 
-    def fill_and_submit_form(self):
+    def fill_contacts_data(self):
         @helpers.try_again_on_stale_element(3)
         def insert_value(id, keys, expected_keys=''):
             def expected_conditions(browser):
@@ -664,8 +674,10 @@ class OrderPage(helpers.SeleniumTestCase):
         insert_value('id_city', 'Санкт-Петербург')
         insert_value('id_phone', '2222222222', expected_keys='+7 (222) 222 22 22')
         insert_value('id_email', 'test@test.test')
+
+    def submit_form(self):
+        # @todo #473:30m Hide all form processing methods to a separated class.
         self.click((By.ID, 'submit-order'))
-        self.wait.until(EC.url_to_be(self.success_order_url))
 
     def test_table_is_presented_if_there_is_some_products(self):
         """If there are some products in cart, we should see them in table on OrderPage."""
@@ -736,8 +748,10 @@ class OrderPage(helpers.SeleniumTestCase):
 
     def test_confirm_order(self):
         """After filling the form we should be able to confirm an Order."""
-        self.perform_operations_on_cart()
-        self.fill_and_submit_form()
+        self.append_products_to_cart()
+        self.fill_contacts_data()
+        self.submit_form()
+        self.wait.until(EC.url_to_be(self.success_order_url))
         self.assertEqual(
             self.browser.current_url,
             self.live_server_url + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success', ))
@@ -749,10 +763,12 @@ class OrderPage(helpers.SeleniumTestCase):
             'order-table-product-id')
         clean_codes = [code.text for code in codes]
 
-        self.perform_operations_on_cart()
+        self.append_products_to_cart()
         final_price = self.browser.find_element_by_id('cart-page-sum').text[:-5]
 
-        self.fill_and_submit_form()
+        self.fill_contacts_data()
+        self.submit_form()
+        self.wait.until(EC.url_to_be(self.success_order_url))
         self.assertEqual(len(mail.outbox), 1)
         sent_mail_body = mail.outbox[0].body
 
@@ -777,6 +793,32 @@ class OrderPage(helpers.SeleniumTestCase):
             .format(final_price),
             sent_mail_body
         )
+
+    def test_pay_with_yandex_kassa(self):
+        success_page_domain = self.YA_KASSA_INNER_DOMAIN
+        self.fill_contacts_data()
+        self.select_payment_type('AC')
+        self.submit_form()
+        self.wait.until(EC.url_contains(success_page_domain))
+        self.assertIn(success_page_domain, self.browser.current_url)
+
+    # @todo #489:60m Fix yandex.kassa payment type bug.
+    #  See details in the test case below.
+    @unittest.expectedFailure
+    def test_change_cart_and_pay_with_yandex_kassa(self):
+        """
+        The same as `test_pay_with_yandex_kassa`, but with the detail.
+
+        Appending products to cart on order page
+        suddenly breaks yandex kassa payment type.
+        """
+        success_page_domain = self.YA_KASSA_INNER_DOMAIN
+        self.append_products_to_cart()
+        self.fill_contacts_data()  # Ignore CPDBear
+        self.select_payment_type('AC')
+        self.submit_form()
+        self.wait.until(EC.url_contains(success_page_domain))
+        self.assertIn(success_page_domain, self.browser.current_url)
 
 
 class SitePage(helpers.SeleniumTestCase):

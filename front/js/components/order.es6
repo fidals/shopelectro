@@ -204,11 +204,10 @@
         <input type="text" name="customerNumber" value="${formData.customerNumber}">
         <input type="text" name="orderNumber" value="${formData.orderNumber}">
         <input type="text" name="paymentType" value="${formData.paymentType}">
-        <input type="submit">
       </form>
     `;
 
-    DOM.$yandexFormWrapper.html(formHtml);
+    DOM.$yandexFormWrapper.append($(formHtml));
   }
 
   /**
@@ -235,9 +234,9 @@
       server.sendYandexOrder(orderInfo)
       .then((formData) => renderYandexForm(formData))
       // setTimeout to wait "onOrderSend" handling
-      .then(() => setTimeout(() => $(DOM.yandexForm).submit(), 100));
+      .then(setTimeout(() => $(DOM.yandexForm).submit(), 100));
     } else {
-      $(DOM.fullForm).submit();
+      setTimeout(() => $(DOM.fullForm).submit(), 100)
     }
   }
 
