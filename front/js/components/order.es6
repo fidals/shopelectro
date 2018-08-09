@@ -234,7 +234,7 @@
       server.sendYandexOrder(orderInfo)
       .then((formData) => renderYandexForm(formData))
       // setTimeout to wait "onOrderSend" handling
-      .then(setTimeout(() => $(DOM.yandexForm).submit(), 200));
+      .then(setTimeout(() => $(DOM.yandexForm).submit(), 100));
     } else {
       $(DOM.fullForm).submit();
     }
