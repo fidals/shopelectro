@@ -236,7 +236,7 @@
       // setTimeout to wait "onOrderSend" handling
       .then(setTimeout(() => $(DOM.yandexForm).submit(), 100));
     } else {
-      $(DOM.fullForm).submit();
+      setTimeout(() => $(DOM.fullForm).submit(), 100)
     }
   }
 
