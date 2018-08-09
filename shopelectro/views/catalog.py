@@ -4,6 +4,7 @@ from functools import partial
 from django import http
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
+from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
@@ -38,19 +39,27 @@ class CategoryTree(catalog.CategoryTree):
     category_model = models.Category
 
 
-def prepare_tile_products(products):
-    images = Image.objects.get_main_images_by_pages(
-        models.ProductPage.objects.filter(
-            shopelectro_product__in=products
+class ProductsAdapter:
+    """Adapts products QuerySet for using in template."""
+
+    def __init__(self, products: QuerySet):
+        self.products = products
+
+    # @todo #388:15m Annotate method `ProductsAdapter.prepare`.
+    #  With namedtuple, dataclass or smth.
+    def prepare(self):
+        images = Image.objects.get_main_images_by_pages(
+            models.ProductPage.objects.filter(
+                shopelectro_product__in=self.products
+            )
         )
-    )
-    categories = models.Category.objects.get_root_categories_by_products(
-        products
-    )
-    return [
-        (product, images.get(product.page), categories.get(product))
-        for product in products
-    ]
+        categories = models.Category.objects.get_root_categories_by_products(
+            self.products
+        )
+        return [
+            (product, images.get(product.page), categories.get(product))
+            for product in self.products
+        ]
 
 
 @set_csrf_cookie
@@ -93,18 +102,13 @@ class ProductPage(catalog.ProductPage):
             .get_group_tags_pairs()
         )
 
-        siblings = (
-            models.Product.actives
-            .filter(category=product.category)
-            .prefetch_related('category')
-            .select_related('page')[:10]
-        )
-
         return {
             **context,
             'price_bounds': config.PRICE_BOUNDS,
             'group_tags_pairs': group_tags_pairs,
-            'tile_products': prepare_tile_products(siblings),
+            'tile_products': ProductsAdapter(
+                product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT)
+            ).prepare(),
         }
 
     def render_siblings_on_404(
@@ -117,19 +121,14 @@ class ProductPage(catalog.ProductPage):
             page__is_active=False
         ).first()
         if inactive_product:
-            related_products = (
-                models.Product.objects
-                .filter(
-                    category=inactive_product.category,
-                    page__is_active=True,
-                )
-                .prefetch_related('category')
-                .select_related('page')[:10]
-            )
             self.object = inactive_product
             context = self.get_context_data(
                 object=inactive_product,
-                tile_products=prepare_tile_products(related_products),
+                tile_products=ProductsAdapter(
+                    inactive_product.get_siblings(
+                        offset=settings.PRODUCT_SIBLINGS_COUNT
+                    )
+                ).prepare(),
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )

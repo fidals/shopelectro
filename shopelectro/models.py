@@ -119,6 +119,16 @@ class Product(AbstractProduct, SyncPageMixin):
     def params(self):
         return Tag.objects.filter(products=self).get_group_tags_pairs()
 
+    # @todo #388:30m Move Product.get_siblings method to refarm-site
+    #  And reuse it on STB.
+    def get_siblings(self, offset):
+        return (
+            self.__class__.actives
+            .filter(category=self.category)
+            .prefetch_related('category')
+            .select_related('page')[:offset]
+        )
+
 
 class ProductFeedback(models.Model):
     product = models.ForeignKey(

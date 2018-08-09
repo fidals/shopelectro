@@ -374,3 +374,5 @@ PRICE_MULTIPLIERS = 1.0, 1.0, 1.0, 1.0
 
 # default for local tests. Prod's one may differ
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
+
+PRODUCT_SIBLINGS_COUNT = 10
