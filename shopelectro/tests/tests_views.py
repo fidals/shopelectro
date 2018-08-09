@@ -428,23 +428,33 @@ class ProductPage(TestCase):
 
     fixtures = ['dump.json']
 
-    def test_orphan_product(self):
-        product = Product.objects.first()
-        product.category = None
-        product.save()
+    def setUp(self):
+        self.product = Product.objects.first()
 
-        response = self.client.get(product.url)
+    def test_orphan_product(self):
+        self.product.category = None
+        self.product.save()
+
+        response = self.client.get(self.product.url)
         self.assertEqual(response.status_code, 404)
 
-    def test_related_products_on_404(self):
+    def test_related_products(self):
         """404 page of sometimes removed product should contain product's siblings."""
-        product = Product.objects.first()
-        product.page.is_active = False
-        product.save()  # saves product.page too
-
-        response = self.client.get(product.url)
+        response = self.client.get(self.product.url)
         # 404 page should show 10 siblings. We'll check the last one
-        sibling_product = product.category.products.all()[9]
+        sibling_product = self.product.category.products.all()[9]
+        self.assertTrue(
+            sibling_product.name in str(response.content)
+        )
+
+    def test_related_products_on_404(self):
+        """404 page of some time ago removed product should contain product's siblings."""
+        self.product.page.is_active = False
+        self.product.save()  # saves product.page too
+
+        response = self.client.get(self.product.url)
+        # 404 page should show 10 siblings. We'll check the last one
+        sibling_product = self.product.category.products.all()[9]
         self.assertEqual(response.status_code, 404)
         self.assertTrue(
             sibling_product.name in str(response.content)

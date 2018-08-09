@@ -89,14 +89,22 @@ class ProductPage(catalog.ProductPage):
 
         group_tags_pairs = (
             models.Tag.objects
-            .filter(products=self.object)
+            .filter(products=product)
             .get_group_tags_pairs()
+        )
+
+        siblings = (
+            models.Product.actives
+            .filter(category=product.category)
+            .prefetch_related('category')
+            .select_related('page')[:10]
         )
 
         return {
             **context,
             'price_bounds': config.PRICE_BOUNDS,
-            'group_tags_pairs': group_tags_pairs
+            'group_tags_pairs': group_tags_pairs,
+            'tile_products': prepare_tile_products(siblings),
         }
 
     def render_siblings_on_404(

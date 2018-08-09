@@ -108,6 +108,10 @@
     {% endif %}
 
     {% include 'catalog/product_delivery.html' %}
+    {% comment %}
+      @todo #388:30m Move product siblings to slider
+    {% endcomment %}
+    {% include 'layout/tile_products.html' %}
     {% include 'catalog/product_feedback.html' %}
   </div>
 {% endblock %}
