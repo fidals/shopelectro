@@ -45,6 +45,7 @@ pipeline:
 
   test:
     image: fidals/se:dev
+    secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS ]
     environment:
       - TEST_ENV=true
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
@@ -60,16 +61,14 @@ pipeline:
       - FTP_IP=${FTP_IP}
       - FTP_USER=${FTP_USER}
       - FTP_PASS=${FTP_PASS}
-      # Hardcoded env values because of drone secret's bug. See stb#263
-      - SELENIUM_TIMEOUT_SECONDS=180
-      - SELENIUM_WAIT_SECONDS=180
+      - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
+      - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
     commands:
       - python manage.py migrate
       - python manage.py excel
       - python manage.py price
       - python manage.py collectstatic --noinput
       - python manage.py test --parallel --liveserver=test:8021-8029
-    secrets: [ FTP_IP, FTP_USER, FTP_PASS ]
     when:
       event: [push, pull_request]
 
@@ -157,8 +156,6 @@ services:
       - DBUS_SESSION_BUS_ADDRESS=/dev/null
       - SCREEN_WIDTH=1366
       - SCREEN_HEIGHT=768
-      - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
-      - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
