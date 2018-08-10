@@ -122,6 +122,8 @@ pipeline:
       - cp drone_env/* env_files/
       - cp drone_env/.env .
       - docker-compose up -d app
+      # wait `app` container
+      - while [ `docker-compose ps | grep app | awk '{print $6}'` != "Up" ]; do sleep 1; done;
       - docker-compose exec -T app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
