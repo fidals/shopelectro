@@ -39,31 +39,19 @@ class CategoryTree(catalog.CategoryTree):
     category_model = models.Category
 
 
-class TemplateDataAdapter:
-    """
-    Adapts data to template format.
-
-    In most cases data came from DB.
-    """
-
-    def __init__(self, products: QuerySet):
-        self.products = products
-
-    # @todo #388:15m Annotate method `TemplateDataAdapter.adapt_products`.
-    #  With namedtuple, dataclass or smth.
-    def adapt_products(self):
-        images = Image.objects.get_main_images_by_pages(
-            models.ProductPage.objects.filter(
-                shopelectro_product__in=self.products
-            )
+def prepare_tile_products(products):
+    images = Image.objects.get_main_images_by_pages(
+        models.ProductPage.objects.filter(
+            shopelectro_product__in=products
         )
-        categories = models.Category.objects.get_root_categories_by_products(
-            self.products
-        )
-        return [
-            (product, images.get(product.page), categories.get(product))
-            for product in self.products
-        ]
+    )
+    categories = models.Category.objects.get_root_categories_by_products(
+        products
+    )
+    return [
+        (product, images.get(product.page), categories.get(product))
+        for product in products
+    ]
 
 
 @set_csrf_cookie
@@ -110,9 +98,9 @@ class ProductPage(catalog.ProductPage):
             **context,
             'price_bounds': config.PRICE_BOUNDS,
             'group_tags_pairs': group_tags_pairs,
-            'tile_products': TemplateDataAdapter(
+            'tile_products': prepare_tile_products(
                 product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT)
-            ).adapt_products(),
+            ),
         }
 
     def render_siblings_on_404(
@@ -128,11 +116,11 @@ class ProductPage(catalog.ProductPage):
             self.object = inactive_product
             context = self.get_context_data(
                 object=inactive_product,
-                tile_products=TemplateDataAdapter(
+                tile_products=prepare_tile_products(
                     inactive_product.get_siblings(
                         offset=settings.PRODUCT_SIBLINGS_COUNT
                     )
-                ).adapt_products(),
+                ),
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
@@ -156,7 +144,7 @@ class IndexPage(pages_views.CustomPageView):
                 .prefetch_related('category')
                 .select_related('page')
             )
-            tile_products = TemplateDataAdapter(top_products).adapt_products()
+            tile_products = prepare_tile_products(top_products)
 
         return {
             **context,
