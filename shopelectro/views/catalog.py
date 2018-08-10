@@ -39,15 +39,19 @@ class CategoryTree(catalog.CategoryTree):
     category_model = models.Category
 
 
-class ProductsAdapter:
-    """Adapts products QuerySet for using in template."""
+class TemplateDataAdapter:
+    """
+    Adapts data to template format.
+
+    In most cases data came from DB.
+    """
 
     def __init__(self, products: QuerySet):
         self.products = products
 
-    # @todo #388:15m Annotate method `ProductsAdapter.prepare`.
+    # @todo #388:15m Annotate method `TemplateDataAdapter.adapt_products`.
     #  With namedtuple, dataclass or smth.
-    def prepare(self):
+    def adapt_products(self):
         images = Image.objects.get_main_images_by_pages(
             models.ProductPage.objects.filter(
                 shopelectro_product__in=self.products
@@ -106,9 +110,9 @@ class ProductPage(catalog.ProductPage):
             **context,
             'price_bounds': config.PRICE_BOUNDS,
             'group_tags_pairs': group_tags_pairs,
-            'tile_products': ProductsAdapter(
+            'tile_products': TemplateDataAdapter(
                 product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT)
-            ).prepare(),
+            ).adapt_products(),
         }
 
     def render_siblings_on_404(
@@ -124,11 +128,11 @@ class ProductPage(catalog.ProductPage):
             self.object = inactive_product
             context = self.get_context_data(
                 object=inactive_product,
-                tile_products=ProductsAdapter(
+                tile_products=TemplateDataAdapter(
                     inactive_product.get_siblings(
                         offset=settings.PRODUCT_SIBLINGS_COUNT
                     )
-                ).prepare(),
+                ).adapt_products(),
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
@@ -152,7 +156,7 @@ class IndexPage(pages_views.CustomPageView):
                 .prefetch_related('category')
                 .select_related('page')
             )
-            tile_products = ProductsAdapter(top_products).prepare()
+            tile_products = TemplateDataAdapter(top_products).adapt_products()
 
         return {
             **context,
