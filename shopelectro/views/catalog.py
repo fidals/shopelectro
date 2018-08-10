@@ -152,7 +152,7 @@ class IndexPage(pages_views.CustomPageView):
                 .prefetch_related('category')
                 .select_related('page')
             )
-            tile_products = prepare_tile_products(top_products)
+            tile_products = ProductsAdapter(top_products).prepare()
 
         return {
             **context,
