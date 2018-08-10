@@ -4,7 +4,6 @@ from functools import partial
 from django import http
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
-from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
