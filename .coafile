@@ -16,10 +16,8 @@ pycodestyle_ignore = E305,W503
 pydocstyle_ignore = D100,D101,D102,D103,D104,D105,D106,D203,D212
 language = Python 3
 
-# @todo #268:60m Resurrect js lint.
-
-# [all.javascript]
-# bears = CPDBear,ESLintBear
-# files = front/js/**/*.es6
-# eslint_config = ./.eslintrc
-# language = JavaScript
+[all.javascript]
+bears = CPDBear,ESLintBear
+files = front/js/**/*.es6
+eslint_config = ./.eslintrc
+language = JavaScript

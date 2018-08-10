@@ -42,10 +42,10 @@
       return {
         id: $el.attr('data-id'),
         quantity: $el.attr('data-count'),
-      }
+      };
     }).get();
     server.flushCart()
-      .then(data => {
+      .then((data) => {
         mediator.publish('onCartUpdate', data);
         mediator.publish('onCartClear', [productsData]);
       });
