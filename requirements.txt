@@ -2,7 +2,7 @@ beautifulsoup4
 celery==4.1.1
 Django==1.10
 django-debug-toolbar
-django-redis
+django-redis==4.8.0
 django-mptt==0.8.7
 django-widget-tweaks
 ipython
