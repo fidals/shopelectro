@@ -232,11 +232,11 @@
     if (isYandex()) {
       // @todo #473:30m Test order redirect to ya.kassa
       server.sendYandexOrder(orderInfo)
-      .then(formData => renderYandexForm(formData))
-      // setTimeout to wait "onOrderSend" handling
-      .then(() => setTimeout(() => $(DOM.yandexForm).submit(), 100));
+        .then(formData => renderYandexForm(formData))
+        // setTimeout to wait "onOrderSend" handling
+        .then(() => setTimeout(() => $(DOM.yandexForm).submit(), 100));
     } else {
-      setTimeout(() => $(DOM.fullForm).submit(), 100)
+      setTimeout(() => $(DOM.fullForm).submit(), 100);
     }
   }
 
