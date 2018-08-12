@@ -4,10 +4,18 @@
 {% load thumbnail %}
 
 {% if tile_products %}
-  <div itemscope itemtype="http://schema.org/Product" class="stuff-top">
+  <div itemscope itemtype="https://schema.org/Product" class="stuff-top">
     <p class="stuff-top-title text-center">{{ tile_title }}</p>
-
     {% for product, image, root_category in tile_products %}
+      <p class="hidden" itemprop="description">
+        {% with description=product.page.display_description %}
+          {% if description %}
+            {{ description }}
+          {% else %}
+            {{ product.name }}
+          {% endif %}
+        {% endwith %}
+      </p>
       <div class="stuff-top-item">
         <a href="{{ product.url }}" class="stuff-top-img js-browse-product" itemprop="url">
           {% include 'index/product_thumbnail.html' with image=image dimensions='x174' only %}
@@ -21,8 +29,8 @@
             </a>
           </div>
           <div class="stuff-top-category">{{ root_category.name }}</div>
-          <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="stuff-top-price-new">
-            <link itemprop="availability" href="http://schema.org/InStock">
+          <div itemprop="offers" itemscope itemtype="https://schema.org/Offer" class="stuff-top-price-new">
+            <link itemprop="availability" href="https://schema.org/InStock">
             <meta itemprop="description" content="{{ product.page.display_description }}">
             <meta itemprop="priceCurrency" content="RUB" />
             <span itemprop="price">{{ product.price|humanize_price }}</span> руб
