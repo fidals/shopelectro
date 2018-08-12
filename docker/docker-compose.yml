@@ -122,10 +122,12 @@ services:
       - --exclude=static/**/*
       - --exclude=media/**/*
       - --exclude=.idea/**/*
-      - --exclude=front_build
-      - --exclude=front/images
+      - --exclude=front_build/**/*
+      - --exclude=front/images/**/*
       - --exclude=**/*.pyc
       - --exclude=**/*.jpg
+      - --exclude=**/*.map
+      - --exclude=**/*.orig
       - -f report.xml
 
 networks:

@@ -89,14 +89,17 @@ class ProductPage(catalog.ProductPage):
 
         group_tags_pairs = (
             models.Tag.objects
-            .filter(products=self.object)
+            .filter(products=product)
             .get_group_tags_pairs()
         )
 
         return {
             **context,
             'price_bounds': config.PRICE_BOUNDS,
-            'group_tags_pairs': group_tags_pairs
+            'group_tags_pairs': group_tags_pairs,
+            'tile_products': prepare_tile_products(
+                product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT)
+            ),
         }
 
     def render_siblings_on_404(
@@ -109,19 +112,14 @@ class ProductPage(catalog.ProductPage):
             page__is_active=False
         ).first()
         if inactive_product:
-            related_products = (
-                models.Product.objects
-                .filter(
-                    category=inactive_product.category,
-                    page__is_active=True,
-                )
-                .prefetch_related('category')
-                .select_related('page')[:10]
-            )
             self.object = inactive_product
             context = self.get_context_data(
                 object=inactive_product,
-                tile_products=prepare_tile_products(related_products),
+                tile_products=prepare_tile_products(
+                    inactive_product.get_siblings(
+                        offset=settings.PRODUCT_SIBLINGS_COUNT
+                    )
+                ),
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
