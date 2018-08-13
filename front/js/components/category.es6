@@ -15,11 +15,13 @@
       mode: 'list',
     },
     $sorting: $('.selectpicker'),
+    $pagination: $('.js-catalog-pagination'),
   };
 
   const init = () => {
     setUpListeners();
     updateLoadMoreBtnState();
+    hidePaginationButtons();
   };
 
   /**
@@ -50,6 +52,16 @@
    * @returns {int} - number of products which are presented in DOM
    */
   const getProductsOnPageCount = () => parseInt(DOM.$productsOnPage.first().text(), 10);
+
+  /**
+   * Hide catalog's pagination buttons.
+   * Buttons should be visible only for web search engines.
+   *
+   * @returns {int} - number of products which are presented in DOM
+   */
+  function hidePaginationButtons() {
+    DOM.$pagination.hide();
+  }
 
   /**
    * Get number of already loaded products

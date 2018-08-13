@@ -233,7 +233,6 @@ class CatalogPagination(BaseCatalogTestCase):
             page_number - 1,
         )
 
-    @override_settings(DEBUG=True, INTERNAL_IPS=[])
     def test_pagination_buttons(self):
         """Each button forward to a previous and a next pagination pages."""
         page_number = 3
