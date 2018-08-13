@@ -1030,21 +1030,6 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.wait_page_loaded()
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
-    def test_select_phone(self):
-        """User selects site phone number."""
-        self.select_text('js-copy-phone')
-        self.browser.find_element_by_class_name('js-copy-phone').click()
-
-        self.assertTrue('COPY_PHONE' in self.reached_goals)
-
-    def test_select_email(self):
-        """User selects site email."""
-        self.prevent_default('click', '.js-copy-mail')
-        self.select_text('js-copy-mail')
-        self.browser.find_element_by_class_name('js-copy-mail').click()
-
-        self.assertTrue('COPY_MAIL' in self.reached_goals)
-
 
 class Search(helpers.SeleniumTestCase):
 

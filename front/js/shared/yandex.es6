@@ -84,10 +84,6 @@
         reachGoal('PUT_IN_CART_FROM_CATEGORY');
         reachGoal('CMN_PUT_IN_CART');
       });
-    // @todo #473:60m Enable and test COPY_PHONE and COPY_MAIL.
-    //  It's ya.metrika aims.
-    DOM.$copyPhoneTag.mouseup(reachCopyPhone);
-    DOM.$copyEmailTag.mouseup(reachCopyEmail);
   }
 
   function reachGoal(goal) {
@@ -100,39 +96,6 @@
     } catch (e) {
       console.error('YaCounter did not loaded. Perhaps the reason for this ' +
         `maybe AdBlock. Traceback: ${e}`);
-    }
-  }
-
-  /**
-   * Returns copied text by user.
-   * http://stackoverflow.com/questions/5379120/get-the-highlighted-selected-text
-   */
-  const getSelectionText = () => window.getSelection().toString();
-
-  /**
-   * Fire when user selects 9 or more numbers of phone.
-   */
-  function reachCopyPhone() {
-    const selectedTextLength = getSelectionText().length;
-
-    if (selectedTextLength > 8) {
-      localStorage.setItem('phoneIsCopied', 'true');
-      reachGoal('COPY_PHONE');
-    }
-  }
-
-  /**
-   * We store this users event for current user.
-   * So it fires once per user.
-   */
-  const isFullMailCopied = () => getSelectionText().indexOf(config.fullEmail) === 0;
-
-  function reachCopyEmail() {
-    const wasEmailCopied = localStorage.getItem('mailIsCopied');
-
-    if (isFullMailCopied && !wasEmailCopied) {
-      localStorage.setItem('mailIsCopied', 'true');
-      reachGoal('COPY_MAIL');
     }
   }
 
