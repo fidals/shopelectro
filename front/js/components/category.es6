@@ -56,8 +56,6 @@
   /**
    * Hide catalog's pagination buttons.
    * Buttons should be visible only for web search engines.
-   *
-   * @returns {int} - number of products which are presented in DOM
    */
   function hidePaginationButtons() {
     DOM.$pagination.hide();
