@@ -290,7 +290,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     category = get_object_or_404(models.CategoryPage, slug=category_slug).model
     sorting_option_str = CategorySortingOption(index=int(sorting)).directed_field
 
-    all_products = (
+    all_products = (  # Ignore CPDBear
         models.Product.objects
         .filter(page__is_active=True)
         .prefetch_related('page__images')
