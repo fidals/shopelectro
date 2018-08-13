@@ -2,10 +2,10 @@ from collections import OrderedDict
 from functools import wraps
 
 from django.db.models import Model
+from django.conf import settings
 
 from ecommerce.cart import Cart
 
-from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import Product
 
 
@@ -23,9 +23,9 @@ def recalculate_price(cart: Cart):
     Actualize price if needed.
     """
     wholesale_types = OrderedDict([
-        ('wholesale_large', PRICE_BOUNDS['wholesale_large']),
-        ('wholesale_medium', PRICE_BOUNDS['wholesale_medium']),
-        ('wholesale_small', PRICE_BOUNDS['wholesale_small']),
+        ('wholesale_large', settings.PRICE_BOUNDS['wholesale_large']),
+        ('wholesale_medium', settings.PRICE_BOUNDS['wholesale_medium']),
+        ('wholesale_small', settings.PRICE_BOUNDS['wholesale_small']),
     ])
 
     product_ids = [id_ for id_, _ in cart]

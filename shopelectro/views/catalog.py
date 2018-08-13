@@ -12,7 +12,6 @@ from catalog.views import catalog
 from images.models import Image
 from pages import views as pages_views
 
-from shopelectro import config
 from shopelectro import models
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -107,7 +106,7 @@ class ProductPage(catalog.ProductPage):
 
         return {
             **context,
-            'price_bounds': config.PRICE_BOUNDS,
+            'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': group_tags_pairs,
             'tile_products': prepare_tile_products(
                 product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT)
@@ -160,7 +159,7 @@ class IndexPage(pages_views.CustomPageView):
         return {
             **context,
             'tile_title': 'ТОП 10 ТОВАРОВ',
-            'category_tile': config.MAIN_PAGE_TILE,
+            'category_tile': settings.MAIN_PAGE_TILE,
             'tile_products': tile_products,
         }
 

@@ -1,9 +1,9 @@
 from math import ceil
 
+from django.conf import settings
 from django.test import TestCase
 
 from shopelectro.cart import SECart
-from shopelectro.config import PRICE_BOUNDS
 from shopelectro.models import Product
 
 
@@ -14,9 +14,9 @@ class SECartTest(TestCase):
     def __init__(self, *args, **kwargs):
         self.item_quantity = 2
         self.wholesale_price_type = {
-            'wholesale_large': PRICE_BOUNDS['wholesale_large'],
-            'wholesale_medium': PRICE_BOUNDS['wholesale_medium'],
-            'wholesale_small': PRICE_BOUNDS['wholesale_small'],
+            'wholesale_large': settings.PRICE_BOUNDS['wholesale_large'],
+            'wholesale_medium': settings.PRICE_BOUNDS['wholesale_medium'],
+            'wholesale_small': settings.PRICE_BOUNDS['wholesale_small'],
             'price': 10000
         }
         super().__init__(*args, **kwargs)

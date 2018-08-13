@@ -10,7 +10,7 @@ from django.views.decorators.cache import cache_page
 from pages.views import RobotsView, SitemapPage
 from pages.urls import custom_page_url
 
-from shopelectro import sitemaps, config, views
+from shopelectro import sitemaps, views
 from shopelectro.admin import se_admin
 
 

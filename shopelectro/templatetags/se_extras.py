@@ -10,7 +10,6 @@ from django.urls import reverse
 from images.models import ImageMixin
 from pages.models import Page
 
-from shopelectro import config
 from shopelectro.models import Category
 
 register = template.Library()
@@ -32,7 +31,7 @@ def roots():
 
 @register.simple_tag
 def footer_links():
-    return config.FOOTER_LINKS
+    return settings.FOOTER_LINKS
 
 
 # TODO - move in pages. Inspired by LP electric
