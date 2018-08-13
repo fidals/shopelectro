@@ -3,13 +3,6 @@ Config storage for shopelectro.ru.
 
 Every config-like option which doesn't belong to settings should be here.
 """
-from datetime import timedelta
-
-
-def cached_time(*args, **kwargs) -> int:
-    """Return value of time for caching in seconds."""
-    return int(timedelta(*args, **kwargs).total_seconds())
-
 # Tile on main page
 MAIN_PAGE_TILE = {
     'accumulators': [

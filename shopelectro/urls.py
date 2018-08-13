@@ -1,3 +1,4 @@
+from datetime import timedelta
 from collections import OrderedDict
 
 from django.conf import settings
@@ -11,6 +12,12 @@ from pages.urls import custom_page_url
 
 from shopelectro import sitemaps, config, views
 from shopelectro.admin import se_admin
+
+
+def cached_time(*args, **kwargs) -> int:
+    """Return value of time for caching in seconds."""
+    return int(timedelta(*args, **kwargs).total_seconds())
+
 
 # Orders sitemaps instances
 sitemaps = OrderedDict([
@@ -28,8 +35,8 @@ if settings.DEBUG:
             return arg
         return cache_page
 
-cached_60d = cache_page(config.cached_time(days=60))
-cached_2h = cache_page(config.cached_time(hours=2))
+cached_60d = cache_page(cached_time(days=60))
+cached_2h = cache_page(cached_time(hours=2))
 
 admin_urls = [
     url(r'^', se_admin.urls),
