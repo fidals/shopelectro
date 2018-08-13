@@ -4,13 +4,21 @@
 {% load se_extras %}
 
 {% block content %}
-  <div itemscope itemtype="http://schema.org/Product" class="page-product custom-checkbox">
-    <meta property="description" itemprop="description" content="{{ product.page.display_description }}" />
-    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="hide">
+  <div itemscope itemtype="https://schema.org/Product" class="page-product custom-checkbox">
+    <p class="hidden" itemprop="description">
+      {% with description=product.page.display_description %}
+        {% if description %}
+          {{ description }}
+        {% else %}
+          {{ product.name }}
+        {% endif %}
+      {% endwith %}
+    </p>
+    <div itemprop="offers" itemscope itemtype="https://schema.org/Offer" class="hide">
       <span itemprop="price">{{ product.price|humanize_price }}</span>
       <span itemprop="priceCurrency">RUB</span>
       <link itemprop="availability"
-            href="http://schema.org/{{ product.in_stock | yesno:'InStock,PreOrder' }}">
+            href="https://schema.org/{{ product.in_stock | yesno:'InStock,PreOrder' }}">
     </div>
 
     {% breadcrumbs_with_siblings page %}

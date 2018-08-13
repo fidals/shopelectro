@@ -1,11 +1,11 @@
 {% load pages_extras %}
 
 <div class="hidden-xs hidden-sm breadcrumbs-wrapper"
-     itemscope itemtype="http://schema.org/BreadcrumbList">
+     itemscope itemtype="https://schema.org/BreadcrumbList">
   {% for name, slug in crumbs_list %}
-    <span class="breadcrumbs-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+    <span class="breadcrumbs-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
       {% if slug %}
-        <a href="{{ slug }}" itemscope itemtype="http://schema.org/Thing" itemprop="item"
+        <a href="{{ slug }}" itemscope itemtype="https://schema.org/Thing" itemprop="item"
            class="breadcrumbs-link">
           <span itemprop="name">{{ name }}</span>
         </a>

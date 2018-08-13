@@ -464,7 +464,7 @@ class ProductPage(TestCase):
 class ProductPageSchema(TestCase):
 
     fixtures = ['dump.json']
-    schema_url = 'http://schema.org'
+    schema_url = 'https://schema.org'
 
     def test_available(self):
         """Page of an product with stock > 0 has $schema_url/InStock link."""
