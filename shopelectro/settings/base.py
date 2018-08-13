@@ -376,3 +376,31 @@ PRICE_MULTIPLIERS = 1.0, 1.0, 1.0, 1.0
 YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
 PRODUCT_SIBLINGS_COUNT = 10
+
+CATEGORY_SORTING_OPTIONS ={
+    0: {
+        'label': 'Цене, сначала дешёвые',
+        'field': 'price',
+        'direction': ''
+    },
+    1: {
+        'label': 'Цене, сначала дорогие',
+        'field': 'price',
+        'direction': '-'
+    },
+    2: {
+        'label': 'Названию, А-Я',
+        'field': 'name',
+        'direction': ''
+    },
+    3: {
+        'label': 'Названию, Я-А',
+        'field': 'name',
+        'direction': '-'
+    },
+    4: {
+        'label': 'Артикулу',
+        'field': 'vendor_code',
+        'direction': ''
+    },
+}

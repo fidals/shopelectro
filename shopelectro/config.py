@@ -6,48 +6,6 @@ Every config-like option which doesn't belong to settings should be here.
 from datetime import timedelta
 
 
-def category_sorting(sorting_index=None):
-    """
-    Sorting options for Category page.
-
-    Returns
-        - a sorting option object in a form of dictionary, if sorting_index is specified
-        - all options if it's not specified.
-    """
-    options = (
-        {
-            'label': 'Цене, сначала дешёвые',
-            'field': 'price',
-            'direction': ''
-        },
-        {
-            'label': 'Цене, сначала дорогие',
-            'field': 'price',
-            'direction': '-'
-        },
-        {
-            'label': 'Названию, А-Я',
-            'field': 'name',
-            'direction': ''
-        },
-        {
-            'label': 'Названию, Я-А',
-            'field': 'name',
-            'direction': '-'
-        },
-        {
-            'label': 'Артикулу',
-            'field': 'vendor_code',
-            'direction': ''
-        }
-    )
-
-    if sorting_index is not None:
-        chosen_option = options[sorting_index]
-        return chosen_option['direction'] + chosen_option['field']
-    return options
-
-
 def cached_time(*args, **kwargs) -> int:
     """Return value of time for caching in seconds."""
     return int(timedelta(*args, **kwargs).total_seconds())
