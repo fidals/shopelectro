@@ -2,4 +2,7 @@
 
 set -e
 
-wget -O- $1 -q | grep shopelectro.ru > /dev/null && echo "OK" || exit 1
+URL=$1s
+[[ $URL ]] || (echo "Specify an url to be checked as the first argument" && exit 1)
+
+wget -O- $URL -q | grep shopelectro.ru > /dev/null && echo "OK" || exit 1

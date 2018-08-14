@@ -128,10 +128,6 @@ pipeline:
       #  `ls` shows this:
       #  build etc front front_build node_modules
 
-      # @todo #408:15m Check necessity for the wait-state.sh in docker-up pipeline
-
-      # wait `app` container (seems that this may be superfluous, so try to perform pipe without it )
-      # - ./wait-state.sh app Up
       # - docker-compose exec -T app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
