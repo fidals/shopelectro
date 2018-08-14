@@ -239,7 +239,7 @@ class CatalogPagination(BaseCatalogTestCase):
         prev, next_ = BeautifulSoup(
             self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
             'html.parser'
-        ).find(class_='catalog-pagination').find_all('a')
+        ).find(class_='js-catalog-pagination').find_all('a')
 
         self.assert_pagination_links(next_, prev, page_number)
 
