@@ -14,11 +14,6 @@
     $downloadPriceInFooter: $('.js-download-price-footer'),
   };
 
-  const config = {
-    phoneRegexp: /\d{3}-\d{2}-\d{2}/g,
-    fullEmail: 'info@shopelectro.ru',
-  };
-
   // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
   // Load ecommerce plugin for gaTracker
