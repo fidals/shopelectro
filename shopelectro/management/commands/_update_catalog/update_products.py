@@ -323,8 +323,12 @@ def main(*args, **kwargs):
         if not any(parsed_files.values()):
             message = 'Files does not exist: {}'.format(parsed_files)
         else:
-            # TODO: happy debugging (:
-            message = 'The file structure has changed or it does not contain the required data.'
+            # file structure is unstable.
+            # You should adapt code for it if you got this error
+            message = (
+                'The file structure has changed'
+                ' or it does not contain the required data.'
+            )
 
         raise UpdateProductError(message)
 

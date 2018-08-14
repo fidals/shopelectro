@@ -16,14 +16,14 @@ from shopelectro.models import Category
 register = template.Library()
 
 
-# TODO - move it in catalog. Inspired by lp_electric
 @register.simple_tag
 def roots():
     return sorted(
         filter(
             lambda x: x.page.is_active,
-            Category.objects  # https://goo.gl/rFKiku
+            Category.objects
             .select_related('page')
+            # about get_cached_trees: https://goo.gl/rFKiku
             .get_cached_trees()
         ),
         key=lambda x: x.page.position,
@@ -35,7 +35,6 @@ def footer_links():
     return config.FOOTER_LINKS
 
 
-# TODO - move in pages. Inspired by LP electric
 @register.filter
 def class_name(model):
     """Return Model name."""
@@ -74,7 +73,6 @@ def time_to_call():
             return time + call
 
 
-# TODO - move it in pages.
 @register.simple_tag
 def full_url(url_name, *args):
     return settings.BASE_URL + reverse(url_name, args=args)
