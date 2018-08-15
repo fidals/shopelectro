@@ -136,9 +136,11 @@ N.B.: Некоторые данные (например, медиафайлы) �
 [Как устроен CI внутри](CI.md). 
 
 # Фичи
+https://github.com/fidals/refarm-site/blob/master/pages/README.md
 - [Tracking aims](https://github.com/fidals/shopelectro/blob/master/doc/tracking_aims.md)
-- [Retail Tags](https://github.com/fidals/shopelectro/blob/master/doc/tags.md)
-- [SEO Templates](https://github.com/fidals/shopelectro/blob/master/doc/seo_templates.md)
+- *Retail Tags* and *SEO Templates*.
+See [refarm-site module's doc](https://github.com/fidals/refarm-site/blob/master/pages/README.md)
+for info about both of them.
 
 ## Новый год
 - Как добавляли - https://github.com/fidals/shopelectro/pull/224

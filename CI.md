@@ -18,9 +18,3 @@ Docker compose фетчит эти образы на локальную маши
 
 Для интеграционных тестов фронтенда нужна собранная фронт-статика: css, js, images.
 Поэтому билдим npm 
-
-# Кэширование
-У текущей билд-системы Докера есть (были) проблемы с кэшированием,
-поэтому каждый раз билдим только с флагом --no-cache.
-# @todo #303:30m Try to rm --no-cache build flags from drone and Makefile.
-#  If it's impossible, write code comment.
