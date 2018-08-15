@@ -32,7 +32,7 @@ def get_paginated_page_or_404(objects, per_page, page_number):
         raise http.Http404('Page does not exist')
 
 
-class CategorySortingOption:
+class SortingOption:
     def __init__(self, index=0):
         options = settings.CATEGORY_SORTING_OPTIONS[index]
         self.label = options['label']
@@ -186,8 +186,8 @@ class CategoryPage(catalog.CategoryPage):
         ))
         page_number = int(self.request.GET.get('page', 1))
         view_type = self.request.session.get('view_type', 'tile')
-        sorting = int(self.kwargs.get('sorting', 0))
-        sorting_option_str = CategorySortingOption(index=sorting).directed_field
+        sorting_index = int(self.kwargs.get('sorting', 0))
+        sorting_option = SortingOption(index=sorting_index)
         category = context['category']
         if (
             page_number < 1 or
@@ -203,7 +203,7 @@ class CategoryPage(catalog.CategoryPage):
             .filter(page__is_active=True)
             .prefetch_related('page__images')
             .select_related('page')
-            .get_by_category(category, ordering=(sorting_option_str, ))
+            .get_by_category(category, ordering=(sorting_option.directed_field, ))
         )
 
         group_tags_pairs = (
@@ -224,7 +224,7 @@ class CategoryPage(catalog.CategoryPage):
                 .filter(tags__in=tags)
                 # Use distinct because filtering by QuerySet tags,
                 # that related with products by many-to-many relation.
-                .distinct(sorting_option_str.lstrip('-'))
+                .distinct(sorting_option.field)
             )
 
             tag_titles = models.serialize_tags_to_title(tags)
@@ -255,7 +255,7 @@ class CategoryPage(catalog.CategoryPage):
             'paginated_page': paginated_page,
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
             'limits': settings.CATEGORY_STEP_MULTIPLIERS,
-            'sort': sorting,
+            'sort': sorting_index,
             'tags': tags,
             'view_type': view_type,
             'skip_canonical': bool(tags),
@@ -288,14 +288,14 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
     page_number = (offset // products_on_page) + 1
     category = get_object_or_404(models.CategoryPage, slug=category_slug).model
-    sorting_option_str = CategorySortingOption(index=int(sorting)).directed_field
+    sorting_option = SortingOption(index=int(sorting))
 
     all_products = (  # Ignore CPDBear
         models.Product.objects
         .filter(page__is_active=True)
         .prefetch_related('page__images')
         .select_related('page')
-        .get_by_category(category, ordering=(sorting_option_str,))
+        .get_by_category(category, ordering=(sorting_option.directed_field,))
     )
 
     if tags:
@@ -308,7 +308,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             .filter(tags__in=tag_entities)
             # Use distinct because filtering by QuerySet tags,
             # that related with products by many-to-many relation.
-            .distinct(sorting_option_str.lstrip('-'))
+            .distinct(sorting_option.field)
         )
 
     paginated_page = get_paginated_page_or_404(all_products, products_on_page, page_number)
