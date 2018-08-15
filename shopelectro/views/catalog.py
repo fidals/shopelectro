@@ -201,7 +201,7 @@ class CategoryPage(catalog.CategoryPage):
         all_products = (
             models.Product.objects
             .filter(page__is_active=True)
-            .prefetch_related('page__images')
+            .prefetch_related('page__images', 'tags', 'tags__group')
             .select_related('page')
             .get_by_category(category, ordering=(sorting_option.directed_field, ))
         )

@@ -26,11 +26,11 @@
   };
 
   const productId = DOM.$addToCart.attr('data-id');
-  if (productId) mediator.publish('onProductDetail', productId);
 
   const init = () => {
     setUpListeners();
     changeOneClickBtnState();
+    publishDetail();
   };
 
   function setUpListeners() {
@@ -49,6 +49,31 @@
     DOM.$ratingList.on('click', 'li', event => mediator.publish('onRate', event));
     DOM.$ratingFilter.on('click', '.js-filter-trigger', filterByRating);
     DOM.$more_text_toggle.on('click', helpers.toggleText);
+  }
+
+  function getProductData() {
+    return {
+      id: productId,
+      name: DOM.$addToCart.data('name'),
+      category: DOM.$addToCart.data('category'),
+      quantity: parseInt(DOM.$counter.val(), 10),
+    }
+  }
+
+  /**
+   * Publish onProductDetail event.
+   */
+  function publishDetail() {
+    const { id, name, category } = getProductData();
+
+    if (id) mediator.publish(
+      'onProductDetail',
+      [{
+        id: id,
+        name: name,
+        category: category,
+      }],
+    );
   }
 
   /**
@@ -75,10 +100,13 @@
    */
   function oneClick() {
     helpers.setDisabledState(DOM.$oneClick, 'Ожидайте...');
-    const productCount = DOM.$counter.val();
-    server.oneClickBuy(productId, productCount, DOM.$phone.val())
+
+    const data = getProductData()
+    const { id, quantity } = data;
+
+    server.oneClickBuy(id, quantity, DOM.$phone.val())
       .then(() => {
-        mediator.publish('onOneClickBuy', [productId, productCount, DOM.$h1.text()]);
+        mediator.publish('onOneClickBuy', [data]);
         // Set timeout to wait handling of onOneClickBuy
         setTimeout(() => {
           window.location.href = '/shop/order-success';
@@ -110,15 +138,13 @@
   }
 
   function buyProduct() {
-    const { id, count } = {
-      id: productId,
-      count: DOM.$counter.val(),
-    };
+    const data = getProductData();
+    const { id, quantity } = data;
 
-    server.addToCart(id, count)
-      .then((data) => {
-        mediator.publish('onCartUpdate', data);
-        mediator.publish('onProductAdd', [id, count]);
+    server.addToCart(id, quantity)
+      .then((newData) => {
+        mediator.publish('onCartUpdate', newData);
+        mediator.publish('onProductAdd', [data]);
       });
   }
 

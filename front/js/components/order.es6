@@ -9,6 +9,7 @@
     submit: '#submit-order',
     fullForm: '#order-form-full',
     productCount: '.js-prod-count',
+    productPrice: '.js-product-price',
     remove: '.js-remove',
     paymentOptions: 'input[name=payment_type]',
     defaultPaymentOptions: 'input[for=id_payment_type_0]',
@@ -62,9 +63,9 @@
     return $(DOM.productRows).map((_, el) => {
       const $el = $(el);
       return {
-        id: $el.attr('data-table-id'),
         name: $el.find('.js-product-link').text(),
         quantity: $el.find(DOM.productCount).val(),
+        price: parseInt($el.find(DOM.productPrice).attr('productPrice'), 10),
       };
     }).get();
   }
@@ -151,14 +152,15 @@
   function changeProductCount(event) {
     const productId = getElAttr(event, 'productId');
     const countDiff = event.target.value - getElAttr(event, 'productLastCount');
+    const data = {
+      id: productId,
+      quantity: Math.abs(countDiff)
+    };
+
     server.changeInCart(productId, event.target.value)
-      .then((data) => {
-        mediator.publish('onCartUpdate', data);
-        if (countDiff > 0) {
-          mediator.publish('onProductAdd', [productId, countDiff]);
-        } else {
-          mediator.publish('onProductRemove', [productId, Math.abs(countDiff)]);
-        }
+      .then((newData) => {
+        mediator.publish('onCartUpdate', newData);
+        mediator.publish(countDiff > 0 ? 'onProductAdd' : 'onProductRemove', [data]);
       });
   }
 

@@ -1,5 +1,6 @@
 (() => {
   const DOM = {
+    $h1: $('.category-title'),
     $productsOnPage: $('.js-products-showed-count'),
     $productsList: $('#products-wrapper'),
     $viewType: $('#category-right'),
@@ -158,21 +159,25 @@
    * Publish 'onCartUpdate' event on success.
    */
   function buyProduct(event) {
-    const buyInfo = () => {
-      const product = $(event.target);
-      const count = product.closest('.js-order').find('.js-product-count').val();
+    const getProductData = () => {
+      const $product = $(event.target);
+      const quantity = $product.closest('.js-order').find('.js-product-count').val();
 
       return {
-        count: parseInt(count, 10),
-        id: parseInt(product.attr('productId'), 10),
+        id: parseInt($product.attr('productId'), 10),
+        name: $product.attr('productName'),
+        quantity: parseInt(quantity, 10),
+        category: DOM.$h1.data('name'),
       };
     };
 
-    const { id, count } = buyInfo();
-    server.addToCart(id, count)
-      .then((data) => {
-        mediator.publish('onCartUpdate', data);
-        mediator.publish('onProductAdd', [id, count]);
+    const data = getProductData();
+    const { id, quantity } = data;
+
+    server.addToCart(id, quantity)
+      .then((newData) => {
+        mediator.publish('onCartUpdate', newData);
+        mediator.publish('onProductAdd', [data]);
       });
   }
 
