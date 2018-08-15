@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
-from django.test import override_settings, TestCase
+from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
