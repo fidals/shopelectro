@@ -121,14 +121,30 @@ pipeline:
       - cp drone_env/* env_files/
       - cp drone_env/.env .
       - docker-compose up -d app
-      # @todo #396:60m Do drone check `docker-up` service.
-      #  Let drone check if started service is available.
-      #  Some code draft:
-      #  `- if [[ $(curl -Is http://127.0.0.1:8010 | head -1 | grep 200) = '' ]]; then echo 'service '; fi`
-      - docker-compose stop
+      # @todo #408:60m Repair docker-up pipeline
+      #  Seems we faced with volumes issue:
+      #  app_1       | python: can't open file 'manage.py': [Errno 2] No such file or directory
+      #  `ls` shows this:
+      #  build etc front front_build node_modules
+
+      # - docker-compose exec -T app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
+      event: [push, pull_request]
+
+  docker-rm:
+    image: docker/compose:1.22.0
+    commands:
+      - cd docker
+      - cp drone_env/* env_files/
+      - cp drone_env/.env .
+      - docker-compose logs app
+      - docker-compose rm -fs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      status: [ success, failure ]
       event: [push, pull_request]
 
 services:
