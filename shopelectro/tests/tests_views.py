@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
-from django.test import override_settings, TestCase, tag
+from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -193,7 +193,7 @@ class CatalogTags(BaseCatalogTestCase):
     #  See details in test below.
     @unittest.expectedFailure
     def test_doubled_tag(self):
-        """CategoryTagsPage filtered by the same tag from different tag groups."""
+        """Category tags page filtered by the same tag from different tag groups."""
         tag_ = self.create_doubled_tag()
         response = self.get_category_page(
             tags=Tag.objects.filter(id=tag_.id)
@@ -211,8 +211,8 @@ class CatalogTags(BaseCatalogTestCase):
         property_links = [
             reverse('category', kwargs={
                 'slug': product.category.page.slug,
-                'tags': tag.slug,
-            }) for tag in product.tags.all()
+                'tags': tag_.slug,
+            }) for tag_ in product.tags.all()
         ]
         response = self.client.get(product.url)
         for link in property_links:
