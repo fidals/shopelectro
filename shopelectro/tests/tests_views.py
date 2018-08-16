@@ -81,7 +81,7 @@ class CatalogTags(BaseCatalogTestCase):
         response = self.get_category_page()
 
         tags = set(chain.from_iterable(map(
-            lambda x: x.tags.all(), Product.objects.get_by_category(self.category)
+            lambda x: x.tags.all(), Product.objects.get_category_descendants(self.category)
         )))
 
         tag_names = list(map(attrgetter('name'), tags))

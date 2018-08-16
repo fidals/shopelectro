@@ -54,7 +54,7 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class ProductActiveManager(models.Manager):
+class ProductActiveManager(ProductManager):
     def get_queryset(self):
         return (
             super(ProductActiveManager, self)
