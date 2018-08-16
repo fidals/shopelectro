@@ -5,6 +5,7 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
+import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -15,7 +16,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import override_settings, TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -75,6 +76,13 @@ class BaseCatalogTestCase(TestCase):
 
 
 class CatalogTags(BaseCatalogTestCase):
+
+    def create_doubled_tag(self):
+        tag_from = Tag.objects.first()
+        group_to = TagGroup.objects.exclude(id=tag_from.group.id).first()
+        return Tag.objects.create(
+            group=group_to, name=tag_from.name, position=tag_from.position
+        )
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
@@ -178,6 +186,22 @@ class CatalogTags(BaseCatalogTestCase):
         self.assertEqual(response.status_code, 200)
         tag_names = ', '.join([t.name for t in tags])
         self.assertContains(response, tag_names)
+
+    # @todo #398:60m Fix doubled tags issue.
+    #  CategoryTagsPage processes doubled tag in bad way.
+    #  Doubled tags - tags with the same name, but from different tag groups.
+    #  See details in test below.
+    @unittest.expectedFailure
+    def test_doubled_tag(self):
+        """CategoryTagsPage filtered by the same tag from different tag groups."""
+        tag_ = self.create_doubled_tag()
+        response = self.get_category_page(
+            tags=Tag.objects.filter(id=tag_.id)
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, tag_.name)
+        delimiter = settings.TAG_GROUPS_TITLE_DELIMITER
+        self.assertNotContains(response, delimiter.join(2 * [tag_.name]))
 
     def test_product_tag_linking(self):
         """Product should contain links on CategoryTagPage for it's every tag."""

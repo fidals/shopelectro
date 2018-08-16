@@ -25,3 +25,5 @@ database/
 *report.xml
 .DS_store
 *.orig
+venv/
+
