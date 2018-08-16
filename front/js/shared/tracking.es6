@@ -32,6 +32,8 @@
   //  submitting of the purchase button with the dummy order's id.
   //  See the parent issue for a detail.
 
+  // @todo #504:30m Send info about product's brand to YA and GA.
+
   // Use a dummy order's id, because we do not wait complete processing of
   // purchase request.
   const orderData = { id: 1 };
