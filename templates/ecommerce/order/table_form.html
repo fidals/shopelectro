@@ -46,7 +46,7 @@
                    name="prod-count" productId="{{ id }}" productLastCount="{{ position.quantity }}">
           </div>
           <div class="div-table-cell order-table-product-price text-center js-product-price"
-               productId="{{ id }}">
+               productId="{{ id }}" productPrice="{{ position.price }}">
             {{ position.price|humanize_price }} руб.
           </div>
           <div class="div-table-cell text-center">

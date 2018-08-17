@@ -26,25 +26,32 @@
 
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
   const gaTracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
-  const orderData = { id: 'DummyId' };
+
+  // @todo #504:60m Send `purchase` event to YA and GA after a success purchase.
+  //  This will allow us to send order's id. Currently we send the event after
+  //  submitting of the purchase button with the dummy order's id.
+  //  See the parent issue for a detail.
+
+  // @todo #504:30m Send info about product's brand to YA and GA.
+
+  // Use a dummy order's id, because we do not wait complete processing of
+  // purchase request.
+  const orderData = { id: 1 };
 
   const init = () => {
     setUpListeners();
   };
 
   function setUpListeners() {
-    mediator.subscribe('onOneClickBuy', (_, id, quantity, name) => {
+    mediator.subscribe('onOneClickBuy', (_, productsData) => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FAST_BUY_SEND');
-      const productsData = { id, quantity, name };
       yaTracker.purchase([productsData], orderData);
       gaTracker.purchase([productsData], orderData);
     });
     mediator.subscribe('onOrderSend', (_, products) => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FULL_BUY_SEND');
-      // Use a dummy order's id, because we do not wait complete processing of
-      // purchase request.
       yaTracker.purchase(products, orderData);
       gaTracker.purchase(products, orderData);
     });
@@ -52,14 +59,14 @@
       yaTracker.remove(products);
     });
     // We receive an onProductAdd event from a category and a product pages
-    mediator.subscribe('onProductAdd', (_, id, quantity) => {
-      yaTracker.add([{ id, quantity }]);
+    mediator.subscribe('onProductAdd', (_, data) => {
+      yaTracker.add([data]);
     });
     mediator.subscribe('onProductRemove', (_, id, quantity) => {
       reachGoal('DELETE_PRODUCT');
       yaTracker.remove([{ id, quantity }]);
     });
-    mediator.subscribe('onProductDetail', (_, id) => yaTracker.detail([{ id }]));
+    mediator.subscribe('onProductDetail', (_, data) => yaTracker.detail([data]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
 
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));
