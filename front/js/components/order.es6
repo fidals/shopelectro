@@ -154,7 +154,7 @@
     const countDiff = event.target.value - getElAttr(event, 'productLastCount');
     const data = {
       id: productId,
-      quantity: Math.abs(countDiff)
+      quantity: Math.abs(countDiff),
     };
 
     server.changeInCart(productId, event.target.value)

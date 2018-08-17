@@ -57,7 +57,7 @@
       name: DOM.$addToCart.data('name'),
       category: DOM.$addToCart.data('category'),
       quantity: parseInt(DOM.$counter.val(), 10),
-    }
+    };
   }
 
   /**
@@ -65,15 +65,7 @@
    */
   function publishDetail() {
     const { id, name, category } = getProductData();
-
-    if (id) mediator.publish(
-      'onProductDetail',
-      [{
-        id: id,
-        name: name,
-        category: category,
-      }],
-    );
+    if (id) mediator.publish('onProductDetail', [{ id, name, category }]);
   }
 
   /**
@@ -101,7 +93,7 @@
   function oneClick() {
     helpers.setDisabledState(DOM.$oneClick, 'Ожидайте...');
 
-    const data = getProductData()
+    const data = getProductData();
     const { id, quantity } = data;
 
     server.oneClickBuy(id, quantity, DOM.$phone.val())
