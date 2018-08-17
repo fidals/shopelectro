@@ -245,10 +245,10 @@ class TagQuerySet(models.QuerySet):
         doubled_tag_qs = super().filter(slug=slug)
         if doubled_tag_qs:
             slug_hash = ''.join(
-                random.choices(string.ascii_letters, k=self.SLUG_HASH_SIZE)
+                random.choices(string.ascii_lowercase, k=self.SLUG_HASH_SIZE)
             )
             slug = f'{slug}_{slug_hash}'
-        return super().create(slug=slug, **kwargs)
+        return super().create(name=name, slug=slug, **kwargs)
 
 
 class TagManager(models.Manager.from_queryset(TagQuerySet)):
