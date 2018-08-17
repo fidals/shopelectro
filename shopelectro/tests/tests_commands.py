@@ -29,6 +29,15 @@ from shopelectro.models import Category, Product, Tag, TagGroup
 """
 
 
+def get_tag_as_dict(group: str, tag: str):
+    return {
+        str(uuid.uuid4()): {
+            'name': group,
+            'tags': {uuid.uuid4(): {'name': tag}}
+        }
+    }
+
+
 class UpdateProducts(TestCase):
 
     @classmethod
@@ -130,6 +139,22 @@ class UpdateProducts(TestCase):
         self.assertEqual(updated_groups_count + create_count, TagGroup.objects.count())
         self.assertEqual(updated_tags_count + create_count, Tag.objects.count())
 
+    # @todo #522:60m Fix doubled named tags creation.
+    #  Append some hash to tag_name if it's not unique.
+    #  Pair (group, name) for every tag should be unique.
+    #  See test below.
+    @unittest.expectedFailure
+    def test_create_double_named_tags(self):
+        """Two tags with the same name should have different slugs."""
+        # create two tags with the same name, but from different groups
+        tag_data = {
+            **get_tag_as_dict(group='First group', tag='Doubled tag'),
+            **get_tag_as_dict(group='Second group', tag='Doubled tag'),
+        }
+        update_tags.create_or_update(tag_data)
+        left_tag, right_tag = Tag.objects.filter(name='Doubled tag')
+        self.assertNotEqual(left_tag.slug, right_tag.slug)
+
 
 class GeneratePrices(TestCase):
 
@@ -149,6 +174,7 @@ class GeneratePrices(TestCase):
 
     @classmethod
     def call_command_patched(cls, name):
+        """Patch with test constants and call."""
         with mock.patch(
             'shopelectro.management.commands.price.Command.IGNORED_CATEGORIES_BY_TARGET',
             new_callable=mock.PropertyMock
