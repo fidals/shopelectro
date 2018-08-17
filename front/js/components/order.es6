@@ -3,7 +3,7 @@
     $fancybox: $('.fancybox'),
     $formErrorText: $('.js-form-error-text'),
     $order: $('.js-order-contain'),
-    $yandexFormWrapper: $('#yandex-form-wrapper'),
+    yandexFormWrapper: '#yandex-form-wrapper',
     yandexForm: '#yandex-form',
     productRows: '.div-table-row',
     submit: '#submit-order',
@@ -208,8 +208,8 @@
         <input type="text" name="paymentType" value="${formData.paymentType}">
       </form>
     `;
-
-    DOM.$yandexFormWrapper.append($(formHtml));
+    // use non-cached version of ya wrapper, because it may be updated
+    $(DOM.yandexFormWrapper).append($(formHtml));
   }
 
   /**
@@ -230,15 +230,17 @@
     // disable button to prevent user's multiple clicks;
     helpers.setDisabledState($(DOM.submit));
 
+    // setTimeout to wait "onOrderSend" handling
+    const submit = selector => setTimeout(() => $(selector).submit(), 100);
     const isYandex = () => !config.sePayments.includes(getSelectedPayment());
+
     if (isYandex()) {
       // @todo #473:30m Test order redirect to ya.kassa
       server.sendYandexOrder(orderInfo)
         .then(formData => renderYandexForm(formData))
-        // setTimeout to wait "onOrderSend" handling
-        .then(() => setTimeout(() => $(DOM.yandexForm).submit(), 100));
+        .then(() => submit(DOM.yandexForm));
     } else {
-      setTimeout(() => $(DOM.fullForm).submit(), 100);
+      submit(DOM.fullForm);
     }
   }
 

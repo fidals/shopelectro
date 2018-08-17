@@ -20,7 +20,7 @@
   try {
     ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
   } catch (e) {
-    var ga = console.error;  // Ignore ESLintBear (no-var)
+    var ga = console.log;  // Ignore ESLintBear (no-var)
     console.error(`GaTracker failed to load. Traceback: ${e}`);
   }
 

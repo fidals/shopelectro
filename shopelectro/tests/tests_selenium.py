@@ -804,9 +804,6 @@ class OrderPage(helpers.SeleniumTestCase):
         self.wait.until(EC.url_contains(success_page_domain))
         self.assertIn(success_page_domain, self.browser.current_url)
 
-    # @todo #489:60m Fix yandex.kassa payment type bug.
-    #  See details in the test case below.
-    @unittest.expectedFailure
     def test_change_cart_and_pay_with_yandex_kassa(self):
         """
         The same as `test_pay_with_yandex_kassa`, but with the detail.
