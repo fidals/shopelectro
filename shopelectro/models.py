@@ -1,3 +1,5 @@
+import random
+import string
 from itertools import chain, groupby
 from operator import attrgetter
 from typing import List, Tuple
@@ -213,6 +215,8 @@ class TagGroup(models.Model):
 
 class TagQuerySet(models.QuerySet):
 
+    SLUG_HASH_SIZE = 5
+
     def get_group_tags_pairs(self) -> List[Tuple[TagGroup, List['Tag']]]:
         ordering = settings.TAGS_ORDER
         distinct = [order.lstrip('-') for order in ordering]
@@ -232,6 +236,20 @@ class TagQuerySet(models.QuerySet):
 
         return group_tags_pair
 
+    def create_safely(self, name: str, slug='', **kwargs):
+        """Make fields automatically unique if they are not."""
+        slug = slug or slugify(
+            unidecode(name.replace('.', '-').replace('+', '-'))
+        )
+        # `my_var; if my_var: ...` is waiting for py3.7
+        doubled_tag_qs = super().filter(slug=slug)
+        if doubled_tag_qs:
+            slug_hash = ''.join(
+                random.choices(string.ascii_letters, k=self.SLUG_HASH_SIZE)
+            )
+            slug = f'{slug}_{slug_hash}'
+        return super().create(slug=slug, **kwargs)
+
 
 class TagManager(models.Manager.from_queryset(TagQuerySet)):
 
@@ -247,6 +265,10 @@ class TagManager(models.Manager.from_queryset(TagQuerySet)):
 
 class Tag(models.Model):
 
+    # Uncomment it after moving to refarm with rf#162
+    # class Meta:
+    #     unique_together = ('name', 'group')
+
     objects = TagManager()
 
     uuid = models.UUIDField(default=uuid4, editable=False)
@@ -256,6 +278,7 @@ class Tag(models.Model):
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
 
+    # Set it as unique with rf#162
     slug = models.SlugField(default='')
 
     group = models.ForeignKey(
