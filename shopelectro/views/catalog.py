@@ -195,15 +195,8 @@ class CategoryPage(catalog.CategoryPage):
         ):
             raise http.Http404('Page does not exist.')  # Ignore CPDBear
 
-        # @todo #470:15m Implement a new method for a Product's manager to get all_products
-        #  as below.
-
-        all_products = (
-            models.Product.objects
-            .filter(page__is_active=True)
-            .prefetch_related('page__images')
-            .select_related('page')
-            .get_by_category(category, ordering=(sorting_option.directed_field, ))
+        all_products = models.Product.actives.get_category_descendants(
+            category, ordering=(sorting_option.directed_field, )
         )
 
         group_tags_pairs = (
@@ -290,12 +283,8 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     category = get_object_or_404(models.CategoryPage, slug=category_slug).model
     sorting_option = SortingOption(index=int(sorting))
 
-    all_products = (  # Ignore CPDBear
-        models.Product.objects
-        .filter(page__is_active=True)
-        .prefetch_related('page__images')
-        .select_related('page')
-        .get_by_category(category, ordering=(sorting_option.directed_field,))
+    all_products = models.Product.actives.get_category_descendants(
+        category, ordering=(sorting_option.directed_field,)
     )
 
     if tags:

@@ -11,6 +11,7 @@ bears = CPDBear,PycodestyleBear,PyDocStyleBear,PyFlakesBear
 files = shopelectro/**/*.py
 minimum_tokens = 35
 max_line_length = 100
+# https://pycodestyle.readthedocs.io/en/latest/intro.html#error-codes
 # ignore W503 according to pep8 notes: https://goo.gl/rEjtY6
 pycodestyle_ignore = E305,W503
 pydocstyle_ignore = D100,D101,D102,D103,D104,D105,D106,D203,D212
