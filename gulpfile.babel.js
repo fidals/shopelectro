@@ -87,6 +87,7 @@ const path = {
         'front/js/vendors/autocomplete.min.js',
         'front/js/vendors/bootstrap-select.js',
         'front/js/vendors/jquery.fancybox.min.js',
+        'front/js/vendors/slick.min.js',
       ],
 
       main: [

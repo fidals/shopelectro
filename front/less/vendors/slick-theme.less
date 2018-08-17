@@ -1,0 +1,144 @@
+@import "../common/variables";
+
+// Slick icon entity codes outputs the following
+// "\2022" outputs ascii character "•"
+@slick-font-path: "../fonts";
+@slick-font-family: "slick";
+@slick-loader-path: "../images";
+@slick-arrow-color: #fff;
+@slick-dot-color: #000;
+@slick-dot-color-active: @slick-dot-color;
+@slick-dot-character: "\2022";
+@slick-dot-size: 6px;
+@slick-opacity-default: 0.75;
+@slick-opacity-on-hover: 1;
+@slick-opacity-not-active: 0.5;
+
+// Slider
+.slick-list {
+  .slick-loading & {
+    background: "@{slick-loader-path}/ajax-loader.gif" no-repeat center @slick-arrow-color;
+  }
+}
+
+// Arrows
+.slick-prev,
+.slick-next {
+  position: absolute;
+  display: block;
+  height: 20px;
+  width: 20px;
+  line-height: 0;
+  font-size: 0;
+  cursor: pointer;
+  background: transparent;
+  color: transparent;
+  top: 50%;
+  transform: translate(0, -50%);
+  padding: 0;
+  border: 0;
+  outline: none;
+
+  &.slick-disabled {
+    cursor: default;
+    opacity: @slick-opacity-not-active;
+  }
+
+  &.slick-disabled::before {
+    opacity: @slick-opacity-not-active;
+  }
+
+  &::before {
+    font-family: @slick-font-family;
+    font-size: 20px;
+    line-height: 1;
+    color: @slick-arrow-color;
+    opacity: @slick-opacity-default;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.slick-prev {
+  left: -25px;
+}
+
+.slick-next {
+  right: -25px;
+
+  [dir="rtl"] & {
+    left: -25px;
+    right: auto;
+  }
+}
+
+// Dots
+.slick-dotted.slick-slider {
+  margin-bottom: 30px;
+}
+
+.slick-dots {
+  position: absolute;
+  bottom: -25px;
+  list-style: none;
+  display: block;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+
+  li {
+    position: relative;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    margin: 0 5px;
+    padding: 0;
+    cursor: pointer;
+
+    button {
+      border: 0;
+      background: transparent;
+      display: block;
+      height: 20px;
+      width: 20px;
+      outline: none;
+      line-height: 0;
+      font-size: 0;
+      color: transparent;
+      padding: 5px;
+      cursor: pointer;
+
+      &:hover,
+      &:focus {
+        outline: none;
+
+        &::before {
+          opacity: @slick-opacity-on-hover;
+        }
+      }
+
+      &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: @slick-dot-character;
+        width: 20px;
+        height: 20px;
+        font-family: @slick-font-family;
+        font-size: @slick-dot-size;
+        line-height: 20px;
+        text-align: center;
+        color: @slick-dot-color;
+        opacity: @slick-opacity-not-active;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    }
+
+    &.slick-active button::before {
+      color: @slick-dot-color-active;
+      opacity: @slick-opacity-default;
+    }
+  }
+}
