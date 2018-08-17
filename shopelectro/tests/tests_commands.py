@@ -142,7 +142,8 @@ class UpdateProducts(TestCase):
     # @todo #522:60m Fix doubled named tags creation.
     #  Append some hash to tag_name if it's not unique.
     #  Pair (group, name) for every tag should be unique.
-    #  See test below.
+    #  See test below for expected logic details.
+    #  Resurrect test `shopelectro.tests.tests_views.CatalogTags#test_doubled_tag`
     @unittest.expectedFailure
     def test_create_double_named_tags(self):
         """Two tags with the same name should have different slugs."""

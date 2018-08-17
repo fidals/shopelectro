@@ -191,10 +191,6 @@ class CatalogTags(BaseCatalogTestCase):
         tag_names = ', '.join([t.name for t in tags])
         self.assertContains(response, tag_names)
 
-    # @todo #398:60m Fix doubled tags issue.
-    #  CategoryTagsPage processes doubled tag in bad way.
-    #  Doubled tags - tags with the same name, but from different tag groups.
-    #  See details in test below.
     @unittest.expectedFailure
     def test_doubled_tag(self):
         """Category tags page filtered by the same tag from different tag groups."""
