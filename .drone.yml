@@ -120,14 +120,8 @@ pipeline:
       - cd docker
       - cp drone_env/* env_files/
       - cp drone_env/.env .
-      - docker-compose up -d app
-      # @todo #408:60m Repair docker-up pipeline
-      #  Seems we faced with volumes issue:
-      #  app_1       | python: can't open file 'manage.py': [Errno 2] No such file or directory
-      #  `ls` shows this:
-      #  build etc front front_build node_modules
-
-      # - docker-compose exec -T app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
+      - docker-compose up -d app-drone
+      - docker-compose exec -T app-drone bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
