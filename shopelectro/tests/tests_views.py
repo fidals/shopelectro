@@ -5,7 +5,6 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
-import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -78,7 +77,8 @@ class BaseCatalogTestCase(TestCase):
 class CatalogTags(BaseCatalogTestCase):
 
     # @todo #522:15m Move method `CatalogTags.create_doubled_tag` to test helpers.
-    #  And rm code doubling at `shopelectro.tests.tests_models.TagTest#test_double_named_tag_creation`.
+    #  And rm code doubling at
+    # `shopelectro.tests.tests_models.TagTest#test_double_named_tag_creation`.
     def create_doubled_tag(self):
         tag_from = Tag.objects.first()
         group_to = TagGroup.objects.exclude(id=tag_from.group.id).first()

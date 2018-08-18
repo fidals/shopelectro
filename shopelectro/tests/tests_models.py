@@ -28,7 +28,7 @@ class TagTest(TestCase):
     fixtures = ['dump.json']
 
     def test_double_named_tag_creation(self):
-        """Tags with the same name should have unique slugs."""
+        """Two tags with the same name should have unique slugs."""
         def create_doubled_tag(tag_from_):
             group_to = TagGroup.objects.exclude(id=tag_from_.group.id).first()
             tag_to = Tag.objects.create_safely(
