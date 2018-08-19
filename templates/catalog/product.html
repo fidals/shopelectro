@@ -63,7 +63,8 @@
 
         <button class="btn btn-blue btn-to-basket js-to-cart-on-product-page" id="btn-to-basket"
                 data-id="{{ product.id }}" data-name="{{ product.name }}"
-                data-category="{{ product.category.name }}">В корзину</button>
+                data-category="{{ product.category.name }}"
+                data-brand="{{ product.get_brand_name }}">В корзину</button>
 
         <p class="product-one-click">Купить в один клик</p>
         <input class="form-control product-one-click-phone js-masked-phone" id="input-one-click-phone"

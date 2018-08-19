@@ -50,7 +50,7 @@ def get_categories_with_tags() -> Generator[
     """
     for category in Category.objects.filter(page__is_active=True):
         products = Product.objects.get_by_category(category)
-        tags = Tag.objects.filter(products__in=products).distinct()
+        tags = Tag.objects.filter_by_products(products)
         for group_name, group_tags in tags.get_group_tags_pairs():
             for group_tag in group_tags:
                 yield category, group_tag

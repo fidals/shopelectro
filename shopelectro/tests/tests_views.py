@@ -242,7 +242,7 @@ class CatalogPagination(BaseCatalogTestCase):
         """Category page contains `pagination_step` count of products in list."""
         pagination_step = 25
         response = self.get_category_page(query_string={'step': pagination_step})
-        self.assertEqual(len(response.context['product_image_pairs']), pagination_step)
+        self.assertEqual(len(response.context['products_data']), pagination_step)
 
     def test_pagination_404(self):
         """Category page returns 404 for a nonexistent page number."""

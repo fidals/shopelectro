@@ -60,7 +60,7 @@ class Command(BaseCommand):
             product.prepared_params = list(
                 filter(
                     lambda x: x[0].name != 'Производитель',
-                    product.params
+                    product.get_params()
                 )
             )
 

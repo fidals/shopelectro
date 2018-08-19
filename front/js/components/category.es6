@@ -168,6 +168,7 @@
         name: $product.attr('productName'),
         quantity: parseInt(quantity, 10),
         category: DOM.$h1.data('name'),
+        brand: $product.attr('productBrand'),
       };
     };
 

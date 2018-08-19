@@ -98,16 +98,10 @@ class ProductPage(catalog.ProductPage):
             # with it's own logic
             return context
 
-        group_tags_pairs = (
-            models.Tag.objects
-            .filter(products=product)
-            .get_group_tags_pairs()
-        )
-
         return {
             **context,
             'price_bounds': settings.PRICE_BOUNDS,
-            'group_tags_pairs': group_tags_pairs,
+            'group_tags_pairs': product.get_params(),
             'tile_products': prepare_tile_products(
                 product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT)
             ),
@@ -164,13 +158,19 @@ class IndexPage(pages_views.CustomPageView):
         }
 
 
-def merge_products_and_images(products):
+def merge_products_context(products):
     images = Image.objects.get_main_images_by_pages(
         models.ProductPage.objects.filter(shopelectro_product__in=products)
     )
 
+    brands = (
+        models.Tag.objects
+        .filter_by_products(products)
+        .get_brands(products)
+    )
+
     return [
-        (product, images.get(product.page))
+        (product, images.get(product.page), brands.get(product))
         for product in products
     ]
 
@@ -201,7 +201,7 @@ class CategoryPage(catalog.CategoryPage):
 
         group_tags_pairs = (
             models.Tag.objects
-            .filter(products__in=all_products)
+            .filter_by_products(all_products)
             .get_group_tags_pairs()
         )
 
@@ -241,7 +241,7 @@ class CategoryPage(catalog.CategoryPage):
 
         return {
             **context,
-            'product_image_pairs': merge_products_and_images(products),
+            'products_data': merge_products_context(products),
             'group_tags_pairs': group_tags_pairs,
             'total_products': total_products,
             'products_count': (page_number - 1) * products_on_page + products.count(),
@@ -305,7 +305,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     view = request.session.get('view_type', 'tile')
 
     return render(request, 'catalog/category_products.html', {
-        'product_image_pairs': merge_products_and_images(products),
+        'products_data': merge_products_context(products),
         'paginated_page': paginated_page,
         'view_type': view,
         'prods': products_on_page,
