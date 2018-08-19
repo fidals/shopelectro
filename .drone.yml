@@ -26,7 +26,7 @@ pipeline:
       - cp drone_env/* env_files/
       - cp drone_env/.env .
       - docker-compose up -d app-drone
-      - sleep 15
+      - sleep 30
       - docker-compose logs app-drone
       - docker-compose exec -T app-drone bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
       - docker-compose stop
