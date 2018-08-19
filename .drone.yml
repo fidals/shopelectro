@@ -23,9 +23,9 @@ pipeline:
     image: docker/compose:1.22.0
     commands:
       - cd docker
-      - docker-compose rm postgres
       - cp drone_env/* env_files/
       - cp drone_env/.env .
+      - docker-compose rm postgres
       - docker-compose up -d app-drone
       - sleep 30
       - docker-compose logs app-drone
