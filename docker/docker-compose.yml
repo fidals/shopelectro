@@ -2,7 +2,7 @@ version: '2'
 
 services:
 
-  app-drone:
+  app-base:
     image: fidals/se:dev
     env_file:
       - env_files/app
@@ -16,17 +16,20 @@ services:
     ports:
       - $VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT
       - $VIRTUAL_HOST_LIVESERVER_PORT
-    depends_on:
-      - postgres
-      - rabbitmq
-      - redis
     networks:
       - se-backend
       - se-frontend
     command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
 
+  app-drone:
+    extends: app-base
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+
   app:
-    extends: app-drone
+    extends: app-base
     depends_on:
       - postgres
       - rabbitmq
