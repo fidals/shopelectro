@@ -28,6 +28,7 @@ pipeline:
       - docker-compose up -d app-drone
       - sleep 30
       - docker-compose logs app-drone
+      - docker-compose logs postgres
       - docker-compose exec -T app-drone bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
       - docker-compose stop
     volumes:
