@@ -22,8 +22,8 @@ pipeline:
   docker-up:
     image: docker/compose:1.22.0
     commands:
-      - docker-compose rm postgres
       - cd docker
+      - docker-compose rm postgres
       - cp drone_env/* env_files/
       - cp drone_env/.env .
       - docker-compose up -d app-drone
