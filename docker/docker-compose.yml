@@ -16,6 +16,10 @@ services:
     ports:
       - $VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT
       - $VIRTUAL_HOST_LIVESERVER_PORT
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
     networks:
       - se-backend
       - se-frontend
