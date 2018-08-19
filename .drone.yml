@@ -6,22 +6,22 @@ workspace:
 
 
 pipeline:
-#
-#  python-build:
-#    image: docker/compose:1.22.0
-#    commands:
-#      - cd docker/
-#      # Build python images with sources and static files
-#      - docker-compose -f docker-compose-build.yml build python-dev
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    when:
-#      event: [push, pull_request]
+
+  python-build:
+    image: docker/compose:1.22.0
+    commands:
+    - cp shopelectro/settings/local.py.dist shopelectro/settings/local.py
+    - cd docker/
+      # Build python images with sources and static files
+      - docker-compose -f docker-compose-build.yml build python-dev
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      event: [push, pull_request]
 
   docker-up:
     image: docker/compose:1.22.0
     commands:
-      - cp shopelectro/settings/local.py.dist shopelectro/settings/local.py
       - cd docker
       - cp drone_env/* env_files/
       - cp drone_env/.env .
