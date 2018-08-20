@@ -24,6 +24,13 @@ from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
 
 
+def randomize_slug(slug: str) -> str:
+    slug_hash = ''.join(
+        random.choices(string.ascii_lowercase, k=settings.SLUG_HASH_SIZE)
+    )
+    return f'{slug}_{slug_hash}'
+
+
 class SECategoryQuerySet(TreeQuerySet):
     def get_categories_tree_with_pictures(self) -> 'SECategoryQuerySet':
         categories_with_pictures = (
@@ -236,7 +243,7 @@ class TagQuerySet(models.QuerySet):
 
         return group_tags_pair
 
-    def create_safely(self, name: str, slug='', **kwargs):
+    def create(self, name: str, slug='', **kwargs):
         """Make fields automatically unique if they are not."""
         slug = slug or slugify(
             unidecode(name.replace('.', '-').replace('+', '-'))
@@ -244,10 +251,7 @@ class TagQuerySet(models.QuerySet):
         # `my_var; if my_var: ...` is waiting for py3.7
         doubled_tag_qs = super().filter(slug=slug)
         if doubled_tag_qs:
-            slug_hash = ''.join(
-                random.choices(string.ascii_lowercase, k=self.SLUG_HASH_SIZE)
-            )
-            slug = f'{slug}_{slug_hash}'
+            slug = randomize_slug(slug)
         return super().create(name=name, slug=slug, **kwargs)
 
 
@@ -294,7 +298,10 @@ class Tag(models.Model):
             self.slug = slugify(
                 unidecode(self.name.replace('.', '-').replace('+', '-'))
             )
-        super(Tag, self).save(*args, **kwargs)
+        doubled_tag_qs = self.objects.filter(slug=self.slug)
+        if doubled_tag_qs:
+            slug = randomize_slug(self.slug)
+        super(Tag, self).save(slug=slug, *args, **kwargs)
 
     @staticmethod
     def parse_url_tags(tags: str) -> list:

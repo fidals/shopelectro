@@ -479,3 +479,6 @@ PRICE_BOUNDS = {
     'wholesale_medium': 50000,
     'wholesale_small': 20000,
 }
+
+# random string to append to doubled slugs
+SLUG_HASH_SIZE = 5
