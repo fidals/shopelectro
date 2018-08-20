@@ -27,7 +27,7 @@ pipeline:
       - cp drone_env/.env .
       - docker-compose rm postgres
       - docker-compose up -d app-drone
-      - docker-compose exec app-drone python manage.py migrate
+      - docker-compose exec -T app-drone python manage.py migrate
       - sleep 15
       - docker-compose logs app-drone
       - docker-compose exec -T app-drone bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
