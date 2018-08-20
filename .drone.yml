@@ -25,11 +25,10 @@ pipeline:
       - cd docker
       - cp drone_env/* env_files/
       - cp drone_env/.env .
-      - docker-compose rm postgres
       - docker-compose up -d app-drone
       - docker-compose exec -T app-drone python manage.py migrate
-      - docker-compose exec -T app-drone python manage.py python manage.py loaddata shopelectro/fixtures/admin.json
-      - docker-compose exec -T app-drone python manage.py python manage.py loaddata shopelectro/fixtures/dump.json
+      - docker-compose exec -T app-drone python manage.py loaddata shopelectro/fixtures/admin.json
+      - docker-compose exec -T app-drone python manage.py loaddata shopelectro/fixtures/dump.json
       - sleep 15
       - docker-compose logs app-drone
       - docker-compose exec -T app-drone bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
