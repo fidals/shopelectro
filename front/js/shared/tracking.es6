@@ -79,10 +79,9 @@
 
   function publishPurchase() {
     if (!DOM.$purchasedOrder.length) return;
-
     const orderData = { id: DOM.$purchasedOrder.data('id') };
     const orderPositions = DOM.$purchasedOrder.data('positions')
-      .map((val) => val.fields);
+      .map(val => val.fields);
 
     yaTracker.purchase(orderPositions, orderData);
     gaTracker.purchase(orderPositions, orderData);

@@ -92,6 +92,7 @@
    */
   function oneClick() {
     helpers.setDisabledState(DOM.$oneClick, 'Ожидайте...');
+    const { id, quantity } = getProductData();
 
     server.oneClickBuy(id, quantity, DOM.$phone.val())
       .then(() => {
