@@ -66,8 +66,8 @@ services:
       - env_files/credentials
     networks:
       - se-backend
-#    volumes:
-#      - $POSTGRES_DATA_DIR:/var/lib/postgresql/data
+    volumes:
+      - $POSTGRES_DATA_DIR:/var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:management-alpine
