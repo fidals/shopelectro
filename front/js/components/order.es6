@@ -48,7 +48,7 @@
       'onCartUpdate', renderTable, fillSavedInputs,
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete,
     );
-    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend', [getProductsData()]));
+    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
 
     /**
      * Bind events to parent's elements, because of dynamic elements.
@@ -57,17 +57,6 @@
     DOM.$order.on('click', DOM.remove, event => removeProduct(getElAttr(event, 'productId'), getElAttr(event, 'productCount')));
     DOM.$order.on('change', DOM.productCount, helpers.debounce(changeProductCount, 250));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
-  }
-
-  function getProductsData() {
-    return $(DOM.productRows).map((_, el) => {
-      const $el = $(el);
-      return {
-        name: $el.find('.js-product-link').text(),
-        quantity: $el.find(DOM.productCount).val(),
-        price: parseInt($el.find(DOM.productPrice).attr('productPrice'), 10),
-      };
-    }).get();
   }
 
   /**
