@@ -143,7 +143,6 @@ pipeline:
       - cp drone_env/* env_files/
       - cp drone_env/.env .
       - docker-compose logs app
-      - docker-compose stop
       - docker-compose rm -fs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
