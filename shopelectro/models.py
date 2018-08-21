@@ -243,17 +243,6 @@ class TagQuerySet(models.QuerySet):
 
         return group_tags_pair
 
-    def create(self, name: str, slug='', **kwargs):
-        """Make fields automatically unique if they are not."""
-        slug = slug or slugify(
-            unidecode(name.replace('.', '-').replace('+', '-'))
-        )
-        # `my_var; if my_var: ...` is waiting for py3.7
-        doubled_tag_qs = super().filter(slug=slug)
-        if doubled_tag_qs:
-            slug = randomize_slug(slug)
-        return super().create(name=name, slug=slug, **kwargs)
-
 
 class TagManager(models.Manager.from_queryset(TagQuerySet)):
 

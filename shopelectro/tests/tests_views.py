@@ -82,11 +82,10 @@ class CatalogTags(BaseCatalogTestCase):
     def create_doubled_tag(self):
         tag_from = Tag.objects.first()
         group_to = TagGroup.objects.exclude(id=tag_from.group.id).first()
-        tag_to = Tag.objects.create_safely(
+        tag_to = Tag.objects.create(
             group=group_to, name=tag_from.name, position=tag_from.position
         )
-        for p in tag_from.products.get_queryset():
-            tag_to.products.add(p)
+        tag_to.products.set(tag_from.products.all())
         tag_to.save()
         return tag_to
 
