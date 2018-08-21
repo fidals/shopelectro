@@ -82,15 +82,7 @@
 
     const orderData = { id: DOM.$purchasedOrder.data('id') };
     const orderPositions = DOM.$purchasedOrder.data('positions')
-      .map((val) => {
-        const { product_id, name, quantity, price } = val.fields;
-        return {
-          id: product_id,
-          name,
-          quantity,
-          price,
-        }
-      });
+      .map((val) => val.fields);
 
     yaTracker.purchase(orderPositions, orderData);
     gaTracker.purchase(orderPositions, orderData);

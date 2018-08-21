@@ -55,7 +55,7 @@ class OrderSuccess(ec_views.OrderSuccess):
         positions_json = serializers.serialize(
             'json',
             context['order'].positions.all(),
-            fields=['product_id', 'name', 'quantity', 'price']
+            fields=['name', 'quantity', 'price'],
         )
 
         return {
