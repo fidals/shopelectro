@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
@@ -47,7 +48,20 @@ class FlushCart(ec_views.FlushCart):
 
 
 class OrderSuccess(ec_views.OrderSuccess):
-    order = Order
+    order = Order.objects.all().prefetch_related('positions')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        positions_json = serializers.serialize(
+            'json',
+            context['order'].positions.all(),
+            fields=['product_id', 'name', 'quantity', 'price']
+        )
+
+        return {
+            **context,
+            'positions_json': positions_json,
+        }
 
 
 @require_POST
