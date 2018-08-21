@@ -298,10 +298,10 @@ class Tag(models.Model):
             self.slug = slugify(
                 unidecode(self.name.replace('.', '-').replace('+', '-'))
             )
-        doubled_tag_qs = self.objects.filter(slug=self.slug)
+        doubled_tag_qs = self.__class__.objects.filter(slug=self.slug)
         if doubled_tag_qs:
-            slug = randomize_slug(self.slug)
-        super(Tag, self).save(slug=slug, *args, **kwargs)
+            self.slug = randomize_slug(self.slug)
+        super(Tag, self).save(*args, **kwargs)
 
     @staticmethod
     def parse_url_tags(tags: str) -> list:

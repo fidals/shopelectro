@@ -49,6 +49,8 @@ class TagTest(TestCase):
             tag_to = Tag(
                 group=group_to, name=tag_from_.name, position=tag_from_.position
             )
+            # required to create `tag.products` field
+            tag_to.save()
             for p in tag_from.products.get_queryset():
                 tag_to.products.add(p)
             tag_to.save()
