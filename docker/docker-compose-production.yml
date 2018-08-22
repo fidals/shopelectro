@@ -30,7 +30,7 @@ services:
     networks:
       - se-backend
       - se-frontend
-    command: gunicorn shopelectro.wsgi:application -c /etc/gunicorn.py -b 0.0.0.0:$VIRTUAL_HOST_PORT
+    command: ./docker/wait-for.sh postgres:5432 -- gunicorn shopelectro.wsgi:application -c /etc/gunicorn.py -b 0.0.0.0:$VIRTUAL_HOST_PORT
 
   celery-beat:
     image: fidals/se:prod

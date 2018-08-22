@@ -5,7 +5,7 @@ COMPOSE_PROJECT_NAME=drone_shopelectro
 ENV_TYPE=LOCAL
 
 # App related settings
-DJANGO_SETTINGS_MODULE=shopelectro.settings.local
+DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
 DJANGO_LOG_LEVEL=INFO
 SECRET_KEY=secret-key
 STAGE_SECRET_KEY=another-secret-key
