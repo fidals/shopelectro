@@ -5,7 +5,6 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
-import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -77,12 +76,18 @@ class BaseCatalogTestCase(TestCase):
 
 class CatalogTags(BaseCatalogTestCase):
 
+    # @todo #522:15m Move method `CatalogTags.create_doubled_tag` to test helpers.
+    #  And rm code doubling at
+    # `shopelectro.tests.tests_models.TagTest#test_double_named_tag_creation`.
     def create_doubled_tag(self):
         tag_from = Tag.objects.first()
         group_to = TagGroup.objects.exclude(id=tag_from.group.id).first()
-        return Tag.objects.create(
+        tag_to = Tag.objects.create(
             group=group_to, name=tag_from.name, position=tag_from.position
         )
+        tag_to.products.set(tag_from.products.all())
+        tag_to.save()
+        return tag_to
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
@@ -191,11 +196,6 @@ class CatalogTags(BaseCatalogTestCase):
         tag_names = ', '.join([t.name for t in tags])
         self.assertContains(response, tag_names)
 
-    # @todo #398:60m Fix doubled tags issue.
-    #  CategoryTagsPage processes doubled tag in bad way.
-    #  Doubled tags - tags with the same name, but from different tag groups.
-    #  See details in test below.
-    @unittest.expectedFailure
     def test_doubled_tag(self):
         """Category tags page filtered by the same tag from different tag groups."""
         tag_ = self.create_doubled_tag()

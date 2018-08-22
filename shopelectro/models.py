@@ -1,3 +1,5 @@
+import random
+import string
 from itertools import chain, groupby
 from operator import attrgetter
 from typing import List, Tuple
@@ -20,6 +22,13 @@ from catalog.models import (
 )
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
+
+
+def randomize_slug(slug: str) -> str:
+    slug_hash = ''.join(
+        random.choices(string.ascii_lowercase, k=settings.SLUG_HASH_SIZE)
+    )
+    return f'{slug}_{slug_hash}'
 
 
 class SECategoryQuerySet(TreeQuerySet):
@@ -213,6 +222,8 @@ class TagGroup(models.Model):
 
 class TagQuerySet(models.QuerySet):
 
+    SLUG_HASH_SIZE = 5
+
     def get_group_tags_pairs(self) -> List[Tuple[TagGroup, List['Tag']]]:
         ordering = settings.TAGS_ORDER
         distinct = [order.lstrip('-') for order in ordering]
@@ -247,6 +258,10 @@ class TagManager(models.Manager.from_queryset(TagQuerySet)):
 
 class Tag(models.Model):
 
+    # Uncomment it after moving to refarm with rf#162
+    # class Meta:
+    #     unique_together = ('name', 'group')
+
     objects = TagManager()
 
     uuid = models.UUIDField(default=uuid4, editable=False)
@@ -256,6 +271,7 @@ class Tag(models.Model):
         default=0, blank=True, db_index=True, verbose_name=_('position'),
     )
 
+    # Set it as unique with rf#162
     slug = models.SlugField(default='')
 
     group = models.ForeignKey(
@@ -271,6 +287,9 @@ class Tag(models.Model):
             self.slug = slugify(
                 unidecode(self.name.replace('.', '-').replace('+', '-'))
             )
+        doubled_tag_qs = self.__class__.objects.filter(slug=self.slug)
+        if doubled_tag_qs:
+            self.slug = randomize_slug(self.slug)
         super(Tag, self).save(*args, **kwargs)
 
     @staticmethod

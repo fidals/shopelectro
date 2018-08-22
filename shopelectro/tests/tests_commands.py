@@ -29,6 +29,15 @@ from shopelectro.models import Category, Product, Tag, TagGroup
 """
 
 
+def get_tag_as_dict(group: str, tag: str):
+    return {
+        str(uuid.uuid4()): {
+            'name': group,
+            'tags': {uuid.uuid4(): {'name': tag}}
+        }
+    }
+
+
 class UpdateProducts(TestCase):
 
     @classmethod
@@ -149,6 +158,7 @@ class GeneratePrices(TestCase):
 
     @classmethod
     def call_command_patched(cls, name):
+        """Patch with test constants and call."""
         with mock.patch(
             'shopelectro.management.commands.price.Command.IGNORED_CATEGORIES_BY_TARGET',
             new_callable=mock.PropertyMock
