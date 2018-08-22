@@ -116,18 +116,21 @@ pipeline:
 
   docker-up:
     image: docker/compose:1.22.0
+    environment:
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
     commands:
       - cd docker
       - cp drone_env/* env_files/
       - cp drone_env/.env .
-      - docker-compose up -d app
-      # @todo #408:60m Repair docker-up pipeline
-      #  Seems we faced with volumes issue:
-      #  app_1       | python: can't open file 'manage.py': [Errno 2] No such file or directory
-      #  `ls` shows this:
-      #  build etc front front_build node_modules
+      - docker-compose up -d app-drone
+      - docker-compose logs app-drone
+      # @todo #517:60m Fill drone-sided app with data.
+      #  Do migrate and fixtures load.
+      #  Currently we faced with issues here:
+      #  https://ci.fidals.com/fidals/shopelectro/721/3
+      #  Then try to resurrect health check.
 
-      # - docker-compose exec -T app bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
+#      - docker-compose exec -T app-drone bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
