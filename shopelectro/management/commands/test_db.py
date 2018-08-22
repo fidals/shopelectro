@@ -39,11 +39,15 @@ class Command(BaseCommand):
     def __init__(self):
         super(BaseCommand, self).__init__()
         self._product_id = 0
-        self.group_names = ['Напряжение', 'Сила тока', 'Мощность']
+        self.group_names = [
+            'Напряжение', 'Сила тока',
+            'Мощность', settings.BRAND_TAG_GROUP_NAME,
+        ]
         self.tag_names = [
             ['6 В', '24 В'],
             ['1.2 А', '10 А'],
-            ['7.2 Вт', '240 Вт']
+            ['7.2 Вт', '240 Вт'],
+            ['Apple', 'Microsoft'],
         ]
 
     def handle(self, *args, **options):

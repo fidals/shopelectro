@@ -2,7 +2,7 @@
 {% load se_extras %}
 {% load user_agents %}
 
-{% for product, image in product_image_pairs %}
+{% for product, image, brand in products_data %}
   <div class="product-card col-xs-6 col-md-4" productId="{{ product.id }}"
        itemscope itemtype="https://schema.org/Product">
     <meta property="name" itemprop="name" content="{{ product.name }}">
@@ -43,11 +43,12 @@
         {% endcomment %}
         <button class="btn btn-blue btn-category-buy js-product-to-cart"
                 productId="{{ product.id }}" productPrice="{{ product.price }}"
-                productName="{{ product.name }}">
+                productName="{{ product.name }}"
+                productBrand="{% if brand %}{{ brand.name }}{% endif %}">
           Купить
         </button>
       </div>
     </div>
   </div>
 {% endfor %}
-<div class="hidden js-products-loaded">{{ product_image_pairs|length }}</div>
+<div class="hidden js-products-loaded">{{ products_data|length }}</div>

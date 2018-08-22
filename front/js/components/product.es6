@@ -57,6 +57,7 @@
       name: DOM.$addToCart.data('name'),
       category: DOM.$addToCart.data('category'),
       quantity: parseInt(DOM.$counter.val(), 10),
+      brand: DOM.$addToCart.data('brand'),
     };
   }
 
@@ -64,8 +65,9 @@
    * Publish onProductDetail event.
    */
   function publishDetail() {
-    const { id, name, category } = getProductData();
-    if (id) mediator.publish('onProductDetail', [{ id, name, category }]);
+    const data = getProductData();
+    const { id } = data;
+    if (id) mediator.publish('onProductDetail', [data]);
   }
 
   /**

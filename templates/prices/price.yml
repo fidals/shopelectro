@@ -46,7 +46,7 @@
           {% endif %}
           {# product_type tag in google merchant doc : https://goo.gl/b0UJQp #}
           {% if utm == 'GM' %}<product_type>{{ product.crumbs }}</product_type>{% endif %}
-          {% for name, values in product.params %}
+          {% for name, values in product.get_params %}
             <param name="{{ name }}">{{ values|first }}</param>
           {% endfor %}
         </offer>
