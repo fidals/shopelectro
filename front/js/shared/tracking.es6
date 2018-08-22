@@ -12,6 +12,7 @@
     $goToProductLink: $('.js-browse-product'),
     $downloadPrice: $('.js-download-price'),
     $downloadPriceInFooter: $('.js-download-price-footer'),
+    $purchasedOrder: $('.js-purchased-order'),
   };
 
   // Sync container for yaTracker
@@ -27,33 +28,21 @@
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
   const gaTracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
 
-  // @todo #504:60m Send `purchase` event to YA and GA after a success purchase.
-  //  This will allow us to send order's id. Currently we send the event after
-  //  submitting of the purchase button with the dummy order's id.
-  //  See the parent issue for a detail.
-
   // @todo #504:30m Send info about product's brand to YA and GA.
-
-  // Use a dummy order's id, because we do not wait complete processing of
-  // purchase request.
-  const orderData = { id: 1 };
 
   const init = () => {
     setUpListeners();
+    publishPurchase();
   };
 
   function setUpListeners() {
-    mediator.subscribe('onOneClickBuy', (_, productsData) => {
+    mediator.subscribe('onOneClickBuy', () => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FAST_BUY_SEND');
-      yaTracker.purchase([productsData], orderData);
-      gaTracker.purchase([productsData], orderData);
     });
-    mediator.subscribe('onOrderSend', (_, products) => {
+    mediator.subscribe('onOrderSend', () => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FULL_BUY_SEND');
-      yaTracker.purchase(products, orderData);
-      gaTracker.purchase(products, orderData);
     });
     mediator.subscribe('onCartClear', (_, products) => {
       yaTracker.remove(products);
@@ -86,6 +75,16 @@
         reachGoal('PUT_IN_CART_FROM_CATEGORY');
         reachGoal('CMN_PUT_IN_CART');
       });
+  }
+
+  function publishPurchase() {
+    if (!DOM.$purchasedOrder.length) return;
+    const orderData = { id: DOM.$purchasedOrder.data('id') };
+    const orderPositions = DOM.$purchasedOrder.data('positions')
+      .map(val => val.fields);
+
+    yaTracker.purchase(orderPositions, orderData);
+    gaTracker.purchase(orderPositions, orderData);
   }
 
   function reachGoal(goal) {

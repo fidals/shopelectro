@@ -11,6 +11,10 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
     touchspin: '.js-touchspin',
   };
 
+  const hrefs = {
+    orderSuccess: '/shop/order-success',
+  };
+
   const labels = {
     callTime: 'callTime',
     phone: 'phone',
@@ -140,5 +144,6 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
     labels,
     initScrollbar,
     initTouchspin,
+    hrefs,
   };
 })();

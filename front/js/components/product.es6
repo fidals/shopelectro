@@ -92,16 +92,14 @@
    */
   function oneClick() {
     helpers.setDisabledState(DOM.$oneClick, 'Ожидайте...');
-
-    const data = getProductData();
-    const { id, quantity } = data;
+    const { id, quantity } = getProductData();
 
     server.oneClickBuy(id, quantity, DOM.$phone.val())
       .then(() => {
-        mediator.publish('onOneClickBuy', [data]);
+        mediator.publish('onOneClickBuy');
         // Set timeout to wait handling of onOneClickBuy
         setTimeout(() => {
-          window.location.href = '/shop/order-success';
+          window.location.href = configs.hrefs.orderSuccess;
         }, 100);
       });
   }
