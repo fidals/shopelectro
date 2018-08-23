@@ -8,6 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
+from catalog import models as ca_models
 from catalog.views import catalog
 from images.models import Image
 from pages import views as pages_views
@@ -220,7 +221,7 @@ class CategoryPage(catalog.CategoryPage):
                 .distinct(sorting_option.field)
             )
 
-            tag_titles = models.serialize_tags_to_title(tags)
+            tag_titles = ca_models.serialize_tags_to_title(tags)
 
         def template_context(page, tag_titles, tags):
             return {
