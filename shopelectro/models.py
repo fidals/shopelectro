@@ -1,8 +1,4 @@
-import random
-import string
-from itertools import chain, groupby
-from operator import attrgetter
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 from uuid import uuid4
 
 from django.conf import settings
