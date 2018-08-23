@@ -5,7 +5,7 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase, TransactionTestCase
 
-from shopelectro.models import Product
+from shopelectro.models import Product, Tag, TagGroup
 
 
 class ProductModel(TestCase):
