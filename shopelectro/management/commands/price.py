@@ -95,9 +95,10 @@ class Command(BaseCommand):
 
             return result_categories
 
+        # @todo #533:30m Move `price.prepare_products` logic to `ProductQuerySet`
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
-            products_except_others = (
+            products_result_qs = (
                 Product.actives
                 .select_related('page')
                 .prefetch_related('category')
@@ -110,15 +111,21 @@ class Command(BaseCommand):
                 Yandex Market feed requires items in some categories to have pictures
                 To simplify filtering we are excluding all products without pictures
                 """
-                products_except_others = (
-                    products_except_others
+                products_result_qs = (
+                    products_result_qs
                     .filter(page__images__isnull=False)
                     .distinct()
                 )
 
+            if utm == 'GM':
+                products_result_qs = (
+                    products_result_qs
+                    .filter(price__gt=settings.PRICE_GM_LOWER_BOUND)
+                )
+
             result_products = [
                 put_crumbs(put_utm(product))
-                for product in products_except_others
+                for product in products_result_qs
             ]
 
             return result_products
