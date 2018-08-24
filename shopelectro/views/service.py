@@ -1,3 +1,4 @@
+import logging
 from hashlib import md5
 
 from django.conf import settings
@@ -9,6 +10,9 @@ from ecommerce import mailer
 from ecommerce.views import get_keys_from_post
 
 from shopelectro.models import Order
+
+logger = logging.getLogger(__name__)
+
 
 YANDEX_REQUEST_PARAM = (
     'action', 'orderSumAmount', 'orderSumCurrencyPaycash', 'orderSumBankPaycash',
@@ -87,6 +91,8 @@ def yandex_aviso(request):
             request, 'ecommerce/yandex_aviso.xml',
             content_type='application/xhtml+xml'
         )
+
+    logger.info(f'received yandex aviso. Aviso data: {request.POST}')
 
     # maybe we can include django-annoying for such cases
     # https://github.com/skorokithakis/django-annoying#get_object_or_none-function
