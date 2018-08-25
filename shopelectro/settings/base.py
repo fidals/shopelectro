@@ -484,3 +484,6 @@ PRICE_BOUNDS = {
 SLUG_HASH_SIZE = 5
 
 BRAND_TAG_GROUP_NAME = 'Производитель'
+
+# products with price lower this value should not be presented at gm.yml price
+PRICE_GM_LOWER_BOUND = 200.0

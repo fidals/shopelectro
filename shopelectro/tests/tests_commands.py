@@ -238,6 +238,15 @@ class GeneratePrices(TestCase):
         products_in_price = self.get_price_offers_node('priceru.xml')
         self.assertEqual(len(products_in_price), Product.objects.count())
 
+    def test_products_in_gm_price_bounds(self):
+        """GM.yml should contain only offers with price > CONST."""
+        offers = self.get_price_offers_node('gm.yml').findall('offer')
+        prices_are_in_bounds = all(
+            float(offer.find('price').text) > settings.PRICE_GM_LOWER_BOUND
+            for offer in offers
+        )
+        self.assertTrue(prices_are_in_bounds)
+
     def test_products_in_yandex_price(self):
         products_in_yandex_price = self.get_price_offers_node('yandex.yml')
         self.assertEqual(
