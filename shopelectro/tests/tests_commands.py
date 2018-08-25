@@ -16,7 +16,6 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
 
-from shopelectro.management.commands import price
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
 )
@@ -152,7 +151,7 @@ class GeneratePrices(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for file_name in price.Command.TARGETS.values():
+        for file_name in settings.UTM_PRICE_MAP.values():
             os.remove(cls.get_price_file_path(file_name))
         super(GeneratePrices, cls).tearDownClass()
 
@@ -192,7 +191,7 @@ class GeneratePrices(TestCase):
         """Price command should generate various price-list files."""
         price_file_min_size = 10 ** 3  # ~1kb
 
-        for name in price.Command.TARGETS.values():
+        for name in settings.UTM_PRICE_MAP.values():
             file_name = self.get_price_file_path(name)
             self.assertIn(name, os.listdir(settings.ASSETS_DIR))
             size = os.stat(file_name).st_size

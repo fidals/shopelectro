@@ -487,3 +487,12 @@ BRAND_TAG_GROUP_NAME = 'Производитель'
 
 # products with price lower this value should not be presented at gm.yml price
 PRICE_GM_LOWER_BOUND = 200.0
+
+# Online market services, that works with our prices.
+# Dict keys - url targets for every service.
+UTM_PRICE_MAP = {
+    'YM': 'yandex.yml',
+    'priceru': 'priceru.xml',
+    'GM': 'gm.yml',
+    'SE78': 'se78.yml',
+}

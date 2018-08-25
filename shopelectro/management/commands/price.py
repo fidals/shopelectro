@@ -3,24 +3,42 @@ import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.template.loader import render_to_string
 from django.urls import reverse
 
 from shopelectro.models import Product, Category
 
 
+class PriceFilter:
+    """Filter offers with individual price requirements."""
+
+    FILTERS = defaultdict(
+        lambda: (lambda qs: qs),
+        # Yandex Market feed requires picture for every offer
+        YM=lambda qs: (
+            qs
+            .filter(page__images__isnull=False)
+            .distinct()
+        ),
+        # Google Merchant feed should not contain offers cheaper then CONST
+        GM=lambda qs: (
+            qs
+            .filter(price__gt=settings.PRICE_GM_LOWER_BOUND)
+        )
+    )
+
+    def __init__(self, utm: str):
+        assert utm in settings.UTM_PRICE_MAP
+        self.utm = utm
+
+    def run(self, query_set: QuerySet) -> QuerySet:
+        return self.FILTERS[self.utm](query_set)
+
+
 class Command(BaseCommand):
     """Generate yml file for a given vendor (YM or price.ru)."""
 
-    # Online market services, that works with our prices.
-    # Dict keys - url targets for every service
-    TARGETS = {
-        'YM': 'yandex.yml',
-        'priceru': 'priceru.xml',
-        'GM': 'gm.yml',
-        'SE78': 'se78.yml',
-    }
     # price files will be stored at this dir
     BASE_DIR = settings.ASSETS_DIR
 
@@ -35,7 +53,7 @@ class Command(BaseCommand):
     })
 
     def create_prices(self):
-        for target in self.TARGETS.items():
+        for target in settings.UTM_PRICE_MAP.items():
             self.generate_yml(*target)
 
     def handle(self, *args, **options):
@@ -95,40 +113,14 @@ class Command(BaseCommand):
 
             return result_categories
 
-        # @todo #533:30m Move `price.prepare_products` logic to `ProductQuerySet`
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
-            products_result_qs = (
-                Product.actives
-                .select_related('page')
-                .prefetch_related('category')
-                .prefetch_related('page__images')
-                .filter(category__in=categories_, price__gt=0)
-            )
-
-            if utm == 'YM':
-                """
-                Yandex Market feed requires items in some categories to have pictures
-                To simplify filtering we are excluding all products without pictures
-                """
-                products_result_qs = (
-                    products_result_qs
-                    .filter(page__images__isnull=False)
-                    .distinct()
-                )
-
-            if utm == 'GM':
-                products_result_qs = (
-                    products_result_qs
-                    .filter(price__gt=settings.PRICE_GM_LOWER_BOUND)
-                )
-
-            result_products = [
+            return [
                 put_crumbs(put_utm(product))
-                for product in products_result_qs
+                for product in PriceFilter(utm).run(
+                    Product.actives.filter_by_categories(categories_)
+                )
             ]
-
-            return result_products
 
         categories = (
             filter_categories(utm) if utm != 'SE78'
