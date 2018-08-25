@@ -123,3 +123,8 @@ def icon_stars(rating=0):
         'half_icons': range(half_icons),
         'empty_icons': range(empty_icons),
     }
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)

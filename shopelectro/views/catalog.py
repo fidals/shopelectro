@@ -26,11 +26,41 @@ def get_products_count(request):
     return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
 
 
-def get_paginated_page_or_404(objects, per_page, page_number):
-    try:
-        return Paginator(objects, per_page).page(page_number)
-    except InvalidPage:
-        raise http.Http404('Page does not exist')
+class PaginatorLinks:
+    """
+    @todo #539:60m Move PaginatorLinks to refarm-site.
+    """
+    def __init__(self, number, path, paginated: Paginator):
+        self.paginated = paginated
+        self.number = number
+        self.path = path
+
+        self.index = number - 1
+        self.neighbor_bounds = settings.PAGINATION_NEIGHBORS // 2
+        self.neighbor_range = list(self.paginated.page_range)
+
+    def page(self):
+        try:
+            return self.paginated.page(self.number)
+        except InvalidPage:
+            raise http.Http404('Page does not exist')
+
+    def showed_number(self):
+        return self.index * self.paginated.per_page + self.page().object_list.count()
+
+    def _url(self, number):
+        self.paginated.validate_number(number)
+        return self.path if number == 1 else f'{self.path}?page={number}'
+
+    def prev_numbers(self):
+        return self.neighbor_range[:self.index][-self.neighbor_bounds:]
+
+    def next_numbers(self):
+        return self.neighbor_range[self.index+1:][:self.neighbor_bounds]
+
+    def number_url_map(self):
+        numbers = self.prev_numbers() + self.next_numbers()
+        return {number: self._url(number) for number in numbers}
 
 
 class SortingOption:
@@ -234,18 +264,24 @@ class CategoryPage(catalog.CategoryPage):
         page.get_template_render_context = partial(
             template_context, page, tag_titles, tags)
 
-        paginated_page = get_paginated_page_or_404(all_products, products_on_page, page_number)
+        paginated = PaginatorLinks(
+            page_number,
+            self.request.path,
+            Paginator(all_products, products_on_page)
+        )
+        paginated_page = paginated.page()
+
         total_products = all_products.count()
-        products = paginated_page.object_list
-        if not products:
+        products_on_page = paginated_page.object_list
+        if not products_on_page:
             raise http.Http404('Page without products does not exist.')
 
         return {
             **context,
-            'products_data': merge_products_context(products),
+            'products_data': merge_products_context(products_on_page),
             'group_tags_pairs': group_tags_pairs,
             'total_products': total_products,
-            'products_count': (page_number - 1) * products_on_page + products.count(),
+            'paginated': paginated,
             'paginated_page': paginated_page,
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
             'limits': settings.CATEGORY_STEP_MULTIPLIERS,
@@ -301,12 +337,18 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             .distinct(sorting_option.field)
         )
 
-    paginated_page = get_paginated_page_or_404(all_products, products_on_page, page_number)
+    paginated = PaginatorLinks(
+        page_number,
+        request.path,
+        Paginator(all_products, products_on_page)
+    )
+    paginated_page = paginated.page()
     products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
 
     return render(request, 'catalog/category_products.html', {
         'products_data': merge_products_context(products),
+        'paginated': paginated,
         'paginated_page': paginated_page,
         'view_type': view,
         'prods': products_on_page,
