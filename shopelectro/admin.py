@@ -238,9 +238,10 @@ class OrderAdmin(mixins.PermissionsControl):
 
     add = False
     inlines = [PositionInline]
-    list_display = ['name', 'email', 'phone', 'address', 'city', 'payment_type', 'paid']
+    list_display = ['id', 'name', 'email', 'phone', 'total_price', 'payment_type', 'paid']
     search_fields = ['name', 'email', 'phone']
     list_display_links = ['name']
+
 
 se_admin = SEAdminSite(name='se_admin')
 se_admin.register(CustomPage, models.CustomPageAdmin)
