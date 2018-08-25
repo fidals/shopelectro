@@ -21,6 +21,7 @@ from django.utils.translation import ugettext as _
 
 from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet, serialize_tags_to_url
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
+from shopelectro.tests.helpers import create_doubled_tag
 
 
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
@@ -49,7 +50,7 @@ def get_page_number(response):
     return response.context['paginated_page'].number
 
 
-def json_to_dict(response: HttpResponse) -> dict():
+def json_to_dict(response: HttpResponse) -> dict:
     return json.loads(response.content)
 
 
@@ -75,19 +76,6 @@ class BaseCatalogTestCase(TestCase):
 
 
 class CatalogTags(BaseCatalogTestCase):
-
-    # @todo #522:15m Move method `CatalogTags.create_doubled_tag` to test helpers.
-    #  And rm code doubling at
-    # `shopelectro.tests.tests_models.TagTest#test_double_named_tag_creation`.
-    def create_doubled_tag(self):
-        tag_from = Tag.objects.first()
-        group_to = TagGroup.objects.exclude(id=tag_from.group.id).first()
-        tag_to = Tag.objects.create(
-            group=group_to, name=tag_from.name, position=tag_from.position
-        )
-        tag_to.products.set(tag_from.products.all())
-        tag_to.save()
-        return tag_to
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
@@ -198,7 +186,7 @@ class CatalogTags(BaseCatalogTestCase):
 
     def test_doubled_tag(self):
         """Category tags page filtered by the same tag from different tag groups."""
-        tag_ = self.create_doubled_tag()
+        tag_ = create_doubled_tag()
         response = self.get_category_page(
             tags=Tag.objects.filter(id=tag_.id)
         )

@@ -6,6 +6,7 @@ from django.forms.models import model_to_dict
 from django.test import TestCase, TransactionTestCase
 
 from shopelectro.models import Product, Tag, TagGroup
+from shopelectro.tests.helpers import create_doubled_tag
 
 
 class ProductModel(TestCase):
@@ -52,18 +53,8 @@ class TagModel(TestCase):
 
     def test_double_named_tag_saving(self):
         """Two tags with the same name should have unique slugs."""
-        def save_doubled_tag(tag_from_):
-            group_to = TagGroup.objects.exclude(id=tag_from_.group.id).first()
-            tag_to = Tag(
-                group=group_to, name=tag_from_.name, position=tag_from_.position
-            )
-            # required to create `tag.products` field
-            tag_to.save()
-            tag_to.products.set(tag_from.products.all())
-            tag_to.save()
-            return tag_to
         tag_from = Tag.objects.first()
-        tag_to = save_doubled_tag(tag_from)
+        tag_to = create_doubled_tag(tag_from)
         self.assertNotEqual(tag_from.slug, tag_to.slug)
 
 
