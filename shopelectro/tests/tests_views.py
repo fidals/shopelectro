@@ -20,7 +20,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 from catalog.models import TagQuerySet, serialize_tags_to_url
 
-from shopelectro.models import Category, Product, Tag, TagGroup
+from shopelectro import context
+from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 from shopelectro.tests.helpers import create_doubled_tag
 
@@ -39,7 +40,7 @@ def reverse_catalog_url(
     if tags:
         # PyCharm's option:
         # noinspection PyTypeChecker
-        tags_slug = serialize_tags_to_url(tags)
+        tags_slug = tags.as_url()
         route_kwargs['tags'] = tags_slug
     if sorting is not None:
         route_kwargs['sorting'] = sorting
@@ -74,6 +75,19 @@ class BaseCatalogTestCase(TestCase):
         return self.client.get(reverse_catalog_url(
             'category', {'slug': category.page.slug}, tags, sorting, query_string,
         ))
+
+
+class CatalogPage(BaseCatalogTestCase):
+
+    def test_merge_product_cache(self):
+        """Context merging should cached."""
+        products = Product.objects.all()[:2]
+        with self.assertNumQueries(7):
+            # N db queries without before cached
+            context.prepare_tile_products(products)
+        with self.assertNumQueries(0):
+            # no db queries after cached
+            context.prepare_tile_products(products)
 
 
 class CatalogTags(BaseCatalogTestCase):
