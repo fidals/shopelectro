@@ -25,7 +25,7 @@
     $successModalText: $('.js-feedback-success'),
   };
 
-  const productId = DOM.$addToCart.attr('data-id');
+  const productId = DOM.$addToCart.data('id');
 
   const init = () => {
     setUpListeners();
@@ -77,7 +77,7 @@
     $.fancybox(
       DOM.$fancybox,
       {
-        index: DOM.$imageBig.attr('data-index'),
+        index: DOM.$imageBig.data('index'),
         helpers: {
           overlay: {
             locked: false,
@@ -119,7 +119,7 @@
    */
   function productImgSwitch(event) {
     const targetSrc = $(event.target).attr('src');
-    const dataIndex = $(event.target).attr('data-index');
+    const dataIndex = $(event.target).data('index');
 
     if (targetSrc !== DOM.$imageBig.attr('src')) {
       DOM.$imageBig.attr({

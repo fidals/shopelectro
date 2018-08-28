@@ -23,13 +23,13 @@
    * Remove product with the given id from cart.
    */
   function remove(event) {
-    const productId = $(event.target).attr('data-id');
-    const productCount = $(event.target).attr('data-count');
+    const id = $(event.target).data('product-id');
+    const quantity = $(event.target).data('product-count');
 
-    server.removeFromCart(productId)
+    server.removeFromCart(id)
       .then((data) => {
         mediator.publish('onCartUpdate', data);
-        mediator.publish('onProductRemove', [productId, productCount]);
+        mediator.publish('onProductRemove', [{ id, quantity }]);
       });
   }
 
@@ -40,8 +40,8 @@
     const productsData = $(DOM.removeFromCart).map((_, el) => {
       const $el = $(el);
       return {
-        id: $el.attr('data-id'),
-        quantity: $el.attr('data-count'),
+        id: $el.data('product-id'),
+        quantity: $el.data('product-count'),
       };
     }).get();
     server.flushCart()

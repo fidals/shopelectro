@@ -86,7 +86,7 @@
 
   function reloadPageWithSorting() {
     const tags = helpers.getUrlEndpointParam('tags');
-    const selectedSorting = getSelectedSortingOption().attr('data-path').trim();
+    const selectedSorting = getSelectedSortingOption().data('path').trim();
     if (tags === '') {
       window.location.href = selectedSorting;
     } else {
@@ -164,11 +164,11 @@
       const quantity = $product.closest('.js-order').find('.js-product-count').val();
 
       return {
-        id: parseInt($product.attr('productId'), 10),
-        name: $product.attr('productName'),
+        id: parseInt($product.data('product-id'), 10),
+        name: $product.data('product-name'),
         quantity: parseInt(quantity, 10),
         category: DOM.$h1.data('name'),
-        brand: $product.attr('productBrand'),
+        brand: $product.data('product-brand'),
       };
     };
 

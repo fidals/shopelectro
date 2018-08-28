@@ -9,7 +9,6 @@
     submit: '#submit-order',
     fullForm: '#order-form-full',
     productCount: '.js-prod-count',
-    productPrice: '.js-product-price',
     remove: '.js-remove',
     paymentOptions: 'input[name=payment_type]',
     defaultPaymentOptions: 'input[for=id_payment_type_0]',
@@ -54,16 +53,9 @@
      * Bind events to parent's elements, because of dynamic elements.
      */
     DOM.$order.on('click', DOM.submit, submitOrder);
-    DOM.$order.on('click', DOM.remove, event => removeProduct(getElAttr(event, 'productId'), getElAttr(event, 'productCount')));
+    DOM.$order.on('click', DOM.remove, removeProduct);
     DOM.$order.on('change', DOM.productCount, helpers.debounce(changeProductCount, 250));
     DOM.$order.on('keyup', 'input', event => storeInput($(event.target)));
-  }
-
-  /**
-   * Return element's attribute value by attr name.
-   */
-  function getElAttr(event, attrName) {
-    return event.currentTarget.getAttribute(attrName);
   }
 
   /**
@@ -126,11 +118,14 @@
   /**
    * Remove Product from Cart.
    */
-  function removeProduct(productId, count) {
-    server.removeFromCart(productId)
+  function removeProduct(event) {
+    const $target = $(event.currentTarget);
+    const id = $target.data('product-id');
+    const quantity = $target.data('product-count');
+    server.removeFromCart(id)
       .then((data) => {
         mediator.publish('onCartUpdate', data);
-        mediator.publish('onProductRemove', [productId, count]);
+        mediator.publish('onProductRemove', [{ id, quantity }]);
       });
   }
 
@@ -139,14 +134,15 @@
    * Handle Product's count change in Cart with delay.
    */
   function changeProductCount(event) {
-    const productId = getElAttr(event, 'productId');
-    const countDiff = event.target.value - getElAttr(event, 'productLastCount');
+    const $target = $(event.currentTarget);
+    const id = $target.data('product-id');
+    const countDiff = event.target.value - $target.data('last-count');
     const data = {
-      id: productId,
+      id,
       quantity: Math.abs(countDiff),
     };
 
-    server.changeInCart(productId, event.target.value)
+    server.changeInCart(id, event.target.value)
       .then((newData) => {
         mediator.publish('onCartUpdate', newData);
         mediator.publish(countDiff > 0 ? 'onProductAdd' : 'onProductRemove', [data]);

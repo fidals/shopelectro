@@ -43,14 +43,14 @@
             </div>
             <input class="prod-count input-number js-prod-count js-touchspin"
                    value="{{ position.quantity }}" type="number"
-                   name="prod-count" productId="{{ id }}" productLastCount="{{ position.quantity }}">
+                   name="prod-count" data-product-id="{{ id }}" data-last-count="{{ position.quantity }}">
           </div>
           <div class="div-table-cell order-table-product-price text-center js-product-price"
-               productId="{{ id }}" productPrice="{{ position.price }}">
+              data-product-id="{{ id }}" data-product-price="{{ position.price }}">
             {{ position.price|humanize_price }} руб.
           </div>
           <div class="div-table-cell text-center">
-            <div class="order-list-remove-item js-remove" productId="{{ id }}" productCount="{{ position.quantity }}" title="Убрать из заказа">
+            <div class="order-list-remove-item js-remove" data-product-id="{{ id }}" data-product-count="{{ position.quantity }}" title="Убрать из заказа">
               <i class="fa fa-close"></i>
             </div>
           </div>
