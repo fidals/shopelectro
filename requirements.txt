@@ -17,4 +17,4 @@ ua-parser==0.8.0
 user-agents==1.1.0
 sorl-thumbnail==12.4a1
 https://github.com/selwin/django-user_agents/archive/master.zip
-https://github.com/fidals/refarm-site/archive/0.1.11.zip
+https://github.com/fidals/refarm-site/archive/0.2.0.zip
