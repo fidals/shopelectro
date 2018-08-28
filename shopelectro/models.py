@@ -119,16 +119,6 @@ class Product(AbstractProduct, SyncPageMixin):
     def get_params(self):
         return Tag.objects.filter_by_products([self]).get_group_tags_pairs()
 
-    # @todo #388:30m Move Product.get_siblings method to refarm-site
-    #  And reuse it on STB.
-    def get_siblings(self, offset):
-        return (
-            self.__class__.actives
-            .filter(category=self.category)
-            .prefetch_related('category')
-            .select_related('page')[:offset]
-        )
-
     def get_brand_name(self) -> str:
         brand: Optional['Tag'] = Tag.objects.get_brands([self]).get(self)
         return brand.name if brand else ''
