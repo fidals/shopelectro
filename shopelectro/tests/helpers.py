@@ -14,6 +14,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from seleniumrequests import Remote  # We use this instead of standard selenium
 
+from shopelectro.models import Tag, TagGroup
+
 disable_celery = override_settings(USE_CELERY=False)
 enable_russian_language = override_settings(
     LANGUAGE_CODE='ru-ru', LANGUAGES=(('ru', 'Russian'),)
@@ -41,6 +43,17 @@ def hover(browser, element):
 
 def context_click(browser, element):
     ActionChains(browser).context_click(element).perform()
+
+
+def create_doubled_tag(tag_from: Tag=None):
+    tag_from = tag_from or Tag.objects.first()
+    group_to = TagGroup.objects.exclude(id=tag_from.group.id).first()
+    tag_to = Tag.objects.create(
+        group=group_to, name=tag_from.name, position=tag_from.position
+    )
+    tag_to.products.set(tag_from.products.all())
+    tag_to.save()
+    return tag_to
 
 
 class SeleniumTestCase(LiveServerTestCase):
