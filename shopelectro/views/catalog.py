@@ -26,10 +26,9 @@ def get_products_count(request):
     return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
 
 
+# @todo #539:60m Move PaginatorLinks to refarm-site.
 class PaginatorLinks:
-    """
-    @todo #539:60m Move PaginatorLinks to refarm-site.
-    """
+
     def __init__(self, number, path, paginated: Paginator):
         self.paginated = paginated
         self.number = number
@@ -56,7 +55,7 @@ class PaginatorLinks:
         return self.neighbor_range[:self.index][-self.neighbor_bounds:]
 
     def next_numbers(self):
-        return self.neighbor_range[self.index+1:][:self.neighbor_bounds]
+        return self.neighbor_range[self.index + 1:][:self.neighbor_bounds]
 
     def number_url_map(self):
         numbers = self.prev_numbers() + self.next_numbers()
