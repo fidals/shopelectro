@@ -1,17 +1,11 @@
-import random
-import string
-from itertools import chain, groupby
-from operator import attrgetter
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from mptt.querysets import TreeQuerySet
-from unidecode import unidecode
 
 from catalog.models import (
     AbstractCategory,
@@ -19,16 +13,11 @@ from catalog.models import (
     CategoryManager,
     ProductActiveManager,
     ProductManager,
+    Tag as caTag,
+    TagGroup as caTagGroup,
 )
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
-
-
-def randomize_slug(slug: str) -> str:
-    slug_hash = ''.join(
-        random.choices(string.ascii_lowercase, k=settings.SLUG_HASH_SIZE)
-    )
-    return f'{slug}_{slug_hash}'
 
 
 class SECategoryQuerySet(TreeQuerySet):
@@ -200,147 +189,13 @@ class ProductPage(ModelPage):
     objects = ModelPage.create_model_page_managers(Product)
 
 
-class TagGroup(models.Model):
-
-    uuid = models.UUIDField(default=uuid4, editable=False)  # Ignore CPDBear
-    name = models.CharField(
-        max_length=100, db_index=True, verbose_name=_('name'))
-    position = models.PositiveSmallIntegerField(
-        default=0, blank=True, db_index=True, verbose_name=_('position'),
-    )
-
-    def __str__(self):
-        return self.name
+class TagGroup(caTagGroup):
+    pass
 
 
-class TagQuerySet(models.QuerySet):
-
-    def filter_by_products(self, products: List[Product]):
-        ordering = settings.TAGS_ORDER
-        distinct = [order.lstrip('-') for order in ordering]
-
-        return (
-            self
-            .filter(products__in=products)
-            .order_by(*ordering)
-            .distinct(*distinct, 'id')
-        )
-
-    def get_group_tags_pairs(self) -> List[Tuple[TagGroup, List['Tag']]]:
-        grouped_tags = groupby(self.prefetch_related('group'), key=attrgetter('group'))
-        return [
-            (group, list(tags_))
-            for group, tags_ in grouped_tags
-        ]
-
-    def get_brands(self, products: List[Product]) -> Dict[Product, 'Tag']:
-        brand_tags = (
-            self.filter(group__name=settings.BRAND_TAG_GROUP_NAME)
-            .prefetch_related('products')
-            .select_related('group')
-        )
-
-        return {
-            product: brand
-            for brand in brand_tags for product in products
-            if product in brand.products.all()
-        }
-
-
-class TagManager(models.Manager.from_queryset(TagQuerySet)):
-
-    def get_queryset(self):
-        return (
-            super().get_queryset()
-            .order_by(*settings.TAGS_ORDER)
-        )
-
-    def get_group_tags_pairs(self):
-        return self.get_queryset().get_group_tags_pairs()
-
-    def filter_by_products(self, products):
-        return self.get_queryset().filter_by_products(products)
-
-    def get_brands(self, products):
-        """Get a batch of products' brands."""
-        return self.get_queryset().get_brands(products)
-
-
-class Tag(models.Model):
-
-    # Uncomment it after moving to refarm with rf#162
-    # class Meta:
-    #     unique_together = ('name', 'group')
-
-    objects = TagManager()
-
-    uuid = models.UUIDField(default=uuid4, editable=False)
-    name = models.CharField(
-        max_length=100, db_index=True, verbose_name=_('name'))
-    position = models.PositiveSmallIntegerField(
-        default=0, blank=True, db_index=True, verbose_name=_('position'),
-    )
-
-    # Set it as unique with rf#162
-    slug = models.SlugField(default='')
-
+class Tag(caTag):
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
-    )
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            # same slugify code used in PageMixin object
-            self.slug = slugify(
-                unidecode(self.name.replace('.', '-').replace('+', '-'))
-            )
-        doubled_tag_qs = self.__class__.objects.filter(slug=self.slug)
-        if doubled_tag_qs:
-            self.slug = randomize_slug(self.slug)
-        super(Tag, self).save(*args, **kwargs)
-
-    @staticmethod
-    def parse_url_tags(tags: str) -> list:
-        groups = tags.split(settings.TAGS_URL_DELIMITER)
-        return set(chain.from_iterable(
-            group.split(settings.TAG_GROUPS_URL_DELIMITER) for group in groups
-        ))
-
-
-def serialize_tags(
-    tags: TagQuerySet,
-    field_name: str,
-    type_delimiter: str,
-    group_delimiter: str,
-) -> str:
-    group_tags_map = tags.get_group_tags_pairs()
-
-    _, tags_by_group = zip(*group_tags_map)
-
-    return group_delimiter.join(
-        type_delimiter.join(getattr(tag, field_name) for tag in tags_list)
-        for tags_list in tags_by_group
-    )
-
-
-def serialize_tags_to_url(tags: TagQuerySet) -> str:
-    return serialize_tags(
-        tags=tags,
-        field_name='slug',
-        type_delimiter=settings.TAGS_URL_DELIMITER,
-        group_delimiter=settings.TAG_GROUPS_URL_DELIMITER
-    )
-
-
-def serialize_tags_to_title(tags: TagQuerySet) -> str:
-    return serialize_tags(
-        tags=tags,
-        field_name='name',
-        type_delimiter=settings.TAGS_TITLE_DELIMITER,
-        group_delimiter=settings.TAG_GROUPS_TITLE_DELIMITER
     )
 
 
