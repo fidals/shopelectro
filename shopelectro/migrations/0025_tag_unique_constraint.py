@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='tag',
-            unique_together={'name', 'group'},
+            unique_together=['name', 'group'],
         ),
     ]
