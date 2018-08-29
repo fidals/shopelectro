@@ -51,9 +51,9 @@
     mediator.subscribe('onProductAdd', (_, data) => {
       yaTracker.add([data]);
     });
-    mediator.subscribe('onProductRemove', (_, id, quantity) => {
+    mediator.subscribe('onProductRemove', (_, data) => {
       reachGoal('DELETE_PRODUCT');
-      yaTracker.remove([{ id, quantity }]);
+      yaTracker.remove([data]);
     });
     mediator.subscribe('onProductDetail', (_, data) => yaTracker.detail([data]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
