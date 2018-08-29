@@ -250,10 +250,12 @@ class CatalogPagination(BaseCatalogTestCase):
             page_number - 1,
         )
 
+    # @todo #539:30m Create test(s) for numbered pagination.
+    #  Currently we test only a prev/next page feature.
     def test_pagination_buttons(self):
         """Each button forward to a previous and a next pagination pages."""
         page_number = 3
-        prev, next_ = BeautifulSoup(
+        prev, *_, next_ = BeautifulSoup(
             self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
             'html.parser'
         ).find(class_='js-catalog-pagination').find_all('a')

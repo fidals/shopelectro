@@ -1,14 +1,33 @@
+{% load se_extras %}
+
 <div class="js-catalog-pagination">
   <span>
-    {% if paginated_page.has_previous %}
-      <a href="{% if paginated_page.previous_page_number == 1 %}{{ request.path }}{% else %}{{ request.path }}?page={{ paginated_page.previous_page_number }}{% endif %}">
-        Предыдущая страница {{ paginated_page.previous_page_number }}
-      </a>
-    {% endif %}
-    {% if paginated_page.has_next %}
-      <a href="{{ request.path }}?page={{ paginated_page.next_page_number }}">
-        Следующая страница {{ paginated_page.next_page_number }}
-      </a>
-    {% endif %}
+    {% with prev_numbers=paginated.prev_numbers next_numbers=paginated.next_numbers url_map=paginated.number_url_map %}
+      {% if prev_numbers %}
+        {% with number=prev_numbers|last %}
+          <a href="{{ url_map|get_item:number }}">
+            <<
+          </a>
+        {% endwith %}
+      {% endif %}
+
+      {% for number in prev_numbers %}
+        <a href="{{ url_map|get_item:number }}">{{ number }}</a>
+      {% endfor %}
+
+      {{ paginated_page.number }}
+
+      {% for number in next_numbers %}
+        <a href="{{ url_map|get_item:number }}">{{ number }}</a>
+      {% endfor %}
+
+      {% if next_numbers %}
+        {% with number=next_numbers|first %}
+          <a href="{{ url_map|get_item:number }}">
+            >>
+          </a>
+        {% endwith %}
+      {% endif %}
+    {% endwith %}
   </span>
 </div>

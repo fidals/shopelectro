@@ -496,3 +496,8 @@ UTM_PRICE_MAP = {
     'GM': 'gm.yml',
     'SE78': 'se78.yml',
 }
+
+# Number of pagination neighbors shown for page.
+# If PAGINATION_NEIGHBORS = 4 and number of a page = 5,
+# then will be shown neighbors by number: 3, 4, 6, 7
+PAGINATION_NEIGHBORS = 4

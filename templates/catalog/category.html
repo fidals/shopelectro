@@ -32,7 +32,7 @@
 
       <p class="products-showed">
         Показано товаров
-        <span class="font-bold js-products-showed-count"> {{ products_count }} </span>
+        <span class="font-bold js-products-showed-count"> {{ paginated.showed_number }} </span>
         из <span class="font-bold js-total-products">{{ total_products }}</span>.
       </p>
 
@@ -48,7 +48,7 @@
                 data-url="{{ category.url }}" type="button">Загрузить ещё</button>
         <p class="products-showed-text">
           Показано товаров
-          <span class="js-products-showed-count">{{ products_count }}</span> из
+          <span class="js-products-showed-count">{{ paginated.showed_number }}</span> из
           <span class="js-total-products">{{ total_products }}</span>
         </p>
       </div>
