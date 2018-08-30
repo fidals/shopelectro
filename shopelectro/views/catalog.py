@@ -242,6 +242,9 @@ class CategoryPage(catalog.CategoryPage):
             slugs = models.Tag.parse_url_tags(tags)
             tags = models.Tag.objects.filter(slug__in=slugs)
 
+            if not tags:
+                raise http.Http404('No such tag.')
+
             all_products = (
                 all_products
                 .filter(tags__in=tags)
