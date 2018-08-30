@@ -211,6 +211,18 @@ class CatalogTags(BaseCatalogTestCase):
         for link in property_links:
             self.assertContains(response, link)
 
+    def test_non_existing_tags_404(self):
+        """Product should contain links on CategoryTagPage for it's every tag."""
+        product = Product.objects.first()
+        self.assertGreater(product.tags.count(), 0)
+
+        bad_tag_url = reverse('category', kwargs={
+            'slug': product.category.page.slug,
+            'tags': 'non-existent-tag',
+        })
+        response = self.client.get(bad_tag_url)
+        self.assertEqual(response.status_code, 404)
+
 
 class CatalogPagination(BaseCatalogTestCase):
 
