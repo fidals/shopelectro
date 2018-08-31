@@ -252,35 +252,43 @@ class CatalogPagination(BaseCatalogTestCase):
             404,
         )
 
-    def assert_pagination_links(self, next_, prev, page_number):
+    def assert_pagination_link(self, link, page_number):
         self.assertEqual(
-            get_page_number(self.client.get(next_['href'])),
-            page_number + 1,
-        )
-        self.assertEqual(
-            get_page_number(self.client.get(prev['href'])),
-            page_number - 1,
+            get_page_number(self.client.get(link['href'])),
+            page_number,
         )
 
-    # @todo #539:30m Create test(s) for numbered pagination.
-    #  Currently we test only a prev/next page feature.
-    def test_pagination_buttons(self):
-        """Each button forward to a previous and a next pagination pages."""
-        page_number = 3
-        prev, *_, next_ = BeautifulSoup(
+    def assert_pagination_links(self, next_, prev, page_number):
+        self.assert_pagination_link(next_, page_number + 1)
+        self.assert_pagination_link(prev, page_number - 1)
+
+    def get_category_soup(self, page_number: int) -> BeautifulSoup:
+        return BeautifulSoup(
             self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
             'html.parser'
-        ).find(class_='js-catalog-pagination').find_all('a')
+        )
+
+    def test_numbered_pagination_links(self):
+        """Forward to numbered pagination pages."""
+        page_number = 3
+        _, *numbered, _ = self.get_category_soup(page_number).find(
+            class_='js-catalog-pagination').find_all('a')
+
+        for slice, link in zip([- 2, -1, 1, 2], numbered):
+            self.assert_pagination_link(link, page_number + slice)
+
+    def test_next_prev_pagination_links(self):
+        """Each button forward to a previous and a next pagination pages."""
+        page_number = 3
+        prev, *_, next_ = self.get_category_soup(page_number).find(
+            class_='js-catalog-pagination').find_all('a')
 
         self.assert_pagination_links(next_, prev, page_number)
 
     def test_pagination_canonical(self):
         """Canonical links forward to a previous and a next pagination pages."""
         page_number = 3
-        soup = BeautifulSoup(
-            self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
-            'html.parser'
-        )
+        soup = self.get_category_soup(page_number)
 
         self.assert_pagination_links(
             next_=soup.find('link', attrs={'rel': 'next'}),
