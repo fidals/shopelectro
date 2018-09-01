@@ -289,7 +289,7 @@ class CatalogPagination(BaseCatalogTestCase):
         soup = self.get_category_soup(page_number)
 
         self.assert_pagination_link(
-            next_=soup.find('link', attrs={'rel': 'next'}),
+            soup.find('link', attrs={'rel': 'next'}),
             page_number + 1
         )
         self.assert_pagination_link(
