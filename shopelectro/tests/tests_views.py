@@ -253,14 +253,11 @@ class CatalogPagination(BaseCatalogTestCase):
         )
 
     def assert_pagination_link(self, link, page_number):
+        """Page numbers from link href and from link anchor should be equal."""
         self.assertEqual(
             get_page_number(self.client.get(link['href'])),
             page_number,
         )
-
-    def assert_pagination_links(self, next_, prev, page_number):
-        self.assert_pagination_link(next_, page_number + 1)
-        self.assert_pagination_link(prev, page_number - 1)
 
     def get_category_soup(self, page_number: int) -> BeautifulSoup:
         return BeautifulSoup(
@@ -274,26 +271,30 @@ class CatalogPagination(BaseCatalogTestCase):
         _, *numbered, _ = self.get_category_soup(page_number).find(
             class_='js-catalog-pagination').find_all('a')
 
-        for slice, link in zip([- 2, -1, 1, 2], numbered):
+        for slice, link in zip([-2, -1, 1, 2], numbered):
             self.assert_pagination_link(link, page_number + slice)
 
-    def test_next_prev_pagination_links(self):
+    def test_arrow_pagination_links(self):
         """Each button forward to a previous and a next pagination pages."""
         page_number = 3
         prev, *_, next_ = self.get_category_soup(page_number).find(
             class_='js-catalog-pagination').find_all('a')
 
-        self.assert_pagination_links(next_, prev, page_number)
+        self.assert_pagination_link(next_, page_number + 1)
+        self.assert_pagination_link(prev, page_number - 1)
 
     def test_pagination_canonical(self):
         """Canonical links forward to a previous and a next pagination pages."""
         page_number = 3
         soup = self.get_category_soup(page_number)
 
-        self.assert_pagination_links(
+        self.assert_pagination_link(
             next_=soup.find('link', attrs={'rel': 'next'}),
-            prev=soup.find('link', attrs={'rel': 'prev'}),
-            page_number=page_number,
+            page_number + 1
+        )
+        self.assert_pagination_link(
+            soup.find('link', attrs={'rel': 'prev'}),
+            page_number - 1
         )
 
 
