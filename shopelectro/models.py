@@ -1,11 +1,17 @@
-from typing import Optional
+import random
+import string
+from itertools import chain, groupby
+from operator import attrgetter
+import typing
 from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from mptt.querysets import TreeQuerySet
+from unidecode import unidecode
 
 from catalog.models import (
     AbstractCategory,
@@ -17,6 +23,13 @@ from catalog.models import (
 )
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
+
+
+def randomize_slug(slug: str) -> str:
+    slug_hash = ''.join(
+        random.choices(string.ascii_lowercase, k=settings.SLUG_HASH_SIZE)
+    )
+    return f'{slug}_{slug_hash}'
 
 
 class SECategoryQuerySet(TreeQuerySet):
