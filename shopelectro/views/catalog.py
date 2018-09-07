@@ -101,7 +101,7 @@ class IndexPage(pages_views.CustomPageView):
 
     def get_context_data(self, **kwargs):
         """Extended method. Add product's images to context."""
-        context = super(IndexPage, self).get_context_data(**kwargs)
+        context_ = super(IndexPage, self).get_context_data(**kwargs)
         mobile_view = get_user_agent(self.request).is_mobile
 
         tile_products = []
@@ -115,7 +115,7 @@ class IndexPage(pages_views.CustomPageView):
             tile_products = context.prepare_tile_products(top_products)
 
         return {
-            **context,
+            **context_,
             'tile_title': 'ТОП 10 ТОВАРОВ',
             'category_tile': settings.MAIN_PAGE_TILE,
             'tile_products': tile_products,
