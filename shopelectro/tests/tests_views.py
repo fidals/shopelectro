@@ -18,7 +18,6 @@ from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-from catalog.models import TagQuerySet, serialize_tags_to_url
 
 from shopelectro import context
 from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet
