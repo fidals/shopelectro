@@ -95,7 +95,7 @@ services:
       - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     networks:
       - se-backend
-    command: celery -A shopelectro worker -E -n worker.mail@%%h -l info -Q mail
+    command: celery -A shopelectro worker -E -n worker.mail@%%h -c 1 -l info -Q mail
 
   nginx:
     image: fidals/se-nginx:prod
