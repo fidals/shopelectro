@@ -132,7 +132,7 @@ class CategoryPage(catalog.CategoryPage):
                 self.kwargs, self.request,
                 models.Product.objects.all()
             )
-            | context.TaggedCategory()
+            | context.TaggedCategory(tags=models.Tag.objects.all())
             | context.SortingCategory()
             | context.PaginationCategory()  # requires SortingCategory
             | context.DBTemplate()  # requires TaggedCategory

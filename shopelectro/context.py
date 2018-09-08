@@ -26,7 +26,7 @@ from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
 from django_user_agents.utils import get_user_agent
 
-from catalog.models import ProductQuerySet
+from catalog.models import ProductQuerySet, Tag, TagQuerySet
 from images.models import Image
 from pages.models import ModelPage
 
@@ -231,16 +231,36 @@ class Category(AbstractProductsListContext):
 
 class TaggedCategory(AbstractProductsListContext):
 
+    def __init__(  # Ignore PyDocStyleBear
+        self,
+        url_kwargs: typing.Dict[str, str]=None,
+        request: http.HttpRequest=None,
+        products: ProductQuerySet=None,
+        tags: TagQuerySet=None
+    ):
+        """
+        :param url_kwargs: Came from `urls` module.
+        :param request: Came from `urls` module.
+        :param products: Every project provides products from DB.
+        """
+        super().__init__(url_kwargs, request, products)
+        # it's not good. Arg should not be default.
+        # That's how we'll prevent assertion.
+        # But we'll throw away inheritance in se#567.
+        assert tags, 'tags is required arg'
+        self.tags_ = tags
+
     def get_sorting_index(self):
         return int(self.url_kwargs.get('sorting', 0))
 
+    # TODO - move to property as in `products` case
     def get_tags(self) -> typing.Optional[models.TagQuerySet]:
         request_tags = self.url_kwargs.get('tags')
         if not request_tags:
             return None
 
-        slugs = models.Tag.parse_url_tags(request_tags)
-        tags = models.Tag.objects.filter(slug__in=slugs)
+        slugs = Tag.parse_url_tags(request_tags)
+        tags = self.tags_.filter(slug__in=slugs)
         if not tags:
             raise http.Http404('No such tag.')
         return tags
