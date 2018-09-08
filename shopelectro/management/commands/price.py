@@ -7,7 +7,7 @@ from django.db.models import Q, QuerySet
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from shopelectro.models import Product, Category
+from shopelectro.models import Product, Category, Tag
 
 
 class PriceFilter:
@@ -75,12 +75,13 @@ class Command(BaseCommand):
             utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
             product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
 
-            product.prepared_params = list(
-                filter(
+            product.prepared_params = [
+                (group, tags[0].name)
+                for (group, tags) in filter(
                     lambda x: x[0].name != 'Производитель',
                     product.get_params()
-                )
-            )
+                ) if tags
+            ]
 
             return product
 
@@ -89,6 +90,10 @@ class Command(BaseCommand):
             product.crumbs = ' > '.join(
                 product.page.get_ancestors_fields('h1', include_self=False)[1:]
             )
+            return product
+
+        def put_brands(product, brands):
+            product.brand = brands.get(product)
             return product
 
         def filter_categories(utm):
@@ -115,11 +120,13 @@ class Command(BaseCommand):
 
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
+            products = PriceFilter(utm).run(
+                Product.actives.filter_by_categories(categories_)
+            )
+            brands = Tag.objects.get_brands(products)
             return [
-                put_crumbs(put_utm(product))
-                for product in PriceFilter(utm).run(
-                    Product.actives.filter_by_categories(categories_)
-                )
+                put_brands(put_crumbs(put_utm(product)), brands)
+                for product in products
             ]
 
         categories = (
