@@ -215,15 +215,8 @@ class Category(AbstractProductsListContext):
         #  Depends on updating to python3.7
         view_type = self.request.session.get('view_type', 'tile')
 
-        group_tags_pairs = (
-            models.Tag.objects
-            .filter_by_products(self.products)
-            .get_group_tags_pairs()
-        )
-
         return {
             'products_data': prepare_tile_products(self.products),
-            'group_tags_pairs': group_tags_pairs,
             # can be `tile` or `list`. Defines products list layout.
             'view_type': view_type,
         }
@@ -242,6 +235,7 @@ class TaggedCategory(AbstractProductsListContext):
         :param url_kwargs: Came from `urls` module.
         :param request: Came from `urls` module.
         :param products: Every project provides products from DB.
+        :param tags: Every project provides tags from DB.
         """
         super().__init__(url_kwargs, request, products)
         # it's not good. Arg should not be default.
@@ -254,7 +248,7 @@ class TaggedCategory(AbstractProductsListContext):
         return int(self.url_kwargs.get('sorting', 0))
 
     # TODO - move to property as in `products` case
-    def get_tags(self) -> typing.Optional[models.TagQuerySet]:
+    def get_tags(self) -> typing.Optional[TagQuerySet]:
         request_tags = self.url_kwargs.get('tags')
         if not request_tags:
             return None
@@ -285,9 +279,15 @@ class TaggedCategory(AbstractProductsListContext):
     def get_context_data(self):
         context = self.super.get_context_data()
         tags = self.get_tags()
+        group_tags_pairs = (
+            self.tags_
+            .filter_by_products(self.products)
+            .get_group_tags_pairs()
+        )
         return {
             **context,
             'tags': tags,
+            'group_tags_pairs': group_tags_pairs,
             # Category's canonical link is `category.page.get_absolute_url`.
             # So, this link always contains no tags.
             # That's why we skip canonical link on tagged category page.
