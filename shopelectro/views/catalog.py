@@ -128,7 +128,10 @@ class CategoryPage(catalog.CategoryPage):
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
         context_ = (
-            context.Category(self.kwargs, self.request)
+            context.Category(
+                self.kwargs, self.request,
+                models.Product.objects.all()
+            )
             | context.TaggedCategory()
             | context.SortingCategory()
             | context.PaginationCategory()  # requires SortingCategory

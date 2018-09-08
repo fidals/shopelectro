@@ -22,11 +22,11 @@ from abc import ABC, abstractmethod
 from functools import lru_cache, partial
 
 from django import http
-from django.db.models import QuerySet
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
 from django_user_agents.utils import get_user_agent
 
+from catalog.models import ProductQuerySet
 from images.models import Image
 from pages.models import ModelPage
 
@@ -82,8 +82,8 @@ class PaginatorLinks:
 
 # @todo #550:30m Split to ProductImagesContext and ProductBrandContext
 @lru_cache(maxsize=64)
-def prepare_tile_products(products: QuerySet):
-    assert isinstance(products, QuerySet)
+def prepare_tile_products(products: ProductQuerySet):
+    assert isinstance(products, ProductQuerySet)
 
     images = Image.objects.get_main_images_by_pages(
         models.ProductPage.objects.filter(shopelectro_product__in=products)
@@ -177,18 +177,35 @@ class AbstractProductsListContext(AbstractPageContext, ABC):
 
     super: 'AbstractProductsListContext' = None
 
+    def __init__(  # Ignore PyDocStyleBear
+        self,
+        url_kwargs: typing.Dict[str, str]=None,
+        request: http.HttpRequest=None,
+        products: ProductQuerySet=None
+    ):
+        """
+        :param url_kwargs: Came from `urls` module.
+        :param request: Came from `urls` module.
+        :param products: Every project provides products from DB.
+        """
+        super().__init__(url_kwargs, request)
+        self.products_ = products
+
+
     @property
-    def products(self) -> QuerySet:
+    def products(self) -> ProductQuerySet:
         if self.super:
             return self.super.products
+        elif self.products_:
+            return self.products_
         else:
-            raise NotImplementedError
+            raise NotImplementedError('Set products queryset')
 
 
 class Category(AbstractProductsListContext):
     @property
-    def products(self) -> QuerySet:
-        return models.Product.actives.get_category_descendants(
+    def products(self) -> ProductQuerySet:
+        return super().products.active().get_category_descendants(
             self.page.model
         )
 
@@ -301,7 +318,7 @@ class SortingCategory(AbstractProductsListContext):
         return int(self.url_kwargs.get('sorting', 0))
 
     @property
-    def products(self) -> QuerySet:
+    def products(self) -> ProductQuerySet:
         sorting_index = int(self.url_kwargs.get('sorting', 0))
         sorting_option = SortingOption(index=sorting_index)
         return self.super.products.order_by(sorting_option.directed_field)
