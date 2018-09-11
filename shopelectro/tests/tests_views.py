@@ -81,7 +81,7 @@ class CatalogPage(BaseCatalogTestCase):
     def test_merge_product_cache(self):
         """Context merging should cached."""
         products = Product.objects.all()[:2]
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(8):
             # N db queries without before cached
             context.prepare_tile_products(products)
         with self.assertNumQueries(0):
@@ -272,9 +272,11 @@ class CatalogPagination(BaseCatalogTestCase):
             page_number,
         )
 
-    def get_category_soup(self, page_number: int) -> BeautifulSoup:
+    def get_category_soup(self, page_number: int, required_status=200) -> BeautifulSoup:
+        category_page = self.get_category_page(query_string={'page': page_number})
+        assert category_page.status_code == required_status
         return BeautifulSoup(
-            self.get_category_page(query_string={'page': page_number}).content.decode('utf-8'),
+            category_page.content.decode('utf-8'),
             'html.parser'
         )
 

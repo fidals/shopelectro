@@ -130,10 +130,11 @@ class CategoryPage(catalog.CategoryPage):
         context_ = (
             context.Category(
                 self.kwargs, self.request,
-                models.Product.objects.all()
+                models.Product.objects.all(),
+                models.ProductPage.objects.all(),
             )
             | context.TaggedCategory(tags=models.Tag.objects.all())
-            | context.SortingCategory()
+            | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
             | context.DBTemplate()  # requires TaggedCategory
         )
