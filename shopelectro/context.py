@@ -287,6 +287,7 @@ class TaggedCategory(AbstractProductsListContext):
                 # @todo #550:60m Try to rm sorting staff from context.TaggedCategory.
                 #  Or explain again why it's impossible. Now it's not clear from comment.
                 .distinct(sorting_option.field)
+                .order_by(sorting_option.field)
             )
         return products
 
