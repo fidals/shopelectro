@@ -17,6 +17,8 @@ Code example to create tagged category:
 >>> Category(url_kwargs, request=HttpRequest()) | TaggedCategory()
 """
 
+# @todo #550:60m Move context module to refarm.catalog app
+
 import typing
 from abc import ABC, abstractmethod
 from collections import defaultdict
