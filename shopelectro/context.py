@@ -32,8 +32,6 @@ from catalog.models import ProductQuerySet, Tag, TagQuerySet
 from images.models import Image
 from pages.models import ModelPage
 
-from shopelectro import models
-
 
 class SortingOption:
     def __init__(self, index=0):
@@ -85,18 +83,16 @@ class PaginatorLinks:
 # @todo #550:30m Split to ProductImagesContext and ProductBrandContext
 @lru_cache(maxsize=64)
 def prepare_tile_products(
-    products: ProductQuerySet, product_pages: QuerySet=None, tags: TagQuerySet=None
+    products: ProductQuerySet, product_pages: QuerySet, tags: TagQuerySet=None
 ):
     # @todo #550:60m Move prepare_tile_products func to context
     #  Now it's separated function with huge of inconsistent queryset deps.
     assert isinstance(products, ProductQuerySet)
 
-    product_pages = product_pages or models.ProductPage.objects.all()
     images = Image.objects.get_main_images_by_pages(
         product_pages.filter(shopelectro_product__in=products)
     )
 
-    tags = tags or models.Tag.objects.all()
     brands = (
         tags
         .filter_by_products(products)
@@ -368,7 +364,9 @@ class SortingCategory(AbstractProductsListContext):
         context = self.super.get_context_data()
         return {
             **context,
-            'products_data': prepare_tile_products(self.products),
+            'products_data': prepare_tile_products(
+                self.products, self.product_pages
+            ),
             'sort': self.get_sorting_index(),
         }
 
@@ -440,7 +438,9 @@ class PaginationCategory(AbstractProductsListContext):
 
         return {
             **context,
-            'products_data': prepare_tile_products(self.products),
+            'products_data': prepare_tile_products(
+                self.products, self.product_pages
+            ),
             'total_products': total_products,
             'products_count': self.products_count,
             'paginated': paginated,

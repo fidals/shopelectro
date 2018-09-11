@@ -19,8 +19,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from shopelectro import context
-from shopelectro.models import Category, Product, Tag, TagGroup, TagQuerySet
+from shopelectro import context, models
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 from shopelectro.tests.helpers import create_doubled_tag
 
@@ -31,7 +30,7 @@ CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
 def reverse_catalog_url(
     url: str,
     route_kwargs: dict,
-    tags: TagQuerySet=None,
+    tags: models.TagQuerySet=None,
     sorting: int=None,
     query_string: dict=None,
 ) -> str:
@@ -60,13 +59,13 @@ class BaseCatalogTestCase(TestCase):
     fixtures = ['dump.json']
 
     def setUp(self):
-        self.category = Category.objects.root_nodes().select_related('page').first()
-        self.tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
+        self.category = models.Category.objects.root_nodes().select_related('page').first()
+        self.tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
     def get_category_page(
         self,
-        category: Category=None,
-        tags: TagQuerySet=None,
+        category: models.Category=None,
+        tags: models.TagQuerySet=None,
         sorting: int=None,
         query_string: dict=None,
     ):
@@ -80,13 +79,14 @@ class CatalogPage(BaseCatalogTestCase):
 
     def test_merge_product_cache(self):
         """Context merging should cached."""
-        products = Product.objects.all()[:2]
-        with self.assertNumQueries(8):
+        products = models.Product.objects.all()[:2]
+        product_pages = models.ProductPage.objects.all()
+        with self.assertNumQueries(5):
             # N db queries without before cached
-            context.prepare_tile_products(products)
+            context.prepare_tile_products(products, product_pages)
         with self.assertNumQueries(0):
             # no db queries after cached
-            context.prepare_tile_products(products)
+            context.prepare_tile_products(products, product_pages)
 
 
 class CatalogTags(BaseCatalogTestCase):
@@ -97,7 +97,7 @@ class CatalogTags(BaseCatalogTestCase):
 
         tags = set(chain.from_iterable(map(
             lambda x: x.tags.all(), (
-                Product.objects
+                models.Product.objects
                 .get_by_category(self.category)
                 .prefetch_related('tags')
             )
@@ -149,7 +149,7 @@ class CatalogTags(BaseCatalogTestCase):
 
         products_count = len(list(filter(
             lambda x: x.category.is_descendant_of(self.category),
-            Product.objects.filter(Q(tags=tags[0]) | Q(tags=tags[1]))
+            models.Product.objects.filter(Q(tags=tags[0]) | Q(tags=tags[1]))
         )))
 
         self.assertContains(response, products_count)
@@ -161,7 +161,7 @@ class CatalogTags(BaseCatalogTestCase):
         CategoryTagsPage with tags "Напряжение 6В" и "Напряжение 24В"
         should contain tag_titles var content: "6В или 24В".
         """
-        tag_group = TagGroup.objects.first()
+        tag_group = models.TagGroup.objects.first()
         tags = tag_group.tags.order_by(*settings.TAGS_ORDER).all()
         response = self.get_category_page(tags=tags)
         self.assertEqual(response.status_code, 200)
@@ -176,9 +176,9 @@ class CatalogTags(BaseCatalogTestCase):
         CategoryTagsPage with tags "Напряжение 6В" и "Cила тока 1А" should
         contain tag_titles var content: "6В и 1А".
         """
-        tag_groups = TagGroup.objects.order_by('position', 'name').all()
+        tag_groups = models.TagGroup.objects.order_by('position', 'name').all()
         tag_ids = [g.tags.first().id for g in tag_groups]
-        tags = Tag.objects.filter(id__in=tag_ids)
+        tags = models.Tag.objects.filter(id__in=tag_ids)
         response = self.get_category_page(tags=tags)
         self.assertEqual(response.status_code, 200)
         delimiter = settings.TAG_GROUPS_TITLE_DELIMITER
@@ -192,7 +192,7 @@ class CatalogTags(BaseCatalogTestCase):
         CategoryTagsPage should contain "tags" template var tag=each(tags) is Tag
         class instance.
         """
-        tags = Tag.objects.order_by(*settings.TAGS_ORDER).all()
+        tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
         response = self.get_category_page(tags=tags)
         self.assertEqual(response.status_code, 200)
         tag_names = ', '.join([t.name for t in tags])
@@ -202,7 +202,7 @@ class CatalogTags(BaseCatalogTestCase):
         """Category tags page filtered by the same tag from different tag groups."""
         tag_ = create_doubled_tag()
         response = self.get_category_page(
-            tags=Tag.objects.filter(id=tag_.id)
+            tags=models.Tag.objects.filter(id=tag_.id)
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, tag_.name)
@@ -211,7 +211,7 @@ class CatalogTags(BaseCatalogTestCase):
 
     def test_product_tag_linking(self):
         """Product should contain links on CategoryTagPage for it's every tag."""
-        product = Product.objects.first()
+        product = models.Product.objects.first()
         self.assertGreater(product.tags.count(), 0)
 
         property_links = [
@@ -226,7 +226,7 @@ class CatalogTags(BaseCatalogTestCase):
 
     def test_non_existing_tags_404(self):
         """Product should contain links on CategoryTagPage for it's every tag."""
-        product = Product.objects.first()
+        product = models.Product.objects.first()
         self.assertGreater(product.tags.count(), 0)
 
         bad_tag_url = reverse('category', kwargs={
@@ -319,12 +319,12 @@ class LoadMore(TestCase):
     DEFAULT_LIMIT = 48
 
     def setUp(self):
-        self.category = Category.objects.root_nodes().select_related('page').first()
+        self.category = models.Category.objects.root_nodes().select_related('page').first()
 
     def load_more(
         self,
-        category: Category=None,
-        tags: TagQuerySet=None,
+        category: models.Category=None,
+        tags: models.TagQuerySet=None,
         offset: int=0,
         # uncomment after implementation urls for load_more with pagination
         # limit: int=0,
@@ -346,7 +346,7 @@ class LoadMore(TestCase):
         self.assertEqual(get_page_number(self.load_more()), 1)
 
     def test_pagination_numbering_last_page(self):
-        offset = Product.objects.get_by_category(self.category).count() - 1
+        offset = models.Product.objects.get_by_category(self.category).count() - 1
         self.assertEqual(
             get_page_number(self.load_more(offset=offset)),
             offset // self.DEFAULT_LIMIT + 1,
@@ -483,7 +483,7 @@ class ProductPage(TestCase):
     fixtures = ['dump.json']
 
     def setUp(self):
-        self.product = Product.objects.first()
+        self.product = models.Product.objects.first()
 
     def test_orphan_product(self):
         self.product.category = None
@@ -524,7 +524,7 @@ class ProductPageSchema(TestCase):
         """Page of an product with stock > 0 has $schema_url/InStock link."""
         self.assertContains(
             self.client.get(
-                Product.objects.filter(in_stock__gt=0).first().url
+                models.Product.objects.filter(in_stock__gt=0).first().url
             ),
             f'{self.schema_url}/InStock',
         )
@@ -533,7 +533,7 @@ class ProductPageSchema(TestCase):
         """Page of an product with stock = 0 has $schema_url/PreOrder link."""
         self.assertContains(
             self.client.get(
-                Product.objects.filter(in_stock=0).first().url
+                models.Product.objects.filter(in_stock=0).first().url
             ),
             f'{self.schema_url}/PreOrder',
         )
