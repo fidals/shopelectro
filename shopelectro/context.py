@@ -257,7 +257,8 @@ class TaggedCategory(AbstractProductsListContext):
     def get_sorting_index(self):
         return int(self.url_kwargs.get('sorting', 0))
 
-    # TODO - move to property as in `products` case
+    # @todo #550:15m Move `TaggedCategory.get_tags` to property.
+    #  As in `products` property case.
     def get_tags(self) -> typing.Optional[TagQuerySet]:
         request_tags = self.url_kwargs.get('tags')
         if not request_tags:
@@ -378,7 +379,6 @@ class PaginationCategory(AbstractProductsListContext):
         mobile_view = get_user_agent(self.request).is_mobile
         return settings.PRODUCTS_ON_PAGE_MOB if mobile_view else settings.PRODUCTS_ON_PAGE_PC
 
-    # TODO - reload self.products
     def get_paginated_page_or_404(self, per_page, page_number) -> Paginator:
         try:
             return Paginator(self.all_products, per_page).page(page_number)
