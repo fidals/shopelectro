@@ -272,13 +272,16 @@ class CatalogPagination(BaseCatalogTestCase):
             page_number,
         )
 
-    def get_category_soup(self, page_number: int, required_status=200) -> BeautifulSoup:
+    def get_category_soup(self, page_number: int) -> BeautifulSoup:
         category_page = self.get_category_page(query_string={'page': page_number})
-        assert category_page.status_code == required_status
         return BeautifulSoup(
             category_page.content.decode('utf-8'),
             'html.parser'
         )
+
+    def test_category_200(self):
+        category_page = self.get_category_page()
+        assert category_page.status_code == 200
 
     def test_numbered_pagination_links(self):
         """Forward to numbered pagination pages."""
