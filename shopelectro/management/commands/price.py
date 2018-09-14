@@ -92,7 +92,7 @@ class Command(BaseCommand):
             )
             return product
 
-        def put_brands(product, brands):
+        def put_brand(product, brands):
             product.brand = brands.get(product)
             return product
 
@@ -125,7 +125,7 @@ class Command(BaseCommand):
             )
             brands = Tag.objects.get_brands(products)
             return [
-                put_brands(put_crumbs(put_utm(product)), brands)
+                put_brand(put_crumbs(put_utm(product)), brands)
                 for product in products
             ]
 

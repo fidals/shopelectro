@@ -254,7 +254,7 @@ class GeneratePrices(TestCase):
         )
 
     def test_brands(self):
-        """Prices contain brand data."""
+        """Price contains brand data."""
         for price in settings.UTM_PRICE_MAP.values():
             offer = self.get_price_offers_node(price).find('offer')
             product = Product.objects.filter(id=offer.get('id')).first()
