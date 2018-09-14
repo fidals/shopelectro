@@ -252,3 +252,13 @@ class GeneratePrices(TestCase):
             len(products_in_yandex_price),
             Product.objects.filter(page__images__isnull=False).distinct().count()
         )
+
+    def test_brands(self):
+        """Price contains brand data."""
+        for price in settings.UTM_PRICE_MAP.values():
+            offer = self.get_price_offers_node(price).find('offer')
+            product = Product.objects.filter(id=offer.get('id')).first()
+            self.assertEqual(
+                product.get_brand_name(),
+                offer.find(f'vendor').text,
+            )
