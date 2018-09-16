@@ -216,6 +216,7 @@ class Tag(caTag):
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
 
+
 class ExcludedModelTPageManager(PageManager):
 
     def get_queryset(self):

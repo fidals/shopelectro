@@ -199,7 +199,6 @@ class AbstractProductsListContext(AbstractPageContext, ABC):
         self.products_ = products
         self.product_pages_ = product_pages
 
-
     @property
     def product_pages(self) -> QuerySet:
         return self.product_pages_ or self.super.product_pages
