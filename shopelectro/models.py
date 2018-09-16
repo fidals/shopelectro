@@ -20,6 +20,8 @@ from catalog.models import (
     ProductActiveManager,
     ProductManager,
     TagGroup as caTagGroup,
+    Tag as caTag,
+    TagQuerySet as caTagQuerySet,
 )
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
@@ -202,141 +204,17 @@ class ProductPage(ModelPage):
 
 
 class TagGroup(caTagGroup):
-
-    def __str__(self):
-        return self.name
+    pass
 
 
-class TagQuerySet(models.QuerySet):
-
-    def filter_by_products(self, products: typing.List[Product]):
-        ordering = settings.TAGS_ORDER
-        distinct = [order.lstrip('-') for order in ordering]
-
-        return (
-            self
-            .filter(products__in=products)
-            .order_by(*ordering)
-            .distinct(*distinct, 'id')
-        )
-
-    def get_group_tags_pairs(self) -> typing.List[typing.Tuple[TagGroup, typing.List['Tag']]]:
-        grouped_tags = groupby(self.prefetch_related('group'), key=attrgetter('group'))
-        return [
-            (group, list(tags_))
-            for group, tags_ in grouped_tags
-        ]
-
-    def get_brands(self, products: typing.List[Product]) -> typing.Dict[Product, 'Tag']:
-        brand_tags = (
-            self.filter(group__name=settings.BRAND_TAG_GROUP_NAME)
-            .prefetch_related('products')
-            .select_related('group')
-        )
-
-        return {
-            product: brand
-            for brand in brand_tags for product in products
-            if product in brand.products.all()
-        }
-
-    def as_string(  # Ignore PyDocStyleBear
-        self,
-        field_name: str,
-        type_delimiter: str,
-        group_delimiter: str,
-    ) -> str:
-        """
-        :param field_name: Only field's value is used to represent tag as string.
-        :param type_delimiter:
-        :param group_delimiter:
-        :return:
-        """
-        if not self:
-            return ''
-
-        group_tags_map = self.get_group_tags_pairs()
-
-        _, tags_by_group = zip(*group_tags_map)
-
-        return group_delimiter.join(
-            type_delimiter.join(getattr(tag, field_name) for tag in tags_list)
-            for tags_list in tags_by_group
-        )
-
-    def as_title(self) -> str:
-        return self.as_string(
-            field_name='name',
-            type_delimiter=settings.TAGS_TITLE_DELIMITER,
-            group_delimiter=settings.TAG_GROUPS_TITLE_DELIMITER
-        )
-
-    def as_url(self) -> str:
-        return self.as_string(
-            field_name='slug',
-            type_delimiter=settings.TAGS_URL_DELIMITER,
-            group_delimiter=settings.TAG_GROUPS_URL_DELIMITER
-        )
+class TagQuerySet(caTagQuerySet):
+    pass
 
 
-class TagManager(models.Manager.from_queryset(TagQuerySet)):
-
-    def get_queryset(self):
-        return (
-            super().get_queryset()
-            .order_by(*settings.TAGS_ORDER)
-        )
-
-    def get_group_tags_pairs(self):
-        return self.get_queryset().get_group_tags_pairs()
-
-    def filter_by_products(self, products):
-        return self.get_queryset().filter_by_products(products)
-
-    def get_brands(self, products):
-        """Get a batch of products' brands."""
-        return self.get_queryset().get_brands(products)
-
-
-class Tag(models.Model):
-
-    # Uncomment it after moving to refarm with rf#162
-    # class Meta:
-    #     unique_together = ('name', 'group')
-
-    objects = TagManager()
-
-    uuid = models.UUIDField(default=uuid4, editable=False)
-    name = models.CharField(
-        max_length=100, db_index=True, verbose_name=_('name'))
-    position = models.PositiveSmallIntegerField(
-        default=0, blank=True, db_index=True, verbose_name=_('position'),
-    )
-
-    # Set it as unique with rf#162
-    slug = models.SlugField(default='')
-
+class Tag(caTag):
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            # same slugify code used in PageMixin object
-            self.slug = slugify(
-                unidecode(self.name.replace('.', '-').replace('+', '-'))
-            )
-        doubled_tag_qs = self.__class__.objects.filter(slug=self.slug)
-        if doubled_tag_qs:
-            self.slug = randomize_slug(self.slug)
-        super(Tag, self).save(*args, **kwargs)
-
-    @staticmethod
-    def parse_url_tags(tags: str) -> list:
-        groups = tags.split(settings.TAGS_URL_DELIMITER)
-        return set(chain.from_iterable(
-            group.split(settings.TAG_GROUPS_URL_DELIMITER) for group in groups
-        ))
 
 
 class ExcludedModelTPageManager(PageManager):

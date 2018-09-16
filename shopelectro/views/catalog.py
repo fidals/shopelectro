@@ -67,7 +67,8 @@ class ProductPage(catalog.ProductPage):
             'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': product.get_params(),
             'tile_products': context.prepare_tile_products(
-                product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT)
+                product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
+                models.ProductPage.objects.all()
             ),
         }
 
@@ -87,7 +88,8 @@ class ProductPage(catalog.ProductPage):
                 tile_products=context.prepare_tile_products(
                     inactive_product.get_siblings(
                         offset=settings.PRODUCT_SIBLINGS_COUNT
-                    )
+                    ),
+                    models.ProductPage.objects.all()
                 ),
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
@@ -112,7 +114,10 @@ class IndexPage(pages_views.CustomPageView):
                 .prefetch_related('category')
                 .select_related('page')
             )
-            tile_products = context.prepare_tile_products(top_products)
+            tile_products = context.prepare_tile_products(
+                top_products,
+                models.ProductPage.objects.all()
+            )
 
         return {
             **context_,
@@ -128,9 +133,13 @@ class CategoryPage(catalog.CategoryPage):
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
         context_ = (
-            context.Category(self.kwargs, self.request)
-            | context.TaggedCategory()
-            | context.SortingCategory()
+            context.Category(
+                self.kwargs, self.request,
+                models.Product.objects.all(),
+                models.ProductPage.objects.all(),
+            )
+            | context.TaggedCategory(tags=models.Tag.objects.all())
+            | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
             | context.DBTemplate()  # requires TaggedCategory
         )
@@ -195,7 +204,9 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     view = request.session.get('view_type', 'tile')
 
     return render(request, 'catalog/category_products.html', {
-        'products_data': context.prepare_tile_products(products),
+        'products_data': context.prepare_tile_products(
+            products, models.ProductPage.objects.all()
+        ),
         'paginated': paginated,
         'paginated_page': paginated_page,
         'view_type': view,

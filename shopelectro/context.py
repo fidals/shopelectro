@@ -17,20 +17,22 @@ Code example to create tagged category:
 >>> Category(url_kwargs, request=HttpRequest()) | TaggedCategory()
 """
 
+# @todo #550:60m Move context module to refarm.catalog app
+
 import typing
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from functools import lru_cache, partial
 
 from django import http
-from django.db.models import QuerySet
 from django.conf import settings
+from django.db.models import QuerySet
 from django.core.paginator import Paginator, InvalidPage
 from django_user_agents.utils import get_user_agent
 
+from catalog.models import ProductQuerySet, Tag, TagQuerySet
 from images.models import Image
 from pages.models import ModelPage
-
-from shopelectro import models
 
 
 class SortingOption:
@@ -82,18 +84,22 @@ class PaginatorLinks:
 
 # @todo #550:30m Split to ProductImagesContext and ProductBrandContext
 @lru_cache(maxsize=64)
-def prepare_tile_products(products: QuerySet):
-    assert isinstance(products, QuerySet)
+def prepare_tile_products(
+    products: ProductQuerySet, product_pages: QuerySet, tags: TagQuerySet=None
+):
+    # @todo #550:60m Move prepare_tile_products func to context
+    #  Now it's separated function with huge of inconsistent queryset deps.
+    assert isinstance(products, ProductQuerySet)
 
     images = Image.objects.get_main_images_by_pages(
-        models.ProductPage.objects.filter(shopelectro_product__in=products)
+        product_pages.filter(shopelectro_product__in=products)
     )
 
     brands = (
-        models.Tag.objects
+        tags
         .filter_by_products(products)
         .get_brands(products)
-    )
+    ) if tags else defaultdict(lambda: None)
 
     return [
         (product, images.get(product.page), brands.get(product))
@@ -177,18 +183,40 @@ class AbstractProductsListContext(AbstractPageContext, ABC):
 
     super: 'AbstractProductsListContext' = None
 
+    def __init__(  # Ignore PyDocStyleBear
+        self,
+        url_kwargs: typing.Dict[str, str]=None,
+        request: http.HttpRequest=None,
+        products: ProductQuerySet=None,
+        product_pages: QuerySet=None,
+    ):
+        """
+        :param url_kwargs: Came from `urls` module.
+        :param request: Came from `urls` module.
+        :param products: Every project provides products from DB.
+        """
+        super().__init__(url_kwargs, request)
+        self.products_ = products
+        self.product_pages_ = product_pages
+
     @property
-    def products(self) -> QuerySet:
+    def product_pages(self) -> QuerySet:
+        return self.product_pages_ or self.super.product_pages
+
+    @property
+    def products(self) -> ProductQuerySet:
         if self.super:
             return self.super.products
+        elif self.products_:
+            return self.products_
         else:
-            raise NotImplementedError
+            raise NotImplementedError('Set products queryset')
 
 
 class Category(AbstractProductsListContext):
     @property
-    def products(self) -> QuerySet:
-        return models.Product.actives.get_category_descendants(
+    def products(self) -> ProductQuerySet:
+        return super().products.active().get_category_descendants(
             self.page.model
         )
 
@@ -198,15 +226,8 @@ class Category(AbstractProductsListContext):
         #  Depends on updating to python3.7
         view_type = self.request.session.get('view_type', 'tile')
 
-        group_tags_pairs = (
-            models.Tag.objects
-            .filter_by_products(self.products)
-            .get_group_tags_pairs()
-        )
-
         return {
-            'products_data': prepare_tile_products(self.products),
-            'group_tags_pairs': group_tags_pairs,
+            'products_data': prepare_tile_products(self.products, self.product_pages),
             # can be `tile` or `list`. Defines products list layout.
             'view_type': view_type,
         }
@@ -214,16 +235,38 @@ class Category(AbstractProductsListContext):
 
 class TaggedCategory(AbstractProductsListContext):
 
+    def __init__(  # Ignore PyDocStyleBear
+        self,
+        url_kwargs: typing.Dict[str, str]=None,
+        request: http.HttpRequest=None,
+        products: ProductQuerySet=None,
+        tags: TagQuerySet=None
+    ):
+        """
+        :param url_kwargs: Came from `urls` module.
+        :param request: Came from `urls` module.
+        :param products: Every project provides products from DB.
+        :param tags: Every project provides tags from DB.
+        """
+        super().__init__(url_kwargs, request, products)
+        # it's not good. Arg should not be default.
+        # That's how we'll prevent assertion.
+        # But we'll throw away inheritance in se#567.
+        assert tags, 'tags is required arg'
+        self.tags_ = tags
+
     def get_sorting_index(self):
         return int(self.url_kwargs.get('sorting', 0))
 
-    def get_tags(self) -> typing.Optional[models.TagQuerySet]:
+    # @todo #550:15m Move `TaggedCategory.get_tags` to property.
+    #  As in `products` property case.
+    def get_tags(self) -> typing.Optional[TagQuerySet]:
         request_tags = self.url_kwargs.get('tags')
         if not request_tags:
             return None
 
-        slugs = models.Tag.parse_url_tags(request_tags)
-        tags = models.Tag.objects.filter(slug__in=slugs)
+        slugs = Tag.parse_url_tags(request_tags)
+        tags = self.tags_.filter(slug__in=slugs)
         if not tags:
             raise http.Http404('No such tag.')
         return tags
@@ -242,15 +285,28 @@ class TaggedCategory(AbstractProductsListContext):
                 # @todo #550:60m Try to rm sorting staff from context.TaggedCategory.
                 #  Or explain again why it's impossible. Now it's not clear from comment.
                 .distinct(sorting_option.field)
+                .order_by(sorting_option.field)
             )
         return products
 
     def get_context_data(self):
         context = self.super.get_context_data()
         tags = self.get_tags()
+        group_tags_pairs = (
+            self.tags_
+            .filter_by_products(self.products)
+            .get_group_tags_pairs()
+        )
         return {
             **context,
             'tags': tags,
+            'group_tags_pairs': group_tags_pairs,
+            'products_data': prepare_tile_products(
+                self.products,
+                self.product_pages,
+                # requires all tags, not only selected
+                self.tags_
+            ),
             # Category's canonical link is `category.page.get_absolute_url`.
             # So, this link always contains no tags.
             # That's why we skip canonical link on tagged category page.
@@ -301,7 +357,7 @@ class SortingCategory(AbstractProductsListContext):
         return int(self.url_kwargs.get('sorting', 0))
 
     @property
-    def products(self) -> QuerySet:
+    def products(self) -> ProductQuerySet:
         sorting_index = int(self.url_kwargs.get('sorting', 0))
         sorting_option = SortingOption(index=sorting_index)
         return self.super.products.order_by(sorting_option.directed_field)
@@ -310,7 +366,9 @@ class SortingCategory(AbstractProductsListContext):
         context = self.super.get_context_data()
         return {
             **context,
-            'products_data': prepare_tile_products(self.products),
+            'products_data': prepare_tile_products(
+                self.products, self.product_pages
+            ),
             'sort': self.get_sorting_index(),
         }
 
@@ -322,45 +380,70 @@ class PaginationCategory(AbstractProductsListContext):
         mobile_view = get_user_agent(self.request).is_mobile
         return settings.PRODUCTS_ON_PAGE_MOB if mobile_view else settings.PRODUCTS_ON_PAGE_PC
 
-    def get_paginated_page_or_404(self, per_page, page_number):
+    def get_paginated_page_or_404(self, per_page, page_number) -> Paginator:
         try:
-            return Paginator(self.products, per_page).page(page_number)
+            return Paginator(self.all_products, per_page).page(page_number)
         except InvalidPage:
             raise http.Http404('Page does not exist')
 
-    def get_context_data(self):
-        context = self.super.get_context_data()
-        products_on_page = int(self.request.GET.get(
+    @property
+    def products_on_page(self):
+        return int(self.request.GET.get(
             'step', self.get_products_count(),
         ))
-        page_number = int(self.request.GET.get('page', 1))
 
+    @property
+    def page_number(self):
+        return int(self.request.GET.get('page', 1))
+
+    @property
+    def all_products(self) -> ProductQuerySet:
+        return self.super.products
+
+    @property
+    def products(self) -> ProductQuerySet:
+        """Only products for current page."""
+        paginated_page = self.get_paginated_page_or_404(
+            self.products_on_page, self.page_number
+        )
+        # it's queryset, but it's sliced
+        products: ProductQuerySet = paginated_page.object_list
+        return products
+
+    @property
+    def products_count(self):
+        return (self.page_number - 1) * self.products_on_page + self.products.count()
+
+    def check_pagination_args(self):
         if (
-            page_number < 1 or
-            products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS
+            self.page_number < 1 or
+            self.products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS
         ):
             raise http.Http404('Page does not exist.')  # Ignore CPDBear
 
-        paginated_page = self.get_paginated_page_or_404(
-            products_on_page, page_number
-        )
-        total_products = self.products.count()
-        products = paginated_page.object_list
-        if not products:
+    def get_context_data(self):
+        context = self.super.get_context_data()
+        self.check_pagination_args()
+
+        if not self.products:
             raise http.Http404('Page without products does not exist.')
 
         paginated = PaginatorLinks(
-            page_number,
+            self.page_number,
             self.request.path,
-            Paginator(self.products, products_on_page)
+            Paginator(self.all_products, self.products_on_page)
         )
         paginated_page = paginated.page()
 
+        total_products = self.all_products.count()
+
         return {
             **context,
-            'products_data': prepare_tile_products(products),
+            'products_data': prepare_tile_products(
+                self.products, self.product_pages
+            ),
             'total_products': total_products,
-            'products_count': (page_number - 1) * products_on_page + products.count(),
+            'products_count': self.products_count,
             'paginated': paginated,
             'paginated_page': paginated_page,
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
