@@ -19,7 +19,9 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from shopelectro import context, models
+from catalog import context
+
+from shopelectro import models
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 from shopelectro.tests.helpers import create_doubled_tag
 
