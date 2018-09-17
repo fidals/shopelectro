@@ -7,10 +7,11 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
+from catalog import context
 from catalog.views import catalog
 from pages import views as pages_views
 
-from shopelectro import context, models
+from shopelectro import models
 from shopelectro.views.helpers import set_csrf_cookie
 
 PRODUCTS_ON_PAGE_PC = 48

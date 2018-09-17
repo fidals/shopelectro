@@ -1,17 +1,13 @@
 import random
 import string
-from itertools import chain, groupby
-from operator import attrgetter
 import typing
 from uuid import uuid4
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from mptt.querysets import TreeQuerySet
-from unidecode import unidecode
 
 from catalog.models import (
     AbstractCategory,
