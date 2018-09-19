@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
@@ -18,9 +20,13 @@ class OrderPage(ec_views.OrderPage):
     cart = SECart
 
     def get_context_data(self, request, **kwargs):
+        data = super().get_context_data(request, **kwargs)
         return {
-            **super(OrderPage, self).get_context_data(request, **kwargs),
+            **data,
             'page': CustomPage.objects.get(slug='order'),
+            'order_fields': json.dumps({
+                field.html_name: f'#{field.id_for_label}' for field in data['form']
+            }),
         }
 
 
@@ -108,8 +114,7 @@ class YandexOrder(OrderPage):
 
     def post(self, request):
         cart = self.cart(request.session)
-        form = self.order_form(request.POST.dict())
-
+        form = self.order_form(request.POST)
         if not form.is_valid():
             return render(request, self.template, {'cart': cart, 'form': form})
 

@@ -12,12 +12,7 @@
     remove: '.js-remove',
     paymentOptions: 'input[name=payment_type]',
     defaultPaymentOptions: 'input[for=id_payment_type_0]',
-    orderForm: {
-      name: '#id_name',
-      phone: '#id_phone',
-      email: '#id_email',
-      city: '#id_city',
-    },
+    orderForm: $('#order-form-full').data('fields'),
   };
 
   const config = {
@@ -159,14 +154,11 @@
    * Return hash with customer's info from form.
    */
   const getOrderInfo = () => {
-    const orderInfo = {
-      payment_type: getSelectedPayment(),
-    };
-
-    $.each(DOM.orderForm, (name, field) => {
-      orderInfo[name] = $(field).val();
-    });
-
+    const orderInfo = Object.keys(DOM.orderForm).reduce((acc, key) => {
+      acc[key] = $(DOM.orderForm[key]).val();
+      return acc;
+    }, {});
+    orderInfo['payment_type'] = getSelectedPayment();
     return orderInfo;
   };
 
