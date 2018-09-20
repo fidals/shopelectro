@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.redirects.models import Redirect
@@ -238,9 +239,12 @@ class OrderAdmin(mixins.PermissionsControl):
 
     add = False
     inlines = [PositionInline]
-    list_display = ['id', 'name', 'email', 'phone', 'total_price', 'payment_type', 'paid']
+    list_display = ['id_', 'name', 'email', 'phone', 'total_price', 'payment_type', 'paid']
     search_fields = ['name', 'email', 'phone']
     list_display_links = ['name']
+
+    def id_(self, obj):
+        return obj.id + settings.FAKE_ORDER_NUMBER
 
 
 se_admin = SEAdminSite(name='se_admin')
