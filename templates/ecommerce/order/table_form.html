@@ -74,7 +74,7 @@
     </div>
   </div>
 
-  <form class="order-form" id="order-form-full" method="post" data-fields="{{ order_fields }}">
+  <form class="order-form" id="order-form-full" method="post" data-fields="{{ raw_order_fields }}">
     {% csrf_token %}
     <div class="order-info">
       <div class="order-payment-types">

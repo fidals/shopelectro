@@ -24,7 +24,7 @@ class OrderPage(ec_views.OrderPage):
         return {
             **data,
             'page': CustomPage.objects.get(slug='order'),
-            'order_fields': json.dumps({
+            'raw_order_fields': json.dumps({
                 field.html_name: f'#{field.id_for_label}' for field in data['form']
             }),
         }
