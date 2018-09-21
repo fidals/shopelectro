@@ -158,7 +158,7 @@
       acc[key] = $(DOM.orderFieldData[key]).val();
       return acc;
     }, {});
-    orderInfo['payment_type'] = getSelectedPayment();
+    orderInfo.payment_type = getSelectedPayment();
     return orderInfo;
   };
 
