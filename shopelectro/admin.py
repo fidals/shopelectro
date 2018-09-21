@@ -244,7 +244,7 @@ class OrderAdmin(mixins.PermissionsControl):
     list_display_links = ['name']
 
     def id_(self, obj):
-        return obj.id + settings.FAKE_ORDER_NUMBER
+        return obj.fake_order_number
 
 
 se_admin = SEAdminSite(name='se_admin')
