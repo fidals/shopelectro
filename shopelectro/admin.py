@@ -238,9 +238,12 @@ class OrderAdmin(mixins.PermissionsControl):
 
     add = False
     inlines = [PositionInline]
-    list_display = ['id', 'name', 'email', 'phone', 'total_price', 'payment_type', 'paid']
+    list_display = ['id_', 'name', 'email', 'phone', 'total_price', 'payment_type', 'paid']
     search_fields = ['name', 'email', 'phone']
     list_display_links = ['name']
+
+    def id_(self, obj):
+        return obj.fake_order_number
 
 
 se_admin = SEAdminSite(name='se_admin')
