@@ -12,12 +12,7 @@
     remove: '.js-remove',
     paymentOptions: 'input[name=payment_type]',
     defaultPaymentOptions: 'input[for=id_payment_type_0]',
-    orderForm: {
-      name: '#id_name',
-      phone: '#id_phone',
-      email: '#id_email',
-      city: '#id_city',
-    },
+    orderFieldData: $('#order-form-full').data('fields'),
   };
 
   const config = {
@@ -68,7 +63,7 @@
     const autocompleteItem = new google.maps.places.Autocomplete(cityField, config.autocomplete);
 
     google.maps.event.addListener(autocompleteItem, 'place_changed', () => {
-      storeInput($(DOM.orderForm.city));
+      storeInput($(DOM.orderFieldData.city));
     });
   }
 
@@ -86,8 +81,8 @@
   function fillSavedInputs() {
     const getFieldByName = name => $(`#id_${name}`);
 
-    for (const fieldName in DOM.orderForm) {  // Ignore ESLintBear (no-restricted-syntax)
-      if ({}.hasOwnProperty.call(DOM.orderForm, fieldName)) {
+    for (const fieldName in DOM.orderFieldData) {  // Ignore ESLintBear (no-restricted-syntax)
+      if ({}.hasOwnProperty.call(DOM.orderFieldData, fieldName)) {
         const $field = getFieldByName(fieldName);
         const savedValue = localStorage.getItem(fieldName);
 
@@ -159,14 +154,11 @@
    * Return hash with customer's info from form.
    */
   const getOrderInfo = () => {
-    const orderInfo = {
-      payment_type: getSelectedPayment(),
-    };
-
-    $.each(DOM.orderForm, (name, field) => {
-      orderInfo[name] = $(field).val();
-    });
-
+    const orderInfo = Object.keys(DOM.orderFieldData).reduce((acc, key) => {
+      acc[key] = $(DOM.orderFieldData[key]).val();
+      return acc;
+    }, {});
+    orderInfo.payment_type = getSelectedPayment();
     return orderInfo;
   };
 
