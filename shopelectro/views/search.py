@@ -26,7 +26,7 @@ class Search(search_views.SearchView):
         ),
         search_engine.Search(
             name='page',
-            qs=ExcludedModelTPage.objects.get_active(),
+            qs=ExcludedModelTPage.actives.all(),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
@@ -55,7 +55,7 @@ class Autocomplete(search_views.AutocompleteView):
         ),
         search_engine.Search(
             name='pages',
-            qs=ExcludedModelTPage.objects.get_active(),
+            qs=ExcludedModelTPage.actives.all(),
             fields=['name'],
             template_fields=['name', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
@@ -83,7 +83,7 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
         ),
         search_engine.Search(
             name='pages',
-            qs=ExcludedModelTPage.objects.get_active(),
+            qs=ExcludedModelTPage.actives.all(),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
