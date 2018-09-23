@@ -20,7 +20,7 @@ from catalog.models import (
     TagQuerySet as caTagQuerySet,
 )
 from ecommerce.models import Order as ecOrder
-from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
+from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager, PageQuerySet
 
 
 def randomize_slug(slug: str) -> str:
@@ -213,12 +213,28 @@ class Tag(caTag):
     )
 
 
-class ExcludedModelTPageManager(PageManager):
+class ExcludedModelTPageQuerySet(PageQuerySet):
+    def exclude_type(self):
+        return self.exclude(type=Page.MODEL_TYPE)
+
+
+class ExcludedModelTPageManager(
+    models.Manager.from_queryset(ExcludedModelTPageQuerySet)
+):
 
     def get_queryset(self):
-        return super().get_queryset().exclude(type=Page.MODEL_TYPE)
+        return super().get_queryset().exclude_type()
 
 
+# @todo #rf169:30m Fix model.Manager bad inheritance
+#  Now we have this problem:
+#  ```
+#  In [2]: type(ExcludedModelTPage.objects.all())
+#  Out[2]: mptt.querysets.TreeQuerySet
+#  ```
+#  But should be `pages.models.PageQuerySet`.
+#  Or just rm all excluded staff
+#  in favor on direct excluded filter using.
 class ExcludedModelTPage(Page):
 
     class Meta(Page.Meta):  # Ignore PycodestyleBear (E303)
