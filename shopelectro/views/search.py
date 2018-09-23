@@ -48,7 +48,7 @@ class Autocomplete(search_views.AutocompleteView):
         ),
         search_engine.Search(
             name='product',
-            qs=Product.actives.all(),
+            qs=Product.objects.active(),
             fields=['name', 'id', 'vendor_code'],
             template_fields=['name', 'price', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,

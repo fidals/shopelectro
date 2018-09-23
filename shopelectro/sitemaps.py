@@ -80,4 +80,4 @@ class ProductSitemap(AbstractSitemap):
 class PagesSitemap(AbstractSitemap):
 
     def items(self):
-        return Page.actives.all()
+        return Page.objects.active()

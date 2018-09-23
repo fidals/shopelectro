@@ -178,7 +178,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     category = get_object_or_404(models.CategoryPage, slug=category_slug).model
     sorting_option = context.SortingOption(index=int(sorting))
 
-    all_products = models.Product.actives.get_category_descendants(
+    all_products = models.Product.objects.active().get_category_descendants(
         category, ordering=(sorting_option.directed_field,)
     )
 
