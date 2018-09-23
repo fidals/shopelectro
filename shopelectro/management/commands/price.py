@@ -121,7 +121,7 @@ class Command(BaseCommand):
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
             products = PriceFilter(utm).run(
-                Product.actives.filter_by_categories(categories_)
+                Product.objects.active()filter_by_categories(categories_)
             )
             brands = Tag.objects.get_brands(products)
             return [
