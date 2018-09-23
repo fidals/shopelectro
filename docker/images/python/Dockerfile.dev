@@ -2,9 +2,8 @@ FROM python:3.7-slim
 
 RUN apt-get update \
     # wget is needed for working with ftp
-    # git is needed for pip
-    && apt-get install --no-install-recommends --no-install-suggests -y wget git make \
-    && apt-get remove --purge -y git \
+    # netcat is needed for waiting of postgres at `dc up -d app`
+    && apt-get install --no-install-recommends --no-install-suggests -y wget netcat \
     && apt-get -y --purge autoremove \
     && rm -rf /var/lib/apt/lists/*
 

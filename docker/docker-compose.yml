@@ -18,8 +18,7 @@ services:
       - $VIRTUAL_HOST_LIVESERVER_PORT
     networks:
       - se-backend
-      - se-frontend
-    command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
+    command: ./docker/wait-for.sh postgres:5432 -- python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
 
   app-drone:
     extends: app-base
@@ -66,8 +65,6 @@ services:
       - env_files/credentials
     networks:
       - se-backend
-    volumes:
-      - $POSTGRES_DATA_DIR:/var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:management-alpine
@@ -142,4 +139,3 @@ services:
 
 networks:
   se-backend:
-  se-frontend:

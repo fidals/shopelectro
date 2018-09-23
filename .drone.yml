@@ -121,16 +121,18 @@ pipeline:
     commands:
       - cd docker
       - cp drone_env/* env_files/
-      - cp drone_env/.env .
+      - for x in drone_env/*; do cat $x >> .env; done;
       - docker-compose up -d app-drone
-      - docker-compose logs app-drone
-      # @todo #517:60m Fill drone-sided app with data.
-      #  Do migrate and fixtures load.
-      #  Currently we faced with issues here:
-      #  https://ci.fidals.com/fidals/shopelectro/721/3
-      #  Then try to resurrect health check.
+      - docker-compose exec -T app-drone docker/wait-for.sh postgres:5432 -- python manage.py migrate
+      - docker-compose exec -T app-drone python manage.py custom_pages
+      # - docker-compose exec -T app-drone docker/wait-for.sh localhost:8000 -- docker/check-health.sh localhost:8000
 
-#      - docker-compose exec -T app-drone bash -c "./docker/check-health.sh http://0.0.0.0:8000/"
+      # @todo #534:60m Fix CI's error for docker-up pipe.
+      #  Any of below commands returns this: "/bin/sh: syntax error: unterminated quoted string"
+      #  docker-compose exec -T app-drone nc -z google.com 80 > /dev/null 2>&1
+      #  docker-compose exec -T app-drone wget google.com
+      #  docker-compose exec -T app-drone docker/check-health.sh localhost:8000
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
@@ -140,9 +142,7 @@ pipeline:
     image: docker/compose:1.22.0
     commands:
       - cd docker
-      - cp drone_env/* env_files/
-      - cp drone_env/.env .
-      - docker-compose logs app
+      - docker-compose logs app-drone
       - docker-compose rm -fs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
