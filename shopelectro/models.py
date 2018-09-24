@@ -13,7 +13,6 @@ from catalog.models import (
     AbstractCategory,
     AbstractProduct,
     CategoryManager,
-    ProductActiveManager,
     ProductManager,
     TagGroup as caTagGroup,
     Tag as caTag,
@@ -69,7 +68,6 @@ class Product(AbstractProduct, SyncPageMixin):
     # because of Django special managers behaviour.
     # Se se#480 for details.
     objects = ProductManager()
-    actives = ProductActiveManager()
 
     category = models.ForeignKey(
         Category,
