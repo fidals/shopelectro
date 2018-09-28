@@ -7,7 +7,7 @@ workspace:
 
 pipeline:
 
-  nodejs-build:  # with `npm install` inside
+  build-nodejs:  # with `npm install` inside
     image: docker/compose:1.22.0
     commands:
       - cd docker/
@@ -21,7 +21,7 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  gulp-build:
+  build-static:
     image: fidals/se-nodejs:dev
     environment:
       # deps from nodejs image
@@ -32,7 +32,7 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  python-build:
+  build-python:
     image: docker/compose:1.22.0
     commands:
       - cd docker/
@@ -98,7 +98,7 @@ pipeline:
     when:
       event: pull_request
 
-  docker-push:
+  push-images:
     image: docker:latest
     environment:
       - DOCKER_HUB_LOGIN=${DOCKER_HUB_LOGIN}
@@ -114,7 +114,14 @@ pipeline:
       event: push
     secrets: [ DOCKER_HUB_LOGIN, DOCKER_HUB_PASSWORD ]
 
-  docker-up:
+  copy-drone-env:
+    image: debian:latest
+    commands:
+      - cd docker
+      - cp drone_env/* env_files/
+      - for x in drone_env/*; do cat $x >> .env; done;
+
+  test-docker-compose:
     image: docker/compose:1.22.0
     environment:
       - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
@@ -124,8 +131,6 @@ pipeline:
       - COMPOSE_INTERACTIVE_NO_CLI=1
     commands:
       - cd docker
-      - cp drone_env/* env_files/
-      - for x in drone_env/*; do cat $x >> .env; done;
       - docker-compose up -d app-drone
       # wait postgres, apply migrations, create custom pages to reach "/" page
       - docker-compose exec -T app-drone docker/wait-for.sh postgres:5432
@@ -138,7 +143,7 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  docker-rm:
+  cleanup:
     image: docker/compose:1.22.0
     commands:
       - cd docker
