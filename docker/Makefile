@@ -62,6 +62,9 @@ lint:
 	$(MAKE) lint-code
 	$(MAKE) lint-pdd
 
+upd-dev:
+	$(dc) up -d app
+
 deploy-dev:
 	$(MAKE) create-env
 	$(MAKE) create-config
@@ -74,7 +77,7 @@ deploy-dev:
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(MAKE) collectstatic
     # to make fresh collected static visible immediately
-	$(dc) stop app && $(dc) up -d app
+	$(dc) stop app && $(MAKE) upd-dev
 
 
 # ---------------------- Production deploy section ----------------------

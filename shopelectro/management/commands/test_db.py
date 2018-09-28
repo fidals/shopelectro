@@ -145,6 +145,8 @@ class Command(BaseCommand):
             create_image(file_path=self.SECOND_IMAGE, slug='gold')
 
         def create_product(parent: se_models.Category, tags_, price_factor):
+            # @todo @589:15m Fill the purchase_price field for fixture's products.
+            #  It is required to improve tests_models.ProductModel.test_products_revenue test.
             product = se_models.Product.objects.create(
                 id=self.product_id,
                 # vendor_code should be differ from id for tests.

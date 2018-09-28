@@ -9,16 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from mptt.querysets import TreeQuerySet
 
-from catalog.models import (
-    AbstractCategory,
-    AbstractProduct,
-    CategoryManager,
-    ProductActiveManager,
-    ProductManager,
-    TagGroup as caTagGroup,
-    Tag as caTag,
-    TagQuerySet as caTagQuerySet,
-)
+from catalog import models as ca_models
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
 
@@ -41,11 +32,11 @@ class SECategoryQuerySet(TreeQuerySet):
         return categories_with_pictures.get_ancestors(include_self=True)
 
 
-class SECategoryManager(CategoryManager.from_queryset(SECategoryQuerySet)):
+class SECategoryManager(ca_models.CategoryManager.from_queryset(SECategoryQuerySet)):
     pass
 
 
-class Category(AbstractCategory, SyncPageMixin):
+class Category(ca_models.AbstractCategory, SyncPageMixin):
 
     objects = SECategoryManager()
     uuid = models.UUIDField(default=uuid4, editable=False)
@@ -63,13 +54,25 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class Product(AbstractProduct, SyncPageMixin):
+class ProductQuerySet(ca_models.ProductQuerySet):
+
+    def calculate_revenue(self):
+        return self.aggregate(total_revenue=models.Sum('purchase_price'))['total_revenue']
+
+
+class ProductManager(models.Manager.from_queryset(ProductQuerySet)):
+
+    def calculate_revenue(self):
+        return self.get_queryset().calculate_revenue()
+
+
+class Product(ca_models.AbstractProduct, SyncPageMixin):
 
     # That's why we are needed to explicitly add objects manager here
     # because of Django special managers behaviour.
     # Se se#480 for details.
     objects = ProductManager()
-    actives = ProductActiveManager()
+    actives = ca_models.ProductActiveManager()
 
     category = models.ForeignKey(
         Category,
@@ -199,15 +202,15 @@ class ProductPage(ModelPage):
     objects = ModelPage.create_model_page_managers(Product)
 
 
-class TagGroup(caTagGroup):
+class TagGroup(ca_models.TagGroup):
     pass
 
 
-class TagQuerySet(caTagQuerySet):
+class TagQuerySet(ca_models.TagQuerySet):
     pass
 
 
-class Tag(caTag):
+class Tag(ca_models.Tag):
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )

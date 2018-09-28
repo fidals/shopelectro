@@ -27,6 +27,13 @@ class ProductModel(TestCase):
         except Exception as error:
             self.fail(f'Creation of existing product failed: {{ error }}')
 
+    def test_calculation_revenue(self):
+        products = Product.objects.all()
+        self.assertEquals(
+            sum([p.purchase_price for p in products]),
+            products.calculate_revenue(),
+        )
+
 
 class TagModel(TestCase):
 
