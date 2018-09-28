@@ -1,7 +1,7 @@
 """
 Generate Excel price-list.
 
-Use this excel editor lib: https://openpyxl.readthedocs.io/en/default/
+Use this excel editor lib: https://openpyxl.readthedocs.io/en/stable/
 """
 import datetime
 import os

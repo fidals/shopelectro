@@ -120,6 +120,9 @@ pipeline:
       - cd docker
       - cp drone_env/* env_files/
       - for x in drone_env/*; do cat $x >> .env; done;
+    when:
+      status: [ success, failure ]
+      event: [push, pull_request]
 
   test-docker-compose:
     image: docker/compose:1.22.0
