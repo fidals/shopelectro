@@ -164,10 +164,6 @@ class Order(ecOrder):
         self.save()
         self.revenue = 0
         for id_, position in cart:
-            print(position['price'], position['purchase_price'])
-            print(position['quantity'])
-            import sys
-            sys.stdout.flush()
             price_diff = position['price'] - position['purchase_price']
             self.revenue += price_diff * position['quantity']
             self.positions.create(
