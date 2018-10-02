@@ -59,18 +59,15 @@ class OrderSuccess(ec_views.OrderSuccess):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        positions = context['order'].positions.all()
-        total_revenue = Product.objects.filter(
-            id__in=[p.product_id for p in positions]
-        ).calculate_revenue()
+        order = context['order']
         positions_json = serializers.serialize(
-            'json', positions, fields=['name', 'quantity', 'price'],
+            'json', order.positions.all(), fields=['name', 'quantity', 'price'],
         )
 
         return {
             **context,
             'positions_json': positions_json,
-            'total_revenue': total_revenue,
+            'total_revenue': order.revenue,
         }
 
 

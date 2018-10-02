@@ -84,7 +84,8 @@ class SECart(Cart):
         """Add vendor_code to cart's positions data."""
         return {
             **super().get_product_data(product),
-            'vendor_code': product.vendor_code
+            'vendor_code': product.vendor_code,
+            'purchase_price': product.purchase_price,
         }
 
     @recalculate

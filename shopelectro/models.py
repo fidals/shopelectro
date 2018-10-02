@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from mptt.querysets import TreeQuerySet
 
-from catalog import models as ca_models
+from catalog import models as catalog_models
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
 
@@ -32,11 +32,11 @@ class SECategoryQuerySet(TreeQuerySet):
         return categories_with_pictures.get_ancestors(include_self=True)
 
 
-class SECategoryManager(ca_models.CategoryManager.from_queryset(SECategoryQuerySet)):
+class SECategoryManager(catalog_models.CategoryManager.from_queryset(SECategoryQuerySet)):
     pass
 
 
-class Category(ca_models.AbstractCategory, SyncPageMixin):
+class Category(catalog_models.AbstractCategory, SyncPageMixin):
 
     objects = SECategoryManager()
     uuid = models.UUIDField(default=uuid4, editable=False)
@@ -54,25 +54,13 @@ class Category(ca_models.AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class ProductQuerySet(ca_models.ProductQuerySet):
-
-    def calculate_revenue(self):
-        return self.aggregate(total_revenue=models.Sum('purchase_price'))['total_revenue']
-
-
-class ProductManager(models.Manager.from_queryset(ProductQuerySet)):
-
-    def calculate_revenue(self):
-        return self.get_queryset().calculate_revenue()
-
-
-class Product(ca_models.AbstractProduct, SyncPageMixin):
+class Product(catalog_models.AbstractProduct, SyncPageMixin):
 
     # That's why we are needed to explicitly add objects manager here
     # because of Django special managers behaviour.
     # Se se#480 for details.
-    objects = ProductManager()
-    actives = ca_models.ProductActiveManager()
+    objects = catalog_models.ProductManager()
+    actives = catalog_models.ProductActiveManager()
 
     category = models.ForeignKey(
         Category,
@@ -160,6 +148,8 @@ class Order(ecOrder):
         default=_default_payment()
     )
     comment = models.TextField(blank=True, default='')
+    # total price - total purchase price
+    revenue = models.FloatField(default=0, verbose_name=_('revenue'))
 
     @property
     def payment_type_name(self):
@@ -172,15 +162,23 @@ class Order(ecOrder):
     def set_positions(self, cart):
         """Save cart's state into Order instance."""
         self.save()
+        self.revenue = 0
         for id_, position in cart:
+            print(position['price'], position['purchase_price'])
+            print(position['quantity'])
+            import sys
+            sys.stdout.flush()
+            price_diff = position['price'] - position['purchase_price']
+            self.revenue += price_diff * position['quantity']
             self.positions.create(
                 order=self,
                 product_id=id_,
                 vendor_code=position['vendor_code'],
                 name=position['name'],
                 price=position['price'],
-                quantity=position['quantity']
+                quantity=position['quantity'],
             )
+        self.save()
         return self
 
 
@@ -202,15 +200,15 @@ class ProductPage(ModelPage):
     objects = ModelPage.create_model_page_managers(Product)
 
 
-class TagGroup(ca_models.TagGroup):
+class TagGroup(catalog_models.TagGroup):
     pass
 
 
-class TagQuerySet(ca_models.TagQuerySet):
+class TagQuerySet(catalog_models.TagQuerySet):
     pass
 
 
-class Tag(ca_models.Tag):
+class Tag(catalog_models.Tag):
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
