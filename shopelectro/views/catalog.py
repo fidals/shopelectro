@@ -140,6 +140,7 @@ class CategoryPage(catalog.CategoryPage):
                 models.ProductPage.objects.all(),
             )
             | context.TaggedCategory(tags=models.Tag.objects.all())
+            | context.ProductImages()
             | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
             | context.DBTemplate()  # requires TaggedCategory

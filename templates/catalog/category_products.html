@@ -2,14 +2,16 @@
 {% load se_extras %}
 {% load user_agents %}
 
-{% for product, image, brand in products_data %}
+{% for product, brand in products_data %}
   <div class="product-card col-xs-6 col-md-4" data-product-id="{{ product.id }}"
        itemscope itemtype="https://schema.org/Product">
     <meta property="name" itemprop="name" content="{{ product.name }}">
     <div class="category-image-wrapper">
       <a class="category-product-link js-browse-product" href="{{ product.url }}"
          {% if not request|is_mobile %}target="_blank"{% endif %}>
-        {% include 'catalog/category_product_image.html' with image=image product=product only%}
+        {% include 'catalog/category_product_image.html'
+          with image=get_item(product_images, product.id) product=product
+        only%}
       </a>
     </div>
 
