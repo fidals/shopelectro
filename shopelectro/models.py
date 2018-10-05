@@ -161,11 +161,9 @@ class Order(ecOrder):
 
     def set_positions(self, cart):
         """Save cart's state into Order instance."""
+        self.revenue = cart.total_revenue()
         self.save()
-        self.revenue = 0
         for id_, position in cart:
-            price_diff = position['price'] - position['purchase_price']
-            self.revenue += price_diff * position['quantity']
             self.positions.create(
                 order=self,
                 product_id=id_,
@@ -174,7 +172,6 @@ class Order(ecOrder):
                 price=position['price'],
                 quantity=position['quantity'],
             )
-        self.save()
         return self
 
 
