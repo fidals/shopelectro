@@ -54,19 +54,20 @@ class FlushCart(ec_views.FlushCart):
 
 
 class OrderSuccess(ec_views.OrderSuccess):
+
     order = Order.objects.all().prefetch_related('positions')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        order = context['order']
         positions_json = serializers.serialize(
-            'json',
-            context['order'].positions.all(),
-            fields=['name', 'quantity', 'price'],
+            'json', order.positions.all(), fields=['name', 'quantity', 'price'],
         )
 
         return {
             **context,
             'positions_json': positions_json,
+            'total_revenue': order.revenue,
         }
 
 

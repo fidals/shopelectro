@@ -79,7 +79,10 @@
 
   function publishPurchase() {
     if (!DOM.$purchasedOrder.length) return;
-    const orderData = { id: DOM.$purchasedOrder.data('id') };
+    const orderData = {
+      id: DOM.$purchasedOrder.data('id'),
+      revenue: parseFloat(DOM.$purchasedOrder.data('total-revenue'), 10),
+    };
     const orderPositions = DOM.$purchasedOrder.data('positions')
       .map(val => val.fields);
 

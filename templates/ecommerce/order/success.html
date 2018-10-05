@@ -12,7 +12,10 @@
     {% else %}
       <h1>Заказ принят</h1>
     {% endif %}
-    <div class="page-info-message js-purchased-order" data-id="{{ order.fake_order_number }}" data-positions="{{ positions_json }}">
+    <div class="page-info-message js-purchased-order"
+      data-id="{{ order.fake_order_number }}"
+      data-positions="{{ positions_json }}"
+      data-total-revenue="{{ total_revenue }}">
       <p>Номер вашего заказа {{ order.fake_order_number }}</p>
       <p>{% time_to_call %}</p>
       {% if order.phone %}

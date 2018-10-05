@@ -27,6 +27,8 @@ class ProductModel(TestCase):
         except Exception as error:
             self.fail(f'Creation of existing product failed: {{ error }}')
 
+    # @todo #589:30m Create test for Order.set_positions
+
 
 class TagModel(TestCase):
 

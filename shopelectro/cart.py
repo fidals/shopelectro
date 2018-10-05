@@ -84,7 +84,8 @@ class SECart(Cart):
         """Add vendor_code to cart's positions data."""
         return {
             **super().get_product_data(product),
-            'vendor_code': product.vendor_code
+            'vendor_code': product.vendor_code,
+            'purchase_price': product.purchase_price,
         }
 
     @recalculate
@@ -101,3 +102,9 @@ class SECart(Cart):
     def remove(self, product: Model):
         super().remove(product)
         return self
+
+    def total_revenue(self):
+        return sum(
+            (position['price'] - position['purchase_price']) * position['quantity']
+            for _, position in self
+        )

@@ -9,16 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from mptt.querysets import TreeQuerySet
 
-from catalog.models import (
-    AbstractCategory,
-    AbstractProduct,
-    CategoryManager,
-    ProductActiveManager,
-    ProductManager,
-    TagGroup as caTagGroup,
-    Tag as caTag,
-    TagQuerySet as caTagQuerySet,
-)
+from catalog import models as catalog_models
 from ecommerce.models import Order as ecOrder
 from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
 
@@ -41,11 +32,11 @@ class SECategoryQuerySet(TreeQuerySet):
         return categories_with_pictures.get_ancestors(include_self=True)
 
 
-class SECategoryManager(CategoryManager.from_queryset(SECategoryQuerySet)):
+class SECategoryManager(catalog_models.CategoryManager.from_queryset(SECategoryQuerySet)):
     pass
 
 
-class Category(AbstractCategory, SyncPageMixin):
+class Category(catalog_models.AbstractCategory, SyncPageMixin):
 
     objects = SECategoryManager()
     uuid = models.UUIDField(default=uuid4, editable=False)
@@ -63,13 +54,13 @@ class Category(AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class Product(AbstractProduct, SyncPageMixin):
+class Product(catalog_models.AbstractProduct, SyncPageMixin):
 
     # That's why we are needed to explicitly add objects manager here
     # because of Django special managers behaviour.
     # Se se#480 for details.
-    objects = ProductManager()
-    actives = ProductActiveManager()
+    objects = catalog_models.ProductManager()
+    actives = catalog_models.ProductActiveManager()
 
     category = models.ForeignKey(
         Category,
@@ -157,6 +148,8 @@ class Order(ecOrder):
         default=_default_payment()
     )
     comment = models.TextField(blank=True, default='')
+    # total price - total purchase price
+    revenue = models.FloatField(default=0, verbose_name=_('revenue'))
 
     @property
     def payment_type_name(self):
@@ -167,7 +160,13 @@ class Order(ecOrder):
         )
 
     def set_positions(self, cart):
-        """Save cart's state into Order instance."""
+        """
+        Save cart's state into Order instance.
+
+        @todo #589:60m Create Cart model.
+         See details here: https://github.com/fidals/shopelectro/pull/590#discussion_r222544672
+        """
+        self.revenue = cart.total_revenue()
         self.save()
         for id_, position in cart:
             self.positions.create(
@@ -176,7 +175,7 @@ class Order(ecOrder):
                 vendor_code=position['vendor_code'],
                 name=position['name'],
                 price=position['price'],
-                quantity=position['quantity']
+                quantity=position['quantity'],
             )
         return self
 
@@ -199,15 +198,15 @@ class ProductPage(ModelPage):
     objects = ModelPage.create_model_page_managers(Product)
 
 
-class TagGroup(caTagGroup):
+class TagGroup(catalog_models.TagGroup):
     pass
 
 
-class TagQuerySet(caTagQuerySet):
+class TagQuerySet(catalog_models.TagQuerySet):
     pass
 
 
-class Tag(caTag):
+class Tag(catalog_models.Tag):
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
