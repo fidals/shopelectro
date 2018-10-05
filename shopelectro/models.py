@@ -160,7 +160,12 @@ class Order(ecOrder):
         )
 
     def set_positions(self, cart):
-        """Save cart's state into Order instance."""
+        """
+        Save cart's state into Order instance.
+
+        @todo #589:60m Create Cart model.
+         See details here: https://github.com/fidals/shopelectro/pull/590#discussion_r222544672
+        """
         self.revenue = cart.total_revenue()
         self.save()
         for id_, position in cart:
