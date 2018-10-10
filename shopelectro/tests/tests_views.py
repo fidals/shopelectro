@@ -83,7 +83,7 @@ class CatalogPage(BaseCatalogTestCase):
         """Context merging should cached."""
         products = models.Product.objects.all()[:2]
         product_pages = models.ProductPage.objects.all()
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(1):
             # N db queries without before cached
             context.prepare_tile_products(products, product_pages)
         with self.assertNumQueries(0):

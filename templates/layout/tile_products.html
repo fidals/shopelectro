@@ -6,7 +6,7 @@
 {% if tile_products %}
   <div itemscope itemtype="https://schema.org/Product" class="stuff-top">
     <p class="stuff-top-title text-center">{{ tile_title }}</p>
-    {% for product, image, root_category in tile_products %}
+    {% for product, root_category in tile_products %}
       <p class="hidden" itemprop="description">
         {% with description=product.page.display_description %}
           {% if description %}
@@ -18,7 +18,9 @@
       </p>
       <div class="stuff-top-item">
         <a href="{{ product.url }}" class="stuff-top-img js-browse-product" itemprop="url">
-          {% include 'index/product_thumbnail.html' with image=image dimensions='x174' only %}
+          {% include 'index/product_thumbnail.html'
+            with image=get_item(product_images, product.id) dimensions='x174'
+          only %}
         </a>
 
         <div class="stuff-top-description">

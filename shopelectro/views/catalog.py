@@ -36,7 +36,7 @@ class ProductPage(catalog.ProductPage):
     slug_field = 'vendor_code'
 
     queryset = (
-        models.Product.actives
+        models.Product.objects.active()
         .filter(category__isnull=False)
         .prefetch_related('product_feedbacks', 'page__images')
         .select_related('page')
@@ -110,7 +110,7 @@ class IndexPage(pages_views.CustomPageView):
         tile_products = []
         if not mobile_view:
             top_products = (
-                models.Product.actives
+                models.Product.objects.active()
                 .filter(id__in=settings.TOP_PRODUCTS)
                 .prefetch_related('category')
                 .select_related('page')
@@ -135,9 +135,11 @@ class CategoryPage(catalog.CategoryPage):
         """Add sorting options and view_types in context."""
         context_ = (
             context.Category(
-                self.kwargs, self.request,
-                models.Product.objects.all(),
-                models.ProductPage.objects.all(),
+                url_kwargs=self.kwargs,
+                request=self.request,
+                page=self.object,
+                products=models.Product.objects.all(),
+                product_pages=models.ProductPage.objects.all(),
             )
             | context.TaggedCategory(tags=models.Tag.objects.all())
             | context.ProductImages()

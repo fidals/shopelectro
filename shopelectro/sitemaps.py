@@ -3,7 +3,7 @@ from typing import Generator, Tuple
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from pages.models import Page
+from pages.models import Page, PageManager
 
 from shopelectro.models import Category, Product, Tag
 
@@ -80,4 +80,5 @@ class ProductSitemap(AbstractSitemap):
 class PagesSitemap(AbstractSitemap):
 
     def items(self):
-        return Page.objects.active()
+        assert(isinstance(Page.objects_, PageManager))
+        return Page.objects_.active()

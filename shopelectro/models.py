@@ -21,7 +21,7 @@ def randomize_slug(slug: str) -> str:
     return f'{slug}_{slug_hash}'
 
 
-class SECategoryQuerySet(TreeQuerySet):
+class SECategoryQuerySet(CategoryQuerySet):
     def get_categories_tree_with_pictures(self) -> 'SECategoryQuerySet':
         categories_with_pictures = (
             self
@@ -39,6 +39,8 @@ class SECategoryManager(catalog_models.CategoryManager.from_queryset(SECategoryQ
 class Category(catalog_models.AbstractCategory, SyncPageMixin):
 
     objects = SECategoryManager()
+    # pages.models.Page.objects_ field. It has the same problem.
+    objects_ = SECategoryManager()
     uuid = models.UUIDField(default=uuid4, editable=False)
 
     @classmethod
@@ -60,7 +62,6 @@ class Product(catalog_models.AbstractProduct, SyncPageMixin):
     # because of Django special managers behaviour.
     # Se se#480 for details.
     objects = catalog_models.ProductManager()
-    actives = catalog_models.ProductActiveManager()
 
     category = models.ForeignKey(
         Category,
@@ -240,3 +241,5 @@ class ExcludedModelTPage(Page):
         proxy = True
 
     objects = ExcludedModelTPageManager()
+    # pages.models.Page.objects_ field. It has the same problem.
+    objects_ = ExcludedModelTPageManager()
