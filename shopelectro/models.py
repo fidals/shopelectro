@@ -7,7 +7,6 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from mptt.querysets import TreeQuerySet
 
 from catalog import models as catalog_models
 from ecommerce.models import Order as ecOrder
@@ -21,7 +20,7 @@ def randomize_slug(slug: str) -> str:
     return f'{slug}_{slug_hash}'
 
 
-class SECategoryQuerySet(CategoryQuerySet):
+class SECategoryQuerySet(catalog_models.CategoryQuerySet):
     def get_categories_tree_with_pictures(self) -> 'SECategoryQuerySet':
         categories_with_pictures = (
             self
