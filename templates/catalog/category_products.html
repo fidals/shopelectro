@@ -9,9 +9,9 @@
     <div class="category-image-wrapper">
       <a class="category-product-link js-browse-product" href="{{ product.url }}"
          {% if not request|is_mobile %}target="_blank"{% endif %}>
-        {% include 'catalog/category_product_image.html'
-          with image=get_item(product_images, product.id) product=product
-        only%}
+        {% with image=product_images|get_item:product.id %}
+          {% include 'catalog/category_product_image.html' with image=image product=product only%}
+        {% endwith %}
       </a>
     </div>
 

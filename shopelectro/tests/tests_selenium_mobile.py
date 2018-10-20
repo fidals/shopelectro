@@ -6,6 +6,7 @@ Every Selenium-based test suite uses fixture called dump.json.
 """
 from django.conf import settings
 from django.test import LiveServerTestCase
+from django.test import override_settings
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -129,6 +130,9 @@ class Mobile(MobileSeleniumTestCase):
         )
         self.assertTrue(catalog_subitem.is_displayed())
 
+    # CarrotQuest outer js service produces error on this test.
+    # Enabled debug makes it off.
+    @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
     def test_cart(self):
         """Cart should updated after Product buy."""
         def get_cart_price_and_size():
