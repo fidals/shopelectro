@@ -18,9 +18,9 @@
       </p>
       <div class="stuff-top-item">
         <a href="{{ product.url }}" class="stuff-top-img js-browse-product" itemprop="url">
-          {% include 'index/product_thumbnail.html'
-            with image=get_item(product_images, product.id) dimensions='x174'
-          only %}
+          {% with image=product_images|get_item:product.id %}
+            {% include 'index/product_thumbnail.html' with image=image dimensions='x174' only %}
+          {% endwith %}
         </a>
 
         <div class="stuff-top-description">

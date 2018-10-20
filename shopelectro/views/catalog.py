@@ -185,6 +185,17 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
         category, ordering=(sorting_option.directed_field,)
     )
 
+    context_ = (
+        context.Category(
+            url_kwargs={},
+            request=request,
+            page=category.page,
+            products=models.Product.objects.all(),
+            product_pages=models.ProductPage.objects.all(),
+        )
+        | context.ProductImages()
+    )
+
     if tags:
         tag_entities = models.Tag.objects.filter(
             slug__in=models.Tag.parse_url_tags(tags)
@@ -211,6 +222,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
         'products_data': context.prepare_tile_products(
             products, models.ProductPage.objects.all()
         ),
+        'product_images': context_.get_context_data()['product_images'],
         'paginated': paginated,
         'paginated_page': paginated_page,
         'view_type': view,
