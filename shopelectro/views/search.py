@@ -41,7 +41,7 @@ class Autocomplete(search_views.AutocompleteView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects.filter(page__is_active=True),
+            qs=Category.objects_.filter(page__is_active=True),
             fields=['name', 'id'],
             template_fields=['name', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
@@ -71,7 +71,7 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects.filter(page__is_active=True),
+            qs=Category.objects_.filter(page__is_active=True),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),

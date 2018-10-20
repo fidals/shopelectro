@@ -61,7 +61,7 @@ class BaseCatalogTestCase(TestCase):
     fixtures = ['dump.json']
 
     def setUp(self):
-        self.category = models.Category.objects.root_nodes().select_related('page').first()
+        self.category = models.Category.objects_.root_nodes().select_related('page').first()
         self.tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
     def get_category_page(
@@ -324,7 +324,7 @@ class LoadMore(TestCase):
     DEFAULT_LIMIT = 48
 
     def setUp(self):
-        self.category = models.Category.objects.root_nodes().select_related('page').first()
+        self.category = models.Category.objects_.root_nodes().select_related('page').first()
 
     def load_more(
         self,
