@@ -42,6 +42,10 @@ class ProductPage(catalog.ProductPage):
         .select_related('page')
     )
 
+    @property
+    def product(self):
+        return self.object
+
     def get(self, request, *args, **kwargs):
         try:
             self.object = self.get_object()
@@ -57,32 +61,32 @@ class ProductPage(catalog.ProductPage):
 
     def get_context_data(self, **kwargs):
         context_ = super(ProductPage, self).get_context_data(**kwargs)
-        product = self.object
-        if not product.page.is_active:
+        if not self.product.page.is_active:
             # this context required to render 404 page
             # with it's own logic
             return context_
 
-        images_context = (
+        return {
+            **context_,
+            'price_bounds': settings.PRICE_BOUNDS,
+            'group_tags_pairs': self.product.get_params(),
+            'product_images': self.get_images_context().get_context_data()['product_images'],
+            'tile_products': context.prepare_tile_products(
+                self.product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
+                models.ProductPage.objects.all()
+            ),
+        }
+
+    def get_images_context(self):
+        return (
             context.ProductImages(
                 url_kwargs={},
                 request=self.request,
-                page=product.page,
+                page=self.product.page,
                 products=models.Product.objects.all(),
                 product_pages=models.ProductPage.objects.all(),
             )
         )
-
-        return {
-            **context_,
-            'price_bounds': settings.PRICE_BOUNDS,
-            'group_tags_pairs': product.get_params(),
-            'product_images': images_context.get_context_data()['product_images'],
-            'tile_products': context.prepare_tile_products(
-                product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
-                models.ProductPage.objects.all()
-            ),
-        }
 
     def render_siblings_on_404(
         self, request, **url_kwargs
@@ -105,6 +109,10 @@ class ProductPage(catalog.ProductPage):
                 ),
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
+            )
+
+            context_['product_images'] = (
+                self.get_images_context().get_context_data()['product_images']
             )
             return render(request, 'catalog/product_404.html', context_, status=404)
 
@@ -136,7 +144,21 @@ class IndexPage(pages_views.CustomPageView):
             'tile_title': 'ТОП 10 ТОВАРОВ',
             'category_tile': settings.MAIN_PAGE_TILE,
             'tile_products': tile_products,
+            'product_images': (
+                self.get_images_context().get_context_data()['product_images']
+            )
         }
+
+    def get_images_context(self):
+        return (
+            context.ProductImages(
+                url_kwargs={},
+                request=self.request,
+                page=self.object,
+                products=models.Product.objects.all(),
+                product_pages=models.ProductPage.objects.all(),
+            )
+        )
 
 
 @set_csrf_cookie
