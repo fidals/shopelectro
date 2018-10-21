@@ -152,7 +152,7 @@ class IndexPage(pages_views.CustomPageView):
     def get_images_context(self):
         return (
             context.ProductImages(
-                url_kwargs={},
+                url_kwargs={},  # Ignore CPDBear
                 request=self.request,
                 page=self.object,
                 products=models.Product.objects.all(),
