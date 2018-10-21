@@ -63,10 +63,21 @@ class ProductPage(catalog.ProductPage):
             # with it's own logic
             return context_
 
+        images_context = (
+            context.ProductImages(
+                url_kwargs={},
+                request=self.request,
+                page=product.page,
+                products=models.Product.objects.all(),
+                product_pages=models.ProductPage.objects.all(),
+            )
+        )
+
         return {
             **context_,
             'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': product.get_params(),
+            'product_images': images_context.get_context_data()['product_images'],
             'tile_products': context.prepare_tile_products(
                 product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
                 models.ProductPage.objects.all()
@@ -185,17 +196,6 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
         category, ordering=(sorting_option.directed_field,)
     )
 
-    context_ = (
-        context.Category(
-            url_kwargs={},
-            request=request,
-            page=category.page,
-            products=models.Product.objects.all(),
-            product_pages=models.ProductPage.objects.all(),
-        )
-        | context.ProductImages()
-    )
-
     if tags:
         tag_entities = models.Tag.objects.filter(
             slug__in=models.Tag.parse_url_tags(tags)
@@ -217,6 +217,17 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     paginated_page = paginated.page()
     products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
+
+    context_ = (
+        context.Category(
+            url_kwargs={},
+            request=request,
+            page=category.page,
+            products=models.Product.objects.all(),
+            product_pages=models.ProductPage.objects.all(),
+        )
+        | context.ProductImages()
+    )
 
     return render(request, 'catalog/category_products.html', {
         'products_data': context.prepare_tile_products(
