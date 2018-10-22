@@ -126,5 +126,5 @@ def icon_stars(rating=0):
 
 
 @register.filter
-def get_item(dictionary, key):
+def get_item(dictionary: dict, key: str):
     return dictionary.get(key)

@@ -103,7 +103,7 @@ class Command(BaseCommand):
     def create_root(count):
         get_name = 'Category #{}'.format
         return [
-            se_models.Category.objects.create(name=get_name(i))
+            se_models.Category.objects_.create(name=get_name(i))
             for i in range(count)
         ]
 
@@ -112,7 +112,7 @@ class Command(BaseCommand):
         name = 'Category #{} of #{}'
 
         def create_categories(name, parent):
-            return se_models.Category.objects.create(name=name, parent=parent)
+            return se_models.Category.objects_.create(name=name, parent=parent)
 
         def get_name(number, parent=None):
             return name.format(number, parent)
@@ -249,7 +249,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def rebuild_mptt_tree():
-        se_models.Category.objects.rebuild()
+        se_models.Category.objects_.rebuild()
         Page.objects.rebuild()
 
     @staticmethod

@@ -36,11 +36,15 @@ class ProductPage(catalog.ProductPage):
     slug_field = 'vendor_code'
 
     queryset = (
-        models.Product.actives
+        models.Product.objects.active()
         .filter(category__isnull=False)
         .prefetch_related('product_feedbacks', 'page__images')
         .select_related('page')
     )
+
+    @property
+    def product(self):
+        return self.object
 
     def get(self, request, *args, **kwargs):
         try:
@@ -57,8 +61,7 @@ class ProductPage(catalog.ProductPage):
 
     def get_context_data(self, **kwargs):
         context_ = super(ProductPage, self).get_context_data(**kwargs)
-        product = self.object
-        if not product.page.is_active:
+        if not self.product.page.is_active:
             # this context required to render 404 page
             # with it's own logic
             return context_
@@ -66,12 +69,24 @@ class ProductPage(catalog.ProductPage):
         return {
             **context_,
             'price_bounds': settings.PRICE_BOUNDS,
-            'group_tags_pairs': product.get_params(),
+            'group_tags_pairs': self.product.get_params(),
+            'product_images': self.get_images_context().get_context_data()['product_images'],
             'tile_products': context.prepare_tile_products(
-                product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
+                self.product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
                 models.ProductPage.objects.all()
             ),
         }
+
+    def get_images_context(self):
+        return (
+            context.ProductImages(
+                url_kwargs={},
+                request=self.request,
+                page=self.product.page,
+                products=models.Product.objects.all(),
+                product_pages=models.ProductPage.objects.all(),
+            )
+        )
 
     def render_siblings_on_404(
         self, request, **url_kwargs
@@ -95,6 +110,10 @@ class ProductPage(catalog.ProductPage):
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
+
+            context_['product_images'] = (
+                self.get_images_context().get_context_data()['product_images']
+            )
             return render(request, 'catalog/product_404.html', context_, status=404)
 
 
@@ -110,7 +129,7 @@ class IndexPage(pages_views.CustomPageView):
         tile_products = []
         if not mobile_view:
             top_products = (
-                models.Product.actives
+                models.Product.objects.active()
                 .filter(id__in=settings.TOP_PRODUCTS)
                 .prefetch_related('category')
                 .select_related('page')
@@ -125,7 +144,21 @@ class IndexPage(pages_views.CustomPageView):
             'tile_title': 'ТОП 10 ТОВАРОВ',
             'category_tile': settings.MAIN_PAGE_TILE,
             'tile_products': tile_products,
+            'product_images': (
+                self.get_images_context().get_context_data()['product_images']
+            )
         }
+
+    def get_images_context(self):
+        return (
+            context.ProductImages(
+                url_kwargs={},  # Ignore CPDBear
+                request=self.request,
+                page=self.object,
+                products=models.Product.objects.all(),
+                product_pages=models.ProductPage.objects.all(),
+            )
+        )
 
 
 @set_csrf_cookie
@@ -135,11 +168,14 @@ class CategoryPage(catalog.CategoryPage):
         """Add sorting options and view_types in context."""
         context_ = (
             context.Category(
-                self.kwargs, self.request,
-                models.Product.objects.all(),
-                models.ProductPage.objects.all(),
+                url_kwargs=self.kwargs,
+                request=self.request,
+                page=self.object,
+                products=models.Product.objects.all(),
+                product_pages=models.ProductPage.objects.all(),
             )
             | context.TaggedCategory(tags=models.Tag.objects.all())
+            | context.ProductImages()
             | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
             | context.DBTemplate()  # requires TaggedCategory
@@ -178,7 +214,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     category = get_object_or_404(models.CategoryPage, slug=category_slug).model
     sorting_option = context.SortingOption(index=int(sorting))
 
-    all_products = models.Product.actives.get_category_descendants(
+    all_products = models.Product.objects.active().get_category_descendants(
         category, ordering=(sorting_option.directed_field,)
     )
 
@@ -204,10 +240,22 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
 
+    context_ = (
+        context.Category(
+            url_kwargs={},
+            request=request,
+            page=category.page,
+            products=models.Product.objects.all(),
+            product_pages=models.ProductPage.objects.all(),
+        )
+        | context.ProductImages()
+    )
+
     return render(request, 'catalog/category_products.html', {
         'products_data': context.prepare_tile_products(
             products, models.ProductPage.objects.all()
         ),
+        'product_images': context_.get_context_data()['product_images'],
         'paginated': paginated,
         'paginated_page': paginated_page,
         'view_type': view,

@@ -7,11 +7,10 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from mptt.querysets import TreeQuerySet
 
 from catalog import models as catalog_models
 from ecommerce.models import Order as ecOrder
-from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager
+from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager, PageQuerySet
 
 
 def randomize_slug(slug: str) -> str:
@@ -21,7 +20,7 @@ def randomize_slug(slug: str) -> str:
     return f'{slug}_{slug_hash}'
 
 
-class SECategoryQuerySet(TreeQuerySet):
+class SECategoryQuerySet(catalog_models.CategoryQuerySet):
     def get_categories_tree_with_pictures(self) -> 'SECategoryQuerySet':
         categories_with_pictures = (
             self
@@ -39,6 +38,8 @@ class SECategoryManager(catalog_models.CategoryManager.from_queryset(SECategoryQ
 class Category(catalog_models.AbstractCategory, SyncPageMixin):
 
     objects = SECategoryManager()
+    # pages.models.Page.objects_ field. It has the same problem.
+    objects_ = SECategoryManager()
     uuid = models.UUIDField(default=uuid4, editable=False)
 
     @classmethod
@@ -60,7 +61,6 @@ class Product(catalog_models.AbstractProduct, SyncPageMixin):
     # because of Django special managers behaviour.
     # Se se#480 for details.
     objects = catalog_models.ProductManager()
-    actives = catalog_models.ProductActiveManager()
 
     category = models.ForeignKey(
         Category,
@@ -212,15 +212,33 @@ class Tag(catalog_models.Tag):
     )
 
 
-class ExcludedModelTPageManager(PageManager):
+class ExcludedModelTPageQuerySet(PageQuerySet):
+    def exclude_type(self):
+        return self.exclude(type=Page.MODEL_TYPE)
+
+
+class ExcludedModelTPageManager(
+    models.Manager.from_queryset(ExcludedModelTPageQuerySet)
+):
 
     def get_queryset(self):
-        return super().get_queryset().exclude(type=Page.MODEL_TYPE)
+        return super().get_queryset().exclude_type()
 
 
+# @todo #rf169:30m Fix model.Manager bad inheritance
+#  Now we have this problem:
+#  ```
+#  In [2]: type(ExcludedModelTPage.objects.all())
+#  Out[2]: mptt.querysets.TreeQuerySet
+#  ```
+#  But should be `pages.models.PageQuerySet`.
+#  Or just rm all excluded staff
+#  in favor on direct excluded filter using.
 class ExcludedModelTPage(Page):
 
     class Meta(Page.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
     objects = ExcludedModelTPageManager()
+    # pages.models.Page.objects_ field. It has the same problem.
+    objects_ = ExcludedModelTPageManager()

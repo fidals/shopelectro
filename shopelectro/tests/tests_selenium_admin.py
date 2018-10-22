@@ -78,10 +78,10 @@ class AdminPage(AdminSeleniumTestCase):
 
     def setUp(self):
         super().setUp()
-        self.root_category_id = str(Category.objects.filter(parent=None).first().id)
-        self.children_category_id = str(Category.objects.filter(
+        self.root_category_id = str(Category.objects_.filter(parent=None).first().id)
+        self.children_category_id = str(Category.objects_.filter(
             parent_id=self.root_category_id).first().id)
-        self.deep_children_category_id = str(Category.objects.filter(
+        self.deep_children_category_id = str(Category.objects_.filter(
             parent_id=self.children_category_id).first().id)
         self.tree_product_id = str(Product.objects.filter(
             category_id=self.deep_children_category_id).first().id)
@@ -296,7 +296,7 @@ class AdminPage(AdminSeleniumTestCase):
         self.open_js_tree_nodes()
         # open context menu and click at redirect to site's page
         item_id = self.click_jstree_context_menu_items(1)
-        category_id = Category.objects.get(id=item_id).page.display_h1
+        category_id = Category.objects_.get(id=item_id).page.display_h1
         # wait new tab opening
         self.wait.until(EC.number_of_windows_to_be(2))
         self.browser.switch_to.window(window_name=self.browser.window_handles[1])

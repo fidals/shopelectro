@@ -61,7 +61,7 @@ class BaseCatalogTestCase(TestCase):
     fixtures = ['dump.json']
 
     def setUp(self):
-        self.category = models.Category.objects.root_nodes().select_related('page').first()
+        self.category = models.Category.objects_.root_nodes().select_related('page').first()
         self.tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
     def get_category_page(
@@ -83,7 +83,7 @@ class CatalogPage(BaseCatalogTestCase):
         """Context merging should cached."""
         products = models.Product.objects.all()[:2]
         product_pages = models.ProductPage.objects.all()
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(1):
             # N db queries without before cached
             context.prepare_tile_products(products, product_pages)
         with self.assertNumQueries(0):
@@ -324,7 +324,7 @@ class LoadMore(TestCase):
     DEFAULT_LIMIT = 48
 
     def setUp(self):
-        self.category = models.Category.objects.root_nodes().select_related('page').first()
+        self.category = models.Category.objects_.root_nodes().select_related('page').first()
 
     def load_more(
         self,

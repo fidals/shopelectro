@@ -13,20 +13,20 @@ class Search(search_views.SearchView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects.filter(page__is_active=True),
+            qs=Category.objects_.active(),
             fields=['name'],  # Ignore CPDBear
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='product',
-            qs=Product.actives,
+            qs=Product.objects.active(),
             fields=['name'],
             redirect_field='vendor_code',
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='page',
-            qs=ExcludedModelTPage.objects.get_active(),
+            qs=ExcludedModelTPage.objects_.filter(is_active=True),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
@@ -41,21 +41,21 @@ class Autocomplete(search_views.AutocompleteView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects.filter(page__is_active=True),
+            qs=Category.objects_.filter(page__is_active=True),
             fields=['name', 'id'],
             template_fields=['name', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='product',
-            qs=Product.actives,
+            qs=Product.objects.active(),
             fields=['name', 'id', 'vendor_code'],
             template_fields=['name', 'price', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='pages',
-            qs=ExcludedModelTPage.objects.get_active(),
+            qs=ExcludedModelTPage.objects_.filter(is_active=True),
             fields=['name'],
             template_fields=['name', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
@@ -71,19 +71,19 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects.filter(page__is_active=True),
+            qs=Category.objects_.filter(page__is_active=True),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='product',
-            qs=Product.actives,
+            qs=Product.objects.active(),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='pages',
-            qs=ExcludedModelTPage.objects.get_active(),
+            qs=ExcludedModelTPage.objects.filter(is_active=True),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
