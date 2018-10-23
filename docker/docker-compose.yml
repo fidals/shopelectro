@@ -38,6 +38,9 @@ services:
       # contains refarm-site modules
       - $DEPS_DIR
       # Thus, you can work with apps related to the refarm-site
+      #- $REFARM_DIR/catalog:/root/.local/lib/python3.7/site-packages/catalog
+      #- $REFARM_DIR/ecommerce:/root/.local/lib/python3.7/site-packages/ecommerce
+      #- $REFARM_DIR/pages:/root/.local/lib/python3.7/site-packages/pages
       #- $REFARM_DIR/search:/root/.local/lib/python3.7/site-packages/search
 
   nodejs:
