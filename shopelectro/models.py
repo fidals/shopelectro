@@ -223,7 +223,7 @@ class ExcludedModelTPageQuerySet(pages_models.PageQuerySet):
     def exclude_type(self):
         return self.exclude(type=pages_models.Page.MODEL_TYPE)
 
-
+# @todo #rf169:30m Fix model.Manager bad inheritance
 #  Now we have this problem:
 #  ```
 #  In [2]: type(ExcludedModelTPage.objects.all())
