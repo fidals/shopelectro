@@ -9,8 +9,8 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from catalog import models as catalog_models
-from ecommerce.models import Order as ecOrder
-from pages.models import CustomPage, ModelPage, Page, SyncPageMixin, PageManager, PageQuerySet
+from ecommerce import models as ecommerce_models
+from pages import models as pages_models
 
 
 def randomize_slug(slug: str) -> str:
@@ -31,11 +31,13 @@ class SECategoryQuerySet(catalog_models.CategoryQuerySet):
         return categories_with_pictures.get_ancestors(include_self=True)
 
 
-class SECategoryManager(catalog_models.CategoryManager.from_queryset(SECategoryQuerySet)):
+class SECategoryManager(
+    catalog_models.CategoryManager.from_queryset(SECategoryQuerySet)
+):
     pass
 
 
-class Category(catalog_models.AbstractCategory, SyncPageMixin):
+class Category(catalog_models.AbstractCategory, pages_models.SyncPageMixin):
 
     objects = SECategoryManager()
     # pages.models.Page.objects_ field. It has the same problem.
@@ -44,7 +46,7 @@ class Category(catalog_models.AbstractCategory, SyncPageMixin):
 
     @classmethod
     def get_default_parent(cls):
-        return CustomPage.objects.filter(slug='catalog').first()
+        return pages_models.CustomPage.objects.filter(slug='catalog').first()
 
     @property
     def image(self):
@@ -55,7 +57,7 @@ class Category(catalog_models.AbstractCategory, SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class Product(catalog_models.AbstractProduct, SyncPageMixin):
+class Product(catalog_models.AbstractProduct, pages_models.SyncPageMixin):
 
     # That's why we are needed to explicitly add objects manager here
     # because of Django special managers behaviour.
@@ -140,7 +142,7 @@ def _default_payment():
     return settings.PAYMENT_OPTIONS[0][0]
 
 
-class Order(ecOrder):
+class Order(ecommerce_models.Order):
     address = models.TextField(blank=True, default='')
     payment_type = models.CharField(
         max_length=255,
@@ -180,22 +182,27 @@ class Order(ecOrder):
         return self
 
 
-class CategoryPage(ModelPage):
+class CategoryPage(pages_models.ModelPage):
     """Create proxy model for Admin."""
 
-    class Meta(ModelPage.Meta):  # Ignore PycodestyleBear (E303)
+    class Meta(pages_models.ModelPage.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
-    objects = ModelPage.create_model_page_managers(Category)
+    # noinspection PyTypeChecker
+    objects = pages_models.ModelPage.create_model_page_managers(Category)
 
 
-class ProductPage(ModelPage):
+class ProductPage(pages_models.ModelPage):
     """Create proxy model for Admin."""
 
-    class Meta(ModelPage.Meta):  # Ignore PycodestyleBear (E303)
+    class Meta(pages_models.ModelPage.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
-    objects = ModelPage.create_model_page_managers(Product)
+    # noinspection PyTypeChecker
+    objects = (
+        pages_models.ModelPage
+        .create_model_page_managers(Product)
+    )
 
 
 class TagGroup(catalog_models.TagGroup):
@@ -212,20 +219,11 @@ class Tag(catalog_models.Tag):
     )
 
 
-class ExcludedModelTPageQuerySet(PageQuerySet):
+class ExcludedModelTPageQuerySet(pages_models.PageQuerySet):
     def exclude_type(self):
-        return self.exclude(type=Page.MODEL_TYPE)
+        return self.exclude(type=pages_models.Page.MODEL_TYPE)
 
 
-class ExcludedModelTPageManager(
-    models.Manager.from_queryset(ExcludedModelTPageQuerySet)
-):
-
-    def get_queryset(self):
-        return super().get_queryset().exclude_type()
-
-
-# @todo #rf169:30m Fix model.Manager bad inheritance
 #  Now we have this problem:
 #  ```
 #  In [2]: type(ExcludedModelTPage.objects.all())
@@ -234,9 +232,17 @@ class ExcludedModelTPageManager(
 #  But should be `pages.models.PageQuerySet`.
 #  Or just rm all excluded staff
 #  in favor on direct excluded filter using.
-class ExcludedModelTPage(Page):
+class ExcludedModelTPageManager(
+    models.Manager.from_queryset(ExcludedModelTPageQuerySet)
+):
 
-    class Meta(Page.Meta):  # Ignore PycodestyleBear (E303)
+    def get_queryset(self):
+        return super().get_queryset().exclude(type=pages_models.Page.MODEL_TYPE)
+
+
+class ExcludedModelTPage(pages_models.Page):
+
+    class Meta(pages_models.Page.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
     objects = ExcludedModelTPageManager()
