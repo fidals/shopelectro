@@ -6,4 +6,5 @@ workers = os.environ.get('WEB_CONCURRENCY', default_workers)
 worker_class = 'sync'
 max_requests = 300
 max_requests_jitter = 300
+timeout = 120
 errorlog = '-'
