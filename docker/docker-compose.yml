@@ -18,7 +18,11 @@ services:
       - $VIRTUAL_HOST_LIVESERVER_PORT
     networks:
       - se-backend
-    command: ./docker/wait-for.sh postgres:5432 -- python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
+    # @todo #603:60m Resurrect postgres waiting
+    #  This prefix for app docker service's command does not work:
+    #  `./docker/wait-for.sh postgres:5432 -- `
+    #  Prefix was used in docker-compose-production too.
+    command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
 
   app-drone:
     extends: app-base
