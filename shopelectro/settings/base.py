@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_user_agents',
+    'django_extensions',
     'generic_admin',
     'django.contrib.admin.apps.SimpleAdminConfig',
     'debug_toolbar',

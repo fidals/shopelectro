@@ -7,6 +7,7 @@ beautifulsoup4
 git+https://github.com/celery/celery.git@1c3a15938d0b9dde674d4666689d6a6c733d64e4#egg=celery
 Django==1.10
 django-debug-toolbar==1.10.1
+django-extensions
 django-redis==4.8.0
 django-mptt==0.8.7
 django-widget-tweaks
@@ -22,4 +23,4 @@ ua-parser==0.8.0
 user-agents==1.1.0
 sorl-thumbnail==12.4a1
 https://github.com/selwin/django-user_agents/archive/master.zip
-https://github.com/fidals/refarm-site/archive/0.4.10.zip
+https://github.com/fidals/refarm-site/archive/0.4.11.zip

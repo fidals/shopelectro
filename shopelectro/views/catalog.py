@@ -176,9 +176,9 @@ class CategoryPage(catalog.CategoryPage):
                 products=models.Product.objects.all(),
                 product_pages=models.ProductPage.objects.all(),
             )
+            | context.TaggedCategory(tags=models.Tag.objects.all())
             | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
-            | context.TaggedCategory(tags=models.Tag.objects.all())
             | context.ProductImages()
             | context.DBTemplate()  # requires TaggedCategory
         )
