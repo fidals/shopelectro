@@ -151,7 +151,7 @@ class Order(ecommerce_models.Order):
     )
     comment = models.TextField(blank=True, default='')
     # total price - total purchase price
-    revenue = models.FloatField(default=0, verbose_name=_('revenue'))
+    revenue = models.FloatField(default=0, null=True, verbose_name=_('revenue'))
 
     @property
     def payment_type_name(self):
