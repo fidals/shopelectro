@@ -127,13 +127,13 @@ class IndexPage(pages_views.CustomPageView):
         mobile_view = get_user_agent(self.request).is_mobile
 
         tile_products = []
-        if not mobile_view:
-            top_products = (
-                models.Product.objects.active()
+        top_products = (
+            models.Product.objects.active()
                 .filter(id__in=settings.TOP_PRODUCTS)
                 .prefetch_related('category')
                 .select_related('page')
-            )
+        )
+        if not mobile_view:
             tile_products = context.prepare_tile_products(
                 top_products,
                 models.ProductPage.objects.all()
@@ -145,18 +145,20 @@ class IndexPage(pages_views.CustomPageView):
             'category_tile': settings.MAIN_PAGE_TILE,
             'tile_products': tile_products,
             'product_images': (
-                self.get_images_context().get_context_data()['product_images']
+                self
+                .get_images_context(products=top_products)
+                .get_context_data()['product_images']
             )
         }
 
-    def get_images_context(self):
+    def get_images_context(self, products=None, product_pages=None):
         return (
             context.ProductImages(
                 url_kwargs={},  # Ignore CPDBear
                 request=self.request,
                 page=self.object,
-                products=models.Product.objects.all(),
-                product_pages=models.ProductPage.objects.all(),
+                products=products or models.Product.objects.all(),
+                product_pages=product_pages or models.ProductPage.objects.all(),
             )
         )
 
@@ -175,9 +177,9 @@ class CategoryPage(catalog.CategoryPage):
                 product_pages=models.ProductPage.objects.all(),
             )
             | context.TaggedCategory(tags=models.Tag.objects.all())
-            | context.ProductImages()
             | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
+            | context.ProductImages()
             | context.DBTemplate()  # requires TaggedCategory
         )
         return {
@@ -245,7 +247,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             url_kwargs={},
             request=request,
             page=category.page,
-            products=models.Product.objects.all(),
+            products=products,
             product_pages=models.ProductPage.objects.all(),
         )
         | context.ProductImages()
