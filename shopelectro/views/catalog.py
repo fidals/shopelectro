@@ -83,8 +83,10 @@ class ProductPage(catalog.ProductPage):
                 url_kwargs={},
                 request=self.request,
                 page=self.product.page,
-                products=models.Product.objects.all(),
-                product_pages=models.ProductPage.objects.all(),
+                products=models.Product.objects.filter(id=self.product.id),
+                product_pages=models.ProductPage.objects.filter(
+                    shopelectro_product=self.product
+                ),
             )
         )
 

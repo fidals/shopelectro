@@ -1,3 +1,4 @@
+{% load cache %}
 {% load pages_extras %}
 {% load se_extras %}
 {% load static %}
@@ -114,29 +115,32 @@
           </div>
         </div>
 
-        <div class="nav-category-wrapper hidden-xs hidden-sm">
-          <ul class="nav-category list-unstyled">
-            {% for root in root_categories %}
+        {% comment %}Cache for a day{% endcomment %}
+        {% cache 86400 categories_menu %}
+          <div class="nav-category-wrapper hidden-xs hidden-sm">
+            <ul class="nav-category list-unstyled">
+              {% for root in root_categories %}
+                <li class="nav-category-item js-menu-item">
+                  <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
+                  {% if root.get_children %}
+                    <ul class="list-white nav-menu-dropdown">
+                      {% for child in root.get_children %}
+                        <li>
+                          <a href="{{ child.url }}" class="list-white-link">
+                            {{ child.name }}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endfor %}
               <li class="nav-category-item js-menu-item">
-                <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
-                {% if root.get_children %}
-                  <ul class="list-white nav-menu-dropdown">
-                    {% for child in root.get_children %}
-                      <li>
-                        <a href="{{ child.url }}" class="list-white-link">
-                          {{ child.name }}
-                        </a>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
+                <a class="nav-category-link" href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
               </li>
-            {% endfor %}
-            <li class="nav-category-item js-menu-item">
-              <a class="nav-category-link" href="{% url 'pages:flat_page' 'remont-akkumulyatorov' %}" title="Ремонт аккумуляторов">Ремонт аккумуляторов</a>
-            </li>
-          </ul>
-        </div>
+            </ul>
+          </div>
+        {% endcache %}
       </div>
     {% endif %}
   </div>
