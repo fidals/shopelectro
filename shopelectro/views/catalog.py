@@ -249,12 +249,17 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             url_kwargs={},
             request=request,
             page=category.page,
-            products=all_products,
+            products=models.Product.objects.all(),
             product_pages=models.ProductPage.objects.filter(
                 shopelectro_product__in=products
             ),
         )
-        | context.ProductImages(products=products)
+        | context.ProductImages(
+            products=products,
+            product_pages=models.ProductPage.objects.filter(
+                shopelectro_product__in=products
+            )
+        )
     )
 
     return render(request, 'catalog/category_products.html', {

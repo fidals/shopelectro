@@ -393,13 +393,11 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.wait_page_loading()
 
         self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'js-toggle-tag-group')
-        )).click()
-
-        self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, self.filter_tag)
         )).click()
+        old_url = self.browser.current_url
         self.browser.find_element_by_class_name(self.apply_btn).click()
+        self.wait.until(EC.url_changes(old_url))
 
         self.load_more_products()
         new_product_cards = len(self.browser.find_elements_by_class_name('product-card'))
