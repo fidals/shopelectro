@@ -131,9 +131,9 @@ class IndexPage(pages_views.CustomPageView):
         tile_products = []
         top_products = (
             models.Product.objects.active()
-                .filter(id__in=settings.TOP_PRODUCTS)
-                .prefetch_related('category')
-                .select_related('page')
+            .filter(id__in=settings.TOP_PRODUCTS)
+            .prefetch_related('category')
+            .select_related('page')
         )
         if not mobile_view:
             tile_products = context.prepare_tile_products(

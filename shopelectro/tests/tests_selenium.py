@@ -193,6 +193,13 @@ class CategoryPage(helpers.SeleniumTestCase):
     def is_empty_cart(self):
         return is_cart_empty(self.browser)
 
+    def apply_tags(self):
+        """Push "apply" button with trailing page reloading."""
+        old_url = self.browser.current_url
+        self.browser.find_element_by_class_name(self.apply_btn).click()
+        self.wait.until(EC.url_changes(old_url))
+        self.wait_page_loading()
+
     def test_breadcrumbs(self):
         """
         Test breadcrumbs.
@@ -346,10 +353,7 @@ class CategoryPage(helpers.SeleniumTestCase):
 
         before_products_count = self.browser.find_element_by_class_name(total_class).text
         self.browser.find_element_by_css_selector(self.filter_tag).click()
-        old_url = self.browser.current_url
-        self.browser.find_element_by_class_name(self.apply_btn).click()
-        self.wait.until(EC.url_changes(old_url))
-        self.wait_page_loading()
+        self.apply_tags()
 
         after_products_count = self.browser.find_element_by_class_name(total_class).text
         self.assertTrue(int(before_products_count) > int(after_products_count))
@@ -398,9 +402,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, self.filter_tag)
         )).click()
-        old_url = self.browser.current_url
-        self.browser.find_element_by_class_name(self.apply_btn).click()
-        self.wait.until(EC.url_changes(old_url))
+        self.apply_tags()
 
         self.load_more_products()
         new_product_cards = len(self.browser.find_elements_by_class_name('product-card'))
