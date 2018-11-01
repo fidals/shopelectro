@@ -141,7 +141,6 @@ class CategoryPage(helpers.SeleniumTestCase):
     def setUp(self):
         def get_testing_url(slug):
             return self.live_server_url + reverse('category', args=(slug,))
-        self.browser.delete_all_cookies()
 
         root_category = Category.objects_.filter(parent=None).first()
         children_category = Category.objects_.filter(parent=root_category).first()
@@ -161,6 +160,10 @@ class CategoryPage(helpers.SeleniumTestCase):
 
         self.apply_btn = 'js-apply-filter'
         self.filter_tag = 'label[for="tag-24-v"]'
+
+    def tearDown(self):
+        self.browser.delete_all_cookies()
+        self.browser.execute_script('localStorage.clear();')
 
     @property
     def product_card(self):
