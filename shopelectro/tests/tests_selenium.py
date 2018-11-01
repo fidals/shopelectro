@@ -141,7 +141,6 @@ class CategoryPage(helpers.SeleniumTestCase):
     def setUp(self):
         def get_testing_url(slug):
             return self.live_server_url + reverse('category', args=(slug,))
-        self.browser.delete_all_cookies()
 
         root_category = Category.objects_.filter(parent=None).first()
         children_category = Category.objects_.filter(parent=root_category).first()
@@ -161,6 +160,10 @@ class CategoryPage(helpers.SeleniumTestCase):
 
         self.apply_btn = 'js-apply-filter'
         self.filter_tag = 'label[for="tag-24-v"]'
+
+    def tearDown(self):
+        self.browser.delete_all_cookies()
+        self.browser.execute_script('localStorage.clear();')
 
     @property
     def product_card(self):
@@ -189,6 +192,13 @@ class CategoryPage(helpers.SeleniumTestCase):
     @property
     def is_empty_cart(self):
         return is_cart_empty(self.browser)
+
+    def apply_tags(self):
+        """Push "apply" button with trailing page reloading."""
+        old_url = self.browser.current_url
+        self.browser.find_element_by_class_name(self.apply_btn).click()
+        self.wait.until(EC.url_changes(old_url))
+        self.wait_page_loading()
 
     def test_breadcrumbs(self):
         """
@@ -343,10 +353,7 @@ class CategoryPage(helpers.SeleniumTestCase):
 
         before_products_count = self.browser.find_element_by_class_name(total_class).text
         self.browser.find_element_by_css_selector(self.filter_tag).click()
-        old_url = self.browser.current_url
-        self.browser.find_element_by_class_name(self.apply_btn).click()
-        self.wait.until(EC.url_changes(old_url))
-        self.wait_page_loading()
+        self.apply_tags()
 
         after_products_count = self.browser.find_element_by_class_name(total_class).text
         self.assertTrue(int(before_products_count) > int(after_products_count))
@@ -393,13 +400,9 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.wait_page_loading()
 
         self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'js-toggle-tag-group')
-        )).click()
-
-        self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, self.filter_tag)
         )).click()
-        self.browser.find_element_by_class_name(self.apply_btn).click()
+        self.apply_tags()
 
         self.load_more_products()
         new_product_cards = len(self.browser.find_elements_by_class_name('product-card'))

@@ -131,9 +131,9 @@ class IndexPage(pages_views.CustomPageView):
         tile_products = []
         top_products = (
             models.Product.objects.active()
-                .filter(id__in=settings.TOP_PRODUCTS)
-                .prefetch_related('category')
-                .select_related('page')
+            .filter(id__in=settings.TOP_PRODUCTS)
+            .prefetch_related('category')
+            .select_related('page')
         )
         if not mobile_view:
             tile_products = context.prepare_tile_products(
@@ -249,10 +249,17 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             url_kwargs={},
             request=request,
             page=category.page,
-            products=products,
-            product_pages=models.ProductPage.objects.all(),
+            products=models.Product.objects.all(),
+            product_pages=models.ProductPage.objects.filter(
+                shopelectro_product__in=products
+            ),
         )
-        | context.ProductImages()
+        | context.ProductImages(
+            products=products,
+            product_pages=models.ProductPage.objects.filter(
+                shopelectro_product__in=products
+            )
+        )
     )
 
     return render(request, 'catalog/category_products.html', {
