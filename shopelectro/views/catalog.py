@@ -11,6 +11,7 @@ from catalog import context
 from catalog.views import catalog
 from pages import views as pages_views
 
+from shopelectro import context as se_context
 from shopelectro import models
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -76,7 +77,7 @@ class ProductPage(catalog.ProductPage):
 
     def get_images_context(self):
         return (
-            context.ProductImages(
+            se_context.ProductImages(
                 url_kwargs={},
                 request=self.request,
                 page=self.product.page,
@@ -173,7 +174,7 @@ class CategoryPage(catalog.CategoryPage):
             | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
             | context.ProductBrands()  # requires TaggedCategory
-            | context.ProductImages()
+            | se_context.ProductImages()
             | context.DBTemplate()  # requires TaggedCategory
         )
         return {
@@ -250,7 +251,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
         | context.SortingCategory()  # requires TaggedCategory
         | context.PaginationCategory()  # requires SortingCategory
         | context.ProductBrands()  # requires TaggedCategory
-        | context.ProductImages()
+        | se_context.ProductImages()
         | context.DBTemplate()  # requires TaggedCategory
     )
 
