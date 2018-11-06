@@ -71,7 +71,7 @@ class ProductPage(catalog.ProductPage):
             **context_,
             'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': self.product.get_params(),
-            'product_images': self.get_images_context()['product_images'],
+            'product_images': self.get_images_context_data()['product_images'],
             'tile_products': self.product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
         }
 
@@ -109,7 +109,7 @@ class ProductPage(catalog.ProductPage):
             )
 
             context_['product_images'] = (
-                self.get_images_context().get_context_data()['product_images']
+                self.get_images_context_data()['product_images']
             )
             return render(request, 'catalog/product_404.html', context_, status=404)
 
