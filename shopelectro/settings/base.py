@@ -313,6 +313,7 @@ SHOP = {
     'success_url': BASE_URL + '/shop/order-success/',
     'fail_url': BASE_URL + '/',
     'cps_phone': '+78124163200',
+    'cps_formatted_phone': '416-32-00',
     'cps_email': 'info@shopelectro.ru',
     'local_delivery_cost': 300,
     'local_delivery_cost_threshold': 5000,
