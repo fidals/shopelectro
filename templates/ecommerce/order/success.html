@@ -18,7 +18,7 @@
       data-total-revenue="{{ total_revenue }}">
       <p>Номер вашего заказа {{ order.fake_order_number }}</p>
       <p>{% time_to_call %}</p>
-      <p>Контактный телефон: <a href="tel:{{ shop.cps_phone }}">8 (812) {{ shop.cps_formatted_phone }}</a></p>
+      <p>Телефон магазина: <a href="tel:{{ shop.cps_phone }}">8 (812) {{ shop.cps_formatted_phone }}</a></p>
 
       {% if order.email %}
         <p>Электронная почта: {{ order.email }}</p>
