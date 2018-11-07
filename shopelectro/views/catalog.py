@@ -11,6 +11,7 @@ from catalog import context
 from catalog.views import catalog
 from pages import views as pages_views
 
+from shopelectro import context as se_context
 from shopelectro import models
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -70,16 +71,13 @@ class ProductPage(catalog.ProductPage):
             **context_,
             'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': self.product.get_params(),
-            'product_images': self.get_images_context().get_context_data()['product_images'],
-            'tile_products': context.prepare_tile_products(
-                self.product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
-                models.ProductPage.objects.all()
-            ),
+            'product_images': self.get_images_context_data()['product_images'],
+            'tile_products': self.product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
         }
 
-    def get_images_context(self):
+    def get_images_context_data(self) -> dict:
         return (
-            context.ProductImages(
+            se_context.ProductImages(
                 url_kwargs={},
                 request=self.request,
                 page=self.product.page,
@@ -87,7 +85,7 @@ class ProductPage(catalog.ProductPage):
                 product_pages=models.ProductPage.objects.filter(
                     shopelectro_product=self.product
                 ),
-            )
+            ).get_context_data()
         )
 
     def render_siblings_on_404(
@@ -103,18 +101,15 @@ class ProductPage(catalog.ProductPage):
             self.object = inactive_product
             context_ = self.get_context_data(
                 object=inactive_product,
-                tile_products=context.prepare_tile_products(
-                    inactive_product.get_siblings(
-                        offset=settings.PRODUCT_SIBLINGS_COUNT
-                    ),
-                    models.ProductPage.objects.all()
+                tile_products=inactive_product.get_siblings(
+                    offset=settings.PRODUCT_SIBLINGS_COUNT
                 ),
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
 
             context_['product_images'] = (
-                self.get_images_context().get_context_data()['product_images']
+                self.get_images_context_data()['product_images']
             )
             return render(request, 'catalog/product_404.html', context_, status=404)
 
@@ -136,10 +131,7 @@ class IndexPage(pages_views.CustomPageView):
             .select_related('page')
         )
         if not mobile_view:
-            tile_products = context.prepare_tile_products(
-                top_products,
-                models.ProductPage.objects.all()
-            )
+            tile_products = top_products
 
         return {
             **context_,
@@ -147,21 +139,21 @@ class IndexPage(pages_views.CustomPageView):
             'category_tile': settings.MAIN_PAGE_TILE,
             'tile_products': tile_products,
             'product_images': (
-                self
-                .get_images_context(products=top_products)
-                .get_context_data()['product_images']
+                self.get_products_context_data(
+                    products=top_products
+                )['product_images']
             )
         }
 
-    def get_images_context(self, products=None, product_pages=None):
+    def get_products_context_data(self, products=None, product_pages=None) -> dict:
         return (
-            context.ProductImages(
+            se_context.ProductImages(
                 url_kwargs={},  # Ignore CPDBear
                 request=self.request,
                 page=self.object,
                 products=products or models.Product.objects.all(),
                 product_pages=product_pages or models.ProductPage.objects.all(),
-            )
+            ).get_context_data()
         )
 
 
@@ -176,12 +168,13 @@ class CategoryPage(catalog.CategoryPage):
                 request=self.request,
                 page=self.object,
                 products=models.Product.objects.all(),
-                product_pages=models.ProductPage.objects.all(),
+                product_pages=models.ProductPage.objects.all(),  # Ignore CPDBear
             )
             | context.TaggedCategory(tags=models.Tag.objects.all())
             | context.SortingCategory()  # requires TaggedCategory
             | context.PaginationCategory()  # requires SortingCategory
-            | context.ProductImages()
+            | context.ProductBrands()  # requires TaggedCategory
+            | se_context.ProductImages()
             | context.DBTemplate()  # requires TaggedCategory
         )
         return {
@@ -244,7 +237,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
 
-    context_ = (
+    data_from_context = (
         context.Category(
             url_kwargs={},
             request=request,
@@ -254,19 +247,18 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
                 shopelectro_product__in=products
             ),
         )
-        | context.ProductImages(
-            products=products,
-            product_pages=models.ProductPage.objects.filter(
-                shopelectro_product__in=products
-            )
-        )
-    )
+        | context.TaggedCategory(tags=models.Tag.objects.all())
+        | context.SortingCategory()  # requires TaggedCategory
+        | context.PaginationCategory()  # requires SortingCategory
+        | context.ProductBrands()  # requires TaggedCategory
+        | se_context.ProductImages()
+        | context.DBTemplate()  # requires TaggedCategory
+    ).get_context_data()
 
     return render(request, 'catalog/category_products.html', {
-        'products_data': context.prepare_tile_products(
-            products, models.ProductPage.objects.all()
-        ),
-        'product_images': context_.get_context_data()['product_images'],
+        'products': products,
+        'product_images': data_from_context['product_images'],
+        'product_brands': data_from_context['product_brands'],
         'paginated': paginated,
         'paginated_page': paginated_page,
         'view_type': view,

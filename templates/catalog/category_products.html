@@ -2,7 +2,7 @@
 {% load se_extras %}
 {% load user_agents %}
 
-{% for product, brand in products_data %}
+{% for product in products %}
   <div class="product-card col-xs-6 col-md-4" data-product-id="{{ product.id }}"
        itemscope itemtype="https://schema.org/Product">
     <meta property="name" itemprop="name" content="{{ product.name }}">
@@ -40,14 +40,16 @@
       <div class="js-order order row">
         <input class="col-xs-4 input-number category-prods-count js-product-count js-touchspin"
                type="number" value="1">
-        <button class="btn btn-blue btn-category-buy js-product-to-cart"
-                data-product-id="{{ product.id }}" data-product-price="{{ product.price }}"
-                data-product-name="{{ product.name }}"
-                data-product-brand="{% if brand %}{{ brand.name }}{% endif %}">
-          Купить
-        </button>
+        {% with brand=product_brands|get_item:product.id %}
+          <button class="btn btn-blue btn-category-buy js-product-to-cart"
+                  data-product-id="{{ product.id }}" data-product-price="{{ product.price }}"
+                  data-product-name="{{ product.name }}"
+                  data-product-brand="{% if brand %}{{ brand.name }}{% endif %}">
+            Купить
+          </button>
+        {% endwith %}
       </div>
     </div>
   </div>
 {% endfor %}
-<div class="hidden js-products-loaded">{{ products_data|length }}</div>
+<div class="hidden js-products-loaded">{{ products|length }}</div>

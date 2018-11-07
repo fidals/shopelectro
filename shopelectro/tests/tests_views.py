@@ -19,8 +19,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from catalog import context
-
 from shopelectro import models
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 from shopelectro.tests.helpers import create_doubled_tag
@@ -75,20 +73,6 @@ class BaseCatalogTestCase(TestCase):
         return self.client.get(reverse_catalog_url(
             'category', {'slug': category.page.slug}, tags, sorting, query_string,
         ))
-
-
-class CatalogPage(BaseCatalogTestCase):
-
-    def test_merge_product_cache(self):
-        """Context merging should cached."""
-        products = models.Product.objects.all()[:2]
-        product_pages = models.ProductPage.objects.all()
-        with self.assertNumQueries(1):
-            # N db queries without before cached
-            context.prepare_tile_products(products, product_pages)
-        with self.assertNumQueries(0):
-            # no db queries after cached
-            context.prepare_tile_products(products, product_pages)
 
 
 class CatalogTags(BaseCatalogTestCase):
@@ -258,7 +242,7 @@ class CatalogPagination(BaseCatalogTestCase):
         """Category page contains `pagination_step` count of products in list."""
         pagination_step = 25
         response = self.get_category_page(query_string={'step': pagination_step})
-        self.assertEqual(len(response.context['products_data']), pagination_step)
+        self.assertEqual(len(response.context['products']), pagination_step)
 
     def test_pagination_404(self):
         """Category page returns 404 for a nonexistent page number."""
