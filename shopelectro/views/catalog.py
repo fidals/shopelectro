@@ -168,7 +168,7 @@ class CategoryPage(catalog.CategoryPage):
                 request=self.request,
                 page=self.object,
                 products=models.Product.objects.all(),
-                product_pages=models.ProductPage.objects.all(),
+                product_pages=models.ProductPage.objects.all(),  # Ignore CPDBear
             )
             | context.TaggedCategory(tags=models.Tag.objects.all())
             | context.SortingCategory()  # requires TaggedCategory
