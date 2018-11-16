@@ -604,27 +604,11 @@ class ProductPage(helpers.SeleniumTestCase):
         self.assertTrue(feedbacks)
 
 
-# @todo #rf182:120m Csrf problems with OrderPage test.
-#  The fourth test (test_empty_cart here) produces error for csrf token:
-#  `Forbidden (CSRF cookie not set.): /shop/cart-add/`
-#  Problem does not occur if we start test `test_empty_cart` as single.
-#  See and launch `test_csrf_problem` method of this class.
 @helpers.disable_celery
-@unittest.skip
 class OrderPage(helpers.SeleniumTestCase):
 
     # Ya.Kassa's domain with card processing UI
     YA_KASSA_INNER_DOMAIN = 'money.yandex.ru'
-
-    def test_csrf_problem(self):
-        self.setUp()
-        self.tearDown()
-        self.setUp()
-        self.tearDown()
-        self.setUp()
-        self.tearDown()
-        self.setUp()
-        self.tearDown()
 
     @staticmethod
     def get_cell(pos, col):
@@ -641,7 +625,6 @@ class OrderPage(helpers.SeleniumTestCase):
         return product_row.format(pos=pos, col=cols[col])
 
     def setUp(self):
-        self.browser.delete_all_cookies()
         self.order_page = CustomPage.objects.get(slug='order')
         self.cart_dropdown = 'basket-parent'
         self.first_product_id = '405'
@@ -659,6 +642,9 @@ class OrderPage(helpers.SeleniumTestCase):
         wait_page_loading(self.browser)
 
     def tearDown(self):
+        # Delete only a session cookie to flush a cart.
+        # If we will flush all cookies it will probably rise csrf-protection errors.
+        self.browser.delete_cookie('sessionid')
         self.browser.execute_script('localStorage.clear();')
 
     def buy_products(self):
@@ -698,8 +684,6 @@ class OrderPage(helpers.SeleniumTestCase):
         # @todo #473:30m Hide all form processing methods to a separated class.
         self.click((By.ID, 'submit-order'))
 
-    @unittest.skip
-    # will be resolved with pdd task from `test_order_email`
     def test_table_is_presented_if_there_is_some_products(self):
         """If there are some products in cart, we should see them in table on OrderPage."""
         order_table = self.browser.find_element_by_class_name('order-list')
@@ -716,8 +700,6 @@ class OrderPage(helpers.SeleniumTestCase):
             self.browser.find_element_by_class_name('order-list').text
         )
 
-    # @todo #493:15m Resurrect test `test_empty_cart`
-    @unittest.skip
     def test_empty_cart(self):
         """After removing every product from cart we should see that it is empty."""
         removes = self.browser.find_elements_by_class_name('js-remove')
@@ -780,9 +762,6 @@ class OrderPage(helpers.SeleniumTestCase):
             self.live_server_url + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success', ))
         )
 
-    # @todo #rf182:30m Resolve problems with csrf for test.
-    #  For `test_table_is_presented_if_there_is_some_products` too.
-    @unittest.skip
     @helpers.disable_celery
     def test_order_email(self):
         codes = self.browser.find_elements_by_class_name(
