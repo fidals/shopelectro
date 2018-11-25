@@ -9,6 +9,7 @@ import unittest
 
 from django.conf import settings
 from django.urls import reverse
+from django.test import tag
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -53,6 +54,7 @@ class AdminSeleniumTestCase(helpers.SeleniumTestCase):
         self.signin()
 
 
+@tag('slow')
 @helpers.enable_russian_language
 class AdminPage(AdminSeleniumTestCase):
     """Selenium-based tests for Admin page UI."""
@@ -330,6 +332,7 @@ class AdminPage(AdminSeleniumTestCase):
         self.assertTrue('Письмо с отзывом успешно отправлено' in self.browser.page_source)
 
 
+@tag('slow')
 @helpers.enable_russian_language
 class TableEditor(AdminSeleniumTestCase):
     """Selenium-based tests for Table Editor [TE]."""

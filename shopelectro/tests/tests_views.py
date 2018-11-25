@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -75,6 +75,7 @@ class BaseCatalogTestCase(TestCase):
         ))
 
 
+@tag('fast')
 class CatalogTags(BaseCatalogTestCase):
 
     def test_category_page_contains_all_tags(self):
@@ -223,6 +224,7 @@ class CatalogTags(BaseCatalogTestCase):
         self.assertEqual(response.status_code, 404)
 
 
+@tag('fast')
 class CatalogPagination(BaseCatalogTestCase):
 
     def test_pagination_numbering(self):
@@ -302,6 +304,7 @@ class CatalogPagination(BaseCatalogTestCase):
         )
 
 
+@tag('fast')
 class LoadMore(TestCase):
 
     fixtures = ['dump.json']
@@ -349,6 +352,7 @@ class LoadMore(TestCase):
         )
 
 
+@tag('fast')
 class SitemapXML(TestCase):
     """
     Test Sitemap XML.
@@ -379,6 +383,7 @@ class SitemapXML(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+@tag('fast')
 class RobotsPage(TestCase):
 
     fixtures = ['dump.json']
@@ -390,6 +395,7 @@ class RobotsPage(TestCase):
         self.assertEqual(self.response.status_code, 200)
 
 
+@tag('fast')
 class SitemapPage(TestCase):
 
     fixtures = ['dump.json']
@@ -409,6 +415,7 @@ class SitemapPage(TestCase):
         self.assertIn(sitemap_url_slug, self.response.content.decode('utf-8'))
 
 
+@tag('fast')
 class YandexKassa(TestCase):
     """
     Test yandex check order and yandex aviso.
@@ -467,6 +474,7 @@ class YandexKassa(TestCase):
         self.assertContains(response, 'code="1"')
 
 
+@tag('fast')
 class ProductPage(TestCase):
 
     fixtures = ['dump.json']
@@ -526,6 +534,7 @@ class ProductPage(TestCase):
         self.assertNotIn('logo', img_path)
 
 
+@tag('fast')
 class ProductPageSchema(TestCase):
 
     fixtures = ['dump.json']
@@ -550,6 +559,7 @@ class ProductPageSchema(TestCase):
         )
 
 
+@tag('fast')
 class ProductsWithoutContent(TestCase):
 
     def test_products_without_images(self):
@@ -561,6 +571,7 @@ class ProductsWithoutContent(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+@tag('fast')
 class TestSearch(TestCase):
     """Test all search methods: search page and autocompletes."""
 

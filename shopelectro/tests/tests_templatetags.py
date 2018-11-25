@@ -1,9 +1,10 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from shopelectro.models import Category
 from shopelectro.templatetags.se_extras import roots
 
 
+@tag('fast')
 class TemplateTags(TestCase):
 
     fixtures = ['dump.json']

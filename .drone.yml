@@ -43,7 +43,7 @@ pipeline:
     when:
       event: [push, pull_request]
 
-  test:
+  fast-test:
     image: fidals/se:dev
     secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS ]
     environment:
@@ -68,7 +68,32 @@ pipeline:
       - python manage.py excel
       - python manage.py price
       - python manage.py collectstatic --noinput
-      - python manage.py test --parallel --liveserver=test:8021-8029
+      - python manage.py test --parallel --tag fast -k -v 3
+    when:
+      event: [push, pull_request]
+
+  slow-test:
+    image: fidals/se:dev
+    secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS ]
+    environment:
+      - TEST_ENV=true
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_URL=postgres
+      - POSTGRES_DB=test
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=test
+      - RABBITMQ_URL=rabbitmq
+      - RABBITMQ_PORT=5672
+      - SELENIUM_URL=http://selenium:4444/wd/hub
+      - FTP_IP=${FTP_IP}
+      - FTP_USER=${FTP_USER}
+      - FTP_PASS=${FTP_PASS}
+      - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
+      - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
+    commands:
+      - python manage.py test --liveserver=slow-test:8021-8029 --parallel --tag slow -k -v 3
     when:
       event: [push, pull_request]
 

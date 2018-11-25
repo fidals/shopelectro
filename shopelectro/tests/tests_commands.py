@@ -14,7 +14,7 @@ from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
@@ -39,6 +39,7 @@ def get_tag_as_dict(group: str, tag: str):
 
 # @todo #603:30m Resurrect update_catalog tests.
 #  Now we have problems with files downloading.
+@tag('slow')
 @unittest.skip
 class UpdateProducts(TestCase):
 
@@ -142,6 +143,7 @@ class UpdateProducts(TestCase):
         self.assertEqual(updated_tags_count + create_count, Tag.objects.count())
 
 
+@tag('fast')
 class GeneratePrices(TestCase):
 
     fixtures = ['dump.json']
