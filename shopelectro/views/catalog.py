@@ -211,8 +211,11 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     category = get_object_or_404(models.CategoryPage, slug=category_slug).model
     sorting_option = context.SortingOption(index=int(sorting))
 
-    all_products = models.Product.objects.active().get_category_descendants(
-        category, ordering=(sorting_option.directed_field,)
+    all_products = (
+        models.Product.objects
+        .active()
+        .get_category_descendants(category)
+        .order_by(sorting_option.directed_field)
     )
 
     if tags:
@@ -225,7 +228,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             .filter(tags__in=tag_entities)
             # Use distinct because filtering by QuerySet tags,
             # that related with products by many-to-many relation.
-            .distinct(sorting_option.field)
+            .distinct()
         )
 
     paginated = context.PaginatorLinks(
