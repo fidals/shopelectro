@@ -145,3 +145,10 @@ for info about both of them.
 ## Новый год
 - Как добавляли - https://github.com/fidals/shopelectro/pull/224
 - Как удаляли - https://github.com/fidals/shopelectro/pull/278
+
+## Товары без картинок
+Есть отдельная ссылка на товары без картинок для удобства
+- [Separated no-images link](https://www.shopelectro.ru/catalog/no-images/).
+It's good to print list.
+- [Link to no-images prods in admin panel](https://www.shopelectro.ru/admin/shopelectro/productpage/?has_images=no&is_active__exact=1).
+It has filters.  
