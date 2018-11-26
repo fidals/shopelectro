@@ -474,6 +474,17 @@ class ProductPage(TestCase):
     def setUp(self):
         self.product = models.Product.objects.first()
 
+    def get_product_page(self, product: models.Product=None):
+        product = product or self.product
+        return self.client.get(product.url)
+
+    def get_product_soup(self, product: models.Product=None) -> BeautifulSoup:
+        product_page = self.get_product_page(product)
+        return BeautifulSoup(
+            product_page.content.decode('utf-8'),
+            'html.parser'
+        )
+
     def test_orphan_product(self):
         self.product.category = None
         self.product.save()
@@ -483,7 +494,7 @@ class ProductPage(TestCase):
 
     def test_related_products(self):
         """404 page of sometimes removed product should contain product's siblings."""
-        response = self.client.get(self.product.url)
+        response = self.get_product_page()
         # 404 page should show 10 siblings. We'll check the last one
         sibling_product = self.product.category.products.all()[9]
         self.assertTrue(
@@ -495,13 +506,25 @@ class ProductPage(TestCase):
         self.product.page.is_active = False
         self.product.save()  # saves product.page too
 
-        response = self.client.get(self.product.url)
+        response = self.get_product_page()
         # 404 page should show 10 siblings. We'll check the last one
         sibling_product = self.product.category.products.all()[9]
         self.assertEqual(response.status_code, 404)
         self.assertTrue(
             sibling_product.name in str(response.content)
         )
+
+    def test_related_product_images(self):
+        """Check previews for product's siblings on product page."""
+        product_soup = self.get_product_soup(product=models.Product.objects.get(id=19))
+        response = self.get_product_page()
+        img_path = (
+            product_soup
+            .find_all(class_='stuff-top-item')[-1]
+            .find('img')['src']
+        )
+        # app shows logo image if preview can't generated
+        self.assertNotIn('logo', img_path)
 
 
 class ProductPageSchema(TestCase):
