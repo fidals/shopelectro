@@ -228,7 +228,8 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
             .filter(tags__in=tag_entities)
             # Use distinct because filtering by QuerySet tags,
             # that related with products by many-to-many relation.
-            .distinct()
+            # Add `id` because `sorting_option.directed_field` maybe not uniq.
+            .distinct('id', sorting_option.directed_field)
         )
 
     paginated = context.PaginatorLinks(
