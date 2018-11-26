@@ -407,7 +407,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.load_more_products()
         new_product_cards = len(self.browser.find_elements_by_class_name('product-card'))
 
-        self.assertEqual(new_product_cards, 50)
+        self.assertEqual(new_product_cards, 96)
 
 
 class ProductPage(helpers.SeleniumTestCase):
