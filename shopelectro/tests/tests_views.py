@@ -517,7 +517,6 @@ class ProductPage(TestCase):
     def test_related_product_images(self):
         """Check previews for product's siblings on product page."""
         product_soup = self.get_product_soup(product=models.Product.objects.get(id=19))
-        response = self.get_product_page()
         img_path = (
             product_soup
             .find_all(class_='stuff-top-item')[-1]
