@@ -67,23 +67,31 @@ class ProductPage(catalog.ProductPage):
             # with it's own logic
             return context_
 
+        tile_products = self.product.get_siblings(
+            offset=settings.PRODUCT_SIBLINGS_COUNT
+        )
+        product_images = self.get_images_context_data(tile_products)['product_images']
+
         return {
             **context_,
             'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': self.product.get_params(),
-            'product_images': self.get_images_context_data()['product_images'],
-            'tile_products': self.product.get_siblings(offset=settings.PRODUCT_SIBLINGS_COUNT),
+            'product_images': product_images,
+            'tile_products': tile_products,
         }
 
-    def get_images_context_data(self) -> dict:
+    def get_images_context_data(self, products) -> dict:
+        """Return images for given products."""
+        products_to_filter = [self.product, *products]
+        product_ids_to_filter = [p.id for p in products_to_filter]
         return (
             se_context.ProductImages(
                 url_kwargs={},
                 request=self.request,
                 page=self.product.page,
-                products=models.Product.objects.filter(id=self.product.id),
+                products=models.Product.objects.filter(id__in=product_ids_to_filter),
                 product_pages=models.ProductPage.objects.filter(
-                    shopelectro_product=self.product
+                    shopelectro_product__in=products_to_filter
                 ),
             ).get_context_data()
         )
@@ -98,18 +106,19 @@ class ProductPage(catalog.ProductPage):
             page__is_active=False
         ).first()
         if inactive_product:
+            siblings = inactive_product.get_siblings(
+                offset=settings.PRODUCT_SIBLINGS_COUNT
+            )
             self.object = inactive_product
             context_ = self.get_context_data(
                 object=inactive_product,
-                tile_products=inactive_product.get_siblings(
-                    offset=settings.PRODUCT_SIBLINGS_COUNT
-                ),
+                tile_products=siblings,
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
 
             context_['product_images'] = (
-                self.get_images_context_data()['product_images']
+                self.get_images_context_data(siblings)['product_images']
             )
             return render(request, 'catalog/product_404.html', context_, status=404)
 
