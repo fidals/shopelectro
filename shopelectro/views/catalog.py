@@ -106,18 +106,19 @@ class ProductPage(catalog.ProductPage):
             page__is_active=False
         ).first()
         if inactive_product:
+            siblings = inactive_product.get_siblings(
+                offset=settings.PRODUCT_SIBLINGS_COUNT
+            )
             self.object = inactive_product
             context_ = self.get_context_data(
                 object=inactive_product,
-                tile_products=inactive_product.get_siblings(
-                    offset=settings.PRODUCT_SIBLINGS_COUNT
-                ),
+                tile_products=siblings,
                 tile_title='Возможно вас заинтересуют похожие товары:',
                 **url_kwargs,
             )
 
             context_['product_images'] = (
-                self.get_images_context_data()['product_images']
+                self.get_images_context_data(siblings)['product_images']
             )
             return render(request, 'catalog/product_404.html', context_, status=404)
 
