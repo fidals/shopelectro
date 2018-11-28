@@ -9,7 +9,7 @@ import unittest
 from django.conf import settings
 from django.core import mail
 from django.db.models import Count
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse  # Ignore CPDBear
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -65,6 +65,7 @@ def wait_page_loading(browser):
     )
 
 
+@tag('slow')
 @helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class Header(helpers.SeleniumTestCase):
@@ -134,6 +135,7 @@ class Header(helpers.SeleniumTestCase):
         self.assertTrue(product_price == product_total_price_in_cart)
 
 
+@tag('slow')
 class CategoryPage(helpers.SeleniumTestCase):
 
     PRODUCTS_TO_LOAD = 48
@@ -410,6 +412,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.assertEqual(new_product_cards, 96)
 
 
+@tag('slow')
 class ProductPage(helpers.SeleniumTestCase):
 
     PRODUCT_ID = 1
@@ -604,6 +607,7 @@ class ProductPage(helpers.SeleniumTestCase):
         self.assertTrue(feedbacks)
 
 
+@tag('slow')
 @helpers.disable_celery
 class OrderPage(helpers.SeleniumTestCase):
 
@@ -823,6 +827,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.assertIn(success_page_domain, self.browser.current_url)
 
 
+@tag('slow')
 class SitePage(helpers.SeleniumTestCase):
 
     def setUp(self):
@@ -879,6 +884,7 @@ class SitePage(helpers.SeleniumTestCase):
         self.assertFalse(accordion_content.is_displayed())
 
 
+@tag('slow')
 @helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class YandexMetrika(helpers.SeleniumTestCase):
@@ -1033,6 +1039,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
 
+@tag('slow')
 class Search(helpers.SeleniumTestCase):
 
     QUERY = 'Cate'

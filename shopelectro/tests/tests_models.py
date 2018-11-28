@@ -3,12 +3,13 @@ from functools import partial
 
 from django.conf import settings
 from django.forms.models import model_to_dict
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, tag
 
 from shopelectro.models import Product, Tag, TagGroup
 from shopelectro.tests.helpers import create_doubled_tag
 
 
+@tag('fast')
 class ProductModel(TestCase):
 
     fixtures = ['dump.json']
@@ -30,6 +31,7 @@ class ProductModel(TestCase):
     # @todo #589:30m Create test for Order.set_positions
 
 
+@tag('fast')
 class TagModel(TestCase):
 
     fixtures = ['dump.json']
@@ -39,9 +41,9 @@ class TagModel(TestCase):
 
     def test_get_brands_content(self):
         brand_group = TagGroup.objects.get(name=settings.BRAND_TAG_GROUP_NAME)
-        for product, tag in Tag.objects.get_brands(self.get_products()).items():
-            self.assertEquals(tag.group, brand_group)
-            self.assertIn(product, tag.products.all())
+        for product, tag_ in Tag.objects.get_brands(self.get_products()).items():
+            self.assertEquals(tag_.group, brand_group)
+            self.assertIn(product, tag_.products.all())
 
     def test_filter_by_products(self):
         sort_by_id = partial(sorted, key=lambda x: x.id)
@@ -60,6 +62,7 @@ class TagModel(TestCase):
         self.assertNotEqual(tag_from.slug, tag_to.slug)
 
 
+@tag('fast')
 class QueryQuantities(TransactionTestCase):
     """Test quantity of db-queries for different methods."""
 

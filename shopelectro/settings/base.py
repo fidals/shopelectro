@@ -219,6 +219,8 @@ LOGGING = {
     },
 }
 
+TEST_RUNNER = 'shopelectro.tests.runner.CheckedTagsRunner'
+
 SITE_CREATED = datetime(2013, 1, 1)
 
 LOCALHOST = 'http://127.0.0.1:8000/'

@@ -1,12 +1,13 @@
 from math import ceil
 
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from shopelectro.cart import SECart
 from shopelectro.models import Product
 
 
+@tag('fast')
 class SECartTest(TestCase):
 
     fixtures = ['dump.json']

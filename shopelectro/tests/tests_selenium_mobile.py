@@ -5,8 +5,7 @@ If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
 from django.conf import settings
-from django.test import LiveServerTestCase
-from django.test import override_settings
+from django.test import LiveServerTestCase, override_settings, tag
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -46,6 +45,7 @@ class MobileSeleniumTestCase(LiveServerTestCase):
         super().tearDownClass()
 
 
+@tag('slow')
 class Mobile(MobileSeleniumTestCase):
 
     def setUp(self):
