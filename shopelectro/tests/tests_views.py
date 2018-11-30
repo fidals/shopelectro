@@ -5,6 +5,7 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
+import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -472,6 +473,48 @@ class YandexKassa(TestCase):
         response = self.yandex_aviso_request()
 
         self.assertContains(response, 'code="1"')
+
+
+@tag('fast')
+class CategoryPage(TestCase):
+
+    fixtures = ['dump.json']
+
+    def setUp(self):
+        self.category = models.Category.objects.first()
+
+    def get_category_page(self, category: models.Category=None):
+        category = category or self.category
+        return self.client.get(category.url)
+
+    # @todo #648:120m Resolve db_template render problem.
+    #  Now the whole app fails trying to render db_template,
+    #  that contains some cyrillic symbols.
+    #  For details see the test below
+    #  and this comment with the traceback:
+    #  https://github.com/fidals/shopelectro/issues/648#issuecomment-443151390
+    @unittest.skip
+    def test_page_db_template_with_special_chars(self):
+        """
+        DB template works with many cyrillic chars in string.
+
+        Now test leads app to fail.
+        Created from se#648
+        """
+        db_template = self.category.page.template
+        db_template.seo_text = (
+            '{% if page.name '
+            '== "Аккумуляторы промышленные 3.7 В, Li-Pol призматические" %}'
+            'some text{% else %}alt text{% endif %}'
+        )
+        db_template.save()
+        rendered_text = db_template.render(
+            field=db_template.seo_text,
+            context={'page': self.category.page}
+        )
+        self.assertEqual('alt text', rendered_text)
+        response = self.get_category_page()
+        self.assertEqual(200, response.status_code)
 
 
 @tag('fast')
