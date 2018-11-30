@@ -476,16 +476,9 @@ class YandexKassa(TestCase):
 
 
 @tag('fast')
-class CategoryPage(TestCase):
+class CategoryPage(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
-
-    def setUp(self):
-        self.category = models.Category.objects.first()
-
-    def get_category_page(self, category: models.Category=None):
-        category = category or self.category
-        return self.client.get(category.url)
 
     # @todo #648:120m Resolve db_template render problem.
     #  Now the whole app fails trying to render db_template,
