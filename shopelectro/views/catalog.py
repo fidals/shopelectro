@@ -253,7 +253,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     products_to_filter = (
         models.Product.objects
         .filter(id__in=[p.id for p in products])
-        .order_by('price')
+        .order_by(sorting_option.directed_field)
     )
     data_from_context = (
         context.Category(

@@ -321,14 +321,13 @@ class LoadMore(TestCase):
         self,
         category: models.Category=None,
         tags: models.TagQuerySet=None,
-        offset: int=DEFAULT_LIMIT,
+        offset: int=0,
         # uncomment after implementation urls for load_more with pagination
         # limit: int=0,
         sorting: int=0,
         query_string: dict=None,
     ) -> HttpResponse:
         category = category or self.category
-        offset = offset or self.DEFAULT_LIMIT
         route_kwargs = {
             'category_slug': category.page.slug,
             'offset': offset,
@@ -348,7 +347,7 @@ class LoadMore(TestCase):
         )
 
     def test_pagination_numbering_first_page(self):
-        self.assertEqual(get_page_number(self.load_more(offset=0)), 1)
+        self.assertEqual(get_page_number(self.load_more()), 1)
 
     def test_pagination_numbering_last_page(self):
         offset = models.Product.objects.get_by_category(self.category).count() - 1
@@ -366,7 +365,7 @@ class LoadMore(TestCase):
 
     def test_image_previews(self):
         """Load_more button should load product with image previews."""
-        load_more_soup = self.get_load_more_soup()
+        load_more_soup = self.get_load_more_soup(offset=self.DEFAULT_LIMIT)
         img_path = (
             load_more_soup
             .find('a', href=f'/catalog/products/{self.PRODUCT_ID_WITH_IMAGE}/')
