@@ -369,7 +369,7 @@ class LoadMore(TestCase):
         load_more_soup = self.get_load_more_soup()
         img_path = (
             load_more_soup
-            .find('a', href='/catalog/products/114/')
+            .find('a', href=f'/catalog/products/{self.PRODUCT_ID_WITH_IMAGE}/')
             .find('img')['src']
         )
         self.assertNotIn('logo', img_path)
