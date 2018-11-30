@@ -34,7 +34,7 @@ class Command(BaseCommand):
         'assets/gold_deer.jpg'
     )
 
-    PRODUCT_WITH_IMAGE = 1
+    PRODUCTS_WITH_IMAGE = [1, 113]
 
     def __init__(self):
         super(BaseCommand, self).__init__()
@@ -94,6 +94,8 @@ class Command(BaseCommand):
             output='shopelectro/fixtures/dump.json'
         )
 
+    # @todo #645:30m Move test_db's product_id to generator. stb2
+    #  Now it uses dirty autoincrement.
     @property
     def product_id(self):
         self._product_id += 1
@@ -161,7 +163,8 @@ class Command(BaseCommand):
             for tag in tags_:
                 product.tags.add(tag)
 
-            if product.id == self.PRODUCT_WITH_IMAGE:
+            if product.id in self.PRODUCTS_WITH_IMAGE:
+                create_images(product.page)
                 create_images(product.page)
 
         def fill_with_products(to_fill, tags_, count):
