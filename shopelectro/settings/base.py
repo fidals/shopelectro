@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'catalog',
     'search',
     'ecommerce',
+    'test_utils',
     'shopelectro',
 ]
 
@@ -219,7 +220,7 @@ LOGGING = {
     },
 }
 
-TEST_RUNNER = 'shopelectro.tests.runner.CheckedTagsRunner'
+TEST_RUNNER = 'test_utils.tests.runner.RefarmTestRunner'
 
 SITE_CREATED = datetime(2013, 1, 1)
 
