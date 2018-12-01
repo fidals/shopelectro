@@ -512,7 +512,7 @@ class CategoryPage(BaseCatalogTestCase):
     #  For details see the test below
     #  and this comment with the traceback:
     #  https://github.com/fidals/shopelectro/issues/648#issuecomment-443151390
-    @unittest.skip
+    # @unittest.skip
     def test_page_db_template_with_special_chars(self):
         """
         DB template works with many cyrillic chars in string.
