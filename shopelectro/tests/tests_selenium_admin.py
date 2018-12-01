@@ -119,7 +119,7 @@ class AdminPage(AdminSeleniumTestCase):
         ))
 
     def get_paginator_text(self) -> str:
-        """Contains text about table elements count."""
+        """Contain text about table elements count."""
         return self.wait.until(EC.visibility_of_element_located(
             (By.CLASS_NAME, 'paginator')
         )).text

@@ -339,7 +339,7 @@ class LoadMore(TestCase):
         ))
 
     def get_load_more_soup(self, *args, **kwargs) -> BeautifulSoup:
-        """Uses interface of `self.load_more` method."""
+        """Use interface of `self.load_more` method."""
         load_more_response = self.load_more(*args, **kwargs)
         return BeautifulSoup(
             load_more_response.content.decode('utf-8'),
