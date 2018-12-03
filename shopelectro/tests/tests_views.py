@@ -29,7 +29,7 @@ CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
 
 
 def reverse_catalog_url(
-    url: str,
+    route: str,
     route_kwargs: dict,
     tags: models.TagQuerySet=None,
     sorting: int=None,
@@ -44,7 +44,7 @@ def reverse_catalog_url(
     if sorting is not None:
         route_kwargs['sorting'] = sorting
 
-    return f'{reverse(url, kwargs=route_kwargs)}{query_string}'
+    return f'{reverse(route, kwargs=route_kwargs)}{query_string}'
 
 
 def get_page_number(response):
@@ -69,10 +69,11 @@ class BaseCatalogTestCase(TestCase):
         tags: models.TagQuerySet=None,
         sorting: int=None,
         query_string: dict=None,
+        route='category',
     ):
         category = category or self.category
         return self.client.get(reverse_catalog_url(
-            'category', {'slug': category.page.slug}, tags, sorting, query_string,
+            route, {'slug': category.page.slug}, tags, sorting, query_string,
         ))
 
 
@@ -310,10 +311,13 @@ class LoadMore(TestCase):
 
     fixtures = ['dump.json']
     DEFAULT_LIMIT = 48
+    PRODUCT_ID_WITH_IMAGE = 114
 
     def setUp(self):
         self.category = models.Category.objects_.root_nodes().select_related('page').first()
 
+    # @todo #645:15m Reuse get_category_page method in LoadMore.load_more
+    #  BaseCatalogTestCase.get_category_page.
     def load_more(
         self,
         category: models.Category=None,
@@ -335,6 +339,14 @@ class LoadMore(TestCase):
             'load_more', route_kwargs, tags, sorting, query_string,
         ))
 
+    def get_load_more_soup(self, *args, **kwargs) -> BeautifulSoup:
+        """Use interface of `self.load_more` method."""
+        load_more_response = self.load_more(*args, **kwargs)
+        return BeautifulSoup(
+            load_more_response.content.decode('utf-8'),
+            'html.parser'
+        )
+
     def test_pagination_numbering_first_page(self):
         self.assertEqual(get_page_number(self.load_more()), 1)
 
@@ -351,6 +363,16 @@ class LoadMore(TestCase):
             get_page_number(self.load_more(offset=offset)),
             2,
         )
+
+    def test_image_previews(self):
+        """Load_more button should load product with image previews."""
+        load_more_soup = self.get_load_more_soup(offset=self.DEFAULT_LIMIT)
+        img_path = (
+            load_more_soup
+            .find('a', href=f'/catalog/products/{self.PRODUCT_ID_WITH_IMAGE}/')
+            .find('img')['src']
+        )
+        self.assertNotIn('logo', img_path)
 
 
 @tag('fast')

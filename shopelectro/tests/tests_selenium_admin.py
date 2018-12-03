@@ -66,7 +66,6 @@ class AdminPage(AdminSeleniumTestCase):
         cls.change_products_url = cls.live_server_url + reverse(
             'admin:shopelectro_productpage_changelist')
         cls.title_text = 'Shopelectro administration'
-        cls.product_table = 'paginator'
         cls.active_products = '//*[@id="changelist-filter"]/ul[1]/li[2]/a'
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[1]/li[3]/a'
         cls.price_filter = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
@@ -119,10 +118,11 @@ class AdminPage(AdminSeleniumTestCase):
             (By.ID, self.tree_product_id)
         ))
 
-    def get_table_with_products(self):
+    def get_paginator_text(self) -> str:
+        """Contain text about table elements count."""
         return self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, self.product_table)
-        ))
+            (By.CLASS_NAME, 'paginator')
+        )).text
 
     def click_jstree_context_menu_items(self, item_index):
         def get_tree_item():
@@ -168,14 +168,12 @@ class AdminPage(AdminSeleniumTestCase):
         self.wait_page_loading()
 
         self.browser.find_element_by_xpath(self.filter_by_has_image).click()
-        table = self.get_table_with_products().text
-
-        self.assertTrue('1' in table)
+        paginator_text = self.get_paginator_text()
+        self.assertTrue('2' in paginator_text)
 
         self.browser.find_element_by_xpath(self.filter_by_has_not_image).click()
-        table = self.get_table_with_products().text
-
-        self.assertTrue('299' in table)
+        paginator_text = self.get_paginator_text()
+        self.assertTrue('298' in paginator_text)
 
     def test_content_filter(self):
         """Content filter is able to filter pages by the presence of the content."""
@@ -183,12 +181,12 @@ class AdminPage(AdminSeleniumTestCase):
         self.wait_page_loading()
 
         self.browser.find_element_by_xpath(self.filter_by_has_content).click()
-        table = self.get_table_with_products().text
+        table = self.get_paginator_text()
 
         self.assertTrue('0' in table)
 
         self.browser.find_element_by_xpath(self.filter_by_has_not_content).click()
-        table = self.get_table_with_products().text
+        table = self.get_paginator_text()
 
         self.assertTrue('300' in table)
 

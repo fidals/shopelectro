@@ -250,14 +250,22 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     products = paginated_page.object_list
     view = request.session.get('view_type', 'tile')
 
+    # products list has been sliced.
+    # So it can't be context's arg.
+    # We should create not sliced list with the same data.
+    products_to_filter = (
+        models.Product.objects
+        .filter(id__in=[p.id for p in products])
+        .order_by(sorting_option.directed_field)
+    )
     data_from_context = (
         context.Category(
             url_kwargs={},
             request=request,
             page=category.page,
-            products=models.Product.objects.all(),
+            products=products_to_filter,
             product_pages=models.ProductPage.objects.filter(
-                shopelectro_product__in=products
+                shopelectro_product__in=products_to_filter
             ),
         )
         | context.TaggedCategory(tags=models.Tag.objects.all())
