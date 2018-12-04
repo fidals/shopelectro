@@ -96,7 +96,7 @@ class Command(BaseCommand):
 
     def write_catalog(self):
         """Write categories and products to sheet."""
-        categories = Category.objects_.all().order_by('name').filter(children=None)
+        categories = Category.objects.all().order_by('name').filter(children=None)
         for category in categories.iterator():
             self.write_category_with_products(category)
 

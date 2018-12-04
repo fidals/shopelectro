@@ -106,7 +106,7 @@ class Command(BaseCommand):
                 .get_descendants(include_self=True)
             )
 
-            result_categories = Category.objects_.exclude(id__in=categories_to_exclude)
+            result_categories = Category.objects.exclude(id__in=categories_to_exclude)
 
             if utm == 'YM':
                 """
@@ -131,7 +131,7 @@ class Command(BaseCommand):
 
         categories = (
             filter_categories(utm) if utm != 'SE78'
-            else Category.objects_.all()
+            else Category.objects.all()
         )
 
         products = prepare_products(categories, utm)
