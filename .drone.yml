@@ -137,12 +137,12 @@ pipeline:
 #  https://ci.fidals.com/fidals/shopelectro/1006/13
 
 #  test-docker-compose:
-#    image: docker/compose:1.22.0
+#    <<: *docker-compose
 #    environment:
 #      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
 #      # COMPOSE_INTERACTIVE_NO_CLI in a combination with `docker-compose exec -T`
 #      # fixes a syntax error: unterminated quoted string.
-#      # Why is it? No one knows.
+#      # Why is it? Nobody knows.
 #      - COMPOSE_INTERACTIVE_NO_CLI=1
 #    commands:
 #      - cd docker
@@ -153,10 +153,6 @@ pipeline:
 #      - docker-compose exec -T app-drone python manage.py custom_pages
 #      # wait python server and check its health
 #      - docker-compose exec -T app-drone docker/wait-for.sh localhost:8000 -- docker/check-health.sh localhost:8000
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    when:
-#      event: [push, pull_request]
 
   cleanup:
     <<: *docker-compose

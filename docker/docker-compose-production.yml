@@ -1,7 +1,21 @@
 version: '2'
+# Anchors
+# x-, Docker will treat as an extension and ignore
+x-celery: &celery-worker
+  image: fidals/se:prod
+  restart: always
+  env_file:
+    - env_files/app
+    - env_files/credentials
+    - env_files/paths
+  depends_on:
+    - app
+  volumes:
+    - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+  networks:
+    - se-backend
 
 services:
-
   app:
     image: fidals/se:prod
     container_name: se-python
@@ -33,68 +47,28 @@ services:
     command: gunicorn shopelectro.wsgi:application -c /etc/gunicorn.py -b 0.0.0.0:$VIRTUAL_HOST_PORT
 
   celery-beat:
-    image: fidals/se:prod
+    <<: *celery-worker
     container_name: se-celery-beat
-    restart: always
-    env_file:
-      - env_files/app
-      - env_files/credentials
-      - env_files/paths
-    depends_on:
-      - app
-    volumes:
-      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
-    networks:
-      - se-backend
     command: celery -A shopelectro beat -l info
 
   celery-command-worker:
-    image: fidals/se:prod
+    <<: *celery-worker
     container_name: se-celery-command-worker
-    restart: always
-    env_file:
-      - env_files/app
-      - env_files/credentials
-      - env_files/paths
     depends_on:
       - app
       - celery-beat
-    networks:
-      - se-backend
     volumes_from:
       - app
     command: celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
 
   celery-default-worker:
-    image: fidals/se:prod
+    <<: *celery-worker
     container_name: se-celery-default-worker
-    restart: always
-    env_file:
-      - env_files/app
-      - env_files/credentials
-      - env_files/paths
-    depends_on:
-      - app
-    networks:
-      - se-backend
-    volumes:
-      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
     command: celery -A shopelectro worker -E -n worker.default@%%h -l info -Q default
 
   celery-mail-worker:
-    image: fidals/se:prod
+    <<: *celery-worker
     container_name: se-celery-mail-worker
-    restart: always
-    env_file:
-      - env_files/app
-      - env_files/credentials
-      - env_files/paths
-    depends_on:
-      - app
-    volumes:
-      - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
-    networks:
-      - se-backend
     command: celery -A shopelectro worker -E -n worker.mail@%%h -c 1 -l info -Q mail
 
   nginx:
