@@ -1,14 +1,50 @@
+# Anchors
+when-pr-push: &when-pr-push
+  when:
+    event: [push, pull_request]
+
+docker-compose: &docker-compose
+  <<: *when-pr-push
+  image: docker/compose:1.22.0
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
+test: &test
+  <<: *when-pr-push
+  image: fidals/se:dev
+  secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS ]
+  environment:
+    - TEST_ENV=true
+    - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=test
+    - POSTGRES_URL=postgres
+    - POSTGRES_DB=test
+    - RABBITMQ_DEFAULT_USER=rabbitmq
+    - RABBITMQ_DEFAULT_PASS=test
+    - RABBITMQ_URL=rabbitmq
+    - RABBITMQ_PORT=5672
+    - SELENIUM_URL=http://selenium:4444/wd/hub
+    - FTP_IP=${FTP_IP}
+    - FTP_USER=${FTP_USER}
+    - FTP_PASS=${FTP_PASS}
+    - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
+    - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
+
+lint: &lint
+  <<: *when-pr-push
+  group: lint
+
+# CI config
 branches: master
 
 workspace:
   base: /drone
   path: shopelectro/
 
-
 pipeline:
-
   build-nodejs:  # with `npm install` inside
-    image: docker/compose:1.22.0
+    <<: *docker-compose
     commands:
       - cd docker/
       - cp drone_env/.env . && cp drone_env/* env_files/
@@ -16,12 +52,9 @@ pipeline:
       # because we have this deps:
       # build nodejs -> gulp build -> build python-prod
       - docker-compose -f docker-compose-build.yml build nodejs
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: [push, pull_request]
 
   build-static:
+    <<: *when-pr-push
     image: fidals/se-nodejs:dev
     environment:
       # deps from nodejs image
@@ -29,85 +62,37 @@ pipeline:
     commands:
       - cp -r /usr/app/src/node_modules .
       - gulp build
-    when:
-      event: [push, pull_request]
 
   build-python:
-    image: docker/compose:1.22.0
+    <<: *docker-compose
     commands:
       - cd docker/
       # Build python images with sources and static files
       - docker-compose -f docker-compose-build.yml build python-dev python-prod
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: [push, pull_request]
 
   fast-test:
-    image: fidals/se:dev
-    secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS ]
-    environment:
-      - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_URL=postgres
-      - POSTGRES_DB=test
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=test
-      - RABBITMQ_URL=rabbitmq
-      - RABBITMQ_PORT=5672
-      - SELENIUM_URL=http://selenium:4444/wd/hub
-      - FTP_IP=${FTP_IP}
-      - FTP_USER=${FTP_USER}
-      - FTP_PASS=${FTP_PASS}
-      - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
-      - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
+    <<: *test
     commands:
       - python manage.py migrate
       - python manage.py excel
       - python manage.py price
       - python manage.py collectstatic --noinput
       - python manage.py test --parallel --tag fast -k -v 3
-    when:
-      event: [push, pull_request]
 
   slow-test:
-    image: fidals/se:dev
-    secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS ]
-    environment:
-      - TEST_ENV=true
-      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_URL=postgres
-      - POSTGRES_DB=test
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=test
-      - RABBITMQ_URL=rabbitmq
-      - RABBITMQ_PORT=5672
-      - SELENIUM_URL=http://selenium:4444/wd/hub
-      - FTP_IP=${FTP_IP}
-      - FTP_USER=${FTP_USER}
-      - FTP_PASS=${FTP_PASS}
-      - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
-      - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
+    <<: *test
     commands:
       - python manage.py test --liveserver=slow-test:8021-8029 --parallel --tag slow -k -v 3
-    when:
-      event: [push, pull_request]
 
   lint-coala:
+    <<: *lint
     image: fidals/coala-ci
-    group: lint
     commands:
       - coala --ci -j 2
-    when:
-      event: pull_request
 
   lint-pdd:
+    <<: *lint
     image: fidals/pdd-ci
-    group: lint
     commands:
       - pdd --verbose
         --exclude=node_modules/**/*
@@ -120,8 +105,6 @@ pipeline:
         --exclude=**/*.pyc
         --exclude=**/*.jpg
         -f report.xml
-    when:
-      event: pull_request
 
   push-images:
     image: docker:latest
@@ -176,36 +159,33 @@ pipeline:
 #      event: [push, pull_request]
 
   cleanup:
-    image: docker/compose:1.22.0
+    <<: *docker-compose
     commands:
       - cd docker
       - docker-compose logs app-drone
       - docker-compose rm -fs
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     when:
       status: [ success, failure ]
       event: [push, pull_request]
 
 services:
   postgres:
+    <<: *when-pr-push
     image: postgres
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=test
-    when:
-      event: [push, pull_request]
 
   rabbitmq:
+    <<: *when-pr-push
     image: rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=rabbitmq
       - RABBITMQ_DEFAULT_PASS=test
-    when:
-      event: [push, pull_request]
 
   selenium:
+    <<: *when-pr-push
     image: selenium/standalone-chrome-debug:3.10.0
     environment:
       # https://github.com/SeleniumHQ/docker-selenium/issues/392
@@ -215,5 +195,3 @@ services:
     shm_size: 4G
     volumes: # https://github.com/SeleniumHQ/docker-selenium#running-the-images
       - /dev/shm:/dev/shm
-    when:
-      event: [push, pull_request]
