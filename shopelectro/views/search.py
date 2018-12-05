@@ -13,7 +13,7 @@ class Search(search_views.SearchView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects_.active(),
+            qs=Category.objects.active(),
             fields=['name'],  # Ignore CPDBear
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
@@ -26,7 +26,7 @@ class Search(search_views.SearchView):
         ),
         search_engine.Search(
             name='page',
-            qs=ExcludedModelTPage.objects_.filter(is_active=True),
+            qs=ExcludedModelTPage.objects.filter(is_active=True),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
@@ -41,7 +41,7 @@ class Autocomplete(search_views.AutocompleteView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects_.filter(page__is_active=True),
+            qs=Category.objects.filter(page__is_active=True),
             fields=['name', 'id'],
             template_fields=['name', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
@@ -50,12 +50,12 @@ class Autocomplete(search_views.AutocompleteView):
             name='product',
             qs=Product.objects.active(),
             fields=['name', 'id', 'vendor_code'],
-            template_fields=['name', 'price', 'url'],
+            template_fields=['name', 'price', 'url'],  # Ignore CPDBear
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='pages',
-            qs=ExcludedModelTPage.objects_.filter(is_active=True),
+            qs=ExcludedModelTPage.objects.filter(is_active=True),
             fields=['name'],
             template_fields=['name', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
@@ -71,7 +71,7 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
     search_entities = [
         search_engine.Search(
             name='category',
-            qs=Category.objects_.filter(page__is_active=True),
+            qs=Category.objects.filter(page__is_active=True),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),

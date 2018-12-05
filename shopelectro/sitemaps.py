@@ -36,7 +36,7 @@ class IndexSitemap(Sitemap):
 class CategorySitemap(AbstractSitemap):
 
     def items(self):
-        return Category.objects_.filter(page__is_active=True)
+        return Category.objects.filter(page__is_active=True)
 
 
 def get_categories_with_tags() -> Generator[
@@ -48,7 +48,7 @@ def get_categories_with_tags() -> Generator[
     Currently, tags per category is limited to 1 tag (by SEO requirements).
     So, for each tags group in each category we'll get 1 tag.
     """
-    for category in Category.objects_.filter(page__is_active=True):
+    for category in Category.objects.filter(page__is_active=True):
         products = Product.objects.get_by_category(category)
         tags = Tag.objects.filter_by_products(products)
         for group_name, group_tags in tags.get_group_tags_pairs():
@@ -80,5 +80,5 @@ class ProductSitemap(AbstractSitemap):
 class PagesSitemap(AbstractSitemap):
 
     def items(self):
-        assert(isinstance(Page.objects_, PageManager))
-        return Page.objects_.active()
+        assert(isinstance(Page.objects, PageManager))
+        return Page.objects.active()

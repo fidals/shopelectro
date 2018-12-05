@@ -60,7 +60,7 @@ class BaseCatalogTestCase(TestCase):
     fixtures = ['dump.json']
 
     def setUp(self):
-        self.category = models.Category.objects_.root_nodes().select_related('page').first()
+        self.category = models.Category.objects.root_nodes().select_related('page').first()
         self.tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
     def get_category_page(
@@ -314,7 +314,7 @@ class LoadMore(TestCase):
     PRODUCT_ID_WITH_IMAGE = 114
 
     def setUp(self):
-        self.category = models.Category.objects_.root_nodes().select_related('page').first()
+        self.category = models.Category.objects.root_nodes().select_related('page').first()
 
     # @todo #645:15m Reuse get_category_page method in LoadMore.load_more
     #  BaseCatalogTestCase.get_category_page.
@@ -705,6 +705,7 @@ class TestSearch(TestCase):
 
     def test_search_has_no_model_pages(self):
         """Search page does not contain page with type=MODEL_TYPE and duplicated content."""
+        print(type(models.ExcludedModelTPage.objects).mro())
         response = self.client.get(
             f'/search/?term={self.QUOTED_SIGNLE_RESULT_TERM}',
             follow=True,

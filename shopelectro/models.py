@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+import mptt
 
 from catalog import models as catalog_models
 from ecommerce import models as ecommerce_models
@@ -40,8 +41,6 @@ class SECategoryManager(
 class Category(catalog_models.AbstractCategory, pages_models.SyncPageMixin):
 
     objects = SECategoryManager()
-    # pages.models.Page.objects_ field. It has the same problem.
-    objects_ = SECategoryManager()
     uuid = models.UUIDField(default=uuid4, editable=False)
 
     @classmethod
@@ -224,28 +223,17 @@ class ExcludedModelTPageQuerySet(pages_models.PageQuerySet):
         return self.exclude(type=pages_models.Page.MODEL_TYPE)
 
 
-# @todo #rf169:30m Fix model.Manager bad inheritance
-#  Now we have this problem:
-#  ```
-#  In [2]: type(ExcludedModelTPage.objects.all())
-#  Out[2]: mptt.querysets.TreeQuerySet
-#  ```
-#  But should be `pages.models.PageQuerySet`.
-#  Or just rm all excluded staff
-#  in favor on direct excluded filter using.
-class ExcludedModelTPageManager(
-    models.Manager.from_queryset(ExcludedModelTPageQuerySet)
-):
-
+class ExcludedModelTPageManager(mptt.models.TreeManager):
     def get_queryset(self):
         return super().get_queryset().exclude(type=pages_models.Page.MODEL_TYPE)
 
 
+# @todo #612:15m Remove ExcludedModelTPage.
+#  Now it used only in search view.
+#  Use there the explicit `exclude(type=...)` instead.
 class ExcludedModelTPage(pages_models.Page):
 
     class Meta(pages_models.Page.Meta):  # Ignore PycodestyleBear (E303)
         proxy = True
 
     objects = ExcludedModelTPageManager()
-    # pages.models.Page.objects_ field. It has the same problem.
-    objects_ = ExcludedModelTPageManager()

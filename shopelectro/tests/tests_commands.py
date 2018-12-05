@@ -204,13 +204,13 @@ class GeneratePrices(TestCase):
 
     def test_categories_in_price(self):
         categories_in_price = self.get_price_categories_node('priceru.xml')
-        self.assertEqual(len(categories_in_price), Category.objects_.count())
+        self.assertEqual(len(categories_in_price), Category.objects.count())
 
     def test_categories_in_yandex_price(self):
         categories_in_yandex_price = self.get_price_categories_node('yandex.yml')
         self.assertEqual(
             len(categories_in_yandex_price),
-            Category.objects_.get_categories_tree_with_pictures().count()
+            Category.objects.get_categories_tree_with_pictures().count()
         )
 
     def test_categories_excluded_by_utm(self):

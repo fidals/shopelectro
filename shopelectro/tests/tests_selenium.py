@@ -144,8 +144,8 @@ class CategoryPage(helpers.SeleniumTestCase):
         def get_testing_url(slug):
             return self.live_server_url + reverse('category', args=(slug,))
 
-        root_category = Category.objects_.filter(parent=None).first()
-        children_category = Category.objects_.filter(parent=root_category).first()
+        root_category = Category.objects.filter(parent=None).first()
+        children_category = Category.objects.filter(parent=root_category).first()
         category_with_product_less_then_LOAD_LIMIT = (
             Category.objects
             .annotate(prod_count=Count('products'))
@@ -635,7 +635,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.remove_product = self.get_cell(pos=4, col='remove') + '/div'
         self.product_count = self.get_cell(pos=4, col='count') + '/div[2]/input'
         self.add_product = self.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
-        self.category = reverse('category', args=(Category.objects_.first().page.slug,))
+        self.category = reverse('category', args=(Category.objects.first().page.slug,))
         self.success_order_url = '{}{}'.format(
             self.live_server_url,
             reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success',))
@@ -896,7 +896,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
         product_vendor_code = Product.objects.first().vendor_code
         self.product_page = server + reverse('product', args=(product_vendor_code,))
         self.category_page = server + reverse(
-            'category', args=(Category.objects_.first().page.slug,))
+            'category', args=(Category.objects.first().page.slug,))
         self.order_page_url = '{}{}'.format(
             self.live_server_url,
             reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order',))
