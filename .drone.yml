@@ -133,28 +133,25 @@ pipeline:
       status: [ success, failure ]
       event: [push, pull_request]
 
-# @todo #603:60m Resurrect `test-docker-compose` pipe step.
-#  See issue details here:
-#  https://ci.fidals.com/fidals/shopelectro/1006/13
-
-#  test-docker-compose:
-#    <<: *docker-compose
-#    <<: *when-pr-push
-#    environment:
-#      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
-#      # COMPOSE_INTERACTIVE_NO_CLI in a combination with `docker-compose exec -T`
-#      # fixes a syntax error: unterminated quoted string.
-#      # Why is it? Nobody knows.
-#      - COMPOSE_INTERACTIVE_NO_CLI=1
-#    commands:
-#      - cd docker
-#      - docker-compose up -d app-drone
-#      # wait postgres, apply migrations, create custom pages to reach "/" page
-#      - docker-compose exec -T app-drone docker/wait-for.sh postgres:5432
-#      - docker-compose exec -T app-drone python manage.py migrate
-#      - docker-compose exec -T app-drone python manage.py custom_pages
-#      # wait python server and check its health
-#      - docker-compose exec -T app-drone docker/wait-for.sh localhost:8000 -- docker/check-health.sh localhost:8000
+  test-docker-compose:
+    <<: *docker-compose
+    <<: *when-pr-push
+    environment:
+      - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
+      - VIRTUAL_HOST_PORT=8000
+      # COMPOSE_INTERACTIVE_NO_CLI in a combination with `docker-compose exec -T`
+      # fixes a syntax error: unterminated quoted string.
+      # Why is it? Nobody knows.
+      - COMPOSE_INTERACTIVE_NO_CLI=1
+    commands:
+      - cd docker
+      - docker-compose up -d app-drone
+      # wait postgres, apply migrations, create custom pages to reach "/" page
+      - docker-compose exec -T app-drone docker/wait-for.sh postgres:5432
+      - docker-compose exec -T app-drone python manage.py migrate
+      - docker-compose exec -T app-drone python manage.py custom_pages
+      # wait python server and check its health
+      - docker-compose exec -T app-drone docker/wait-for.sh 0.0.0.0:8000 -- docker/check-health.sh 0.0.0.0:8000
 
   cleanup:
     <<: *docker-compose
