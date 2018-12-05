@@ -66,7 +66,7 @@ class Command(BaseCommand):
             """Put UTM attribute to product."""
             utm_marks = [
                 ('utm_source', utm),
-                ('utm_medium', 'cpc'),
+                ('utm_medium', 'cpc' if utm != 'YM' else 'cpc-market'),
                 ('utm_content', product.get_root_category().page.slug),
                 ('utm_term', str(product.vendor_code)),
             ]
