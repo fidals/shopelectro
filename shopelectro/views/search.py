@@ -50,7 +50,7 @@ class Autocomplete(search_views.AutocompleteView):
             name='product',
             qs=Product.objects.active(),
             fields=['name', 'id', 'vendor_code'],
-            template_fields=['name', 'price', 'url'],
+            template_fields=['name', 'price', 'url'],  # Ignore CPDBear
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
