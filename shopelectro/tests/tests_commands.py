@@ -164,7 +164,7 @@ class GeneratePrices(TestCase):
     def call_command_patched(cls, name):
         """Patch with test constants and call."""
         with mock.patch(
-            'shopelectro.management.commands.price.Command.IGNORED_CATEGORIES_BY_TARGET',
+            'shopelectro.management.commands.price.Command.IGNORED_CATEGORIES_MAP',
             new_callable=mock.PropertyMock
         ) as target:
             target.return_value = defaultdict(list, {

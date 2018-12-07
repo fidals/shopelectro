@@ -48,7 +48,8 @@ class Command(BaseCommand):
         'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
     ]
 
-    IGNORED_CATEGORIES_BY_TARGET = defaultdict(list, {
+    # dict keys are url targets for every service
+    IGNORED_CATEGORIES_MAP = defaultdict(list, {
         'GM': ['Усилители звука для слабослышащих'],
     })
 
@@ -101,7 +102,7 @@ class Command(BaseCommand):
                 Category.objects
                 .filter(
                     Q(name__in=cls.IGNORED_CATEGORIES)
-                    | Q(name__in=cls.IGNORED_CATEGORIES_BY_TARGET[utm])
+                    | Q(name__in=cls.IGNORED_CATEGORIES_MAP[utm])
                 )
                 .get_descendants(include_self=True)
             )
