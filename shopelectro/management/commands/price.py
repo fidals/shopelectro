@@ -36,6 +36,8 @@ class PriceFilter:
         return self.FILTERS[self.utm](query_set)
 
 
+# @todo #661:120m Refactor price command.
+#  Create Price class with it's own price processing.
 class Command(BaseCommand):
     """Generate yml file for a given vendor (YM or price.ru)."""
 
@@ -53,6 +55,11 @@ class Command(BaseCommand):
         'GM': ['Усилители звука для слабослышащих'],
     })
 
+    UTM_MEDIUM_DATA = defaultdict(
+        lambda: 'cpc',
+        {'YM': 'cpc-market'}
+    )
+
     def create_prices(self):
         for target in settings.UTM_PRICE_MAP.items():
             self.generate_yml(*target)
@@ -67,14 +74,14 @@ class Command(BaseCommand):
             """Put UTM attribute to product."""
             utm_marks = [
                 ('utm_source', utm),
-                ('utm_medium', 'cpc' if utm != 'YM' else 'cpc-market'),
+                ('utm_medium', cls.UTM_MEDIUM_DATA[utm]),
                 ('utm_content', product.get_root_category().page.slug),
                 ('utm_term', str(product.vendor_code)),
             ]
 
             url = reverse('product', args=(product.vendor_code,))
-            utm_mark_query = '&'.join('{}={}'.format(k, v) for k, v in utm_marks)
-            product.utm_url = '{}{}?{}'.format(settings.BASE_URL, url, utm_mark_query)
+            utm_mark_query = '&'.join(f'{k}={v}' for k, v in utm_marks)
+            product.utm_url = f'{settings.BASE_URL}{url}?{utm_mark_query}'
 
             product.prepared_params = [
                 (group, tags[0].name)

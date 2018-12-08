@@ -10,6 +10,7 @@ import random
 import unittest
 import uuid
 from unittest import mock
+import urllib.parse
 from xml.etree import ElementTree
 
 from django.conf import settings
@@ -172,6 +173,8 @@ class GeneratePrices(TestCase):
             })
             call_command(name)
 
+    # @todo #661:30m Refactor huge set of getters in prices test.
+    #  Move every `get_price_...` method to some `PriceNode` class.
     @staticmethod
     def get_price_file_path(filename):
         return os.path.join(settings.ASSETS_DIR, filename)
@@ -267,3 +270,13 @@ class GeneratePrices(TestCase):
                 product.get_brand_name(),
                 offer.find(f'vendor').text,
             )
+
+    def test_utm_yandex(self):
+        """Url tag of every offer should contain valid utm marks."""
+        offer = self.get_price_offers_node(
+            settings.UTM_PRICE_MAP['YM']
+        )[0]
+        
+        url = offer.find('url').text
+        get_attrs = urllib.parse.parse_qs(url)
+        self.assertEqual('cpc-market', get_attrs['utm_medium'][0])
