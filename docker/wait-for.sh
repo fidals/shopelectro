@@ -20,6 +20,10 @@ echoerr() {
   if [ "$QUIET" -ne 1 ]; then printf "%s\n" "$*" 1>&2; fi
 }
 
+echoinfo() {
+  if [ "$QUIET" -ne 1 ]; then printf "%s\n" "$*"; fi
+}
+
 usage() {
   exitcode="$1"
   cat << USAGE >&2
@@ -42,10 +46,12 @@ wait_for() {
         exec "$@"
       fi
       exit 0
+    else
+      echoinfo "Connect to ${HOST}:${PORT}. Attempt #${i}."
     fi
     sleep 1
   done
-  echo "Operation timed out" >&2
+  echoerr "Operation timed out" >&2
   exit 1
 }
 

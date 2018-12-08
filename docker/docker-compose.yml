@@ -1,42 +1,34 @@
 version: '2'
 
+# Anchors
+# x-, Docker will treat as an extension and ignore
+x-app-base: &app-base
+  # use yaml anchor istead of docker-compose `extends` option, because
+  # `extends` disallow `depends_on` in inherited service
+  image: fidals/se:dev
+  env_file:
+    - env_files/app
+    - env_files/credentials
+    - env_files/paths
+    - env_files/ports
+  environment:
+    - ALLOWED_HOSTS=*
+    - TEST_ENV=true
+    - PYTHONUNBUFFERED=0
+  ports:
+    - $VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT
+    - $VIRTUAL_HOST_LIVESERVER_PORT
+  networks:
+    - se-backend
+  depends_on:
+    - postgres
+    - rabbitmq
+    - redis
+  command: docker/wait-for.sh postgres:5432 -- python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
+
 services:
-
-  app-base:
-    image: fidals/se:dev
-    env_file:
-      - env_files/app
-      - env_files/credentials
-      - env_files/paths
-      - env_files/ports
-    environment:
-      - ALLOWED_HOSTS=*
-      - TEST_ENV=true
-      - PYTHONUNBUFFERED=0
-    ports:
-      - $VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT
-      - $VIRTUAL_HOST_LIVESERVER_PORT
-    networks:
-      - se-backend
-    # @todo #603:60m Resurrect postgres waiting
-    #  This prefix for app docker service's command does not work:
-    #  `./docker/wait-for.sh postgres:5432 -- `
-    #  Prefix was used in docker-compose-production too.
-    command: python manage.py runserver 0.0.0.0:$VIRTUAL_HOST_PORT
-
-  app-drone:
-    extends: app-base
-    depends_on:
-      - postgres
-      - rabbitmq
-      - redis
-
   app:
-    extends: app-base
-    depends_on:
-      - postgres
-      - rabbitmq
-      - redis
+    <<: *app-base
     volumes:
       - ./../:$SRC_DIR
       # contains refarm-site modules
@@ -46,6 +38,9 @@ services:
       #- $REFARM_DIR/ecommerce:/root/.local/lib/python3.7/site-packages/ecommerce
       #- $REFARM_DIR/pages:/root/.local/lib/python3.7/site-packages/pages
       #- $REFARM_DIR/search:/root/.local/lib/python3.7/site-packages/search
+
+  app-drone:
+    <<: *app-base
 
   nodejs:
     image: fidals/se-nodejs:dev
