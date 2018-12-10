@@ -280,3 +280,4 @@ class GeneratePrices(TestCase):
         url = offer.find('url').text
         get_attrs = urllib.parse.parse_qs(url)
         self.assertEqual('cpc-market', get_attrs['utm_medium'][0])
+
