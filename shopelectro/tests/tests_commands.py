@@ -276,8 +276,6 @@ class GeneratePrices(TestCase):
         offer = self.get_price_offers_node(
             settings.UTM_PRICE_MAP['YM']
         )[0]
-        
         url = offer.find('url').text
         get_attrs = urllib.parse.parse_qs(url)
         self.assertEqual('cpc-market', get_attrs['utm_medium'][0])
-
