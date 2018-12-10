@@ -69,7 +69,6 @@ class UpdateProductsUnit(TestCase):
         self.assertTrue(old_named_pages.first().is_active)
 
 
-
 # @todo #603:30m Resurrect update_catalog tests.
 #  Now we have problems with files downloading.
 @tag('slow')
