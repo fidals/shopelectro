@@ -19,7 +19,7 @@ from django.test import TestCase, tag
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
 )
-from shopelectro.models import Category, Product, Tag, TagGroup
+from shopelectro.models import Category, Product, ProductPage, Tag, TagGroup
 
 """
 @todo #179 Раздели тесты класса UpdateProducts на интеграционные и модульные.
@@ -35,6 +35,39 @@ def get_tag_as_dict(group: str, tag: str):
             'tags': {uuid.uuid4(): {'name': tag}}
         }
     }
+
+
+@tag('fast')
+class UpdateProductsUnit(TestCase):
+    """Unit tests, but not integration."""
+
+    fixtures = ['dump.json']
+
+    def test_product_delete(self):
+        """Function called "delete" should not delete, but should deactivate product page."""
+        product = Product.objects.first()
+        # - delete all products. Our product is among them
+        update_products.delete(data={})
+        self.assertFalse(product.page.is_active)
+
+    # @todo #656:30m Fix pages consistency in update_db command.
+    #  See test below for details.
+    @unittest.expectedFailure
+    def test_product_pages_consistency(self):
+        """Full import cycle with delete/update/create should keep db pages consistency."""
+        # - take some existing prod
+        product = Product.objects.first()
+        product_data = {str(product.uuid): {'name': product.name}}
+        # - delete all products. Our product is among them
+        update_products.delete(data={})
+        # - set our product to db again
+        updated_products = update_products.update(product_data)
+        update_products.create(product_data, updated_products)
+        # - assert if product's page is unique by name
+        old_named_pages = ProductPage.objects.filter(name=product.name)
+        # - and this unique page should be active
+        self.assertTrue(old_named_pages.first().is_active)
+
 
 
 # @todo #603:30m Resurrect update_catalog tests.
@@ -86,7 +119,8 @@ class UpdateProducts(TestCase):
         self.assertEqual(len(updated_products), update_products_count)
         self.assertTrue(all(
             product.price == new_data['price']
-            for product in updated_products))
+            for product in updated_products
+        ))
 
     def test_create_products(self):
         create_count = 10
