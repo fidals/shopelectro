@@ -64,6 +64,7 @@ class UpdateProductsUnit(TestCase):
         updated_products = update_products.update(product_data)
         update_products.create(product_data, updated_products)
         # - assert if product's page is unique by name
+        self.assertEqual(ProductPage.objects.filter(name=product.name).count(), 1)
         old_named_pages = ProductPage.objects.filter(name=product.name)
         # - and this unique page should be active
         self.assertTrue(old_named_pages.first().is_active)
