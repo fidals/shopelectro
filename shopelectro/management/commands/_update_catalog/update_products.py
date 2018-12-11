@@ -236,6 +236,11 @@ def report(recipients=None, message=None):
 
 @transaction.atomic
 def delete(data: Dict[UUID, Data]):
+    """
+    Deactivate stale pages.
+
+    Deactivate all pages that are still in db, but already not in `data`.
+    """
     uuids = list(data)
     pages_to_deactivate = ProductPage.objects.exclude(
         shopelectro_product__uuid__in=uuids)
