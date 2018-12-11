@@ -487,9 +487,6 @@ PRICE_BOUNDS = {
     'wholesale_small': 20000,
 }
 
-# random string to append to doubled slugs
-SLUG_HASH_SIZE = 5
-
 BRAND_TAG_GROUP_NAME = 'Производитель'
 
 # products with price lower this value should not be presented at gm.yml price
@@ -511,4 +508,3 @@ PAGINATION_NEIGHBORS = 10
 
 PRODUCTS_ON_PAGE_PC = 48
 PRODUCTS_ON_PAGE_MOB = 12
-
