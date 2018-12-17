@@ -18,6 +18,10 @@ from shopelectro.models import Product, Order
 class OrderPage(ec_views.OrderPage):
     order_form = OrderForm
     cart = SECart
+    # Django does not provide context_processors for render_to_string function,
+    # which is used to render an order mail. So we have to explicitly pass
+    # a context to it.
+    email_extra_context = {'shop': settings.SHOP}
 
     def get_context_data(self, request, **kwargs):
         data = super().get_context_data(request, **kwargs)
@@ -79,9 +83,9 @@ def one_click_buy(request):
     Accept XHR, save Order to DB, send mail about it
     and return 200 OK.
     """
-    SECart(request.session).clear()
-
     cart = SECart(request.session)
+    cart.clear()
+
     product = get_object_or_404(Product, id=request.POST['product'])
     cart.add(product, int(request.POST['quantity']))
     order = Order(phone=request.POST['phone'])
@@ -91,6 +95,8 @@ def one_click_buy(request):
         subject=settings.EMAIL_SUBJECTS['one_click'],
         order=order,
         to_customer=False,
+        # see se.OrderPage class for a detail about `shop` context.
+        extra_context={'shop': settings.SHOP},
     )
     return HttpResponse('ok')
 

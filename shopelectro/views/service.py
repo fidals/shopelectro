@@ -77,6 +77,8 @@ def yandex_aviso(request):
                 'paid': paid,
                 'profit': profit,
                 'commission': commission,
+                # see se.OrderPage class for a detail about `shop` context.
+                'shop': settings.SHOP,
             })
 
     def send_mail_to_customer(order):
@@ -84,6 +86,8 @@ def yandex_aviso(request):
             subject=settings.EMAIL_SUBJECTS['yandex_order'],
             order=order,
             to_shop=False,
+            # see se.OrderPage class for a detail about `shop` context.
+            extra_context={'shop': settings.SHOP},
         )
 
     if not has_correct_md5(request.POST):
