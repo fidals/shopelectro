@@ -784,6 +784,9 @@ class OrderPage(helpers.SeleniumTestCase):
         self.assertIn('Наличные', sent_mail_body)
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
         self.assertIn('test@test.test', sent_mail_body)
+        self.assertIn(f'tel:{settings.SHOP["cps_phone"]}', sent_mail_body)
+        self.assertIn(settings.SHOP['cps_formatted_phone'], sent_mail_body)
+
         for code in clean_codes:
             self.assertInHTML(
                 '<td align="left"'
