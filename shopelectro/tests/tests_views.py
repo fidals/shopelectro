@@ -10,7 +10,7 @@ from functools import partial
 from itertools import chain
 from operator import attrgetter
 from xml.etree import ElementTree as ET
-from urllib.parse import urlencode, urlparse, quote
+from urllib.parse import urlparse, quote
 
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -20,31 +20,14 @@ from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
+from refarm_test_utils.utils import reverse_catalog_url
+
 from shopelectro import models
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 from shopelectro.tests.helpers import create_doubled_tag
 
 
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
-
-
-def reverse_catalog_url(
-    route: str,
-    route_kwargs: dict,
-    tags: models.TagQuerySet=None,
-    sorting: int=None,
-    query_string: dict=None,
-) -> str:
-    query_string = f'?{urlencode(query_string)}' if query_string else ''
-    if tags:
-        # PyCharm's option:
-        # noinspection PyTypeChecker
-        tags_slug = tags.as_url()
-        route_kwargs['tags'] = tags_slug
-    if sorting is not None:
-        route_kwargs['sorting'] = sorting
-
-    return f'{reverse(route, kwargs=route_kwargs)}{query_string}'
 
 
 def get_page_number(response):
