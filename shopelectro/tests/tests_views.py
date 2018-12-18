@@ -53,10 +53,17 @@ class BaseCatalogTestCase(TestCase):
         sorting: int=None,
         query_string: dict=None,
         route='category',
+        route_kwargs: dict=None,
     ):
+        route_kwargs = route_kwargs or {}
         category = category or self.category
+        route_kwargs = {
+            'slug': category.page.slug,
+            **route_kwargs
+        }
+
         return self.client.get(reverse_catalog_url(
-            route, {'slug': category.page.slug}, tags, sorting, query_string,
+            route, route_kwargs, tags, sorting, query_string,
         ))
 
 
@@ -290,17 +297,12 @@ class CatalogPagination(BaseCatalogTestCase):
 
 
 @tag('fast')
-class LoadMore(TestCase):
+class LoadMore(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
     DEFAULT_LIMIT = 48
     PRODUCT_ID_WITH_IMAGE = 114
 
-    def setUp(self):
-        self.category = models.Category.objects.root_nodes().select_related('page').first()
-
-    # @todo #645:15m Reuse get_category_page method in LoadMore.load_more
-    #  BaseCatalogTestCase.get_category_page.
     def load_more(
         self,
         category: models.Category=None,
@@ -313,14 +315,18 @@ class LoadMore(TestCase):
     ) -> HttpResponse:
         category = category or self.category
         route_kwargs = {
-            'category_slug': category.page.slug,
             'offset': offset,
             # uncomment after implementation urls for load_more with pagination
             # 'limit': limit,
         }
-        return self.client.get(reverse_catalog_url(
-            'load_more', route_kwargs, tags, sorting, query_string,
-        ))
+        return self.get_category_page(
+            category=category,
+            tags=tags,
+            sorting=sorting,
+            query_string=query_string,
+            route='load_more',
+            route_kwargs=route_kwargs
+        )
 
     def get_load_more_soup(self, *args, **kwargs) -> BeautifulSoup:
         """Use interface of `self.load_more` method."""
