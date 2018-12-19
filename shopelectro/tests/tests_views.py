@@ -694,7 +694,6 @@ class TestSearch(TestCase):
 
     def test_search_has_no_model_pages(self):
         """Search page does not contain page with type=MODEL_TYPE and duplicated content."""
-        print(type(models.ExcludedModelTPage.objects).mro())
         response = self.client.get(
             f'/search/?term={self.QUOTED_SIGNLE_RESULT_TERM}',
             follow=True,
