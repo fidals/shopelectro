@@ -192,13 +192,13 @@ class CategoryPage(catalog.CategoryPage):
         }
 
 
-def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
+def load_more(request, slug, offset=0, limit=0, sorting=0, tags=None):
     """
     Load more products of a given category.
 
     :param sorting: preferred sorting index from CATEGORY_SORTING tuple
     :param request: HttpRequest object
-    :param category_slug: Slug for a given category
+    :param slug: Slug for a given category
     :param offset: used for slicing QuerySet.
     :return: products list in html format
     """
@@ -217,7 +217,7 @@ def load_more(request, category_slug, offset=0, limit=0, sorting=0, tags=None):
     # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
     # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
     page_number = (offset // products_on_page) + 1
-    category = get_object_or_404(models.CategoryPage, slug=category_slug).model
+    category = get_object_or_404(models.CategoryPage, slug=slug).model
     sorting_option = context.SortingOption(index=int(sorting))
 
     all_products = (

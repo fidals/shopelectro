@@ -10,7 +10,7 @@ from functools import partial
 from itertools import chain
 from operator import attrgetter
 from xml.etree import ElementTree as ET
-from urllib.parse import urlencode, urlparse, quote
+from urllib.parse import urlparse, quote
 
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -20,31 +20,14 @@ from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
+from catalog.helpers import reverse_catalog_url
+
 from shopelectro import models
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 from shopelectro.tests.helpers import create_doubled_tag
 
 
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
-
-
-def reverse_catalog_url(
-    route: str,
-    route_kwargs: dict,
-    tags: models.TagQuerySet=None,
-    sorting: int=None,
-    query_string: dict=None,
-) -> str:
-    query_string = f'?{urlencode(query_string)}' if query_string else ''
-    if tags:
-        # PyCharm's option:
-        # noinspection PyTypeChecker
-        tags_slug = tags.as_url()
-        route_kwargs['tags'] = tags_slug
-    if sorting is not None:
-        route_kwargs['sorting'] = sorting
-
-    return f'{reverse(route, kwargs=route_kwargs)}{query_string}'
 
 
 def get_page_number(response):
@@ -70,10 +53,17 @@ class BaseCatalogTestCase(TestCase):
         sorting: int=None,
         query_string: dict=None,
         route='category',
+        route_kwargs: dict=None,
     ):
+        route_kwargs = route_kwargs or {}
         category = category or self.category
+        route_kwargs = {
+            'slug': category.page.slug,
+            **route_kwargs
+        }
+
         return self.client.get(reverse_catalog_url(
-            route, {'slug': category.page.slug}, tags, sorting, query_string,
+            route, route_kwargs, tags, sorting, query_string,
         ))
 
 
@@ -307,17 +297,12 @@ class CatalogPagination(BaseCatalogTestCase):
 
 
 @tag('fast')
-class LoadMore(TestCase):
+class LoadMore(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
     DEFAULT_LIMIT = 48
     PRODUCT_ID_WITH_IMAGE = 114
 
-    def setUp(self):
-        self.category = models.Category.objects.root_nodes().select_related('page').first()
-
-    # @todo #645:15m Reuse get_category_page method in LoadMore.load_more
-    #  BaseCatalogTestCase.get_category_page.
     def load_more(
         self,
         category: models.Category=None,
@@ -330,14 +315,18 @@ class LoadMore(TestCase):
     ) -> HttpResponse:
         category = category or self.category
         route_kwargs = {
-            'category_slug': category.page.slug,
             'offset': offset,
             # uncomment after implementation urls for load_more with pagination
             # 'limit': limit,
         }
-        return self.client.get(reverse_catalog_url(
-            'load_more', route_kwargs, tags, sorting, query_string,
-        ))
+        return self.get_category_page(
+            category=category,
+            tags=tags,
+            sorting=sorting,
+            query_string=query_string,
+            route='load_more',
+            route_kwargs=route_kwargs
+        )
 
     def get_load_more_soup(self, *args, **kwargs) -> BeautifulSoup:
         """Use interface of `self.load_more` method."""
