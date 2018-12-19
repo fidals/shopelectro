@@ -20,7 +20,7 @@ from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from refarm_test_utils.utils import reverse_catalog_url
+from catalog.helpers import reverse_catalog_url
 
 from shopelectro import models
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
