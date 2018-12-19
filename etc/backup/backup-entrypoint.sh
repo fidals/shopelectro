@@ -5,9 +5,8 @@
 
 for type in database media static
 do
-    echo $type
     tar -zcvf /opt/backup/$type-`date "+%Y-%m-%d"`.tar.gz -C /usr/app/src/$type .
 done
 
-# delete files older than 7 days
-find /opt/backup/* -mtime +7 -print -delete
+# delete files older than DAYS_TO_STORE days
+find /opt/backup/* -mtime +${DAYS_TO_STORE:-7} -print -delete
