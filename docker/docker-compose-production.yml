@@ -44,7 +44,7 @@ services:
     networks:
       - se-backend
       - se-frontend
-    command: gunicorn shopelectro.wsgi:application -c /etc/gunicorn.py -b 0.0.0.0:$VIRTUAL_HOST_PORT
+    command: docker/wait-for.sh postgres:5432 -- gunicorn shopelectro.wsgi:application -c /etc/gunicorn.py -b 0.0.0.0:$VIRTUAL_HOST_PORT
 
   celery-beat:
     <<: *celery-worker
@@ -132,6 +132,8 @@ services:
       context: ..
       dockerfile: docker/cron/Dockerfile
     container_name: se-backup-data
+    environment:
+      - DAYS_TO_STORE=2
     volumes_from:
       - app
     volumes:
