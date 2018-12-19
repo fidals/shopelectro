@@ -51,9 +51,6 @@ class UpdateProductsUnit(TestCase):
         update_products.delete(data={})
         self.assertFalse(product.page.is_active)
 
-    # @todo #656:30m Fix pages consistency in update_db command.
-    #  See test below for details.
-    @unittest.expectedFailure
     def test_product_pages_consistency(self):
         """Full import cycle with delete/update/create should keep db pages consistency."""
         # - take some existing prod
@@ -65,7 +62,7 @@ class UpdateProductsUnit(TestCase):
         updated_products = update_products.update(product_data)
         update_products.create(product_data, updated_products)
         # - assert if product's page is unique by name
-        self.assertEqual(ProductPage.objects.filter(name=product.name).count(), 1)
+        self.assertEqual(1, ProductPage.objects.filter(name=product.name).count())
         old_named_pages = ProductPage.objects.filter(name=product.name)
         # - and this unique page should be active
         self.assertTrue(old_named_pages.first().is_active)

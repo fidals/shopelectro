@@ -276,6 +276,9 @@ def update(data: Dict[UUID, Data]) -> QuerySet:
         for field, value in product_data.items():
             save(product, field, value)
         product.save()
+        # if 1C contains product, it should be inactive at DB
+        product.page.is_active = True
+        product.page.save()
 
     logger.info('{} products were updated.'.format(products.count()))
     return products
