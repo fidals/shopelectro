@@ -27,7 +27,7 @@ class Search(search_views.SearchView):
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
-            name='page',
+            name='page',  # Ignore CPDBear
             qs=Page.objects.filter(is_active=True).exclude(type=Page.MODEL_TYPE),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
