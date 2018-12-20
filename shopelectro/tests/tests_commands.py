@@ -51,9 +51,6 @@ class UpdateProductsUnit(TestCase):
         update_products.delete(data={})
         self.assertFalse(product.page.is_active)
 
-    # @todo #656:30m Fix pages consistency in update_db command.
-    #  See test below for details.
-    @unittest.expectedFailure
     def test_product_pages_consistency(self):
         """Full import cycle with delete/update/create should keep db pages consistency."""
         # - take some existing prod
@@ -65,7 +62,7 @@ class UpdateProductsUnit(TestCase):
         updated_products = update_products.update(product_data)
         update_products.create(product_data, updated_products)
         # - assert if product's page is unique by name
-        self.assertEqual(ProductPage.objects.filter(name=product.name).count(), 1)
+        self.assertEqual(1, ProductPage.objects.filter(name=product.name).count())
         old_named_pages = ProductPage.objects.filter(name=product.name)
         # - and this unique page should be active
         self.assertTrue(old_named_pages.first().is_active)
@@ -178,6 +175,26 @@ class UpdateProducts(TestCase):
         self.assertEqual(updated_tags_count + create_count, Tag.objects.count())
 
 
+class Price:
+
+    def __init__(self, utm: str):
+        filename = settings.UTM_PRICE_MAP[utm]
+        self.file_path = os.path.join(settings.ASSETS_DIR, filename)
+        self.root_node = ElementTree.parse(self.file_path)
+
+    @property
+    def shop_node(self) -> ElementTree:
+        return self.root_node.getroot().find('shop')
+
+    @property
+    def categories_node(self) -> ElementTree:
+        return self.shop_node.find('categories')
+
+    @property
+    def offers_node(self) -> ElementTree:
+        return self.shop_node.find('offers')
+
+
 @tag('fast')
 class GeneratePrices(TestCase):
 
@@ -191,8 +208,14 @@ class GeneratePrices(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for file_name in settings.UTM_PRICE_MAP.values():
-            os.remove(cls.get_price_file_path(file_name))
+        for utm in settings.UTM_PRICE_MAP:
+            # @todo #667:30m Create `Prices` class for test_commands.
+            #  It should keep prices without need of recreating it
+            #  every time price is needed.
+            #  For example for price file removing
+            #  we need only file file_path,
+            #  but should instantiate the whole price object.
+            os.remove(Price(utm).file_path)
         super(GeneratePrices, cls).tearDownClass()
 
     @classmethod
@@ -207,46 +230,23 @@ class GeneratePrices(TestCase):
             })
             call_command(name)
 
-    # @todo #661:30m Refactor huge set of getters in prices test.
-    #  Move every `get_price_...` method to some `PriceNode` class.
-    @staticmethod
-    def get_price_file_path(filename):
-        return os.path.join(settings.ASSETS_DIR, filename)
-
-    @classmethod
-    def get_price_node(cls, filename):
-        return ElementTree.parse(cls.get_price_file_path(filename))
-
-    @classmethod
-    def get_price_shop_node(cls, filename):
-        return cls.get_price_node(filename).getroot().find('shop')
-
-    @classmethod
-    def get_price_categories_node(cls, filename):
-        return cls.get_price_shop_node(filename).find('categories')
-
-    @classmethod
-    def get_price_offers_node(cls, filename):
-        return cls.get_price_shop_node(filename).find('offers')
-
     def test_prices_exists(self):
         """Price command should generate various price-list files."""
         price_file_min_size = 10 ** 3  # ~1kb
 
-        for name in settings.UTM_PRICE_MAP.values():
-            file_name = self.get_price_file_path(name)
-            self.assertIn(name, os.listdir(settings.ASSETS_DIR))
-            size = os.stat(file_name).st_size
+        for utm, filename in settings.UTM_PRICE_MAP.items():
+            self.assertIn(filename, os.listdir(settings.ASSETS_DIR))
+            size = os.stat(Price(utm).file_path).st_size
             self.assertGreaterEqual(size, price_file_min_size)
 
     def test_categories_in_price(self):
-        categories_in_price = self.get_price_categories_node('priceru.xml')
+        categories_in_price = Price(utm='priceru').categories_node
         self.assertEqual(len(categories_in_price), Category.objects.count())
 
     def test_categories_in_yandex_price(self):
-        categories_in_yandex_price = self.get_price_categories_node('yandex.yml')
+        categories = Price(utm='YM').categories_node
         self.assertEqual(
-            len(categories_in_yandex_price),
+            len(categories),
             Category.objects.get_categories_tree_with_pictures().count()
         )
 
@@ -258,7 +258,7 @@ class GeneratePrices(TestCase):
                     return category
             return None
         included_name = 'Category #0 of #Category #0 of #Category #1'
-        categories_node = self.get_price_categories_node('gm.yml')
+        categories_node = Price(utm='GM').categories_node
 
         # check if find_category inner function is correct
         self.assertIsNotNone(
@@ -276,12 +276,12 @@ class GeneratePrices(TestCase):
         )
 
     def test_products_in_price(self):
-        products_in_price = self.get_price_offers_node('priceru.xml')
-        self.assertEqual(len(products_in_price), Product.objects.count())
+        products = Price(utm='priceru').offers_node
+        self.assertEqual(len(products), Product.objects.count())
 
     def test_products_in_gm_price_bounds(self):
         """GM.yml should contain only offers with price > CONST."""
-        offers = self.get_price_offers_node('gm.yml').findall('offer')
+        offers = Price(utm='GM').offers_node.findall('offer')
         prices_are_in_bounds = all(
             float(offer.find('price').text) > settings.PRICE_GM_LOWER_BOUND
             for offer in offers
@@ -289,16 +289,16 @@ class GeneratePrices(TestCase):
         self.assertTrue(prices_are_in_bounds)
 
     def test_products_in_yandex_price(self):
-        products_in_yandex_price = self.get_price_offers_node('yandex.yml')
+        products = Price(utm='YM').offers_node
         self.assertEqual(
-            len(products_in_yandex_price),
+            len(products),
             Product.objects.filter(page__images__isnull=False).distinct().count()
         )
 
     def test_brands(self):
         """Price contains brand data."""
-        for price in settings.UTM_PRICE_MAP.values():
-            offer = self.get_price_offers_node(price).find('offer')
+        for utm in settings.UTM_PRICE_MAP:
+            offer = Price(utm=utm).offers_node.find('offer')
             product = Product.objects.filter(id=offer.get('id')).first()
             self.assertEqual(
                 product.get_brand_name(),
@@ -307,9 +307,7 @@ class GeneratePrices(TestCase):
 
     def test_utm_yandex(self):
         """Url tag of every offer should contain valid utm marks."""
-        offer = self.get_price_offers_node(
-            settings.UTM_PRICE_MAP['YM']
-        )[0]
+        offer = Price(utm='YM').offers_node[0]
         url = offer.find('url').text
         get_attrs = urllib.parse.parse_qs(url)
         self.assertEqual('cpc-market', get_attrs['utm_medium'][0])

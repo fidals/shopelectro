@@ -2,7 +2,9 @@ from django.conf import settings
 
 from search import views as search_views, search as search_engine
 
-from shopelectro.models import Category, Product, ExcludedModelTPage
+from pages.models import Page
+
+from shopelectro.models import Category, Product
 
 
 class Search(search_views.SearchView):
@@ -25,8 +27,8 @@ class Search(search_views.SearchView):
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
-            name='page',
-            qs=ExcludedModelTPage.objects.filter(is_active=True),
+            name='page',  # Ignore CPDBear
+            qs=Page.objects.filter(is_active=True).exclude(type=Page.MODEL_TYPE),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
@@ -55,7 +57,7 @@ class Autocomplete(search_views.AutocompleteView):
         ),
         search_engine.Search(
             name='pages',
-            qs=ExcludedModelTPage.objects.filter(is_active=True),
+            qs=Page.objects.filter(is_active=True).exclude(type=Page.MODEL_TYPE),
             fields=['name'],
             template_fields=['name', 'url'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
@@ -83,7 +85,7 @@ class AdminAutocomplete(search_views.AdminAutocompleteView):
         ),
         search_engine.Search(
             name='pages',
-            qs=ExcludedModelTPage.objects.filter(is_active=True),
+            qs=Page.objects.filter(is_active=True).exclude(type=Page.MODEL_TYPE),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )

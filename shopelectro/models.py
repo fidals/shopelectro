@@ -216,24 +216,3 @@ class Tag(catalog_models.Tag):
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
-
-
-class ExcludedModelTPageQuerySet(pages_models.PageQuerySet):
-    def exclude_type(self):
-        return self.exclude(type=pages_models.Page.MODEL_TYPE)
-
-
-class ExcludedModelTPageManager(mptt.models.TreeManager):
-    def get_queryset(self):
-        return super().get_queryset().exclude(type=pages_models.Page.MODEL_TYPE)
-
-
-# @todo #612:15m Remove ExcludedModelTPage.
-#  Now it used only in search view.
-#  Use there the explicit `exclude(type=...)` instead.
-class ExcludedModelTPage(pages_models.Page):
-
-    class Meta(pages_models.Page.Meta):  # Ignore PycodestyleBear (E303)
-        proxy = True
-
-    objects = ExcludedModelTPageManager()
