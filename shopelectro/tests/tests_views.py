@@ -164,12 +164,12 @@ class CatalogTags(BaseCatalogTestCase):
         tag_titles = delimiter.join(t.name for t in tags)
         self.assertContains(response, tag_titles)
 
-    def test_tags_var(self):
+    def test_tags_var_in_db_template(self):
         """
         Test CategoryTagsPage with canonical tags.
 
-        CategoryTagsPage should contain "tags" template var tag=each(tags) is Tag
-        class instance.
+        "tags" db template at CategoryTagsPage
+        should render tag names. For example "1 м, 20 кг".
         """
         tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
         response = self.get_category_page(tags=tags)
