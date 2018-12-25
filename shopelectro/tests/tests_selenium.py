@@ -423,7 +423,7 @@ class ProductPage(helpers.SeleniumTestCase):
         self.product = Product.objects.get(id=self.PRODUCT_ID)
         server = self.live_server_url
         self.test_product_page = server + self.product.url
-        self.success_order = server + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success',))
+        self.success_order = server + reverse(CustomPage.ROUTE, args=('order-success',))
         self.product_name = self.product.name
         self.browser.get(self.test_product_page)
         wait_page_loading(self.browser)
@@ -638,7 +638,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.category = reverse('category', args=(Category.objects.first().page.slug,))
         self.success_order_url = '{}{}'.format(
             self.live_server_url,
-            reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success',))
+            reverse(CustomPage.ROUTE, args=('order-success',))
         )
         self.buy_products()
         self.wait.until_not(is_cart_empty)
@@ -763,7 +763,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.wait.until(EC.url_to_be(self.success_order_url))
         self.assertEqual(
             self.browser.current_url,
-            self.live_server_url + reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order-success', ))
+            self.live_server_url + reverse(CustomPage.ROUTE, args=('order-success', ))
         )
 
     @helpers.disable_celery
@@ -902,7 +902,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
             'category', args=(Category.objects.first().page.slug,))
         self.order_page_url = '{}{}'.format(
             self.live_server_url,
-            reverse(Page.CUSTOM_PAGES_URL_NAME, args=('order',))
+            reverse(CustomPage.ROUTE, args=('order',))
         )
         self.browser.get(self.live_server_url)
         wait_page_loading(self.browser)

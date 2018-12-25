@@ -3,7 +3,7 @@ from typing import Generator, Tuple
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from pages.models import Page, PageManager
+from pages.models import CustomPage, PageManager
 
 from shopelectro.models import Category, Product, Tag
 
@@ -30,7 +30,7 @@ class IndexSitemap(Sitemap):
     # method on each object as returned by items().
     # https://docs.djangoproject.com/ja/1.9/ref/contrib/sitemaps/#django.contrib.sitemaps.Sitemap.location
     def location(self, model):
-        return reverse(Page.CUSTOM_PAGES_URL_NAME, args=(model, ))
+        return reverse(CustomPage.ROUTE, args=(model, ))
 
 
 class CategorySitemap(AbstractSitemap):
