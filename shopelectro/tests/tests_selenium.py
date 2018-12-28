@@ -15,7 +15,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC, ui
 
-from pages.models import FlatPage, CustomPage, Page
+from pages.models import FlatPage, CustomPage
 
 from shopelectro.models import Category, Product
 from shopelectro.tests import helpers
