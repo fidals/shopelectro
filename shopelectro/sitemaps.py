@@ -3,7 +3,7 @@ from typing import Generator, Tuple
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from pages.models import CustomPage, PageManager
+from pages.models import CustomPage, Page, PageManager
 
 from shopelectro.models import Category, Product, Tag
 
