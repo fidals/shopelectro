@@ -4,16 +4,19 @@ from .base import *
 
 
 DEBUG = True
-
+USE_CELERY = False
 # http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = True
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
-EMAIL_HOST_PASSWORD = 'so_secret_pass'
 
 # to disable django connection pool.
 # See .base.CONN_MAX_AGE for details
 CONN_MAX_AGE = 0
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
+EMAIL_HOST_PASSWORD = 'so_secret_pass'
+
+SITE_DOMAIN_NAME = 'stage.shopelectro.ru'
+YANDEX_KASSA_LINK = 'https://demomoney.yandex.ru/eshop.xml'
 
 SELENIUM_URL = os.environ.get('SELENIUM_URL', 'http://selenium:4444/wd/hub')
 SELENIUM_WAIT_SECONDS = int(os.environ['SELENIUM_WAIT_SECONDS'])
