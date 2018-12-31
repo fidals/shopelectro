@@ -19,7 +19,12 @@ x-app-base: &app-base
     - $VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT
     - $VIRTUAL_HOST_LIVESERVER_PORT
   networks:
-    - se-backend
+    networks:
+      stb-backend:
+        aliases:
+          # Use alias here because Chrome (and not only Chrome) supports HSTS in strange way.
+          # See this github comment for details: https://goo.gl/ynD1KC
+          - app-selenium
   depends_on:
     - postgres
     - rabbitmq
@@ -94,7 +99,7 @@ services:
       - 6382:6379
 
   selenium:
-    image: selenium/standalone-chrome-debug:3.10.0
+    image: selenium/standalone-chrome-debug:3.14.0
     restart: always
     ports:
       - 4444
