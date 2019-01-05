@@ -3,6 +3,6 @@
 {% for radio in form.payment_type %}
   <div class="payment-types-form-item">
     {{ radio }}
-    <img src="{% static 'images/pay/'|add:radio.choice_value|add:'.png' %}" >
+    <img src="{% static 'images/pay/'|add:radio.data.value|add:'.png' %}" >
   </div>
 {% endfor %}

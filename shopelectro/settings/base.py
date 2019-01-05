@@ -222,7 +222,6 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'refarm_test_utils.runners.RefarmTestRunner'
-LIVESERVER_PORT = int(os.environ.get('LIVESERVER_PORT', 8020))
 LIVESERVER_HOST = socket.gethostname()
 
 SITE_CREATED = datetime(2013, 1, 1)

@@ -17,7 +17,6 @@ x-app-base: &app-base
     - PYTHONUNBUFFERED=0
   ports:
     - $VIRTUAL_HOST_EXPOSE_PORT:$VIRTUAL_HOST_PORT
-    - $LIVESERVER_PORT
   networks:
     se-backend:
       aliases:
