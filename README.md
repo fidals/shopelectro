@@ -69,8 +69,7 @@ dc exec app python manage.py price
 make test
 
 # запускаем один тест
-dc exec app python manage.py test -v 3 \
-    stroyprombeton.tests.tests_selenium.CartTestCase.buy_on_product_page
+dc exec app python manage.py test shopelectro.tests.tests_selenium.TestClass.test_method
 ```
 
 #### Fixtures
