@@ -19,6 +19,8 @@ class MobileSeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
 
     fixtures = ['dump.json']
+    port = settings.LIVESERVER_PORT
+    host = settings.LIVESERVER_HOST
 
     @classmethod
     def setUpClass(cls):

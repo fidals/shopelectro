@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import socket
 from datetime import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -221,6 +222,8 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'refarm_test_utils.runners.RefarmTestRunner'
+LIVESERVER_PORT = int(os.environ.get('LIVESERVER_PORT', 8020))
+LIVESERVER_HOST = socket.gethostname()
 
 SITE_CREATED = datetime(2013, 1, 1)
 
