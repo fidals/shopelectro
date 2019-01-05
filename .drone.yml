@@ -78,7 +78,7 @@ pipeline:
       - python manage.py excel
       - python manage.py price
       - python manage.py collectstatic --noinput
-      - python manage.py test --parallel --tag fast -k -v 3
+      - python manage.py test --parallel --tag fast -v 3 -k
 
   slow-test:
     <<: *test

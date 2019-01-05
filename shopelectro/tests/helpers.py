@@ -90,7 +90,7 @@ class SeleniumTestCase(LiveServerTestCase):
     def tearDownClass(cls):
         """Close selenium session."""
         cls.browser.quit()
-        super(SeleniumTestCase, cls).tearDownClass()
+        super().tearDownClass()
 
     @contextmanager
     def screen_fail(self, filename=''):

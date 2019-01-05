@@ -222,7 +222,8 @@ LOGGING = {
 }
 
 TEST_RUNNER = 'refarm_test_utils.runners.RefarmTestRunner'
-LIVESERVER_HOST = socket.gethostname()
+# LIVESERVER_HOST = socket.gethostname()
+LIVESERVER_HOST = socket.gethostbyname(socket.gethostname())
 
 SITE_CREATED = datetime(2013, 1, 1)
 
