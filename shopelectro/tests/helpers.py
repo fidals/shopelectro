@@ -60,6 +60,7 @@ class SeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
 
     fixtures = ['dump.json']
+    host = settings.LIVESERVER_HOST
 
     @classmethod
     def setUpClass(cls):
@@ -89,7 +90,7 @@ class SeleniumTestCase(LiveServerTestCase):
     def tearDownClass(cls):
         """Close selenium session."""
         cls.browser.quit()
-        super(SeleniumTestCase, cls).tearDownClass()
+        super().tearDownClass()
 
     @contextmanager
     def screen_fail(self, filename=''):

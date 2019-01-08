@@ -46,7 +46,7 @@ collectstatic:
 
 test: build-static
 	$(dc) up -d app selenium
-	$(dc) exec app python manage.py test -v 3 --liveserver=app-server:8020-8030 --parallel
+	$(dc) exec app python manage.py test -v 3 --parallel
 	$(dc) stop
 
 lint-code:

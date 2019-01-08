@@ -5,7 +5,7 @@ beautifulsoup4
 
 # celery==4.2.2
 git+https://github.com/celery/celery.git@1c3a15938d0b9dde674d4666689d6a6c733d64e4#egg=celery
-Django==1.10
+Django==1.11.17
 django-debug-toolbar==1.10.1
 django-extensions
 django-redis==4.8.0
