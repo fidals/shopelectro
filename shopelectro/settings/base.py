@@ -223,7 +223,7 @@ LOGGING = {
 
 TEST_RUNNER = 'refarm_test_utils.runners.RefarmTestRunner'
 # address for selenium-based tests
-# host name doesn't resolve at CI, so we have to use host address
+# CI doesn't resolve a host name, so we have to use the host address
 LIVESERVER_HOST = socket.gethostbyname(socket.gethostname())
 
 SITE_CREATED = datetime(2013, 1, 1)
