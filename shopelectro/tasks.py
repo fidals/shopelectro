@@ -57,3 +57,8 @@ def update_catalog():
         generate_excel_file(),
         collect_static()
     ]
+
+
+@app.task
+def check_production():
+    pass
