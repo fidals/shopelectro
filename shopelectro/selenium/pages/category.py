@@ -1,12 +1,27 @@
+import typing
 
-class CategoryPage:
+from shopelectro.selenium.elements import ProductCard
+from shopelectro.selenium.pages import Page
 
-    def __init__(self, slug):
+from django.urls import reverse
 
-    def buy_products(self):
-        # self.driver.get(self.live_server_url + self.category)
-        # for i in range(1, 6):
-        #     self.browser.find_element_by_xpath(
-        #         '//*[@id="products-wrapper"]/div[{}]/div[2]/div[5]/button'
-        #         .format(i)
-        #     ).click()
+# @todo #682:60m Implement and reuse shopelectro.selenium.CategoryPage for selenium tests.
+
+
+class CategoryPage(Page):
+
+    def __init__(self, driver, slug):
+        super().__init__(driver)
+        self.slug = slug
+
+    @property
+    def address(self):
+        return reverse('category', args=(self.slug,))
+
+    def product_cards(self) -> typing.List[ProductCard]:
+        pass
+
+    def add_to_cart(self, product_cards=None: typing.List[ProductCard]):
+        product_cards = product_cards or self.product_cards()[:6]
+        for card in product_cards:
+            card.add_to_cart()
