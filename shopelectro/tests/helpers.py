@@ -65,7 +65,7 @@ class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         """Instantiate browser instance."""
-        super(SeleniumTestCase, cls).setUpClass()
+        super().setUpClass()
         cls.browser = Remote(
             command_executor=settings.SELENIUM_URL,
             desired_capabilities=DesiredCapabilities.CHROME
@@ -109,12 +109,6 @@ class SeleniumTestCase(LiveServerTestCase):
                     f.write(base64.b64decode(screen_b64.encode('ascii')))
             raise e
 
-    # @todo #300:60m Use or create clear selenium.WebElement behaviour system.from
-    #  Currently we return element from click method.
-    #  It's not clear design decision. Use or create your own behaviour system.
-    #  Some pipeline like WebElement or custom one.
-    #  Maybe page objects pattern will be helpful:
-    #  http://selenium-python.readthedocs.io/page-objects.html
     def click(self, click_locator) -> WebElement:
         """Click on element in safe way and return element we clicked on."""
         dom_element = self.wait.until(
