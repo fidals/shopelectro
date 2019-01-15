@@ -1,4 +1,5 @@
 import typing
+from functools import partial
 
 from django import http
 from django.conf import settings
@@ -34,6 +35,7 @@ def get_view_type(request):
 
 def get_catalog_context(request, category, raw_tags, page_number, per_page, sorting_index):
     all_tags = newcontext.Tags(models.Tag.objects.all())
+
     if raw_tags:
         selected_tags = newcontext.tags.Checked404Tags(
             newcontext.tags.ParsedTags(
@@ -76,6 +78,7 @@ def get_catalog_context(request, category, raw_tags, page_number, per_page, sort
     extra_context = {
         'skip_canonical': selected_tags.qs().exists(),
         'total_products': products.qs().count(),
+        'selected_tags': selected_tags.qs(),
     }
     return contexts, extra_context
 
@@ -240,9 +243,23 @@ class CategoryPage(catalog.CategoryPage):
             sorting_index=sorting_index,
         )
 
+        selected_tags = extra_context['selected_tags']
+        if selected_tags:
+            def template_context(page, tag_titles, tags):
+                return {
+                    'page': page,
+                    'tag_titles': tag_titles,
+                    'tags': tags,
+                }
+
+            page = self.object
+            page.get_template_render_context = partial(
+                template_context, self.object, selected_tags.as_title(), selected_tags
+            )
+
         return {
             **super().get_context_data(**kwargs),
-            **(contexts.context()),
+            **contexts.context(),
             **extra_context,
             'view_type': get_view_type(self.request),
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
