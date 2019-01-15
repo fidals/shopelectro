@@ -63,6 +63,7 @@ def update_catalog():
 
 # @todo #682:60m Implement check_purchase.
 #  Handle errors. Report failed attempts.
+#  Schedule it in the celery beat.
 
 
 @app.task

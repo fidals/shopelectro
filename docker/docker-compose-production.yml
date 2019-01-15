@@ -124,19 +124,6 @@ services:
     ports:
       - 6379
 
-  selenium:
-    image: selenium/standalone-chrome:3.14.0
-    restart: always
-    ports:
-      - 4444
-    environment:
-      - DBUS_SESSION_BUS_ADDRESS=/dev/null
-    networks:
-      - se-backend
-    shm_size: 2G
-    volumes:
-      - /dev/shm:/dev/shm
-
   # Контейнер делает бэкапы по крону.
   # Бэкап - это несколько архивов: database.tar.gz, media.tar.gz, static.tar.gz
   # в директории /opt/backup/shopelectro
