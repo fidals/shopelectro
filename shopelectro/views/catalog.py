@@ -3,7 +3,6 @@ from functools import partial
 
 from django import http
 from django.conf import settings
-from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
@@ -75,12 +74,12 @@ def get_catalog_context(request, category, raw_tags, page_number, per_page, sort
     contexts = newcontext.Contexts(
         all_tags, paginated_products, images, brands, grouped_tags,
     )
-    extra_context = {
+    optional_context = {
         'skip_canonical': selected_tags.qs().exists(),
         'total_products': products.qs().count(),
         'selected_tags': selected_tags.qs(),
     }
-    return contexts, extra_context
+    return contexts, optional_context
 
 
 # CATALOG VIEWS
@@ -231,7 +230,7 @@ class CategoryPage(catalog.CategoryPage):
         """Add sorting options and view_types in context."""
         sorting_index = int(self.kwargs.get('sorting', 0))
 
-        contexts, extra_context = get_catalog_context(
+        contexts, optional_context = get_catalog_context(
             request=self.request,
             category=self.object.model,
             raw_tags=self.kwargs.get('tags'),
@@ -242,7 +241,7 @@ class CategoryPage(catalog.CategoryPage):
             sorting_index=sorting_index,
         )
 
-        selected_tags = extra_context['selected_tags']
+        selected_tags = optional_context['selected_tags']
         if selected_tags:
             def template_context(page, tag_titles, tags):
                 return {
@@ -259,7 +258,7 @@ class CategoryPage(catalog.CategoryPage):
         return {
             **super().get_context_data(**kwargs),
             **contexts.context(),
-            **extra_context,
+            **optional_context,
             'view_type': get_view_type(self.request),
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
             'limits': settings.CATEGORY_STEP_MULTIPLIERS,
@@ -282,11 +281,6 @@ def load_more(request, slug, offset=0, limit=0, sorting=0, tags=None):
     if offset < 0:
         return http.HttpResponseBadRequest(
             'The offset is wrong. An offset should be greater than or equal to 0.'
-        )
-    if products_on_page not in settings.CATEGORY_STEP_MULTIPLIERS:
-        return http.HttpResponseBadRequest(
-            'The limit number is wrong. List of available numbers:'
-            f' {", ".join(map(str, settings.CATEGORY_STEP_MULTIPLIERS))}'
         )
     # increment page number because:
     # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
