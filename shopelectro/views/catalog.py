@@ -7,8 +7,9 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
-from catalog import context
+from catalog import context, newcontext
 from catalog.views import catalog
+from images.models import Image
 from pages import views as pages_views
 
 from shopelectro import context as se_context
@@ -23,6 +24,58 @@ def get_products_count(request):
     """Calculate max products list size from request. List size depends on device type."""
     mobile_view = get_user_agent(request).is_mobile
     return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
+
+
+def get_view_type(request):
+    view_type = request.session.get('view_type', 'tile')
+    assert view_type in ['list', 'tile']
+    return view_type
+
+
+def get_catalog_context(request, category, raw_tags, page_number, per_page, sorting_index):
+    all_tags = newcontext.Tags(models.Tag.objects.all())
+    if raw_tags:
+        selected_tags = newcontext.tags.Checked404Tags(newcontext.tags.ParsedTags(
+            tags=all_tags,
+            raw_tags=raw_tags,
+        ))
+    else:
+        selected_tags = newcontext.Tags(models.Tag.objects.none())
+
+    products = newcontext.products.OrderedProducts(
+        products=newcontext.products.TaggedProducts(
+            products=newcontext.products.ProductsByCategory(
+                products=newcontext.products.ActiveProducts(
+                    newcontext.Products(
+                        models.Product.objects.all(),
+                    ),
+                ),
+                category=category,
+            ),
+            tags=selected_tags,
+        ),
+        sorting_index=sorting_index,
+    )
+
+    paginated_products = newcontext.products.PaginatedProducts(
+        products=products,
+        url=request.path,
+        page_number=page_number,
+        per_page=per_page,
+    )
+
+    images = newcontext.products.ProductImages(paginated_products, Image.objects.all())
+    brands = newcontext.products.ProductBrands(paginated_products, all_tags)
+    grouped_tags = newcontext.tags.GroupedTags(all_tags)
+
+    contexts = newcontext.Contexts(
+        all_tags, paginated_products, images, brands, grouped_tags,
+    )
+    extra_context = {
+        'skip_canonical': selected_tags.qs().exists(),
+        'total_products': products.qs().count(),
+    }
+    return contexts, extra_context
 
 
 # CATALOG VIEWS
@@ -171,24 +224,28 @@ class CategoryPage(catalog.CategoryPage):
 
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
-        context_ = (
-            context.Category(
-                url_kwargs=self.kwargs,
-                request=self.request,
-                page=self.object,
-                products=models.Product.objects.all(),
-                product_pages=models.ProductPage.objects.all(),  # Ignore CPDBear
-            )
-            | context.TaggedCategory(tags=models.Tag.objects.all())
-            | context.SortingCategory()  # requires TaggedCategory
-            | context.PaginationCategory()  # requires SortingCategory
-            | context.ProductBrands()  # requires TaggedCategory
-            | se_context.ProductImages()
-            | context.DBTemplate()  # requires TaggedCategory
+        sorting_index = int(self.kwargs.get('sorting', 0))
+
+        raw_tags = self.kwargs.get('tags')
+        contexts, extra_context = get_catalog_context(
+            request=self.request,
+            category=self.object.model,
+            raw_tags=raw_tags,
+            page_number=int(self.request.GET.get('page', 1)),
+            per_page=int(self.request.GET.get(
+                'step', get_products_count(self.request),
+            )),
+            sorting_index=sorting_index,
         )
+
         return {
             **super().get_context_data(**kwargs),
-            **context_.get_context_data(),
+            **(contexts.context()),
+            **extra_context,
+            'view_type': get_view_type(self.request),
+            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
+            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
+            'sort': sorting_index,
         }
 
 
@@ -218,73 +275,18 @@ def load_more(request, slug, offset=0, limit=0, sorting=0, tags=None):
     # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
     page_number = (offset // products_on_page) + 1
     category = get_object_or_404(models.CategoryPage, slug=slug).model
-    sorting_option = context.SortingOption(index=int(sorting))
+    sorting_index = int(sorting)
 
-    all_products = (
-        models.Product.objects
-        .active()
-        .get_category_descendants(category)
-        .order_by(sorting_option.directed_field)
+    contexts, _ = get_catalog_context(
+        request=request,
+        category=category,
+        raw_tags=tags,
+        page_number=page_number,
+        per_page=products_on_page,
+        sorting_index=sorting_index,
     )
 
-    if tags:
-        tag_entities = models.Tag.objects.filter(
-            slug__in=models.Tag.parse_url_tags(tags)
-        )
-
-        all_products = (
-            all_products
-            .filter(tags__in=tag_entities)
-            # Use distinct because filtering by QuerySet tags,
-            # that related with products by many-to-many relation.
-            # Add `id` because `sorting_option.directed_field` maybe not uniq.
-            .distinct('id', sorting_option.directed_field)
-        )
-
-    paginated = context.PaginatorLinks(
-        page_number,
-        request.path,
-        Paginator(all_products, products_on_page)
-    )
-    paginated_page = paginated.page()
-    products = paginated_page.object_list
-    view = request.session.get('view_type', 'tile')
-
-    # products list has been sliced.
-    # So it can't be context's arg.
-    # We should create not sliced list with the same data.
-    products_to_filter = (
-        models.Product.objects
-        .filter(id__in=[p.id for p in products])
-        .order_by(sorting_option.directed_field)
-    )
-    data_from_context = (
-        context.Category(
-            url_kwargs={},
-            request=request,
-            page=category.page,
-            products=products_to_filter,
-            product_pages=models.ProductPage.objects.filter(
-                shopelectro_product__in=products_to_filter
-            ),
-        )
-        | context.TaggedCategory(tags=models.Tag.objects.all())
-        | context.SortingCategory()  # requires TaggedCategory
-        | context.PaginationCategory()  # requires SortingCategory
-        | context.ProductBrands()  # requires TaggedCategory
-        | se_context.ProductImages()
-        | context.DBTemplate()  # requires TaggedCategory
-    ).get_context_data()
-
-    return render(request, 'catalog/category_products.html', {
-        'products': products,
-        'product_images': data_from_context['product_images'],
-        'product_brands': data_from_context['product_brands'],
-        'paginated': paginated,
-        'paginated_page': paginated_page,
-        'view_type': view,
-        'prods': products_on_page,
-    })
+    return render(request, 'catalog/category_products.html', contexts.context())
 
 
 @require_POST
