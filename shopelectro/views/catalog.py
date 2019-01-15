@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
-from catalog import context, newcontext
+from catalog import newcontext
 from catalog.views import catalog
 from images.models import Image
 from pages import views as pages_views
@@ -35,10 +35,12 @@ def get_view_type(request):
 def get_catalog_context(request, category, raw_tags, page_number, per_page, sorting_index):
     all_tags = newcontext.Tags(models.Tag.objects.all())
     if raw_tags:
-        selected_tags = newcontext.tags.Checked404Tags(newcontext.tags.ParsedTags(
-            tags=all_tags,
-            raw_tags=raw_tags,
-        ))
+        selected_tags = newcontext.tags.Checked404Tags(
+            newcontext.tags.ParsedTags(
+                tags=all_tags,
+                raw_tags=raw_tags,
+            )
+        )
     else:
         selected_tags = newcontext.Tags(models.Tag.objects.none())
 
