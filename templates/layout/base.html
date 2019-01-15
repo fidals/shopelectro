@@ -8,7 +8,7 @@
 <head>
   {% include 'layout/google_tag_manager.html' with DEBUG=DEBUG is_head_tag=True %}
   {% if page %}
-    {% include 'layout/metadata.html' with page=page skip_canonical=skip_canonical paginated_page=paginated.page only %}
+    {% include 'layout/metadata.html' with page=page skip_canonical=skip_canonical paginated=paginated only %}
   {% endif %}
   {% block stylesheets %}
     <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">

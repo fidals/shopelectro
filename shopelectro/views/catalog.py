@@ -231,11 +231,10 @@ class CategoryPage(catalog.CategoryPage):
         """Add sorting options and view_types in context."""
         sorting_index = int(self.kwargs.get('sorting', 0))
 
-        raw_tags = self.kwargs.get('tags')
         contexts, extra_context = get_catalog_context(
             request=self.request,
             category=self.object.model,
-            raw_tags=raw_tags,
+            raw_tags=self.kwargs.get('tags'),
             page_number=int(self.request.GET.get('page', 1)),
             per_page=int(self.request.GET.get(
                 'step', get_products_count(self.request),
