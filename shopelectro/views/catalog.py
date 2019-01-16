@@ -230,6 +230,8 @@ class CategoryPage(catalog.CategoryPage):
         """Add sorting options and view_types in context."""
         sorting_index = int(self.kwargs.get('sorting', 0))
 
+        # @todo #683:30m Create Page context class.
+        #  Move rest of plain context data to this class.
         contexts, optional_context = get_catalog_context(
             request=self.request,
             category=self.object.model,
@@ -252,7 +254,7 @@ class CategoryPage(catalog.CategoryPage):
 
             page = self.object
             page.get_template_render_context = partial(
-                template_context, self.object, selected_tags.as_title(), selected_tags
+                template_context, page, selected_tags.as_title(), selected_tags
             )
 
         return {
