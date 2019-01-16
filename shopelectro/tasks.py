@@ -70,10 +70,10 @@ def update_catalog():
 def check_purchase():
     driver = selenium.SiteDriver(site_url=settings.BASE_URL)
     category_page = selenium.CategoryPage(driver, CategoryPage.objects.first().url)
-    category_page.move_to()
+    category_page.load()
     category_page.add_to_cart()
 
     order_page = selenium.OrderPage(driver)
-    order_page.move_to()
+    order_page.load()
     order_page.fill_contacts()
     order_page.make_order()

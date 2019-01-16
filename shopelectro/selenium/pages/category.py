@@ -5,7 +5,7 @@ from shopelectro.selenium.pages import Page
 
 from django.urls import reverse
 
-# @todo #682:60m Implement and reuse shopelectro.selenium.CategoryPage for selenium tests.
+# @todo #682:120m Implement and reuse shopelectro.selenium.CategoryPage for selenium tests.
 
 
 class CategoryPage(Page):
@@ -15,7 +15,7 @@ class CategoryPage(Page):
         self.slug = slug
 
     @property
-    def address(self):
+    def path(self):
         return reverse('category', args=(self.slug,))
 
     def product_cards(self) -> typing.List[ProductCard]:
