@@ -1,8 +1,4 @@
-import typing
-
 from shopelectro.selenium.pages import Page
-
-from django.urls import reverse
 
 from pages.models import CustomPage
 

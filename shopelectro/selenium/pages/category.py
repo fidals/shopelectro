@@ -19,9 +19,9 @@ class CategoryPage(Page):
         return reverse('category', args=(self.slug,))
 
     def product_cards(self) -> typing.List[ProductCard]:
-        pass
+        raise NotImplementedError
 
-    def add_to_cart(self, product_cards=None: typing.List[ProductCard]):
+    def add_to_cart(self, product_cards: typing.List[ProductCard]=None):
         product_cards = product_cards or self.product_cards()[:6]
         for card in product_cards:
             card.add_to_cart()

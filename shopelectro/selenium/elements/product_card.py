@@ -9,6 +9,8 @@ class ProductCard:
 
     def __init__(self, driver: SiteDriver, card_index: int):
         """
+        Ctor.
+
         :param int card_index: The index number of the product card at a category page
         """
         self.driver = driver

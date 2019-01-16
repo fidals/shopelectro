@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 
 from django.conf import settings
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from seleniumrequests import Remote
 
