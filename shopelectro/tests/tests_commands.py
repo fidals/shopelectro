@@ -243,7 +243,7 @@ class GeneratePrices(TestCase):
 
         for utm, filename in settings.UTM_PRICE_MAP.items():
             self.assertIn(filename, os.listdir(settings.ASSETS_DIR))
-            size = os.stat(Price(utm).file_path).st_size
+            size = os.stat(self.prices[utm].file_path).st_size
             self.assertGreaterEqual(size, price_file_min_size)
 
     def test_categories_in_price(self):
