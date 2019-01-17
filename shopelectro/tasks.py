@@ -61,9 +61,8 @@ def update_catalog():
         collect_static()
     ]
 
-# @todo #682:60m Implement check_purchase.
-#  Handle errors. Report failed attempts.
-#  Schedule it in the celery beat.
+# @todo #690:60m Handle errors in check_purchase.
+#  Report failed attempts. Schedule it in the celery beat.
 
 
 @app.task
