@@ -1,5 +1,8 @@
 from shopelectro.selenium import SiteDriver
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
 
 class Page:
     """
@@ -9,7 +12,7 @@ class Page:
     """
 
     def __init__(self, driver: SiteDriver):
-        if not isinstance(self.driver, SiteDriver):
+        if not isinstance(driver, SiteDriver):
             raise TypeError('Driver must be an instance of shopelectro.selenium.SiteDriver')
         self.driver = driver
         self.path: str

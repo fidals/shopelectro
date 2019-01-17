@@ -1,4 +1,4 @@
-from selenium.driver import SiteDriver
+from shopelectro.selenium.driver import SiteDriver
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,5 +18,5 @@ class ProductCard:
 
     def add_to_cart(self):
         self.driver.wait.until(
-            EC.visibility_of_element_located((By.XPATH, self.button_xpath))
+            EC.element_to_be_clickable((By.XPATH, self.button_xpath))
         ).click()
