@@ -31,33 +31,32 @@ def get_view_type(request):
     assert view_type in ['list', 'tile']
     return view_type
 
-
+# @todo 683:60m Create context class(es) for catalog page representation.
+#  Remove get_catalog_context in favor of created class(es).
 def get_catalog_context(request, category, raw_tags, page_number, per_page, sorting_index):
     all_tags = newcontext.Tags(models.Tag.objects.all())
-
+    selected_tags = newcontext.tags.ParsedTags(
+        tags=all_tags,
+        raw_tags=raw_tags,
+    )
     if raw_tags:
-        selected_tags = newcontext.tags.Checked404Tags(
-            newcontext.tags.ParsedTags(
-                tags=all_tags,
-                raw_tags=raw_tags,
-            )
-        )
-    else:
-        selected_tags = newcontext.Tags(models.Tag.objects.none())
+        selected_tags = newcontext.tags.Checked404Tags(selected_tags)
 
+    # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
+    #  Rename Checked404Tags to ExistOr404.
     products = newcontext.products.OrderedProducts(
+        sorting_index=sorting_index,
         products=newcontext.products.TaggedProducts(
+            tags=selected_tags,
             products=newcontext.products.ProductsByCategory(
+                category=category,
                 products=newcontext.products.ActiveProducts(
                     newcontext.Products(
                         models.Product.objects.all(),
                     ),
                 ),
-                category=category,
             ),
-            tags=selected_tags,
         ),
-        sorting_index=sorting_index,
     )
 
     paginated_products = newcontext.products.PaginatedProducts(
@@ -71,9 +70,10 @@ def get_catalog_context(request, category, raw_tags, page_number, per_page, sort
     brands = newcontext.products.ProductBrands(paginated_products, all_tags)
     grouped_tags = newcontext.tags.GroupedTags(all_tags)
 
-    contexts = newcontext.Contexts(
-        all_tags, paginated_products, images, brands, grouped_tags,
-    )
+    contexts = newcontext.Contexts(paginated_products, images, brands, grouped_tags)
+    # @todo #683:60m Create context class(es).
+    #  Remove optional_context from get_catalog_context and
+    #  patching of page.get_template_render_context in favor of created class(es).
     optional_context = {
         'skip_canonical': selected_tags.qs().exists(),
         'total_products': products.qs().count(),
@@ -230,8 +230,6 @@ class CategoryPage(catalog.CategoryPage):
         """Add sorting options and view_types in context."""
         sorting_index = int(self.kwargs.get('sorting', 0))
 
-        # @todo #683:30m Create Page context class.
-        #  Move rest of plain context data to this class.
         contexts, optional_context = get_catalog_context(
             request=self.request,
             category=self.object.model,
