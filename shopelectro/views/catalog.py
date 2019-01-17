@@ -31,7 +31,8 @@ def get_view_type(request):
     assert view_type in ['list', 'tile']
     return view_type
 
-# @todo 683:60m Create context class(es) for catalog page representation.
+
+# @todo #683:60m Create context class(es) for catalog page representation.
 #  Remove get_catalog_context in favor of created class(es).
 def get_catalog_context(request, category, raw_tags, page_number, per_page, sorting_index):
     all_tags = newcontext.Tags(models.Tag.objects.all())
