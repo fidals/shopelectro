@@ -16,7 +16,7 @@ class Input:
     def send_keys(self, keys: str):
         keys = str(keys)
         if not re.match(r'[\w\d\s\-_]+', keys, re.I | re.U):
-            raise ValueError('Form text should not contain special symbols')
+            raise ValueError('Remove special symbols from text')
         el = self.driver.wait.until(EC.element_to_be_clickable(self.locator))
         el.clear()
         el.send_keys(keys)
