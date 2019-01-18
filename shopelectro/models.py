@@ -137,16 +137,15 @@ class ProductFeedback(models.Model):
 
 def _default_payment():
     """Default payment option is first element of first tuple in options."""
-    assert settings.PAYMENT_OPTIONS[0][0], 'No payment options!'
-    return settings.PAYMENT_OPTIONS[0][0]
+    return
 
 
 class Order(ecommerce_models.Order):
     address = models.TextField(blank=True, default='')
     payment_type = models.CharField(
         max_length=255,
-        choices=settings.PAYMENT_OPTIONS,
-        default=_default_payment()
+        choices=list(settings.PaymentOptions),
+        default=settings.PaymentOptions.default().name,
     )
     comment = models.TextField(blank=True, default='')
     # total price - total purchase price
@@ -155,10 +154,7 @@ class Order(ecommerce_models.Order):
     @property
     def payment_type_name(self):
         """Return name for an order's payment option."""
-        return next(
-            name for option, name in settings.PAYMENT_OPTIONS
-            if self.payment_type == option
-        )
+        return settings.PaymentOptions[self.payment_type].name
 
     def set_positions(self, cart):
         """

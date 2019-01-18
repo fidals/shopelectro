@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-
+import enum
 import os
 import socket
 from datetime import datetime
@@ -245,14 +245,28 @@ SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 CART_ID = 'cart'
 
 # Used to define choices attr in definition of Order.payment_type field
-PAYMENT_OPTIONS = (
-    ('cash', 'Наличные'),
-    ('cashless', 'Безналичные и денежные переводы'),
-    ('AC', 'Банковская карта'),
-    ('PC', 'Яндекс.Деньги'),
-    ('GP', 'Связной (терминал)'),
-    ('AB', 'Альфа-Клик'),
-)
+class PairIterEnum(enum.EnumMeta):
+
+    def __iter__(self):
+        for i in super().__iter__():
+            yield i.name, i.value
+
+    def __repr__(self):
+        keys = ', '.join(next(zip(*PaymentOptions)))
+        return f"<enum '{self.__name__}: {names}'>"
+
+
+class PaymentOptions(enum.Enum, metaclass=PairIterEnum):
+    cash = 'Наличные'
+    cashless = 'Безналичные и денежные переводы'
+    AC = 'Банковская карта'
+    PC = 'Яндекс.Деньги'
+    GP = 'Связной (терминал)'
+    AB = 'Альфа-Клик'
+
+    @staticmethod
+    def default():
+        return PaymentOptions.cash
 
 # It is fake-pass. Correct pass will be created on `docker-compose up` stage from `docker/.env`
 YANDEX_SHOP_PASS = os.environ.get('YANDEX_SHOP_PASS', 'so_secret_pass')
