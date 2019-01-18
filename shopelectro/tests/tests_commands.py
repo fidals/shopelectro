@@ -6,7 +6,7 @@ Note: tests running pretty long.
 import glob
 import os
 import random
-import typing as t
+import typing
 import unittest
 import urllib.parse
 import uuid
@@ -198,14 +198,14 @@ class Price:
 
 class Prices(dict):
 
-    def __init__(self, utm_list: t.List[str]):
+    def __init__(self, utm_list: typing.List[str]):
         super().__init__()
         self.update({utm: Price(utm) for utm in utm_list})
 
     def remove(self):
         """Remove price files."""
         for price in self.values():
-           os.remove(price.file_path)
+            os.remove(price.file_path)
 
 
 @tag('fast')
