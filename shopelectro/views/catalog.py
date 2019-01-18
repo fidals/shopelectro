@@ -33,6 +33,7 @@ def get_view_type(request):
 
 
 # @todo #683:60m Create context class(es) for catalog page representation.
+#  Created class(es) will compose the context classes for catalog views.
 #  Remove get_catalog_context in favor of created class(es).
 def get_catalog_context(request, category, raw_tags, page_number, per_page, sorting_index):
     all_tags = newcontext.Tags(models.Tag.objects.all())
@@ -44,7 +45,7 @@ def get_catalog_context(request, category, raw_tags, page_number, per_page, sort
         selected_tags = newcontext.tags.Checked404Tags(selected_tags)
 
     # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
-    #  Rename Checked404Tags to ExistOr404.
+    #  Rename Checked404Tags to ExistingOr404.
     products = newcontext.products.OrderedProducts(
         sorting_index=sorting_index,
         products=newcontext.products.TaggedProducts(
