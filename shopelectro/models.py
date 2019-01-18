@@ -1,3 +1,4 @@
+import enum
 import random
 import string
 import typing
@@ -135,12 +136,36 @@ class ProductFeedback(models.Model):
         default='', blank=True, verbose_name=_('limitations'))
 
 
+class PairIterEnum(enum.EnumMeta):
+
+    def __iter__(self):
+        for i in super().__iter__():
+            yield i.name, i.value
+
+    def __repr__(self):
+        keys = ', '.join(next(zip(*PaymentOptions)))
+        return f"<enum '{self.__name__}: {names}'>"
+
+
+class PaymentOptions(enum.Enum, metaclass=PairIterEnum):
+    cash = 'Наличные'
+    cashless = 'Безналичные и денежные переводы'
+    AC = 'Банковская карта'
+    PC = 'Яндекс.Деньги'
+    GP = 'Связной (терминал)'
+    AB = 'Альфа-Клик'
+
+    @staticmethod
+    def default():
+        return PaymentOptions.cash
+
+
 class Order(ecommerce_models.Order):
     address = models.TextField(blank=True, default='')
     payment_type = models.CharField(
         max_length=255,
-        choices=list(settings.PaymentOptions),
-        default=settings.PaymentOptions.default().name,
+        choices=list(PaymentOptions),
+        default=PaymentOptions.default().name,
     )
     comment = models.TextField(blank=True, default='')
     # total price - total purchase price
