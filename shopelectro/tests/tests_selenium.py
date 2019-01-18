@@ -16,7 +16,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC, ui
 
 from pages.models import FlatPage, CustomPage
-
 from shopelectro.models import Category, Product
 from shopelectro.tests import helpers
 
@@ -57,6 +56,8 @@ def is_cart_empty(browser):
     return browser.find_element_by_class_name('js-cart-is-empty').is_displayed()
 
 
+# @todo #494:15m Rm `wait_page_loading` function in favor of analogous method.
+#  In favor of `helpers.SeleniumTestCase.wait_page_loaded`
 def wait_page_loading(browser):
     ui.WebDriverWait(browser, 60).until(
         EC.visibility_of_element_located(
@@ -1026,8 +1027,6 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.assertTrue('FULL_BUY_SEND' in self.reached_goals)
         self.assertTrue('CMN_BUY_SEND' in self.reached_goals)
 
-    # @todo #473:15m Resurrect test `test_cart_page_open`
-    @unittest.skip
     def test_cart_page_open(self):
         self.buy_product()
         self.prevent_default('click', '.js-go-to-cart')

@@ -7,7 +7,6 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-import mptt
 
 from catalog import models as catalog_models
 from ecommerce import models as ecommerce_models
