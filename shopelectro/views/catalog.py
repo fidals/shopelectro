@@ -1,5 +1,4 @@
 import typing
-from functools import partial
 
 from django import http
 from django.conf import settings
@@ -34,7 +33,7 @@ def get_view_type(request):
 # @todo #683:60m Create context class(es) for catalog page representation.
 #  Created class(es) will compose the context classes for catalog views.
 #  Remove get_catalog_context in favor of created class(es).
-def get_catalog_context(request, category, raw_tags, page_number, per_page, sorting_index):
+def get_catalog_context(request, page, category, raw_tags, page_number, per_page, sorting_index):
     all_tags = newcontext.Tags(models.Tag.objects.all())
     selected_tags = newcontext.tags.ParsedTags(
         tags=all_tags,
@@ -70,17 +69,10 @@ def get_catalog_context(request, category, raw_tags, page_number, per_page, sort
     images = newcontext.products.ProductImages(paginated_products, Image.objects.all())
     brands = newcontext.products.ProductBrands(paginated_products, all_tags)
     grouped_tags = newcontext.tags.GroupedTags(all_tags)
+    page = se_context.Page(page, selected_tags)
 
-    contexts = newcontext.Contexts(paginated_products, images, brands, grouped_tags)
-    # @todo #683:60m Create context class(es).
-    #  Remove optional_context from get_catalog_context and
-    #  patching of page.get_template_render_context in favor of created class(es).
-    optional_context = {
-        'skip_canonical': selected_tags.qs().exists(),
-        'total_products': products.qs().count(),
-        'selected_tags': selected_tags.qs(),
-    }
-    return contexts, optional_context
+    contexts = newcontext.Contexts(page, paginated_products, images, brands, grouped_tags)
+    return contexts
 
 
 # CATALOG VIEWS
@@ -210,8 +202,9 @@ class CategoryPage(catalog.CategoryPage):
         """Add sorting options and view_types in context."""
         sorting_index = int(self.kwargs.get('sorting', 0))
 
-        contexts, optional_context = get_catalog_context(
+        contexts = get_catalog_context(
             request=self.request,
+            page=self.object,
             category=self.object.model,
             raw_tags=self.kwargs.get('tags'),
             page_number=int(self.request.GET.get('page', 1)),
@@ -221,24 +214,9 @@ class CategoryPage(catalog.CategoryPage):
             sorting_index=sorting_index,
         )
 
-        selected_tags = optional_context['selected_tags']
-        if selected_tags:
-            def template_context(page, tag_titles, tags):
-                return {
-                    'page': page,
-                    'tag_titles': tag_titles,
-                    'tags': tags,
-                }
-
-            page = self.object
-            page.get_template_render_context = partial(
-                template_context, page, selected_tags.as_title(), selected_tags
-            )
-
         return {
             **super().get_context_data(**kwargs),
             **contexts.context(),
-            **optional_context,
             'view_type': get_view_type(self.request),
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
             'limits': settings.CATEGORY_STEP_MULTIPLIERS,
@@ -266,12 +244,13 @@ def load_more(request, slug, offset=0, limit=0, sorting=0, tags=None):
     # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
     # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
     page_number = (offset // products_on_page) + 1
-    category = get_object_or_404(models.CategoryPage, slug=slug).model
+    page = get_object_or_404(models.CategoryPage, slug=slug)
     sorting_index = int(sorting)
 
-    contexts, _ = get_catalog_context(
+    contexts = get_catalog_context(
         request=request,
-        category=category,
+        page=page,
+        category=page.model,
         raw_tags=tags,
         page_number=page_number,
         per_page=products_on_page,
