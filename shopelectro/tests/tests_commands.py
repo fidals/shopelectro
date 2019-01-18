@@ -3,14 +3,15 @@ Test catalog command, which call other commands like price and excel.
 
 Note: tests running pretty long.
 """
-from collections import defaultdict
 import glob
 import os
 import random
+import typing
 import unittest
-import uuid
-from unittest import mock
 import urllib.parse
+import uuid
+from collections import defaultdict
+from unittest import mock
 from xml.etree import ElementTree
 
 from django.conf import settings
@@ -195,6 +196,18 @@ class Price:
         return self.shop_node.find('offers')
 
 
+class Prices(dict):
+
+    def __init__(self, utm_list: typing.List[str]):
+        super().__init__()
+        self.update({utm: Price(utm) for utm in utm_list})
+
+    def remove(self):
+        """Remove price files."""
+        for price in self.values():
+            os.remove(price.file_path)
+
+
 @tag('fast')
 class GeneratePrices(TestCase):
 
@@ -205,17 +218,11 @@ class GeneratePrices(TestCase):
     def setUpTestData(cls):
         cls.call_command_patched('price')
         super(GeneratePrices, cls).setUpTestData()
+        cls.prices = Prices(['GM', 'YM', 'priceru', 'SE78'])
 
     @classmethod
     def tearDownClass(cls):
-        for utm in settings.UTM_PRICE_MAP:
-            # @todo #667:30m Create `Prices` class for test_commands.
-            #  It should keep prices without need of recreating it
-            #  every time price is needed.
-            #  For example for price file removing
-            #  we need only file file_path,
-            #  but should instantiate the whole price object.
-            os.remove(Price(utm).file_path)
+        cls.prices.remove()
         super(GeneratePrices, cls).tearDownClass()
 
     @classmethod
@@ -236,15 +243,15 @@ class GeneratePrices(TestCase):
 
         for utm, filename in settings.UTM_PRICE_MAP.items():
             self.assertIn(filename, os.listdir(settings.ASSETS_DIR))
-            size = os.stat(Price(utm).file_path).st_size
+            size = os.stat(self.prices[utm].file_path).st_size
             self.assertGreaterEqual(size, price_file_min_size)
 
     def test_categories_in_price(self):
-        categories_in_price = Price(utm='priceru').categories_node
+        categories_in_price = self.prices['priceru'].categories_node
         self.assertEqual(len(categories_in_price), Category.objects.count())
 
     def test_categories_in_yandex_price(self):
-        categories = Price(utm='YM').categories_node
+        categories = self.prices['YM'].categories_node
         self.assertEqual(
             len(categories),
             Category.objects.get_categories_tree_with_pictures().count()
@@ -258,7 +265,7 @@ class GeneratePrices(TestCase):
                     return category
             return None
         included_name = 'Category #0 of #Category #0 of #Category #1'
-        categories_node = Price(utm='GM').categories_node
+        categories_node = self.prices['GM'].categories_node
 
         # check if find_category inner function is correct
         self.assertIsNotNone(
@@ -276,12 +283,12 @@ class GeneratePrices(TestCase):
         )
 
     def test_products_in_price(self):
-        products = Price(utm='priceru').offers_node
+        products = self.prices['priceru'].offers_node
         self.assertEqual(len(products), Product.objects.count())
 
     def test_products_in_gm_price_bounds(self):
         """GM.yml should contain only offers with price > CONST."""
-        offers = Price(utm='GM').offers_node.findall('offer')
+        offers = self.prices['GM'].offers_node.findall('offer')
         prices_are_in_bounds = all(
             float(offer.find('price').text) > settings.PRICE_GM_LOWER_BOUND
             for offer in offers
@@ -289,7 +296,7 @@ class GeneratePrices(TestCase):
         self.assertTrue(prices_are_in_bounds)
 
     def test_products_in_yandex_price(self):
-        products = Price(utm='YM').offers_node
+        products = self.prices['YM'].offers_node
         self.assertEqual(
             len(products),
             Product.objects.filter(page__images__isnull=False).distinct().count()
@@ -298,7 +305,7 @@ class GeneratePrices(TestCase):
     def test_brands(self):
         """Price contains brand data."""
         for utm in settings.UTM_PRICE_MAP:
-            offer = Price(utm=utm).offers_node.find('offer')
+            offer = self.prices[utm].offers_node.find('offer')
             product = Product.objects.filter(id=offer.get('id')).first()
             self.assertEqual(
                 product.get_brand_name(),
@@ -307,7 +314,7 @@ class GeneratePrices(TestCase):
 
     def test_utm_yandex(self):
         """Url tag of every offer should contain valid utm marks."""
-        offer = Price(utm='YM').offers_node[0]
+        offer = self.prices['YM'].offers_node[0]
         url = offer.find('url').text
         get_attrs = urllib.parse.parse_qs(url)
         self.assertEqual('cpc-market', get_attrs['utm_medium'][0])
