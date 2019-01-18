@@ -31,7 +31,7 @@ CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
 
 
 def get_page_number(response):
-    return response.context['paginated_page'].number
+    return response.context['paginated']['page'].number
 
 
 def json_to_dict(response: HttpResponse) -> dict:
@@ -236,7 +236,7 @@ class CatalogPagination(BaseCatalogTestCase):
         """Category page contains `pagination_step` count of products in list."""
         pagination_step = 25
         response = self.get_category_page(query_string={'step': pagination_step})
-        self.assertEqual(len(response.context['products']), pagination_step)
+        self.assertEqual(len(response.context['paginated']['page'].object_list), pagination_step)
 
     def test_pagination_404(self):
         """Category page returns 404 for a nonexistent page number."""

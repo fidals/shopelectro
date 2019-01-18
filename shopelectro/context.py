@@ -4,6 +4,8 @@ from catalog.context import AbstractProductsListContext
 from catalog.models import ProductQuerySet
 from images.models import Image
 
+# @todo #683:60m Remove the ProductImages in favor of catalog.newcontext.ProductImages
+
 
 class ProductImages(AbstractProductsListContext):
 

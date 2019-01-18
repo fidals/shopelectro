@@ -40,11 +40,11 @@
 {# seo guys want just to skip canonical on several pages #}
 {% if not skip_canonical %}
   <link rel="canonical" href="{{ page.get_absolute_url }}">
-  {% if paginated_page.has_previous %}
-    <link rel="prev" href="{% if paginated_page.previous_page_number == 1 %}{{ page.get_absolute_url }}{% else %}{{ page.get_absolute_url }}?page={{ paginated_page.previous_page_number }}{% endif %}">
+  {% if paginated.page.has_previous %}
+    <link rel="prev" href="{% if paginated.page.previous_page_number == 1 %}{{ page.get_absolute_url }}{% else %}{{ page.get_absolute_url }}?page={{ paginated.page.previous_page_number }}{% endif %}">
   {% endif %}
-  {% if paginated_page.has_next %}
-    <link rel="next" href="{{ page.get_absolute_url }}?page={{ paginated_page.next_page_number }}">
+  {% if paginated.page.has_next %}
+    <link rel="next" href="{{ page.get_absolute_url }}?page={{ paginated.page.next_page_number }}">
   {% endif %}
 {% endif %}
 <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">

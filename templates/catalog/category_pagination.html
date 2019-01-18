@@ -3,28 +3,27 @@
 
 <div class="js-catalog-pagination">
   <span>
-    {% with prev_numbers=paginated.prev_numbers next_numbers=paginated.next_numbers url_map=paginated.number_url_map %}
-      {% if prev_numbers %}
-        {% with number=prev_numbers|last %}
-          <a href="{{ url_map|get_item:number }}">
+    {% with prev_pairs=paginated.prev_pairs next_pairs=paginated.next_pairs %}
+      {% if prev_pairs %}
+        {% with pair=prev_pairs|last %}
+          <a href="{{ pair.1 }}">
             <<
           </a>
         {% endwith %}
       {% endif %}
-
-      {% for number in prev_numbers %}
-        <a href="{{ url_map|get_item:number }}">{{ number }}</a>
+      {% for number, url in prev_pairs %}
+        <a href="{{ url }}">{{ number }}</a>
       {% endfor %}
 
-      {{ paginated_page.number }}
+      {{ paginated.page.number }}
 
-      {% for number in next_numbers %}
-        <a href="{{ url_map|get_item:number }}">{{ number }}</a>
+      {% for number, url in next_pairs %}
+        <a href="{{ url }}">{{ number }}</a>
       {% endfor %}
 
-      {% if next_numbers %}
-        {% with number=next_numbers|first %}
-          <a href="{{ url_map|get_item:number }}">
+      {% if next_pairs %}
+        {% with pair=next_pairs|first %}
+          <a href="{{ pair.1 }}">
             >>
           </a>
         {% endwith %}
