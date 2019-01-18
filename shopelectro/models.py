@@ -135,11 +135,6 @@ class ProductFeedback(models.Model):
         default='', blank=True, verbose_name=_('limitations'))
 
 
-def _default_payment():
-    """Default payment option is first element of first tuple in options."""
-    return
-
-
 class Order(ecommerce_models.Order):
     address = models.TextField(blank=True, default='')
     payment_type = models.CharField(
