@@ -1,6 +1,6 @@
 import re
 
-from shopelectro.selenium.conditions import TextPresentedInValue
+from shopelectro.selenium.conditions import AlnumPresentedInValue
 from shopelectro.selenium.driver import SiteDriver
 
 from selenium.webdriver.common.by import By
@@ -20,4 +20,4 @@ class Input:
         el = self.driver.wait.until(EC.element_to_be_clickable(self.locator))
         el.clear()
         el.send_keys(keys)
-        self.driver.wait.until(TextPresentedInValue(self.locator, keys))
+        self.driver.wait.until(AlnumPresentedInValue(self.locator, keys))
