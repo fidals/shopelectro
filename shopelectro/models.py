@@ -172,9 +172,9 @@ class Order(ecommerce_models.Order):
     revenue = models.FloatField(default=0, null=True, verbose_name=_('revenue'))
 
     @property
-    def payment_type_name(self):
-        """Return name for an order's payment option."""
-        return settings.PaymentOptions[self.payment_type].name
+    def payment_type_label(self):
+        """Return label for an order's payment option."""
+        return PaymentOptions[self.payment_type].value
 
     def set_positions(self, cart):
         """
