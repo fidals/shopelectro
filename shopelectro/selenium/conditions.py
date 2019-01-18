@@ -1,3 +1,6 @@
+from selenium.common.exceptions import StaleElementReferenceException
+
+
 def alphanumeric(text: str) -> str:
     return ''.join(filter(lambda c: c.isalnum(), text))
 
@@ -8,6 +11,7 @@ class AlnumPresentedInValue:
 
     Remove all non-alphanumeric characters before checking.
     """
+
     def __init__(self, locator, text):
         self.locator = locator
         self.text = text

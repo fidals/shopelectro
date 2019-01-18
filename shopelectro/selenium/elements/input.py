@@ -3,7 +3,6 @@ import re
 from shopelectro.selenium.conditions import AlnumPresentedInValue
 from shopelectro.selenium.driver import SiteDriver
 
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 
