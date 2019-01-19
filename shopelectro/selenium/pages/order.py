@@ -44,6 +44,6 @@ class OrderPage(Page):
 
         item = Button(
             self.driver,
-            (By.CSS, f'input[name="payment_type"][value="{payment_type.name}"]'),
+            (By.CSS, f'input[name="payment_type"][value="{payment_option.name}"]'),
         )
         item.click()
