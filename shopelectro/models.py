@@ -136,18 +136,21 @@ class ProductFeedback(models.Model):
         default='', blank=True, verbose_name=_('limitations'))
 
 
-class PairIterEnum(enum.EnumMeta):
+class ItemsEnum(enum.EnumMeta):
+    """
+    Provide dict-like `items` method.
 
-    def __iter__(self):
-        for i in super().__iter__():
-            yield i.name, i.value
+    https://docs.python.org/3/library/enum.html#enum-classes
+    """
+    def items(self):
+        return [(i.name, i.value) for i in self]
 
     def __repr__(self):
-        keys = ', '.join(next(zip(*PaymentOptions)))
-        return f"<enum '{self.__name__}: {names}'>"
+        fields = ', '.join(i.name for i in self)
+        return f"<enum '{self.__name__}: {fields}'>"
 
 
-class PaymentOptions(enum.Enum, metaclass=PairIterEnum):
+class PaymentOptions(enum.Enum, metaclass=ItemsEnum):
     cash = 'Наличные'
     cashless = 'Безналичные и денежные переводы'
     AC = 'Банковская карта'
@@ -164,7 +167,7 @@ class Order(ecommerce_models.Order):
     address = models.TextField(blank=True, default='')
     payment_type = models.CharField(
         max_length=255,
-        choices=list(PaymentOptions),
+        choices=PaymentOptions.items(),
         default=PaymentOptions.default().name,
     )
     comment = models.TextField(blank=True, default='')
