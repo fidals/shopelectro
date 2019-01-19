@@ -129,31 +129,23 @@ class ProductPage(catalog.ProductPage):
         tile_products = self.product.get_siblings(
             offset=settings.PRODUCT_SIBLINGS_COUNT
         )
-        product_images = self.get_images_context_data(tile_products)['product_images']
+        product_images = self.get_images_context_data(tile_products)
 
         return {
             **context_,
+            **product_images,
             'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': self.product.get_params(),
-            'product_images': product_images,
             'tile_products': tile_products,
         }
 
     def get_images_context_data(self, products) -> dict:
         """Return images for given products."""
         products_to_filter = [self.product, *products]
-        product_ids_to_filter = [p.id for p in products_to_filter]
-        return (
-            se_context.ProductImages(
-                url_kwargs={},
-                request=self.request,
-                page=self.product.page,
-                products=models.Product.objects.filter(id__in=product_ids_to_filter),
-                product_pages=models.ProductPage.objects.filter(
-                    shopelectro_product__in=products_to_filter
-                ),
-            ).get_context_data()
-        )
+        return newcontext.ProductImages(
+            newcontext.Products(products_to_filter),
+            Image.objects.all(),
+        ).context()
 
     def render_siblings_on_404(
         self, request, **url_kwargs
@@ -214,15 +206,10 @@ class IndexPage(pages_views.CustomPageView):
         }
 
     def get_products_context_data(self, products=None, product_pages=None) -> dict:
-        return (
-            se_context.ProductImages(
-                url_kwargs={},  # Ignore CPDBear
-                request=self.request,
-                page=self.object,
-                products=products or models.Product.objects.all(),
-                product_pages=product_pages or models.ProductPage.objects.all(),
-            ).get_context_data()
-        )
+        return newcontext.ProductImages(
+            newcontext.Products(products),
+            Image.objects.all(),
+        ).context()
 
 
 @set_csrf_cookie
