@@ -142,6 +142,7 @@ class ItemsEnum(enum.EnumMeta):
 
     https://docs.python.org/3/library/enum.html#enum-classes
     """
+
     def items(self):
         return [(i.name, i.value) for i in self]
 
