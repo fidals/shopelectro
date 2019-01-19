@@ -12,7 +12,6 @@ from catalog.views import catalog
 from images.models import Image
 from pages import views as pages_views
 
-from shopelectro import context as se_context
 from shopelectro import models
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -142,7 +141,7 @@ class ProductPage(catalog.ProductPage):
     def get_images_context_data(self, products) -> dict:
         """Return images for given products."""
         products_to_filter = [self.product, *products]
-        return newcontext.ProductImages(
+        return newcontext.products.ProductImages(
             newcontext.Products(products_to_filter),
             Image.objects.all(),
         ).context()
@@ -168,9 +167,7 @@ class ProductPage(catalog.ProductPage):
                 **url_kwargs,
             )
 
-            context_['product_images'] = (
-                self.get_images_context_data(siblings)['product_images']
-            )
+            context_.update(self.get_images_context_data(siblings))
             return render(request, 'catalog/product_404.html', context_, status=404)
 
 
@@ -193,23 +190,17 @@ class IndexPage(pages_views.CustomPageView):
         if not mobile_view:
             tile_products = top_products
 
+        images_ctx = newcontext.products.ProductImages(
+            newcontext.Products(tile_products),
+            Image.objects.all(),
+        ).context()
         return {
             **context_,
+            **images_ctx,
             'tile_title': 'ТОП 10 ТОВАРОВ',
             'category_tile': settings.MAIN_PAGE_TILE,
             'tile_products': tile_products,
-            'product_images': (
-                self.get_products_context_data(
-                    products=top_products
-                )['product_images']
-            )
         }
-
-    def get_products_context_data(self, products=None, product_pages=None) -> dict:
-        return newcontext.ProductImages(
-            newcontext.Products(products),
-            Image.objects.all(),
-        ).context()
 
 
 @set_csrf_cookie
