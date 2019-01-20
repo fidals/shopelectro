@@ -22,7 +22,7 @@
     </div>
 
     <div class="col-md-9 category-right view-mode-{{ view_type }}" id="category-right">
-      {% if page.display_seo_text and paginated_page.number == 1 %}
+      {% if page.display_seo_text and paginated.page.number == 1 %}
         {% autoescape off %}
           <div class="hidden-xs hidden-sm category-text" id="category-text">{{ page.display_seo_text }}</div>
         {% endautoescape %}
@@ -32,7 +32,7 @@
 
       <p class="products-showed">
         Показано товаров
-        <span class="font-bold js-products-showed-count"> {{ paginated.showed_number }} </span>
+        <span class="font-bold js-products-showed-count"> {{ paginated.showed_count }} </span>
         из <span class="font-bold js-total-products">{{ total_products }}</span>.
       </p>
 
@@ -48,7 +48,7 @@
                 data-url="{{ category.url }}" type="button">Загрузить ещё</button>
         <p class="products-showed-text">
           Показано товаров
-          <span class="js-products-showed-count">{{ paginated.showed_number }}</span> из
+          <span class="js-products-showed-count">{{ paginated.showed_count }}</span> из
           <span class="js-total-products">{{ total_products }}</span>
         </p>
       </div>
