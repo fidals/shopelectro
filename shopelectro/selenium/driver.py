@@ -10,9 +10,9 @@ class SiteDriver(Remote):
     """Provide convenient access to the site."""
 
     def __init__(self, *, site_url, **kwargs):
-        super().__init__(**kwargs)
         kwargs.setdefault('command_executor', settings.SELENIUM_URL)
         kwargs.setdefault('desired_capabilities', DesiredCapabilities.CHROME)
+        super().__init__(**kwargs)
 
         self.site_url = site_url
         self.wait = WebDriverWait(self, settings.SELENIUM_WAIT_SECONDS)

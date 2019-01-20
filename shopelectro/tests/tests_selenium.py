@@ -661,7 +661,6 @@ class OrderPage(helpers.SeleniumTestCase):
             ).click()
 
     def select_payment_type(self, payment_type='cash'):
-        # @todo #473:15m Move `payment_type` to dict or dataclass
         input_item = self.browser.find_element_by_css_selector(
             f'input[name="payment_type"][value="{payment_type}"]'
         )
@@ -686,7 +685,6 @@ class OrderPage(helpers.SeleniumTestCase):
         insert_value('id_email', 'test@test.test')
 
     def submit_form(self):
-        # @todo #473:30m Hide all form processing methods to a separated class.
         self.click((By.ID, 'submit-order'))
 
     def test_table_is_presented_if_there_is_some_products(self):

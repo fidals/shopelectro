@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-
 import os
 import socket
 from datetime import datetime
@@ -243,16 +242,6 @@ SITE_DOMAIN_NAME = 'www.shopelectro.ru'
 
 # Used to retrieve instances in ecommerce.Cart
 CART_ID = 'cart'
-
-# Used to define choices attr in definition of Order.payment_type field
-PAYMENT_OPTIONS = (
-    ('cash', 'Наличные'),
-    ('cashless', 'Безналичные и денежные переводы'),
-    ('AC', 'Банковская карта'),
-    ('PC', 'Яндекс.Деньги'),
-    ('GP', 'Связной (терминал)'),
-    ('AB', 'Альфа-Клик'),
-)
 
 # It is fake-pass. Correct pass will be created on `docker-compose up` stage from `docker/.env`
 YANDEX_SHOP_PASS = os.environ.get('YANDEX_SHOP_PASS', 'so_secret_pass')

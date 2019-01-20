@@ -1,3 +1,4 @@
+import enum
 import random
 import string
 import typing
@@ -134,30 +135,49 @@ class ProductFeedback(models.Model):
         default='', blank=True, verbose_name=_('limitations'))
 
 
-def _default_payment():
-    """Default payment option is first element of first tuple in options."""
-    assert settings.PAYMENT_OPTIONS[0][0], 'No payment options!'
-    return settings.PAYMENT_OPTIONS[0][0]
+class ItemsEnum(enum.EnumMeta):
+    """
+    Provide dict-like `items` method.
+
+    https://docs.python.org/3/library/enum.html#enum-classes
+    """
+
+    def items(self):
+        return [(i.name, i.value) for i in self]
+
+    def __repr__(self):
+        fields = ', '.join(i.name for i in self)
+        return f"<enum '{self.__name__}: {fields}'>"
+
+
+class PaymentOptions(enum.Enum, metaclass=ItemsEnum):
+    cash = 'Наличные'
+    cashless = 'Безналичные и денежные переводы'
+    AC = 'Банковская карта'
+    PC = 'Яндекс.Деньги'
+    GP = 'Связной (терминал)'
+    AB = 'Альфа-Клик'
+
+    @staticmethod
+    def default():
+        return PaymentOptions.cash
 
 
 class Order(ecommerce_models.Order):
     address = models.TextField(blank=True, default='')
     payment_type = models.CharField(
         max_length=255,
-        choices=settings.PAYMENT_OPTIONS,
-        default=_default_payment()
+        choices=PaymentOptions.items(),
+        default=PaymentOptions.default().name,
     )
     comment = models.TextField(blank=True, default='')
     # total price - total purchase price
     revenue = models.FloatField(default=0, null=True, verbose_name=_('revenue'))
 
     @property
-    def payment_type_name(self):
-        """Return name for an order's payment option."""
-        return next(
-            name for option, name in settings.PAYMENT_OPTIONS
-            if self.payment_type == option
-        )
+    def payment_type_label(self):
+        """Return label for an order's payment option."""
+        return PaymentOptions[self.payment_type].value
 
     def set_positions(self, cart):
         """
