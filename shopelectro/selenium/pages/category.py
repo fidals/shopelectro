@@ -22,6 +22,7 @@ class CategoryPage(Page):
         raise NotImplementedError
 
     def add_to_cart(self, product_cards: typing.List[ProductCard]=None):
-        product_cards = product_cards or self.product_cards()[:6]
+        default_cards = [ProductCard(self.driver, i) for i in range(1, 7)]
+        product_cards = product_cards or default_cards
         for card in product_cards:
             card.add_to_cart()
