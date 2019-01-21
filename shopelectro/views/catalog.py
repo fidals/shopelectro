@@ -11,7 +11,7 @@ from catalog.views import catalog
 from images.models import Image
 from pages import views as pages_views
 
-from shopelectro import models
+from shopelectro import models, context as se_context
 from shopelectro.views.helpers import set_csrf_cookie
 
 PRODUCTS_ON_PAGE_PC = 48
