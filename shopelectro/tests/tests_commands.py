@@ -218,7 +218,7 @@ class GeneratePrices(TestCase):
     def setUpTestData(cls):
         cls.call_command_patched('price')
         super(GeneratePrices, cls).setUpTestData()
-        cls.prices = Prices(['GM', 'YM', 'priceru', 'SE78'])
+        cls.prices = Prices(settings.UTM_PRICE_MAP.keys())
 
     @classmethod
     def tearDownClass(cls):
@@ -229,7 +229,7 @@ class GeneratePrices(TestCase):
     def call_command_patched(cls, name):
         """Patch with test constants and call."""
         with mock.patch(
-            'shopelectro.management.commands.price.Command.IGNORED_CATEGORIES_MAP',
+            'shopelectro.management.commands.price.Tree.IGNORED_CATEGORIES_MAP',
             new_callable=mock.PropertyMock
         ) as target:
             target.return_value = defaultdict(list, {
