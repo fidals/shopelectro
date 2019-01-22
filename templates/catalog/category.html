@@ -33,7 +33,7 @@
       <p class="products-showed">
         Показано товаров
         <span class="font-bold js-products-showed-count"> {{ paginated.showed_count }} </span>
-        из <span class="font-bold js-total-products">{{ total_products }}</span>.
+        из <span class="font-bold js-total-products">{{ paginated.total_products }}</span>.
       </p>
 
       <div class="row product-card-wrapper" id="products-wrapper"
@@ -49,7 +49,7 @@
         <p class="products-showed-text">
           Показано товаров
           <span class="js-products-showed-count">{{ paginated.showed_count }}</span> из
-          <span class="js-total-products">{{ total_products }}</span>
+          <span class="js-total-products">{{ paginated.total_products }}</span>
         </p>
       </div>
     </div>
