@@ -7,6 +7,7 @@ from django.db.models import Q, QuerySet
 from django.template.loader import render_to_string
 from django.urls import reverse
 
+from catalog import newcontext
 from shopelectro import models
 
 
@@ -31,7 +32,7 @@ class Files:
 
     def create(self):
         for target, file_name in self.utm_price_map.items():
-            File(file_name, self.base_dir).create(Tree(target).context())
+            File(file_name, self.base_dir).create(Context(target).context())
 
 
 class Price:
@@ -69,8 +70,8 @@ class PriceFilter:
         return self.FILTERS[self.utm](query_set)
 
 
-class Tree:
-    """Tree contains price data. And assembles it to price context."""
+class Context(newcontext.Context):
+    """DB data, extracted for price file."""
 
     UTM_MEDIUM_DATA = defaultdict(
         lambda: 'cpc',
@@ -91,7 +92,7 @@ class Tree:
     def __init__(self, target: str):
         self.target = target
 
-    # @todo #666:120m  Split price.Tree.context to smaller classes
+    # @todo #666:120m  Split price.Context.context to smaller classes
     #  Don't forget it:
     #  - Move class `PriceFilter` to `Product`
     #  - Merge to `IGNORED` constants
@@ -182,39 +183,12 @@ class Tree:
         }
 
 
-class Category:
-    pass
-
-
-class Categories:
-    pass
-
-
-class Product:
-    pass
-
-
-class Products:
-    pass
-
-
 # --- command block ---
 class Command(BaseCommand):
     """Generate yml file for a given vendor (YM or price.ru)."""
 
     # price files will be stored at this dir
     BASE_DIR = settings.ASSETS_DIR
-
-    IGNORED_CATEGORIES = [
-        'Измерительные приборы', 'Новогодние вращающиеся светодиодные лампы',
-        'Новогодние лазерные проекторы', 'MP3- колонки', 'Беспроводные звонки',
-        'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
-    ]
-
-    # dict keys are url targets for every service
-    IGNORED_CATEGORIES_MAP = defaultdict(list, {
-        'GM': ['Усилители звука для слабослышащих'],
-    })
 
     def handle(self, *args, **options):
         Files(settings.UTM_PRICE_MAP, self.BASE_DIR).create()
