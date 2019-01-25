@@ -2,6 +2,7 @@ from contextlib import contextmanager
 
 from django.conf import settings
 from django.core.management import call_command
+from selenium.common.exceptions import WebDriverException
 
 from shopelectro import selenium
 from shopelectro.celery import app
@@ -65,18 +66,23 @@ def update_catalog():
 #  Report failed attempts. Schedule it in the celery beat.
 
 
-@app.task
-def check_purchase():
-    driver = selenium.SiteDriver(site_url=settings.BASE_URL)
-    category_page = selenium.CategoryPage(driver, CategoryPage.objects.first().url)
-    category_page.load()
-    category_page.add_to_cart()
+@app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def check_purchase(self):
+    try:
+        driver = selenium.SiteDriver(site_url=settings.BASE_URL)
+        category_page = selenium.CategoryPage(driver, CategoryPage.objects.first().url)
+        category_page.load()
+        category_page.add_to_cart()
 
-    order_page = selenium.OrderPage(driver)
-    order_page.load()
-    order_page.fill_contacts()
-    order_page.make_order()
+        order_page = selenium.OrderPage(driver)
+        order_page.load()
+        order_page.fill_contacts()
+        order_page.make_order()
 
-    success_page = selenium.SuccessPage(driver)
-    success_page.load()
-    assert success_page.is_success()
+        success_page = selenium.SuccessPage(driver)
+        success_page.load()
+        assert success_page.is_success()
+    except (WebDriverException, AssertionError) as err:
+        if self.request.retries + 1 > self.max_retries:
+            # report fail
+        raise err
