@@ -76,3 +76,7 @@ def check_purchase():
     order_page.load()
     order_page.fill_contacts()
     order_page.make_order()
+
+    success_page = selenium.SuccessPage(driver)
+    success_page.load()
+    assert success_page.is_success()
