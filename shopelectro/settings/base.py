@@ -501,3 +501,8 @@ PAGINATION_NEIGHBORS = 10
 
 PRODUCTS_ON_PAGE_PC = 48
 PRODUCTS_ON_PAGE_MOB = 12
+
+TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN')
+TG_REPORT_ADDRESSEES = os.environ.get(
+    'TG_REPORT_ADDRESSEE', '@artemiy312,@duker33'
+).split(',')
