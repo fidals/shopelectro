@@ -88,5 +88,6 @@ def check_purchase(self):
         assert success_page.is_success()
     except (WebDriverException, AssertionError) as err:
         if self.request.retries + 1 > self.max_retries:
+            # report on the last attempt
             TelegramReport().send(f'Can\'t buy a product. Got the error: {err}')
         raise err
