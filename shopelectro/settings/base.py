@@ -504,5 +504,6 @@ PRODUCTS_ON_PAGE_MOB = 12
 
 TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN')
 TG_REPORT_ADDRESSEES = os.environ.get(
-    'TG_REPORT_ADDRESSEE', '@artemiy312,@duker33'
+    'TG_REPORT_ADDRESSEES', '@shopelectro_reports'
 ).split(',')
+CHECK_PURCHASE_RETRIES = int(os.environ.get('CHECK_PURCHASE_RETRIES', '3'))

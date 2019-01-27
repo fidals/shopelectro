@@ -6,7 +6,7 @@ from selenium.common.exceptions import WebDriverException
 
 from shopelectro import selenium
 from shopelectro.celery import app
-from shopelectro.report import TGReport
+from shopelectro.report import TelegramReport
 from shopelectro.models import CategoryPage
 from shopelectro.management.commands._update_catalog import utils
 
@@ -69,7 +69,7 @@ def update_catalog():
 @app.task(
     bind=True,
     autoretry_for=(WebDriverException, AssertionError),
-    retry_kwargs={'max_retries': 3},
+    retry_kwargs={'max_retries': settings.CHECK_PURCHASE_RETRIES},
 )
 def check_purchase(self):
     try:
@@ -88,5 +88,5 @@ def check_purchase(self):
         assert success_page.is_success()
     except (WebDriverException, AssertionError) as err:
         if self.request.retries + 1 > self.max_retries:
-            TGReport().send(f'Can\'t buy a product. Got the error: {err}')
+            TelegramReport().send(f'Can\'t buy a product. Got the error: {err}')
         raise err

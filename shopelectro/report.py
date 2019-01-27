@@ -4,7 +4,7 @@ from django.conf import settings
 from telegram import Bot
 
 
-class TGReport:
+class TelegramReport:
 
     def __init__(self):
         self.bot = Bot(settings.TG_BOT_TOKEN)
