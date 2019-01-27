@@ -131,6 +131,10 @@ class CatalogTags(BaseCatalogTestCase):
             models.Product.objects.filter(Q(tags=tags[0]) | Q(tags=tags[1]))
         )))
 
+        self.assertEqual(
+            products_count,
+            response.context['paginated']['total_products']
+        )
         self.assertContains(response, products_count)
 
     def test_tag_titles_content_disjunction(self):
@@ -214,6 +218,17 @@ class CatalogTags(BaseCatalogTestCase):
         })
         response = self.client.get(bad_tag_url)
         self.assertEqual(response.status_code, 404)
+
+    def test_category_tag_relation(self):
+        """Category page should contain only tags, related to the current category."""
+        category = models.Category.objects.get(
+            name='Category #0 of #Category #0 of #Category #0'
+        )
+        # category is not related to this tag at DB ...
+        tag = models.Tag.objects.exclude_by_products(category.products.all()).first()
+        # ... so category page should not contain this tag
+        response = self.client.get(category.url)
+        self.assertNotContains(response, tag.name)
 
 
 @tag('fast')

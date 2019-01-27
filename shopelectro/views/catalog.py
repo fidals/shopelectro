@@ -44,18 +44,19 @@ def get_catalog_context(request, page, category, raw_tags, page_number, per_page
 
     # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
     #  Rename Checked404Tags to ExistingOr404.
+    products_by_category = newcontext.products.ProductsByCategory(
+        category=category,
+        products=newcontext.products.ActiveProducts(
+            newcontext.Products(
+                models.Product.objects.all(),
+            ),
+        ),
+    )
     products = newcontext.products.OrderedProducts(
         sorting_index=sorting_index,
         products=newcontext.products.TaggedProducts(
             tags=selected_tags,
-            products=newcontext.products.ProductsByCategory(
-                category=category,
-                products=newcontext.products.ActiveProducts(
-                    newcontext.Products(
-                        models.Product.objects.all(),
-                    ),
-                ),
-            ),
+            products=products_by_category
         ),
     )
 
@@ -68,7 +69,9 @@ def get_catalog_context(request, page, category, raw_tags, page_number, per_page
 
     images = newcontext.products.ProductImages(paginated_products, Image.objects.all())
     brands = newcontext.products.ProductBrands(paginated_products, all_tags)
-    grouped_tags = newcontext.tags.GroupedTags(all_tags)
+    grouped_tags = newcontext.tags.GroupedTags(
+        tags=newcontext.tags.TagsByProducts(all_tags, products_by_category.qs())
+    )
     page = se_context.Page(page, selected_tags)
 
     contexts = newcontext.Contexts(page, paginated_products, images, brands, grouped_tags)
