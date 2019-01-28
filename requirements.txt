@@ -22,5 +22,6 @@ Unidecode==1.0.22
 ua-parser==0.8.0
 user-agents==1.1.0
 sorl-thumbnail==12.5.0
+python-telegram-bot==11.1.0
 https://github.com/selwin/django-user_agents/archive/master.zip
 https://github.com/fidals/refarm-site/archive/0.4.28.zip
