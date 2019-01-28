@@ -12,8 +12,8 @@ django-redis==4.8.0
 django-mptt==0.8.7
 django-widget-tweaks
 ipython
+psycopg2-binary==2.7.7
 openpyxl==2.5.2
-psycopg2-binary==2.7.6.1
 requests
 selenium==3.14.0
 selenium-requests==1.3
