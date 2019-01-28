@@ -1,5 +1,3 @@
-import typing
-
 from django.conf import settings
 from telegram import Bot
 
