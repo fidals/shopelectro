@@ -506,13 +506,6 @@ class CategoryPage(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
 
-    # @todo #648:120m Resolve db_template render problem.
-    #  Now the whole app fails trying to render db_template,
-    #  that contains some cyrillic symbols.
-    #  For details see the test below
-    #  and this comment with the traceback:
-    #  https://github.com/fidals/shopelectro/issues/648#issuecomment-443151390
-    # @unittest.skip
     def test_page_db_template_with_special_chars(self):
         """
         DB template works with many cyrillic chars in string.
