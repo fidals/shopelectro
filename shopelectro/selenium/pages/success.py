@@ -3,7 +3,7 @@ from shopelectro.selenium.pages import Page
 from pages.models import CustomPage
 
 
-class SuccesPage(Page):
+class SuccessPage(Page):
 
     @property
     def path(self):

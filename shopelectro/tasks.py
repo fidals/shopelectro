@@ -74,7 +74,7 @@ def update_catalog():
 def check_purchase(self):
     try:
         driver = selenium.SiteDriver(site_url=settings.BASE_URL)
-        category_page = selenium.CategoryPage(driver, CategoryPage.objects.first().url)
+        category_page = selenium.CategoryPage(driver, CategoryPage.objects.first().slug)
         category_page.load()
         category_page.add_to_cart()
 
@@ -84,7 +84,6 @@ def check_purchase(self):
         order_page.make_order()
 
         success_page = selenium.SuccessPage(driver)
-        success_page.load()
         assert success_page.is_success()
     except (WebDriverException, AssertionError) as err:
         if self.request.retries + 1 > self.max_retries:
