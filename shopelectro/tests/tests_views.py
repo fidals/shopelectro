@@ -509,8 +509,7 @@ class CategoryPage(BaseCatalogTestCase):
         """
         DB template works with many cyrillic chars in string.
 
-        Now test leads app to fail.
-        Created from se#648
+        This led to the segmentation fault issue. See #651 for details.
         """
         db_template = self.category.page.template
         db_template.seo_text = (
