@@ -5,7 +5,6 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
-import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -506,19 +505,11 @@ class CategoryPage(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
 
-    # @todo #648:120m Resolve db_template render problem.
-    #  Now the whole app fails trying to render db_template,
-    #  that contains some cyrillic symbols.
-    #  For details see the test below
-    #  and this comment with the traceback:
-    #  https://github.com/fidals/shopelectro/issues/648#issuecomment-443151390
-    @unittest.skip
     def test_page_db_template_with_special_chars(self):
         """
         DB template works with many cyrillic chars in string.
 
-        Now test leads app to fail.
-        Created from se#648
+        This led to the segmentation fault issue. See #651 for details.
         """
         db_template = self.category.page.template
         db_template.seo_text = (
