@@ -1,5 +1,6 @@
-from collections import defaultdict
 import os
+import typing
+from collections import defaultdict
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -7,9 +8,40 @@ from django.db.models import Q, QuerySet
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from shopelectro.models import Product, Category, Tag
+from catalog import newcontext
+from shopelectro import models
 
 
+# --- files processing ---
+class File:
+    def __init__(self, path: str, context: dict):
+        self.path = path
+        self.context = context
+
+    def create(self):
+        with open(self.path, 'w', encoding='utf-8') as file:
+            file.write(render_to_string('prices/price.yml', self.context).strip())
+        return f'{self.path} generated...'
+
+
+class Files:
+    def __init__(self, files: typing.List[File]):
+        self.files = files
+
+    def create(self):
+        for file in self.files:
+            file.create()
+
+
+class Price:
+    pass
+
+
+class Prices:
+    pass
+
+
+# --- data ---
 class PriceFilter:
     """Filter offers with individual price requirements."""
 
@@ -36,13 +68,13 @@ class PriceFilter:
         return self.FILTERS[self.utm](query_set)
 
 
-# @todo #661:120m Refactor price command.
-#  Create Price class with it's own price processing.
-class Command(BaseCommand):
-    """Generate yml file for a given vendor (YM or price.ru)."""
+class Context(newcontext.Context):
+    """DB data, extracted for price file."""
 
-    # price files will be stored at this dir
-    BASE_DIR = settings.ASSETS_DIR
+    UTM_MEDIUM_DATA = defaultdict(
+        lambda: 'cpc',
+        {'YM': 'cpc-market'}
+    )
 
     IGNORED_CATEGORIES = [
         'Измерительные приборы', 'Новогодние вращающиеся светодиодные лампы',
@@ -55,26 +87,22 @@ class Command(BaseCommand):
         'GM': ['Усилители звука для слабослышащих'],
     })
 
-    UTM_MEDIUM_DATA = defaultdict(
-        lambda: 'cpc',
-        {'YM': 'cpc-market'}
-    )
+    def __init__(self, target: str):
+        self.target = target
 
-    def create_prices(self):
-        for target in settings.UTM_PRICE_MAP.items():
-            self.generate_yml(*target)
-
-    def handle(self, *args, **options):
-        self.create_prices()
-
-    @classmethod
-    def get_context_for_yml(cls, utm):
-        """Create context dictionary for rendering files."""
+    # @todo #666:120m  Split price.Context.context to smaller classes
+    #  Don't forget it:
+    #  - Move class `PriceFilter` to `Product`
+    #  - Merge to `IGNORED` constants
+    #  - Rm constants from Tree class
+    #  - Inject logs object here instead of returning operation status
+    #  - Maybe split this file to blocks
+    def context(self) -> dict:
         def put_utm(product):
             """Put UTM attribute to product."""
             utm_marks = [
-                ('utm_source', utm),
-                ('utm_medium', cls.UTM_MEDIUM_DATA[utm]),
+                ('utm_source', self.target),
+                ('utm_medium', self.UTM_MEDIUM_DATA[self.target]),
                 ('utm_content', product.get_root_category().page.slug),
                 ('utm_term', str(product.vendor_code)),
             ]
@@ -106,15 +134,15 @@ class Command(BaseCommand):
 
         def filter_categories(utm):
             categories_to_exclude = (
-                Category.objects
+                models.Category.objects
                 .filter(
-                    Q(name__in=cls.IGNORED_CATEGORIES)
-                    | Q(name__in=cls.IGNORED_CATEGORIES_MAP[utm])
+                    Q(name__in=self.IGNORED_CATEGORIES)
+                    | Q(name__in=self.IGNORED_CATEGORIES_MAP[utm])
                 )
                 .get_descendants(include_self=True)
             )
 
-            result_categories = Category.objects.exclude(id__in=categories_to_exclude)
+            result_categories = models.Category.objects.exclude(id__in=categories_to_exclude)
 
             if utm == 'YM':
                 """
@@ -129,36 +157,41 @@ class Command(BaseCommand):
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
             products = PriceFilter(utm).run(
-                Product.objects.active().filter_by_categories(categories_)
+                models.Product.objects.active().filter_by_categories(categories_)
             )
-            brands = Tag.objects.get_brands(products)
+            brands = models.Tag.objects.get_brands(products)
             return [
                 put_brand(put_crumbs(put_utm(product)), brands)
                 for product in products
             ]
 
         categories = (
-            filter_categories(utm) if utm != 'SE78'
-            else Category.objects.all()
+            filter_categories(self.target) if self.target != 'SE78'
+            else models.Category.objects.all()
         )
 
-        products = prepare_products(categories, utm)
+        products = prepare_products(categories, self.target)
 
         return {
             'base_url': settings.BASE_URL,
             'categories': categories,
             'products': products,
             'shop': settings.SHOP,
-            'utm': utm,
+            'utm': self.target,
         }
 
-    @classmethod
-    def generate_yml(cls, utm, file_name):
-        """Generate yml file."""
-        file_to_write = os.path.join(cls.BASE_DIR, file_name)
-        context = cls.get_context_for_yml(utm)
 
-        with open(file_to_write, 'w', encoding='utf-8') as file:
-            file.write(render_to_string('prices/price.yml', context).strip())
+# --- command block ---
+class Command(BaseCommand):
+    """Generate yml file for a given vendor (YM or price.ru)."""
 
-        return '{} generated...'.format(file_name)
+    # price files will be stored at this dir
+    BASE_DIR = settings.ASSETS_DIR
+
+    def handle(self, *args, **options):
+        Files(
+            [File(
+                path=os.path.join(self.BASE_DIR, filename),
+                context=Context(target).context()
+            ) for target, filename in settings.UTM_PRICE_MAP.items()]
+        ).create()

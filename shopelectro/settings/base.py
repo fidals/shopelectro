@@ -487,6 +487,7 @@ PRICE_GM_LOWER_BOUND = 200.0
 
 # Online market services, that works with our prices.
 # Dict keys - url targets for every service.
+# @todo #666:30m  Move UTM_PRICE_MAP to an iterable Enum
 UTM_PRICE_MAP = {
     'YM': 'yandex.yml',
     'priceru': 'priceru.xml',
