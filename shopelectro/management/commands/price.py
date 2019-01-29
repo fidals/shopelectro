@@ -1,4 +1,5 @@
 import os
+import typing
 from collections import defaultdict
 
 from django.conf import settings
@@ -13,26 +14,23 @@ from shopelectro import models
 
 # --- files processing ---
 class File:
-    def __init__(self, name: str, dir: str):
-        self.name = name
-        self.dir = dir
+    def __init__(self, path: str, context: dict):
+        self.path = path
+        self.context = context
 
-    def create(self, context: dict):
-        path = os.path.join(self.dir, self.name)
-        with open(path, 'w', encoding='utf-8') as file:
-            file.write(render_to_string('prices/price.yml', context).strip())
-        return f'{self.name} generated...'
+    def create(self):
+        with open(self.path, 'w', encoding='utf-8') as file:
+            file.write(render_to_string('prices/price.yml', self.context).strip())
+        return f'{self.path} generated...'
 
 
 class Files:
-    # utm_price_map will be moved to Enum
-    def __init__(self, utm_price_map: dict, base_dir: str):
-        self.utm_price_map = utm_price_map
-        self.base_dir = base_dir
+    def __init__(self, files: typing.List[File]):
+        self.files = files
 
     def create(self):
-        for target, file_name in self.utm_price_map.items():
-            File(file_name, self.base_dir).create(Context(target).context())
+        for file in self.files:
+            file.create()
 
 
 class Price:
@@ -191,4 +189,9 @@ class Command(BaseCommand):
     BASE_DIR = settings.ASSETS_DIR
 
     def handle(self, *args, **options):
-        Files(settings.UTM_PRICE_MAP, self.BASE_DIR).create()
+        Files(
+            [File(
+                path=os.path.join(self.BASE_DIR, filename),
+                context=Context(target).context()
+            ) for target, filename in settings.UTM_PRICE_MAP.items()]
+        ).create()
