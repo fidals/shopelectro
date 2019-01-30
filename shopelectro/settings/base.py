@@ -414,8 +414,10 @@ CATEGORY_SORTING_OPTIONS ={
 # Every link should have either slug or url.
 MAIN_PAGE_TILE = {
     'accumulators': [
-        {'name': 'Типоразмера AA', 'slug': 'tiporazmer-aa'},
-        {'name': 'Типоразмера ААА', 'slug': 'akkumuliatory-aaa'},
+        {'name': 'Типоразмера AA',
+         'url': '/catalog/categories/akkumuliatory-270/tags/aa/'},
+        {'name': 'Типоразмера ААА',
+         'slug': '/catalog/categories/akkumuliatory-270/tags/aaa/'},
         {'name': 'Для радиомоделей и игрушек',
          'slug': 'akkumuliatory-dlia-radioupravliaemykh-modelei-i-igrushek'},
         {'name': 'Свинцово-кислотные',
@@ -436,9 +438,10 @@ MAIN_PAGE_TILE = {
         {'name': 'Дисковые литиевые', 'slug': 'diskovye-litievye-batareiki-3-v'},
     ],
     'lights': [
-        {'name': 'Ручные', 'slug': 'ruchnye-fonari'},
-        {'name': 'Налобные', 'slug': 'nalobnye-fonari'},
-        {'name': 'Туристические', 'slug': 'turisticheskie-kempingovye-fonari'},
+        {'name': 'Ручные', 'url': '/catalog/categories/fonari-226/tags/ruchnoi/'},
+        {'name': 'Налобные', 'url': '/catalog/categories/fonari-226/tags/nalobnyi/'},
+        {'name': 'Туристические', 'url': '/categories/fonari-226/tags/kempingovye/'},
+        {'name': 'Автомобильные', 'slug': 'avtomobilnye-fonari'},
     ],
     'chargers': [
         {'name': 'Для фотоаппаратов',
