@@ -3,6 +3,7 @@ import typing
 from django import http
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
@@ -10,7 +11,6 @@ from catalog import newcontext
 from catalog.views import catalog
 from images.models import Image
 from pages import views as pages_views
-
 from shopelectro import models, context as se_context
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -170,6 +170,17 @@ class ProductPage(catalog.ProductPage):
 @set_csrf_cookie
 class IndexPage(pages_views.CustomPageView):
 
+    @staticmethod
+    def get_categories_tile():
+        """Patch every link with url, generated from slug."""
+        return {section: [
+            {**link, 'url': (
+                reverse('category', kwargs={'slug': link['slug']})
+                if link.get('slug') and not link.get('url')
+                else link['url']
+            )} for link in links
+        ] for section, links in settings.MAIN_PAGE_TILE.items()}
+
     def get_context_data(self, **kwargs):
         """Extended method. Add product's images to context."""
         context_ = super(IndexPage, self).get_context_data(**kwargs)
@@ -193,7 +204,7 @@ class IndexPage(pages_views.CustomPageView):
             **context_,
             **images_ctx,
             'tile_title': 'ТОП 10 ТОВАРОВ',
-            'category_tile': settings.MAIN_PAGE_TILE,
+            'category_tile': self.get_categories_tile(),
             'tile_products': tile_products,
         }
 

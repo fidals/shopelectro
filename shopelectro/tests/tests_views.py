@@ -6,25 +6,24 @@ They all should be using Django's TestClient.
 """
 import json
 from functools import partial
-from itertools import chain
 from operator import attrgetter
-from xml.etree import ElementTree as ET
 from urllib.parse import urlparse, quote
+from xml.etree import ElementTree as ET
 
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
-from django.test import TestCase, tag
+from django.test import override_settings, TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+from itertools import chain
 
 from catalog.helpers import reverse_catalog_url
-
 from shopelectro import models
-from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
+from shopelectro import views
 from shopelectro.tests.helpers import create_doubled_tag
-
+from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
 
@@ -525,6 +524,26 @@ class CategoryPage(BaseCatalogTestCase):
         self.assertEqual('alt text', rendered_text)
         response = self.get_category_page()
         self.assertEqual(200, response.status_code)
+
+
+@tag('fast')
+class IndexPage(TestCase):
+
+    MAIN_PAGE_TILE = {
+        'some_section': [
+            {'name': 'Has url', 'url': '/section/first/'},
+            {'name': 'Has url and slug', 'slug': 'slug', 'url': '/section/second/'},
+            {'name': 'Has slug, but not url', 'slug': 'third'},
+        ]
+    }
+
+    def test_get_category_tile(self):
+        with override_settings(MAIN_PAGE_TILE=self.MAIN_PAGE_TILE):
+            tile = views.IndexPage.get_categories_tile()
+        first_url, second_url, third_url = [link['url'] for link in tile['some_section']]
+        self.assertEqual('/section/first/', first_url)
+        self.assertEqual('/section/second/', second_url)
+        self.assertEqual('/catalog/categories/third/', third_url)
 
 
 @tag('fast')

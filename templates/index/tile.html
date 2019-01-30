@@ -15,7 +15,7 @@
     <ul class="stuff-list stuff-list-01 list-unstyled">
       {% for item in category_tile.accumulators %}
         <li class="stuff-item">
-          <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+          <a class="stuff-link" href="{{ item.url }}">{{ item.name }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -36,7 +36,7 @@
     <ul class="stuff-list stuff-list-02 list-unstyled">
       {% for item in category_tile.inverter %}
         <li class="stuff-item">
-          <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+          <a class="stuff-link" href="{{ item.url }}">{{ item.name }}</a>
         </li>
       {% endfor %}
       <li></li>
@@ -56,7 +56,7 @@
       <ul class="stuff-double-list list-unstyled">
         {% for item in category_tile.batteries %}
           <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+            <a class="stuff-link" href="{{ item.url }}">{{ item.name }}</a>
           </li>
         {% endfor %}
       </ul>
@@ -76,7 +76,7 @@
       <ul class="stuff-double-list list-unstyled">
         {% for item in category_tile.lights %}
           <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+            <a class="stuff-link" href="{{ item.url }}">{{ item.name }}</a>
           </li>
         {% endfor %}
       </ul>
@@ -98,7 +98,7 @@
     <ul class="stuff-list stuff-list-03 list-unstyled">
       {% for item in category_tile.chargers %}
         <li class="stuff-item">
-          <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+          <a class="stuff-link" href="{{ item.url }}">{{ item.name }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -139,7 +139,7 @@
       <ul class="stuff-double-list list-unstyled">
         {% for item in category_tile.adapters %}
           <li class="stuff-item stuff-item-double">
-            <a class="stuff-link" href="{% url 'category' item.slug %}">{{ item.name }}</a>
+            <a class="stuff-link" href="{{ item.url }}">{{ item.name }}</a>
           </li>
         {% endfor %}
       </ul>
