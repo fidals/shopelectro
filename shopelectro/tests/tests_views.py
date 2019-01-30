@@ -532,7 +532,7 @@ class IndexPage(TestCase):
     MAIN_PAGE_TILE = {
         'some_section': [
             {'name': 'Has url', 'url': '/section/first/'},
-            {'name': 'Has url and slug',  'slug': 'slug', 'url': '/section/second/'},
+            {'name': 'Has url and slug', 'slug': 'slug', 'url': '/section/second/'},
             {'name': 'Has slug, but not url', 'slug': 'third'},
         ]
     }
