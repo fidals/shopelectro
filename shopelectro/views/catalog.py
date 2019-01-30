@@ -204,7 +204,7 @@ class IndexPage(pages_views.CustomPageView):
             **context_,
             **images_ctx,
             'tile_title': 'ТОП 10 ТОВАРОВ',
-            'category_tile': self.get_tile(),
+            'category_tile': self.get_categories_tile(),
             'tile_products': tile_products,
         }
 
