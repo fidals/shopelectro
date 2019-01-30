@@ -417,7 +417,7 @@ MAIN_PAGE_TILE = {
         {'name': 'Типоразмера AA',
          'url': '/catalog/categories/akkumuliatory-270/tags/aa/'},
         {'name': 'Типоразмера ААА',
-         'slug': '/catalog/categories/akkumuliatory-270/tags/aaa/'},
+         'url': '/catalog/categories/akkumuliatory-270/tags/aaa/'},
         {'name': 'Для радиомоделей и игрушек',
          'slug': 'akkumuliatory-dlia-radioupravliaemykh-modelei-i-igrushek'},
         {'name': 'Свинцово-кислотные',
