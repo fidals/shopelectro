@@ -410,7 +410,8 @@ CATEGORY_SORTING_OPTIONS ={
     },
 }
 
-# Tile on main page
+# Tile on main page.
+# Every link should have either slug or url.
 MAIN_PAGE_TILE = {
     'accumulators': [
         {'name': 'Типоразмера AA', 'slug': 'tiporazmer-aa'},
