@@ -40,40 +40,30 @@ class Files:
             file.create()
 
 
-class Price:
-    pass
-
-
-class Prices:
-    pass
-
-
+# TODO - inject logs
 class Context(newcontext.Context):
     """DB data, extracted for price file."""
 
     def __init__(self, target: str):
         self.target = target
 
-    # @todo #666:120m  Split price.Context.context to smaller classes
-    #  Don't forget it:
-    #  - Move class `PriceFilter` to `Product`
-    #  - Rm constants from Tree class
-    #  - Inject logs object here instead of returning operation status
-    #  - Maybe split this file to blocks
     def context(self) -> dict:
-        categories = Categories(self.target).filter()
-        products = Products(self.target, parents=categories)
+        categories = CategoriesFilter(self.target).qs()
+        products = ProductsPatch(
+            self.target,
+            products=ProductsFilter(self.target, parents=categories).qs()
+        ).prepare()
 
         return {
             'base_url': settings.BASE_URL,
             'categories': categories,
-            'products': products.prepare(),
+            'products': products,
             'shop': settings.SHOP,
             'utm': self.target,
         }
 
 
-class Categories:
+class CategoriesFilter:
     """Categories list for particular market place."""
 
     # dict keys are url targets for every service
@@ -98,20 +88,11 @@ class Categories:
         assert target in settings.UTM_PRICE_MAP
         self.target = target
 
-    # TODO - move to filter like Products.FILTERS
-    def filter(self) -> models.SECategoryQuerySet:
+    def qs(self) -> models.SECategoryQuerySet:
         if self.target == 'SE78':
             return models.Category.objects.all()
 
         result_categories = (
-            models.Category.objects
-            .exclude(
-                id__in=(
-                    models.Category.objects
-                    .filter(name__in=self.ignored)
-                    .get_descendants(include_self=True)
-                )
-            )
         )
 
         if self.target == 'YM':
@@ -127,7 +108,7 @@ class Categories:
         return result_categories
 
 
-class Products:
+class ProductsFilter:
     """Filter offers with individual price requirements."""
 
     FILTERS = defaultdict(
@@ -145,20 +126,28 @@ class Products:
         )
     )
 
-    UTM_MEDIUM_DATA = defaultdict(
-        lambda: 'cpc',
-        {'YM': 'cpc-market'}
-    )
-
     def __init__(self, target: str, parents: models.SECategoryQuerySet):
         assert target in settings.UTM_PRICE_MAP
         self.target = target
         self.parents = parents
 
-    def filter(self) -> QuerySet:
+    def qs(self) -> QuerySet:
         return self.FILTERS[self.target](
             models.Product.objects.active().filter_by_categories(self.parents)
         )
+
+
+class ProductsPatch:
+
+    UTM_MEDIUM_DATA = defaultdict(
+        lambda: 'cpc',
+        {'YM': 'cpc-market'}
+    )
+
+    def __init__(self, target: str, products: QuerySet):
+        assert target in settings.UTM_PRICE_MAP
+        self.target = target
+        self.products = products
 
     def put_utm(self, product):
         """Put UTM attribute to product."""
@@ -196,11 +185,10 @@ class Products:
 
     def prepare(self) -> typing.List[models.Product]:
         """Path every product with additional fields."""
-        products = self.filter()
-        brands = models.Tag.objects.get_brands(products)
+        brands = models.Tag.objects.get_brands(self.products)
         return [
             self.put_brand(self.put_crumbs(self.put_utm(product)), brands)
-            for product in products
+            for product in self.products
         ]
 
 
