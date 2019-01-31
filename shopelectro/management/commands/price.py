@@ -5,6 +5,7 @@ Django command to generate yml price files for market-places.
 See `settings.UTM_PRICE_MAP` to explore current list of supported market-places.
 """
 
+import logging
 import os
 import typing
 from collections import defaultdict
@@ -18,6 +19,8 @@ from django.urls import reverse
 from catalog import newcontext
 from shopelectro import models
 
+logger = logging.getLogger(__name__)
+
 
 # --- files processing ---
 class File:
@@ -28,7 +31,7 @@ class File:
     def create(self):
         with open(self.path, 'w', encoding='utf-8') as file:
             file.write(render_to_string('prices/price.yml', self.context).strip())
-        return f'{self.path} generated...'
+        logger.info(f'{self.path} generated.')
 
 
 class Files:
@@ -40,7 +43,6 @@ class Files:
             file.create()
 
 
-# TODO - inject logs
 class Context(newcontext.Context):
     """DB data, extracted for price file."""
 
@@ -93,6 +95,14 @@ class CategoriesFilter:
             return models.Category.objects.all()
 
         result_categories = (
+            models.Category.objects
+            .exclude(
+                id__in=(
+                    models.Category.objects
+                    .filter(name__in=self.ignored)
+                    .get_descendants(include_self=True)
+                )
+            )
         )
 
         if self.target == 'YM':
