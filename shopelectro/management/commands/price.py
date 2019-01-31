@@ -1,10 +1,17 @@
+"""
+Django command to generate yml price files for market-places.
+
+`utm` or `target` defines particular market-place.
+See `settings.UTM_PRICE_MAP` to explore current list of supported market-places.
+"""
+
 import os
 import typing
 from collections import defaultdict
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 from django.template.loader import render_to_string
 from django.urls import reverse
 
@@ -76,17 +83,6 @@ class Context(newcontext.Context):
         {'YM': 'cpc-market'}
     )
 
-    IGNORED_CATEGORIES = [
-        'Измерительные приборы', 'Новогодние вращающиеся светодиодные лампы',
-        'Новогодние лазерные проекторы', 'MP3- колонки', 'Беспроводные звонки',
-        'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
-    ]
-
-    # dict keys are url targets for every service
-    IGNORED_CATEGORIES_MAP = defaultdict(list, {
-        'GM': ['Усилители звука для слабослышащих'],
-    })
-
     def __init__(self, target: str):
         self.target = target
 
@@ -132,28 +128,6 @@ class Context(newcontext.Context):
             product.brand = brands.get(product)
             return product
 
-        def filter_categories(utm):
-            categories_to_exclude = (
-                models.Category.objects
-                .filter(
-                    Q(name__in=self.IGNORED_CATEGORIES)
-                    | Q(name__in=self.IGNORED_CATEGORIES_MAP[utm])
-                )
-                .get_descendants(include_self=True)
-            )
-
-            result_categories = models.Category.objects.exclude(id__in=categories_to_exclude)
-
-            if utm == 'YM':
-                """
-                Yandex Market feed requires items in some categories to have pictures
-                To simplify filtering we are excluding all categories
-                which don't contain at least one product with picture
-                """
-                result_categories = result_categories.get_categories_tree_with_pictures()
-
-            return result_categories
-
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
             products = PriceFilter(utm).run(
@@ -167,10 +141,7 @@ class Context(newcontext.Context):
                 for product in products
             ]
 
-        categories = (
-            filter_categories(self.target) if self.target != 'SE78'
-            else models.Category.objects.all()
-        )
+        categories = Categories(self.target).filter()
 
         products = prepare_products(categories, self.target)
 
@@ -181,6 +152,59 @@ class Context(newcontext.Context):
             'shop': settings.SHOP,
             'utm': self.target,
         }
+
+
+class Categories:
+    """Categories list for particular market place."""
+
+    # dict keys are url targets for every service
+    IGNORED_CATEGORIES_MAP = defaultdict(list, {
+        'GM': ['Усилители звука для слабослышащих'],
+        # will be ignored by every category
+        'default': [
+            'Измерительные приборы', 'Новогодние вращающиеся светодиодные лампы',
+            'Новогодние лазерные проекторы', 'MP3- колонки', 'Беспроводные звонки',
+            'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
+        ]
+    })
+
+    @property
+    def ignored(self) -> typing.List[str]:
+        return (
+            self.IGNORED_CATEGORIES_MAP['default']
+            + self.IGNORED_CATEGORIES_MAP[self.target]
+        )
+
+    def __init__(self, target: str):
+        assert target in settings.UTM_PRICE_MAP
+        self.target = target
+
+    def filter(self) -> models.SECategoryQuerySet:
+        if self.target == 'SE78':
+            return models.Category.objects.all()
+
+        result_categories = (
+            models.Category.objects
+            .exclude(
+                id__in=(
+                    models.Category.objects
+                    .filter(name__in=self.ignored)
+                    .get_descendants(include_self=True)
+                )
+            )
+        )
+
+        if self.target == 'YM':
+            """
+            Yandex Market feed requires items in some categories to have pictures.
+            To simplify filtering we are excluding all categories
+            which don't contain at least one product with picture.
+            """
+            # @todo #715:30m  Try to rm ancestors filter in YM price filter.
+            #  Exclude only categories with no pictures, without their ancestors.
+            result_categories = result_categories.get_categories_tree_with_pictures()
+
+        return result_categories
 
 
 # --- command block ---
