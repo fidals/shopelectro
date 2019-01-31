@@ -537,9 +537,9 @@ class IndexPage(TestCase):
         ]
     }
 
+    @override_settings(MAIN_PAGE_TILE=MAIN_PAGE_TILE)
     def test_get_category_tile(self):
-        with override_settings(MAIN_PAGE_TILE=self.MAIN_PAGE_TILE):
-            tile = views.IndexPage.get_categories_tile()
+        tile = views.IndexPage.get_categories_tile()
         first_url, second_url, third_url = [link['url'] for link in tile['some_section']]
         self.assertEqual('/section/first/', first_url)
         self.assertEqual('/section/second/', second_url)
