@@ -5,6 +5,7 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
+import unittest
 from functools import partial
 from operator import attrgetter
 from urllib.parse import urlparse, quote
@@ -44,15 +45,16 @@ class BaseCatalogTestCase(TestCase):
         self.category = models.Category.objects.root_nodes().select_related('page').first()
         self.tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
-    def get_category_page(
+    def get_category_url(
         self,
-        category: models.Category=None,
-        tags: models.TagQuerySet=None,
-        sorting: int=None,
-        query_string: dict=None,
+        category: models.Category = None,
+        tags: models.TagQuerySet = None,
+        sorting: int = None,
+        query_string: dict = None,
         route='category',
-        route_kwargs: dict=None,
+        route_kwargs: dict = None,
     ):
+        query_string = query_string or {}
         route_kwargs = route_kwargs or {}
         category = category or self.category
         route_kwargs = {
@@ -60,9 +62,13 @@ class BaseCatalogTestCase(TestCase):
             **route_kwargs
         }
 
-        return self.client.get(reverse_catalog_url(
+        return reverse_catalog_url(
             route, route_kwargs, tags, sorting, query_string,
-        ))
+        )
+
+    def get_category_page(self, *args, **kwargs):
+        """See `self.get_category_url()` interface."""
+        return self.client.get(self.get_category_url(*args, **kwargs))
 
 
 @tag('fast')
@@ -524,6 +530,32 @@ class CategoryPage(BaseCatalogTestCase):
         self.assertEqual('alt text', rendered_text)
         response = self.get_category_page()
         self.assertEqual(200, response.status_code)
+
+    @unittest.expectedFailure
+    def test_tags_pagination_has_canonical_links(self):
+        """
+        Paginated tags page should contain canonical link.
+
+        Link on it's not paginated version.
+        """
+        tags = models.Tag.objects.filter_by_products(
+            products=(
+                 models.Product.objects.all()
+                 .get_category_descendants(self.category)
+            )
+        )[:1]
+
+        not_paginated_url = self.get_category_url(
+            tags=tags
+        )
+        paginated_url = self.get_category_url(
+            tags=tags,
+            query_string={'page': 2}
+        )
+        response = self.client.get(paginated_url)
+        self.assertContains(
+            response, CANONICAL_HTML_TAG.format(path=not_paginated_url)
+        )
 
 
 @tag('fast')
