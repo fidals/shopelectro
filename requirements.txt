@@ -24,5 +24,4 @@ user-agents==1.1.0
 sorl-thumbnail==12.5.0
 python-telegram-bot==11.1.0
 https://github.com/selwin/django-user_agents/archive/master.zip
-# https://github.com/fidals/refarm-site/archive/0.4.29.zip
-git+https://github.com/fidals/refarm-site@253_products_qs#egg=refarm-site
+https://github.com/fidals/refarm-site/archive/0.4.30.zip
