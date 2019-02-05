@@ -91,40 +91,6 @@ class CatalogTags(BaseCatalogTestCase):
         for tag_name in tag_names:
             self.assertContains(response, tag_name)
 
-    def test_has_canonical_meta_tag(self):
-        """Test that CategoryPage should contain canonical meta tag."""
-        response = self.get_category_page()
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response,
-            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO']),
-        )
-
-    def test_tags_page_has_no_canonical_meta_tag(self):
-        """Test that CategoryTagsPage should not contain canonical meta tag."""
-        # ignore CPDBear
-        response = self.get_category_page(tags=self.tags)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(
-            response,
-            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO']),
-        )
-
-    def test_paginated_tags_page_has_no_canonical_meta_tag(self):
-        """
-        Test CategoryTagsPage with canonical tags.
-
-        CategoryTagsPage with pagination (and sorting) options
-        should not contain canonical meta tag.
-        """
-        # ignore CPDBear
-        response = self.get_category_page(tags=self.tags, sorting=1)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(
-            response,
-            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO'])
-        )
-
     def test_contains_product_with_certain_tags(self):
         """Category page contains Product's related by certain tags."""
         tags = self.tags
@@ -530,6 +496,16 @@ class CategoryPage(BaseCatalogTestCase):
         self.assertEqual('alt text', rendered_text)
         response = self.get_category_page()
         self.assertEqual(200, response.status_code)
+
+    def test_canonical_meta_tag(self):
+        """Category page should contain canonical meta tag."""
+        path = self.get_category_url()
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            CANONICAL_HTML_TAG.format(path=path),
+        )
 
     def test_tags_pagination_has_canonical_links(self):
         """
