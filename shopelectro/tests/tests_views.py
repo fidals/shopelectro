@@ -5,7 +5,6 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
-import unittest
 from functools import partial
 from operator import attrgetter
 from urllib.parse import urlparse, quote
