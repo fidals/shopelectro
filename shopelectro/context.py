@@ -24,5 +24,4 @@ class Page(Context):
 
         return {
             'page': self._page,
-            'skip_canonical': tags_qs.exists(),
         }

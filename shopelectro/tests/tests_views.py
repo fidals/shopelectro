@@ -531,7 +531,6 @@ class CategoryPage(BaseCatalogTestCase):
         response = self.get_category_page()
         self.assertEqual(200, response.status_code)
 
-    @unittest.expectedFailure
     def test_tags_pagination_has_canonical_links(self):
         """
         Paginated tags page should contain canonical link.
