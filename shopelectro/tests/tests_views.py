@@ -515,8 +515,8 @@ class CategoryPage(BaseCatalogTestCase):
         """
         tags = models.Tag.objects.filter_by_products(
             products=(
-                 models.Product.objects.all()
-                 .get_category_descendants(self.category)
+                models.Product.objects.all()
+                .get_category_descendants(self.category)
             )
         )[:1]
 
