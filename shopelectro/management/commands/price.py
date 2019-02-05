@@ -14,7 +14,6 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
 from django.template.loader import render_to_string
-from django.urls import reverse
 
 from catalog import newcontext
 from shopelectro import models
@@ -53,8 +52,8 @@ class Context(newcontext.Context):
         categories = CategoriesFilter(self.target).qs()
         products = ProductsPatch(
             self.target,
-            products=ProductsFilter(self.target, parents=categories).qs()
-        ).prepare()
+            products=ProductsFilter(self.target, categories).qs()
+        ).products()
 
         return {
             'base_url': settings.BASE_URL,
@@ -136,10 +135,10 @@ class ProductsFilter:
         )
     )
 
-    def __init__(self, target: str, parents: models.SECategoryQuerySet):
+    def __init__(self, target: str, categories: models.SECategoryQuerySet):
         assert target in settings.UTM_PRICE_MAP
         self.target = target
-        self.parents = parents
+        self.categories = categories
 
     def qs(self) -> QuerySet:
         return self.FILTERS[self.target](
@@ -159,6 +158,16 @@ class ProductsPatch:
         self.target = target
         self.products = products
 
+    def put_params(self, product):
+        product.prepared_params = [
+            (group, tags[0].name)
+            for (group, tags) in filter(
+                lambda x: x[0].name != 'Производитель',
+                product.get_params()
+            ) if tags
+        ]
+        return product
+
     def put_utm(self, product):
         """Put UTM attribute to product."""
         utm_marks = [
@@ -168,17 +177,8 @@ class ProductsPatch:
             ('utm_term', str(product.vendor_code)),
         ]
 
-        url = reverse('product', args=(product.vendor_code,))
         utm_mark_query = '&'.join(f'{k}={v}' for k, v in utm_marks)
-        product.utm_url = f'{settings.BASE_URL}{url}?{utm_mark_query}'
-
-        product.prepared_params = [
-            (group, tags[0].name)
-            for (group, tags) in filter(
-                lambda x: x[0].name != 'Производитель',
-                product.get_params()
-            ) if tags
-        ]
+        product.utm_url = f'{settings.BASE_URL}{product.url}?{utm_mark_query}'
 
         return product
 
@@ -193,11 +193,14 @@ class ProductsPatch:
         product.brand = brands.get(product)
         return product
 
-    def prepare(self) -> typing.List[models.Product]:
+    def products(self) -> typing.List[models.Product]:
         """Path every product with additional fields."""
         brands = models.Tag.objects.get_brands(self.products)
         return [
-            self.put_brand(self.put_crumbs(self.put_utm(product)), brands)
+            self.put_brand(
+                product=self.put_params(self.put_crumbs(self.put_utm(product))),
+                brands=brands
+            )
             for product in self.products
         ]
 
