@@ -159,7 +159,7 @@ class Context(newcontext.Context):
             products = PriceFilter(utm).run(
                 models.Product.objects.active()
                 .bind_fields()
-                .filter(categories__in=categories_, price__gt=0)
+                .filter(category__in=categories_, price__gt=0)
             )
             brands = models.Tag.objects.get_brands(products)
             return [
