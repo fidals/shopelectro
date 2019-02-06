@@ -142,7 +142,8 @@ class ProductsFilter:
 
     def qs(self) -> QuerySet:
         return self.FILTERS[self.target](
-            models.Product.objects.active().filter_by_categories(self.categories)
+            models.Product.objects.active()
+            .filter(category__in=self.categories, price__gt=0)
         )
 
 
