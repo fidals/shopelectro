@@ -156,7 +156,7 @@ class ProductsPatch:
     def __init__(self, target: str, products: QuerySet):
         assert target in settings.UTM_PRICE_MAP
         self.target = target
-        self.products = products
+        self._products = products
 
     def put_params(self, product):
         product.prepared_params = [
@@ -195,13 +195,13 @@ class ProductsPatch:
 
     def products(self) -> typing.List[models.Product]:
         """Path every product with additional fields."""
-        brands = models.Tag.objects.get_brands(self.products)
+        brands = models.Tag.objects.get_brands(self._products)
         return [
             self.put_brand(
                 product=self.put_params(self.put_crumbs(self.put_utm(product))),
                 brands=brands
             )
-            for product in self.products
+            for product in self._products
         ]
 
 
