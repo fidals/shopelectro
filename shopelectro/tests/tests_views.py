@@ -75,8 +75,8 @@ class CatalogTags(BaseCatalogTestCase):
         tags = set(chain.from_iterable(map(
             lambda x: x.tags.all(), (
                 models.Product.objects
-                .get_by_category(self.category)
                 .prefetch_related('tags')
+                .filter_descendants(self.category)
             )
         )))
 
@@ -353,7 +353,7 @@ class LoadMore(BaseCatalogTestCase):
         self.assertEqual(get_page_number(self.load_more()), 1)
 
     def test_pagination_numbering_last_page(self):
-        offset = models.Product.objects.get_by_category(self.category).count() - 1
+        offset = models.Product.objects.filter_descendants(self.category).count() - 1
         self.assertEqual(
             get_page_number(self.load_more(offset=offset)),
             offset // self.DEFAULT_LIMIT + 1,

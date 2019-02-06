@@ -157,7 +157,9 @@ class Context(newcontext.Context):
         def prepare_products(categories_, utm):
             """Filter product list and patch it for rendering."""
             products = PriceFilter(utm).run(
-                models.Product.objects.active().filter_by_categories(categories_)
+                models.Product.objects.active()
+                .bind_fields()
+                .filter(category__in=categories_, price__gt=0)
             )
             brands = models.Tag.objects.get_brands(products)
             return [
