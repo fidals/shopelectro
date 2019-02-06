@@ -44,15 +44,16 @@ class BaseCatalogTestCase(TestCase):
         self.category = models.Category.objects.root_nodes().select_related('page').first()
         self.tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
 
-    def get_category_page(
+    def get_category_url(
         self,
-        category: models.Category=None,
-        tags: models.TagQuerySet=None,
-        sorting: int=None,
-        query_string: dict=None,
+        category: models.Category = None,
+        tags: models.TagQuerySet = None,
+        sorting: int = None,
+        query_string: dict = None,
         route='category',
-        route_kwargs: dict=None,
+        route_kwargs: dict = None,
     ):
+        query_string = query_string or {}
         route_kwargs = route_kwargs or {}
         category = category or self.category
         route_kwargs = {
@@ -60,9 +61,13 @@ class BaseCatalogTestCase(TestCase):
             **route_kwargs
         }
 
-        return self.client.get(reverse_catalog_url(
+        return reverse_catalog_url(
             route, route_kwargs, tags, sorting, query_string,
-        ))
+        )
+
+    def get_category_page(self, *args, **kwargs):
+        """See `self.get_category_url()` interface."""
+        return self.client.get(self.get_category_url(*args, **kwargs))
 
 
 @tag('fast')
@@ -84,40 +89,6 @@ class CatalogTags(BaseCatalogTestCase):
 
         for tag_name in tag_names:
             self.assertContains(response, tag_name)
-
-    def test_has_canonical_meta_tag(self):
-        """Test that CategoryPage should contain canonical meta tag."""
-        response = self.get_category_page()
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response,
-            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO']),
-        )
-
-    def test_tags_page_has_no_canonical_meta_tag(self):
-        """Test that CategoryTagsPage should not contain canonical meta tag."""
-        # ignore CPDBear
-        response = self.get_category_page(tags=self.tags)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(
-            response,
-            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO']),
-        )
-
-    def test_paginated_tags_page_has_no_canonical_meta_tag(self):
-        """
-        Test CategoryTagsPage with canonical tags.
-
-        CategoryTagsPage with pagination (and sorting) options
-        should not contain canonical meta tag.
-        """
-        # ignore CPDBear
-        response = self.get_category_page(tags=self.tags, sorting=1)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(
-            response,
-            CANONICAL_HTML_TAG.format(path=response.request['PATH_INFO'])
-        )
 
     def test_contains_product_with_certain_tags(self):
         """Category page contains Product's related by certain tags."""
@@ -525,6 +496,41 @@ class CategoryPage(BaseCatalogTestCase):
         response = self.get_category_page()
         self.assertEqual(200, response.status_code)
 
+    def test_canonical_meta_tag(self):
+        """Category page should contain canonical meta tag."""
+        path = self.get_category_url()
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            CANONICAL_HTML_TAG.format(path=path),
+        )
+
+    def test_tags_pagination_has_canonical_links(self):
+        """
+        Paginated tags page should contain canonical link.
+
+        Link on it's not paginated version.
+        """
+        tags = models.Tag.objects.filter_by_products(
+            products=(
+                models.Product.objects.all()
+                .filter_descendants(self.category)
+            )
+        )[:1]
+
+        not_paginated_url = self.get_category_url(
+            tags=tags
+        )
+        paginated_url = self.get_category_url(
+            tags=tags,
+            query_string={'page': 2}
+        )
+        response = self.client.get(paginated_url)
+        self.assertContains(
+            response, CANONICAL_HTML_TAG.format(path=not_paginated_url)
+        )
+
 
 @tag('fast')
 class IndexPage(TestCase):
@@ -537,9 +543,9 @@ class IndexPage(TestCase):
         ]
     }
 
+    @override_settings(MAIN_PAGE_TILE=MAIN_PAGE_TILE)
     def test_get_category_tile(self):
-        with override_settings(MAIN_PAGE_TILE=self.MAIN_PAGE_TILE):
-            tile = views.IndexPage.get_categories_tile()
+        tile = views.IndexPage.get_categories_tile()
         first_url, second_url, third_url = [link['url'] for link in tile['some_section']]
         self.assertEqual('/section/first/', first_url)
         self.assertEqual('/section/second/', second_url)

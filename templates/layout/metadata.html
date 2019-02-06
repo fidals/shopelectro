@@ -37,16 +37,15 @@
 {# seo guys desired this tag: http://prntscr.com/gt5jh1 #}
 <meta name="cmsmagazine" content="8a67cdaf9ded6448bd3626abd67b56e4">
 
-{# seo guys want just to skip canonical on several pages #}
-{% if not skip_canonical %}
-  <link rel="canonical" href="{{ page.get_absolute_url }}">
-  {% if paginated.page.has_previous %}
-    <link rel="prev" href="{% if paginated.page.previous_page_number == 1 %}{{ page.get_absolute_url }}{% else %}{{ page.get_absolute_url }}?page={{ paginated.page.previous_page_number }}{% endif %}">
-  {% endif %}
-  {% if paginated.page.has_next %}
-    <link rel="next" href="{{ page.get_absolute_url }}?page={{ paginated.page.next_page_number }}">
-  {% endif %}
+{# request path is current path, but without http url's query string #}
+<link rel="canonical" href="{{ request.path }}">
+{% if paginated.page.has_previous %}
+  <link rel="prev" href="{{ request.path }}{% if paginated.page.previous_page_number > 1 %}?page={{ paginated.page.previous_page_number }}{% endif %}">
 {% endif %}
+{% if paginated.page.has_next %}
+  <link rel="next" href="{{ request.path }}?page={{ paginated.page.next_page_number }}">
+{% endif %}
+
 <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 <link rel="android-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
