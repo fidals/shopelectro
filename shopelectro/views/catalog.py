@@ -14,15 +14,6 @@ from pages import views as pages_views
 from shopelectro import models, context as se_context
 from shopelectro.views.helpers import set_csrf_cookie
 
-PRODUCTS_ON_PAGE_PC = 48
-PRODUCTS_ON_PAGE_MOB = 12
-
-
-def get_products_count(request):
-    """Calculate max products list size from request. List size depends on device type."""
-    mobile_view = get_user_agent(request).is_mobile
-    return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
-
 
 def get_view_type(request):
     view_type = request.session.get('view_type', 'tile')
@@ -30,16 +21,14 @@ def get_view_type(request):
     return view_type
 
 
-# @todo #683:60m Create context class(es) for catalog page representation.
-#  Created class(es) will compose the context classes for catalog views.
-#  Remove get_catalog_context in favor of created class(es).
-def get_catalog_context(request, page, category, raw_tags, page_number, per_page, sorting_index):
+def get_catalog_context(request_data: 'ProductListRequestData', category, page):
+
     all_tags = newcontext.Tags(models.Tag.objects.all())
     selected_tags = newcontext.tags.ParsedTags(
         tags=all_tags,
-        raw_tags=raw_tags,
+        raw_tags=request_data.tags,
     )
-    if raw_tags:
+    if request_data.tags:
         selected_tags = newcontext.tags.Checked404Tags(selected_tags)
 
     # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
@@ -53,7 +42,7 @@ def get_catalog_context(request, page, category, raw_tags, page_number, per_page
         ),
     )
     products = newcontext.products.OrderedProducts(
-        sorting_index=sorting_index,
+        sorting_index=request_data.sorting_index,
         products=newcontext.products.TaggedProducts(
             tags=selected_tags,
             products=products_by_category
@@ -62,9 +51,9 @@ def get_catalog_context(request, page, category, raw_tags, page_number, per_page
 
     paginated_products = newcontext.products.PaginatedProducts(
         products=products,
-        url=request.path,
-        page_number=page_number,
-        per_page=per_page,
+        url=request_data.request.path,
+        page_number=request_data.pagination_page_number,
+        per_page=request_data.pagination_per_page,
     )
 
     images = newcontext.products.ProductImages(paginated_products, Image.objects.all())
@@ -74,8 +63,9 @@ def get_catalog_context(request, page, category, raw_tags, page_number, per_page
     )
     page = se_context.Page(page, selected_tags)
 
-    contexts = newcontext.Contexts(page, paginated_products, images, brands, grouped_tags)
-    return contexts
+    return newcontext.Contexts(
+        page, paginated_products, images, brands, grouped_tags
+    )
 
 
 # CATALOG VIEWS
@@ -209,68 +199,96 @@ class IndexPage(pages_views.CustomPageView):
         }
 
 
+class RequestData:
+    def __init__(
+        self, request: http.HttpRequest, url_kwargs: typing.Dict[str, str]
+    ):
+        self.request = request
+        self.url_kwargs = url_kwargs
+
+
+class ProductListRequestData(RequestData):
+    """Data came from django urls to django views."""
+
+    PRODUCTS_ON_PAGE_PC = 48
+    PRODUCTS_ON_PAGE_MOB = 12
+
+    @property
+    def sorting_index(self):
+        return int(self.url_kwargs.get('sorting', 0))
+
+    @property
+    def tags(self) -> str:
+        """Tags list in url args format."""
+        return self.url_kwargs.get('tags')
+
+    @property
+    def length(self):
+        """Max products list size based on device type."""
+        is_mobile = get_user_agent(self.request).is_mobile
+        return (
+            self.PRODUCTS_ON_PAGE_MOB
+            if is_mobile else self.PRODUCTS_ON_PAGE_PC
+        )
+
+    @property
+    def pagination_page_number(self):
+        return int(self.request.GET.get('page', 1))
+
+    @property
+    def pagination_per_page(self):
+        return int(self.request.GET.get('step', self.length))
+
+
+# @todo #723:60m  Create separated PaginationRequestData class.
+#  And may be remove `LoadMoreRequestData` class.
+class LoadMoreRequestData(ProductListRequestData):
+
+    @property
+    def offset(self):
+        return int(self.url_kwargs.get('offset', 0))
+
+    @property
+    def pagination_page_number(self):
+        # increment page number because:
+        # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
+        # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
+        return (self.offset // self.pagination_per_page) + 1
+
+
 @set_csrf_cookie
 class CategoryPage(catalog.CategoryPage):
 
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
-        sorting_index = int(self.kwargs.get('sorting', 0))
-
+        request_data = ProductListRequestData(self.request, self.kwargs)
         contexts = get_catalog_context(
-            request=self.request,
+            request_data,
             page=self.object,
             category=self.object.model,
-            raw_tags=self.kwargs.get('tags'),
-            page_number=int(self.request.GET.get('page', 1)),
-            per_page=int(self.request.GET.get(
-                'step', get_products_count(self.request),
-            )),
-            sorting_index=sorting_index,
         )
-
         return {
             **super().get_context_data(**kwargs),
             **contexts.context(),
             'view_type': get_view_type(self.request),
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
             'limits': settings.CATEGORY_STEP_MULTIPLIERS,
-            'sort': sorting_index,
+            'sort': request_data.sorting_index,
         }
 
 
-def load_more(request, slug, offset=0, limit=0, sorting=0, tags=None):
-    """
-    Load more products of a given category.
-
-    :param sorting: preferred sorting index from CATEGORY_SORTING tuple
-    :param request: HttpRequest object
-    :param slug: Slug for a given category
-    :param offset: used for slicing QuerySet.
-    :return: products list in html format
-    """
-    products_on_page = limit or get_products_count(request)
-    offset = int(offset)
-    if offset < 0:
+def load_more(request, **url_kwargs):
+    request_data = LoadMoreRequestData(request, url_kwargs)
+    if request_data.offset < 0:
         return http.HttpResponseBadRequest(
             'The offset is wrong. An offset should be greater than or equal to 0.'
         )
-    # increment page number because:
-    # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
-    # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
-    page_number = (offset // products_on_page) + 1
-    page = get_object_or_404(models.CategoryPage, slug=slug)
-    sorting_index = int(sorting)
-
+    page = get_object_or_404(models.CategoryPage, slug=url_kwargs['slug'])
     contexts = get_catalog_context(
-        request=request,
+        request_data,
         page=page,
         category=page.model,
-        raw_tags=tags,
-        page_number=page_number,
-        per_page=products_on_page,
-        sorting_index=sorting_index,
     )
-
     return render(request, 'catalog/category_products.html', contexts.context())
 
 
