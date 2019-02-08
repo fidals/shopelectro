@@ -56,7 +56,7 @@ task_routes = {
         'queue': 'command',
         'routing_key': 'utils.command',
         'priority': 20,
-    }
+    },
     'ecommerce.tasks.send_mail': {
         'queue': 'mail',
         'routing_key': 'utils.mail',
