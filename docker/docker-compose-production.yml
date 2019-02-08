@@ -49,7 +49,7 @@ services:
   celery-beat:
     <<: *celery-worker
     container_name: se-celery-beat
-    command: celery -A shopelectro beat -l info
+    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro beat -l info
 
   celery-command-worker:
     <<: *celery-worker
@@ -59,17 +59,17 @@ services:
       - celery-beat
     volumes_from:
       - app
-    command: celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
+    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
 
   celery-default-worker:
     <<: *celery-worker
     container_name: se-celery-default-worker
-    command: celery -A shopelectro worker -E -n worker.default@%%h -l info -Q default
+    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.default@%%h -l info -Q default
 
   celery-mail-worker:
     <<: *celery-worker
     container_name: se-celery-mail-worker
-    command: celery -A shopelectro worker -E -n worker.mail@%%h -c 1 -l info -Q mail
+    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.mail@%%h -c 1 -l info -Q mail
 
   nginx:
     image: fidals/se-nginx:prod
