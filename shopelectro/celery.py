@@ -41,7 +41,7 @@ beat_schedule = {
     },
     'check-purchase': {
         'task': 'shopelectro.tasks.check_purchase',
-        'schedule': timedelta(days=1),
+        'schedule': timedelta(days=1).total_seconds(),
     },
 }
 
