@@ -39,6 +39,10 @@ beat_schedule = {
         'task': 'shopelectro.tasks.update_catalog',
         'schedule': timedelta(hours=2),
     },
+    'check-purchase': {
+        'task': 'shopelectro.tasks.check_purchase',
+        'schedule': timedelta(day=1),
+    },
 }
 
 # http://docs.celeryproject.org/en/master/userguide/routing.html
