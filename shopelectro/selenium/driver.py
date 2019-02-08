@@ -17,5 +17,11 @@ class SiteDriver(Remote):
         self.site_url = site_url
         self.wait = WebDriverWait(self, settings.SELENIUM_WAIT_SECONDS)
 
+    def __enter__(self):
+        yield self
+
+    def __exit__(self):
+        self.quit()
+
     def get(self, url):
         super().get(urljoin(self.site_url, url))
