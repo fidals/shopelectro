@@ -21,51 +21,70 @@ def get_view_type(request):
     return view_type
 
 
-def get_catalog_context(request_data: 'ProductListRequestData', category, page):
+class CatalogContext:
+    def __init__(self, request_data: 'ProductListRequestData', category, page):
+        self.request_data = request_data
+        self.category = category
+        self.page = page
 
-    all_tags = newcontext.Tags(models.Tag.objects.all())
-    selected_tags = newcontext.tags.ParsedTags(
-        tags=all_tags,
-        raw_tags=request_data.tags,
-    )
-    if request_data.tags:
-        selected_tags = newcontext.tags.Checked404Tags(selected_tags)
+    @staticmethod
+    def get_all_tags() -> newcontext.Tags:
+        return newcontext.Tags(models.Tag.objects.all())
 
-    # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
-    #  Rename Checked404Tags to ExistingOr404.
-    products_by_category = newcontext.products.ProductsByCategory(
-        category=category,
-        products=newcontext.products.ActiveProducts(
-            newcontext.Products(
-                models.Product.objects.all(),
+    def select_tags(self) -> newcontext.tags.ParsedTags:
+        selected_tags = newcontext.tags.ParsedTags(
+            tags=self.get_all_tags(),
+            raw_tags=self.request_data.tags,
+        )
+        if self.request_data.tags:
+            selected_tags = newcontext.tags.Checked404Tags(selected_tags)
+        return selected_tags
+
+    def filter_products(self) -> newcontext.Products:
+        return newcontext.products.OrderedProducts(
+            sorting_index=self.request_data.sorting_index,
+            products=newcontext.products.TaggedProducts(
+                tags=self.select_tags(),
+                products=newcontext.products.ProductsByCategory(
+                    category=self.category,
+                    products=newcontext.products.ActiveProducts(
+                        newcontext.Products(
+                            models.Product.objects.all(),
+                        ),
+                    ),
+                )
             ),
-        ),
-    )
-    products = newcontext.products.OrderedProducts(
-        sorting_index=request_data.sorting_index,
-        products=newcontext.products.TaggedProducts(
-            tags=selected_tags,
-            products=products_by_category
-        ),
-    )
+        )
 
-    paginated_products = newcontext.products.PaginatedProducts(
-        products=products,
-        url=request_data.request.path,
-        page_number=request_data.pagination_page_number,
-        per_page=request_data.pagination_per_page,
-    )
+    def paginate_products(self) -> newcontext.products.PaginatedProducts:
+        """
+        We have to use separated method for pagination,
+        because paginated QuerySet can not used as QuerySet.
+        It's not the most strong place of Django ORM, of course.
 
-    images = newcontext.products.ProductImages(paginated_products, Image.objects.all())
-    brands = newcontext.products.ProductBrands(paginated_products, all_tags)
-    grouped_tags = newcontext.tags.GroupedTags(
-        tags=newcontext.tags.TagsByProducts(all_tags, products_by_category.qs())
-    )
-    page = se_context.Page(page, selected_tags)
+        :return: ProductsContext with paginated QuerySet inside
+        """
+        # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
+        #  Rename Checked404Tags to ExistingOr404.
+        paginated_products = newcontext.products.PaginatedProducts(
+            products=self.filter_products(),
+            url=self.request_data.request.path,
+            page_number=self.request_data.pagination_page_number,
+            per_page=self.request_data.pagination_per_page,
+        )
+        return paginated_products
 
-    return newcontext.Contexts(
-        page, paginated_products, images, brands, grouped_tags
-    )
+    def context(self) -> dict:
+        images = newcontext.products.ProductImages(self.paginate_products(), Image.objects.all())
+        brands = newcontext.products.ProductBrands(self.paginate_products(), self.get_all_tags())
+        grouped_tags = newcontext.tags.GroupedTags(
+            tags=newcontext.tags.TagsByProducts(self.get_all_tags(), self.filter_products().qs())
+        )
+        page = se_context.Page(self.page, self.select_tags())
+
+        return newcontext.Contexts(
+            page, self.paginate_products(), images, brands, grouped_tags
+        ).context()
 
 
 # CATALOG VIEWS
@@ -262,14 +281,14 @@ class CategoryPage(catalog.CategoryPage):
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
         request_data = ProductListRequestData(self.request, self.kwargs)
-        contexts = get_catalog_context(
+        context_ = CatalogContext(
             request_data,
             page=self.object,
             category=self.object.model,
         )
         return {
             **super().get_context_data(**kwargs),
-            **contexts.context(),
+            **context_.context(),
             'view_type': get_view_type(self.request),
             'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
             'limits': settings.CATEGORY_STEP_MULTIPLIERS,
@@ -284,12 +303,12 @@ def load_more(request, **url_kwargs):
             'The offset is wrong. An offset should be greater than or equal to 0.'
         )
     page = get_object_or_404(models.CategoryPage, slug=url_kwargs['slug'])
-    contexts = get_catalog_context(
+    context_ = CatalogContext(
         request_data,
         page=page,
         category=page.model,
     )
-    return render(request, 'catalog/category_products.html', contexts.context())
+    return render(request, 'catalog/category_products.html', context_.context())
 
 
 @require_POST
