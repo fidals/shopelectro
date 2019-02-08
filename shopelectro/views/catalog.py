@@ -15,13 +15,22 @@ from shopelectro import models, context as se_context
 from shopelectro.views.helpers import set_csrf_cookie
 
 
-def get_view_type(request):
-    view_type = request.session.get('view_type', 'tile')
-    assert view_type in ['list', 'tile']
-    return view_type
+# TODO - place this context and RequestData to separated modules.
+class ListParamsContext(newcontext.Context):
+
+    def __init__(self, request_data: 'ProductListRequestData'):
+        self.request_data = request_data
+
+    def context(self) -> dict:
+        return {
+            'view_type': self.request_data.get_view_type(),
+            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
+            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
+            'sort': self.request_data.sorting_index,
+        }
 
 
-class CatalogContext:
+class CatalogContext(newcontext.Context):
     def __init__(self, request_data: 'ProductListRequestData', category, page):
         self.request_data = request_data
         self.category = category
@@ -81,9 +90,13 @@ class CatalogContext:
             tags=newcontext.tags.TagsByProducts(self.get_all_tags(), self.filter_products().qs())
         )
         page = se_context.Page(self.page, self.select_tags())
+        product_list = ListParamsContext(self.request_data)
+
+        # TODO - pass category, children, etc
 
         return newcontext.Contexts(
-            page, self.paginate_products(), images, brands, grouped_tags
+            page, self.paginate_products(),
+            images, brands, grouped_tags, product_list
         ).context()
 
 
@@ -231,6 +244,7 @@ class ProductListRequestData(RequestData):
 
     PRODUCTS_ON_PAGE_PC = 48
     PRODUCTS_ON_PAGE_MOB = 12
+    VIEW_TYPES = ['list', 'tile']
 
     @property
     def sorting_index(self):
@@ -249,6 +263,11 @@ class ProductListRequestData(RequestData):
             self.PRODUCTS_ON_PAGE_MOB
             if is_mobile else self.PRODUCTS_ON_PAGE_PC
         )
+
+    def get_view_type(self):
+        view_type = self.request.session.get('view_type', 'tile')
+        assert view_type in self.VIEW_TYPES
+        return view_type
 
     @property
     def pagination_page_number(self):
@@ -289,10 +308,6 @@ class CategoryPage(catalog.CategoryPage):
         return {
             **super().get_context_data(**kwargs),
             **context_.context(),
-            'view_type': get_view_type(self.request),
-            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
-            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
-            'sort': request_data.sorting_index,
         }
 
 
