@@ -7,10 +7,12 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
+# can't do `import pages` because of django error
+# TODO - provide error
+from pages import models as pages_models, views as pages_views
 from catalog import newcontext
 from catalog.views import catalog
 from images.models import Image
-from pages import views as pages_views
 from shopelectro import models, context as se_context
 from shopelectro.views.helpers import set_csrf_cookie
 
@@ -30,11 +32,32 @@ class ListParamsContext(newcontext.Context):
         }
 
 
-class CatalogContext(newcontext.Context):
-    def __init__(self, request_data: 'ProductListRequestData', category, page):
-        self.request_data = request_data
+# TODO - move it to refarm side
+class BaseCategoryContext(newcontext.Context):
+    def __init__(self, category: models.Category):
         self.category = category
-        self.page = page
+
+    def context(self):
+        return {
+            'category': self.category,
+            'children': self.category.get_children(),
+        }
+
+
+class CatalogContext(newcontext.Context):
+    def __init__(self, request_data: 'ProductListRequestData'):
+        self.request_data = request_data
+
+    @property
+    def page(self):
+        return get_object_or_404(
+            pages_models.ModelPage,
+            slug=self.request_data.slug
+        )
+
+    @property
+    def category(self):
+        return self.page.model
 
     @staticmethod
     def get_all_tags() -> newcontext.Tags:
@@ -91,11 +114,10 @@ class CatalogContext(newcontext.Context):
         )
         page = se_context.Page(self.page, self.select_tags())
         product_list = ListParamsContext(self.request_data)
-
-        # TODO - pass category, children, etc
+        category = BaseCategoryContext(self.category)
 
         return newcontext.Contexts(
-            page, self.paginate_products(),
+            page, category, self.paginate_products(),
             images, brands, grouped_tags, product_list
         ).context()
 
@@ -247,6 +269,10 @@ class ProductListRequestData(RequestData):
     VIEW_TYPES = ['list', 'tile']
 
     @property
+    def slug(self):
+        return self.url_kwargs.get('slug', '')
+
+    @property
     def sorting_index(self):
         return int(self.url_kwargs.get('sorting', 0))
 
@@ -295,15 +321,13 @@ class LoadMoreRequestData(ProductListRequestData):
 
 
 @set_csrf_cookie
-class CategoryPage(catalog.CategoryPage):
+class CategoryPage(catalog.CategoryPageTemplate):
 
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
         request_data = ProductListRequestData(self.request, self.kwargs)
         context_ = CatalogContext(
             request_data,
-            page=self.object,
-            category=self.object.model,
         )
         return {
             **super().get_context_data(**kwargs),
@@ -320,8 +344,6 @@ def load_more(request, **url_kwargs):
     page = get_object_or_404(models.CategoryPage, slug=url_kwargs['slug'])
     context_ = CatalogContext(
         request_data,
-        page=page,
-        category=page.model,
     )
     return render(request, 'catalog/category_products.html', context_.context())
 
