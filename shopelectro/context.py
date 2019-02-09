@@ -1,5 +1,7 @@
 from functools import partial
 
+from django.conf import settings
+
 from catalog.newcontext import Context, Tags
 
 
@@ -24,4 +26,18 @@ class Page(Context):
 
         return {
             'page': self._page,
+        }
+
+
+class ListParams(Context):
+
+    def __init__(self, request_data: 'ProductListRequestData'):
+        self.request_data = request_data
+
+    def context(self) -> dict:
+        return {
+            'view_type': self.request_data.get_view_type(),
+            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
+            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
+            'sort': self.request_data.sorting_index,
         }

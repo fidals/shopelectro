@@ -7,46 +7,20 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
-# can't do `import pages` because of django error
-# TODO - provide error
+# can't do `import pages` because of django error.
+# Traceback: https://gist.github.com/duker33/685e8a9f59fc5dbd243e297e77aaca42
 from pages import models as pages_models, views as pages_views
 from catalog import newcontext
 from catalog.views import catalog
 from images.models import Image
 from shopelectro import models, context as se_context
+from shopelectro import request_data
 from shopelectro.views.helpers import set_csrf_cookie
 
 
-# TODO - place this context and RequestData to separated modules.
-class ListParamsContext(newcontext.Context):
-
-    def __init__(self, request_data: 'ProductListRequestData'):
-        self.request_data = request_data
-
-    def context(self) -> dict:
-        return {
-            'view_type': self.request_data.get_view_type(),
-            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
-            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
-            'sort': self.request_data.sorting_index,
-        }
-
-
-# TODO - move it to refarm side
-class BaseCategoryContext(newcontext.Context):
-    def __init__(self, category: models.Category):
-        self.category = category
-
-    def context(self):
-        return {
-            'category': self.category,
-            'children': self.category.get_children(),
-        }
-
-
 class CatalogContext(newcontext.Context):
-    def __init__(self, request_data: 'ProductListRequestData'):
-        self.request_data = request_data
+    def __init__(self, request_data_: request_data.ProductList):
+        self.request_data = request_data_
 
     @property
     def page(self):
@@ -113,13 +87,13 @@ class CatalogContext(newcontext.Context):
             tags=newcontext.tags.TagsByProducts(self.get_all_tags(), self.filter_products().qs())
         )
         page = se_context.Page(self.page, self.select_tags())
-        product_list = ListParamsContext(self.request_data)
-        category = BaseCategoryContext(self.category)
+        product_list = se_context.ListParams(self.request_data)
+        category = newcontext.category.Context(self.category)
 
-        return newcontext.Contexts(
+        return newcontext.Contexts([
             page, category, self.paginate_products(),
             images, brands, grouped_tags, product_list
-        ).context()
+        ]).context()
 
 
 # CATALOG VIEWS
@@ -253,81 +227,14 @@ class IndexPage(pages_views.CustomPageView):
         }
 
 
-class RequestData:
-    def __init__(
-        self, request: http.HttpRequest, url_kwargs: typing.Dict[str, str]
-    ):
-        self.request = request
-        self.url_kwargs = url_kwargs
-
-
-class ProductListRequestData(RequestData):
-    """Data came from django urls to django views."""
-
-    PRODUCTS_ON_PAGE_PC = 48
-    PRODUCTS_ON_PAGE_MOB = 12
-    VIEW_TYPES = ['list', 'tile']
-
-    @property
-    def slug(self):
-        return self.url_kwargs.get('slug', '')
-
-    @property
-    def sorting_index(self):
-        return int(self.url_kwargs.get('sorting', 0))
-
-    @property
-    def tags(self) -> str:
-        """Tags list in url args format."""
-        return self.url_kwargs.get('tags')
-
-    @property
-    def length(self):
-        """Max products list size based on device type."""
-        is_mobile = get_user_agent(self.request).is_mobile
-        return (
-            self.PRODUCTS_ON_PAGE_MOB
-            if is_mobile else self.PRODUCTS_ON_PAGE_PC
-        )
-
-    def get_view_type(self):
-        view_type = self.request.session.get('view_type', 'tile')
-        assert view_type in self.VIEW_TYPES
-        return view_type
-
-    @property
-    def pagination_page_number(self):
-        return int(self.request.GET.get('page', 1))
-
-    @property
-    def pagination_per_page(self):
-        return int(self.request.GET.get('step', self.length))
-
-
-# @todo #723:60m  Create separated PaginationRequestData class.
-#  And may be remove `LoadMoreRequestData` class.
-class LoadMoreRequestData(ProductListRequestData):
-
-    @property
-    def offset(self):
-        return int(self.url_kwargs.get('offset', 0))
-
-    @property
-    def pagination_page_number(self):
-        # increment page number because:
-        # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
-        # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
-        return (self.offset // self.pagination_per_page) + 1
-
-
 @set_csrf_cookie
 class CategoryPage(catalog.CategoryPageTemplate):
 
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
-        request_data = ProductListRequestData(self.request, self.kwargs)
+        request_data_ = request_data.ProductList(self.request, self.kwargs)
         context_ = CatalogContext(
-            request_data,
+            request_data_,
         )
         return {
             **super().get_context_data(**kwargs),
@@ -336,14 +243,14 @@ class CategoryPage(catalog.CategoryPageTemplate):
 
 
 def load_more(request, **url_kwargs):
-    request_data = LoadMoreRequestData(request, url_kwargs)
-    if request_data.offset < 0:
+    request_data_ = request_data.LoadMore(request, url_kwargs)
+    if request_data_.offset < 0:
         return http.HttpResponseBadRequest(
             'The offset is wrong. An offset should be greater than or equal to 0.'
         )
     page = get_object_or_404(models.CategoryPage, slug=url_kwargs['slug'])
     context_ = CatalogContext(
-        request_data,
+        request_data_,
     )
     return render(request, 'catalog/category_products.html', context_.context())
 
