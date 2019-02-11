@@ -64,10 +64,10 @@ class CatalogContext(newcontext.Context):
 
     def paginate_products(self) -> newcontext.products.PaginatedProducts:
         """
-        We have to use separated method for pagination,
-        because paginated QuerySet can not used as QuerySet.
-        It's not the most strong place of Django ORM, of course.
+        We have to use separated method for pagination.
 
+        Because paginated QuerySet can not used as QuerySet.
+        It's not the most strong place of Django ORM, of course.
         :return: ProductsContext with paginated QuerySet inside
         """
         # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
@@ -248,11 +248,11 @@ def load_more(request, **url_kwargs):
         return http.HttpResponseBadRequest(
             'The offset is wrong. An offset should be greater than or equal to 0.'
         )
-    page = get_object_or_404(models.CategoryPage, slug=url_kwargs['slug'])
-    context_ = CatalogContext(
-        request_data_,
+    return render(
+        request,
+        'catalog/category_products.html',
+        CatalogContext(request_data_).context()
     )
-    return render(request, 'catalog/category_products.html', context_.context())
 
 
 @require_POST

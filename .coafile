@@ -17,7 +17,7 @@ max_line_length = 100
 # https://pycodestyle.readthedocs.io/en/latest/intro.html#error-codes
 # ignore W503 according to pep8 notes: https://goo.gl/rEjtY6
 pycodestyle_ignore = W503
-pydocstyle_ignore = D100,D101,D102,D103,D104,D105,D106,D203,D212
+pydocstyle_ignore = D100,D101,D102,D103,D104,D105,D106,D203,D212,D401,D404
 language = Python 3
 
 [all.javascript]
