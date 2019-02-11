@@ -18,9 +18,9 @@ class SiteDriver(Remote):
         self.wait = WebDriverWait(self, settings.SELENIUM_WAIT_SECONDS)
 
     def __enter__(self):
-        yield self
+        return self
 
-    def __exit__(self):
+    def __exit__(self, *args, **kwargs):
         self.quit()
 
     def get(self, url):
