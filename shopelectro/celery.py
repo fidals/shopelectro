@@ -87,7 +87,7 @@ app.conf.update(
     task_routes=task_routes,
     task_queues=task_queues,
     beat_schedule=beat_schedule,
-    worker_max_memory_per_child = 200000,  # after 250MB will restart
+    worker_max_memory_per_child=200000,  # after 250MB will restart
 )
 
 # Load task modules from all registered Django app configs.
