@@ -70,7 +70,7 @@ class BaseCatalogTestCase(TestCase):
         return self.client.get(self.get_category_url(*args, **kwargs))
 
 
-@tag('fast')
+@tag('fast', 'catalog')
 class CatalogTags(BaseCatalogTestCase):
 
     def test_category_page_contains_all_tags(self):
@@ -200,7 +200,7 @@ class CatalogTags(BaseCatalogTestCase):
         self.assertNotContains(response, tag.name)
 
 
-@tag('fast')
+@tag('fast', 'catalog')
 class CatalogPagination(BaseCatalogTestCase):
 
     def test_pagination_numbering(self):
@@ -470,7 +470,7 @@ class YandexKassa(TestCase):
         self.assertContains(response, 'code="1"')
 
 
-@tag('fast')
+@tag('fast', 'catalog')
 class CategoryPage(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
