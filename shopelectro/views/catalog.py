@@ -2,98 +2,20 @@ import typing
 
 from django import http
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
 # can't do `import pages` because of django error.
 # Traceback: https://gist.github.com/duker33/685e8a9f59fc5dbd243e297e77aaca42
-from pages import models as pages_models, views as pages_views
+from pages import views as pages_views
 from catalog import newcontext
 from catalog.views import catalog
 from images.models import Image
-from shopelectro import models, context as se_context
+from shopelectro import context as se_context, models
 from shopelectro import request_data
 from shopelectro.views.helpers import set_csrf_cookie
-
-
-class CatalogContext(newcontext.Context):
-    def __init__(self, request_data_: request_data.Catalog):
-        self.request_data = request_data_
-
-    @property
-    def page(self):
-        return get_object_or_404(
-            pages_models.ModelPage,
-            slug=self.request_data.slug
-        )
-
-    @property
-    def category(self):
-        return self.page.model
-
-    @staticmethod
-    def get_all_tags() -> newcontext.Tags:
-        return newcontext.Tags(models.Tag.objects.all())
-
-    def select_tags(self) -> newcontext.tags.ParsedTags:
-        selected_tags = newcontext.tags.ParsedTags(
-            tags=self.get_all_tags(),
-            raw_tags=self.request_data.tags,
-        )
-        if self.request_data.tags:
-            selected_tags = newcontext.tags.Checked404Tags(selected_tags)
-        return selected_tags
-
-    def filter_products(self) -> newcontext.Products:
-        return newcontext.products.OrderedProducts(
-            sorting_index=self.request_data.sorting_index,
-            products=newcontext.products.TaggedProducts(
-                tags=self.select_tags(),
-                products=newcontext.products.ProductsByCategory(
-                    category=self.category,
-                    products=newcontext.products.ActiveProducts(
-                        newcontext.Products(
-                            models.Product.objects.all(),
-                        ),
-                    ),
-                )
-            ),
-        )
-
-    def paginate_products(self) -> newcontext.products.PaginatedProducts:
-        """
-        We have to use separated method for pagination.
-
-        Because paginated QuerySet can not used as QuerySet.
-        It's not the most strong place of Django ORM, of course.
-        :return: ProductsContext with paginated QuerySet inside
-        """
-        # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
-        #  Rename Checked404Tags to ExistingOr404.
-        paginated_products = newcontext.products.PaginatedProducts(
-            products=self.filter_products(),
-            url=self.request_data.request.path,
-            page_number=self.request_data.pagination_page_number,
-            per_page=self.request_data.pagination_per_page,
-        )
-        return paginated_products
-
-    def context(self) -> dict:
-        images = newcontext.products.ProductImages(self.paginate_products(), Image.objects.all())
-        brands = newcontext.products.ProductBrands(self.paginate_products(), self.get_all_tags())
-        grouped_tags = newcontext.tags.GroupedTags(
-            tags=newcontext.tags.TagsByProducts(self.get_all_tags(), self.filter_products().qs())
-        )
-        page = se_context.Page(self.page, self.select_tags())
-        product_list = se_context.ListParams(self.request_data)
-        category = newcontext.category.Context(self.category)
-
-        return newcontext.Contexts([
-            page, category, self.paginate_products(),
-            images, brands, grouped_tags, product_list
-        ]).context()
 
 
 # CATALOG VIEWS
@@ -235,7 +157,7 @@ class CategoryPage(catalog.CategoryPageTemplate):
         request_data_ = request_data.Catalog(self.request, self.kwargs)
         return {
             **super().get_context_data(**kwargs),
-            **CatalogContext(request_data_).context(),
+            **se_context.Catalog(request_data_).context(),
         }
 
 
@@ -248,7 +170,7 @@ def load_more(request, **url_kwargs):
     return render(
         request,
         'catalog/category_products.html',
-        CatalogContext(request_data_).context()
+        se_context.Catalog(request_data_).context()
     )
 
 
