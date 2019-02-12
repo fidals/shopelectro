@@ -83,11 +83,11 @@ app.conf.update(
     task_default_queue='default',
     task_default_exchange='default',
     task_default_routing_key='default',
-    task_ignore_result=True,
-    worker_pool_restarts=1000,
+    worker_pool_restarts=True,
     task_routes=task_routes,
     task_queues=task_queues,
     beat_schedule=beat_schedule,
+    worker_max_memory_per_child=200000,  # after 250MB will restart
 )
 
 # Load task modules from all registered Django app configs.
