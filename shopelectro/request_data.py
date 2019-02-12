@@ -4,7 +4,7 @@ from django import http
 from django_user_agents.utils import get_user_agent
 
 
-class RequestData:
+class Request:
     def __init__(
         self, request: http.HttpRequest, url_kwargs: typing.Dict[str, str]
     ):
@@ -12,7 +12,7 @@ class RequestData:
         self.url_kwargs = url_kwargs
 
 
-class ProductList(RequestData):
+class Catalog(Request):
     """Data came from django urls to django views."""
 
     PRODUCTS_ON_PAGE_PC = 48
@@ -29,12 +29,12 @@ class ProductList(RequestData):
 
     @property
     def tags(self) -> str:
-        """Tags list in url args format."""
+        """:return: 'color=red&size=large' for example."""
         return self.url_kwargs.get('tags')
 
     @property
     def length(self):
-        """Max products list size based on device type."""
+        """Max size of products list depends on the device type."""
         is_mobile = get_user_agent(self.request).is_mobile
         return (
             self.PRODUCTS_ON_PAGE_MOB
@@ -57,7 +57,7 @@ class ProductList(RequestData):
 
 # @todo #723:60m  Create separated request_data.Pagination class.
 #  And may be remove `LoadMoreRequestData` class.
-class LoadMore(ProductList):
+class LoadMore(Catalog):
 
     @property
     def offset(self):

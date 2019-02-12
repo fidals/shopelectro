@@ -19,7 +19,7 @@ from shopelectro.views.helpers import set_csrf_cookie
 
 
 class CatalogContext(newcontext.Context):
-    def __init__(self, request_data_: request_data.ProductList):
+    def __init__(self, request_data_: request_data.Catalog):
         self.request_data = request_data_
 
     @property
@@ -232,13 +232,10 @@ class CategoryPage(catalog.CategoryPageTemplate):
 
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
-        request_data_ = request_data.ProductList(self.request, self.kwargs)
-        context_ = CatalogContext(
-            request_data_,
-        )
+        request_data_ = request_data.Catalog(self.request, self.kwargs)
         return {
             **super().get_context_data(**kwargs),
-            **context_.context(),
+            **CatalogContext(request_data_).context(),
         }
 
 
