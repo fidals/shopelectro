@@ -33,23 +33,7 @@ class Page(newcontext.Context):
         }
 
 
-class CatalogParams(newcontext.Context):
-    """Params for product list from settings and request."""
-
-    def __init__(self, request_data: 'request_data.Catalog'):
-        self.request_data = request_data
-
-    def context(self) -> dict:
-        return {
-            'view_type': self.request_data.get_view_type(),
-            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
-            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
-            'sort': self.request_data.sorting_index,
-        }
-
-
-class CatalogDB(newcontext.Context):
-    """Catalog data, fetched from DB with request."""
+class Catalog(newcontext.Context):
 
     def __init__(self, request_data_: request_data.Catalog):
         self.request_data = request_data_
@@ -112,21 +96,18 @@ class CatalogDB(newcontext.Context):
             tags=newcontext.tags.TagsByProducts(all_tags, filter_products.qs())
         )
         page = Page(self.page, selected_tags)
-        params = CatalogParams(self.request_data)
         category = newcontext.category.Context(self.category)
+        params = {
+            'view_type': self.request_data.get_view_type(),
+            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
+            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
+            'sort': self.request_data.sorting_index,
+        }
 
-        return newcontext.Contexts([
-            page, category, paginated_products,
-            images, brands, grouped_tags, params
-        ]).context()
-
-
-class Catalog(newcontext.Context):
-    def __init__(self, request_data_: request_data.Catalog):
-        self.request_data = request_data_
-
-    def context(self):
-        return newcontext.Contexts([
-            CatalogParams(self.request_data),
-            CatalogDB(self.request_data),
-        ])
+        return {
+            **params,
+            **newcontext.Contexts([
+                page, category, paginated_products,
+                images, brands, grouped_tags
+            ]).context()
+        }
