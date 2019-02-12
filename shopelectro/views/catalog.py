@@ -13,8 +13,8 @@ from pages import views as pages_views
 from catalog import newcontext
 from catalog.views import catalog
 from images.models import Image
-from shopelectro import context as se_context, models
-from shopelectro import request_data
+from shopelectro import context as se_context, models, request_data
+from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
 
 
@@ -162,8 +162,9 @@ class CategoryPage(catalog.CategoryPageTemplate):
 
 
 def load_more(request, **url_kwargs):
-    request_data_ = request_data.LoadMore(request, url_kwargs)
-    if request_data_.offset < 0:
+    try:
+        request_data_ = request_data.LoadMore(request, url_kwargs)
+    except Http400:
         return http.HttpResponseBadRequest(
             'The offset is wrong. An offset should be greater than or equal to 0.'
         )

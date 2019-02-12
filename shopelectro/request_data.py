@@ -3,18 +3,20 @@ import typing
 from django import http
 from django_user_agents.utils import get_user_agent
 
+from shopelectro.exception import Http400
+
 
 class Request:
+    """Comprehensive request entity: django's request + url arguments."""
     def __init__(
         self, request: http.HttpRequest, url_kwargs: typing.Dict[str, str]
     ):
+        """:param request: came here throw django urls and django views."""
         self.request = request
         self.url_kwargs = url_kwargs
 
 
 class Catalog(Request):
-    """Data came from django urls to django views."""
-
     PRODUCTS_ON_PAGE_PC = 48
     PRODUCTS_ON_PAGE_MOB = 12
     VIEW_TYPES = ['list', 'tile']
@@ -59,9 +61,13 @@ class Catalog(Request):
 #  And may be remove `LoadMoreRequestData` class.
 class LoadMore(Catalog):
 
-    @property
-    def offset(self):
-        return int(self.url_kwargs.get('offset', 0))
+    def __init__(
+        self, request: http.HttpRequest, url_kwargs: typing.Dict[str, str]
+    ):
+        super().__init__(request, url_kwargs)
+        self.offset = int(self.url_kwargs.get('offset', 0))
+        if self.offset < 0:
+            raise Http400()
 
     @property
     def pagination_page_number(self):

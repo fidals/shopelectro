@@ -1,3 +1,7 @@
+class Http400(Exception):
+    pass
+
+
 class UpdateCatalogException(BaseException):
     def __init__(self, message=''):
         self.message = message
