@@ -33,7 +33,8 @@ class Page(newcontext.Context):
         }
 
 
-class ListParams(newcontext.Context):
+class CatalogParams(newcontext.Context):
+    """Params for product list from settings and request."""
 
     def __init__(self, request_data: 'request_data.Catalog'):
         self.request_data = request_data
@@ -47,7 +48,9 @@ class ListParams(newcontext.Context):
         }
 
 
-class Catalog(newcontext.Context):
+class CatalogDB(newcontext.Context):
+    """Catalog data, fetched from DB with request."""
+
     def __init__(self, request_data_: request_data.Catalog):
         self.request_data = request_data_
 
@@ -109,10 +112,21 @@ class Catalog(newcontext.Context):
             tags=newcontext.tags.TagsByProducts(all_tags, filter_products.qs())
         )
         page = Page(self.page, selected_tags)
-        product_list = ListParams(self.request_data)
+        params = CatalogParams(self.request_data)
         category = newcontext.category.Context(self.category)
 
         return newcontext.Contexts([
             page, category, paginated_products,
-            images, brands, grouped_tags, product_list
+            images, brands, grouped_tags, params
         ]).context()
+
+
+class Catalog(newcontext.Context):
+    def __init__(self, request_data_: request_data.Catalog):
+        self.request_data = request_data_
+
+    def context(self):
+        return newcontext.Contexts([
+            CatalogParams(self.request_data),
+            CatalogDB(self.request_data),
+        ])

@@ -8,6 +8,7 @@ from shopelectro.exception import Http400
 
 class Request:
     """Comprehensive request entity: django's request + url arguments."""
+
     def __init__(
         self, request: http.HttpRequest, url_kwargs: typing.Dict[str, str]
     ):
