@@ -77,8 +77,7 @@ class ProductPage(catalog.ProductPage):
         """Return images for given products."""
         products_to_filter = [self.product, *products]
         return newcontext.products.ProductImages(
-            newcontext.Products(products_to_filter),
-            Image.objects.all(),
+            products_to_filter, Image.objects.all(),
         ).context()
 
     def render_siblings_on_404(

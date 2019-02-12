@@ -9,6 +9,21 @@ from pages import models as pages_models
 from shopelectro import models, request_data
 
 
+# @todo #255:60m  Improve `SortingOption` interface.
+#  Now it's located in context and this is wrong.
+#  Maybe refactor `CATEGORY_SORTING_OPTIONS`.
+class SortingOption:
+    def __init__(self, index=0):
+        options = settings.CATEGORY_SORTING_OPTIONS[index]
+        self.label = options['label']
+        self.field = options['field']
+        self.direction = options['direction']
+
+    @property
+    def directed_field(self):
+        return self.direction + self.field
+
+
 class Page(newcontext.Context):
 
     def __init__(self, page, tags: newcontext.Tags):
@@ -59,19 +74,11 @@ class Catalog(newcontext.Context):
         if self.request_data.tags:
             selected_tags = newcontext.tags.Checked404Tags(selected_tags)
 
-        filter_products = newcontext.products.OrderedProducts(
-            sorting_index=self.request_data.sorting_index,
-            products=newcontext.products.TaggedProducts(
-                tags=selected_tags,
-                products=newcontext.products.ProductsByCategory(
-                    category=self.category,
-                    products=newcontext.products.ActiveProducts(
-                        newcontext.Products(
-                            models.Product.objects.all(),
-                        ),
-                    ),
-                )
-            ),
+        products = (
+            models.Product.objects.active()
+            .filter_descendants(self.category)
+            .tagged_or_all(selected_tags.qs())
+            .order_by(SortingOption(index=self.request_data.sorting_index).directed_field)
         )
 
         """
@@ -83,17 +90,17 @@ class Catalog(newcontext.Context):
         """
         # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
         #  Rename Checked404Tags to ExistingOr404.
-        paginated_products = newcontext.products.PaginatedProducts(
-            products=filter_products,
+        paginated = newcontext.products.PaginatedProducts(
+            products=products,
             url=self.request_data.request.path,
             page_number=self.request_data.pagination_page_number,
             per_page=self.request_data.pagination_per_page,
         )
 
-        images = newcontext.products.ProductImages(paginated_products, Image.objects.all())
-        brands = newcontext.products.ProductBrands(paginated_products, all_tags)
+        images = newcontext.products.ProductImages(paginated.products, Image.objects.all())
+        brands = newcontext.products.ProductBrands(paginated.products, all_tags)
         grouped_tags = newcontext.tags.GroupedTags(
-            tags=newcontext.tags.TagsByProducts(all_tags, filter_products.qs())
+            tags=newcontext.tags.TagsByProducts(all_tags, products)
         )
         page = Page(self.page, selected_tags)
         category = newcontext.category.Context(self.category)
@@ -107,7 +114,7 @@ class Catalog(newcontext.Context):
         return {
             **params,
             **newcontext.Contexts([
-                page, category, paginated_products,
+                page, category, paginated,
                 images, brands, grouped_tags
             ]).context()
         }

@@ -382,7 +382,7 @@ YANDEX_KASSA_LINK = 'https://money.yandex.ru/eshop.xml'
 
 PRODUCT_SIBLINGS_COUNT = 10
 
-CATEGORY_SORTING_OPTIONS ={
+CATEGORY_SORTING_OPTIONS = {
     0: {
         'label': 'Цене, сначала дешёвые',
         'field': 'price',
