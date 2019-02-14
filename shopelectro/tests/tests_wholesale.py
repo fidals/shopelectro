@@ -124,7 +124,7 @@ class SECartTest(TestCase):
 
     def run_dec_set_test(self, before, after):
         self.add_products_to_card(before)
-        self.cart.set_product_quantity(
+        self.cart.set_position_quantity(
             self.second_product, after['second_product_quantity']
         )
         total = self.get_set_total(before, after)
@@ -132,10 +132,10 @@ class SECartTest(TestCase):
 
     def run_inc_set_test(self, before, after):
         self.add_products_to_card(before)
-        self.cart.set_product_quantity(
+        self.cart.set_position_quantity(
             self.first_product, after['first_product_quantity']
         )
-        self.cart.set_product_quantity(
+        self.cart.set_position_quantity(
             self.second_product, after['second_product_quantity']
         )
         total = self.get_add_total(after)

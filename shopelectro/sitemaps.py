@@ -23,14 +23,7 @@ class IndexSitemap(Sitemap):
     # Required. A method that returns a list of objects.
     # https://docs.djangoproject.com/ja/1.9/ref/contrib/sitemaps/#django.contrib.sitemaps.Sitemap.items
     def items(self):
-        return ['']
-
-    # location()
-    # Optional. If location isn’t provided, the framework will call the get_absolute_url()
-    # method on each object as returned by items().
-    # https://docs.djangoproject.com/ja/1.9/ref/contrib/sitemaps/#django.contrib.sitemaps.Sitemap.location
-    def location(self, model):
-        return reverse(CustomPage.ROUTE, args=(model, ))
+        return [CustomPage.objects.get(slug='')]
 
 
 class CategorySitemap(AbstractSitemap):

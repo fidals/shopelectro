@@ -98,7 +98,8 @@ ecommerce_urls = [
 ]
 
 custom_pages = [
-    custom_page_url(r'^(?P<page>)$', cached_2h(views.IndexPage.as_view())),
+    # can't use just `r'^(?P<page>)$'` with no args to views, because reverse don't work
+    custom_page_url(r'^$', cached_2h(views.IndexPage.as_view()), {'page': ''}, name='index'),
     custom_page_url(r'^(?P<page>robots\.txt)$', RobotsView.as_view()),
     custom_page_url(r'^(?P<page>search)/$', views.Search.as_view()),
     custom_page_url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view())),

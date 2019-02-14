@@ -2,80 +2,20 @@ import typing
 
 from django import http
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
+# can't do `import pages` because of django error.
+# Traceback: https://gist.github.com/duker33/685e8a9f59fc5dbd243e297e77aaca42
+from pages import views as pages_views
 from catalog import newcontext
 from catalog.views import catalog
 from images.models import Image
-from pages import views as pages_views
-from shopelectro import models, context as se_context
+from shopelectro import context as se_context, models, request_data
+from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
-
-PRODUCTS_ON_PAGE_PC = 48
-PRODUCTS_ON_PAGE_MOB = 12
-
-
-def get_products_count(request):
-    """Calculate max products list size from request. List size depends on device type."""
-    mobile_view = get_user_agent(request).is_mobile
-    return PRODUCTS_ON_PAGE_MOB if mobile_view else PRODUCTS_ON_PAGE_PC
-
-
-def get_view_type(request):
-    view_type = request.session.get('view_type', 'tile')
-    assert view_type in ['list', 'tile']
-    return view_type
-
-
-# @todo #683:60m Create context class(es) for catalog page representation.
-#  Created class(es) will compose the context classes for catalog views.
-#  Remove get_catalog_context in favor of created class(es).
-def get_catalog_context(request, page, category, raw_tags, page_number, per_page, sorting_index):
-    all_tags = newcontext.Tags(models.Tag.objects.all())
-    selected_tags = newcontext.tags.ParsedTags(
-        tags=all_tags,
-        raw_tags=raw_tags,
-    )
-    if raw_tags:
-        selected_tags = newcontext.tags.Checked404Tags(selected_tags)
-
-    # @todo #683:30m Remove *Tags and *Products suffixes from catalog.newcontext classes.
-    #  Rename Checked404Tags to ExistingOr404.
-    products_by_category = newcontext.products.ProductsByCategory(
-        category=category,
-        products=newcontext.products.ActiveProducts(
-            newcontext.Products(
-                models.Product.objects.all(),
-            ),
-        ),
-    )
-    products = newcontext.products.OrderedProducts(
-        sorting_index=sorting_index,
-        products=newcontext.products.TaggedProducts(
-            tags=selected_tags,
-            products=products_by_category
-        ),
-    )
-
-    paginated_products = newcontext.products.PaginatedProducts(
-        products=products,
-        url=request.path,
-        page_number=page_number,
-        per_page=per_page,
-    )
-
-    images = newcontext.products.ProductImages(paginated_products, Image.objects.all())
-    brands = newcontext.products.ProductBrands(paginated_products, all_tags)
-    grouped_tags = newcontext.tags.GroupedTags(
-        tags=newcontext.tags.TagsByProducts(all_tags, products_by_category.qs())
-    )
-    page = se_context.Page(page, selected_tags)
-
-    contexts = newcontext.Contexts(page, paginated_products, images, brands, grouped_tags)
-    return contexts
 
 
 # CATALOG VIEWS
@@ -137,8 +77,7 @@ class ProductPage(catalog.ProductPage):
         """Return images for given products."""
         products_to_filter = [self.product, *products]
         return newcontext.products.ProductImages(
-            newcontext.Products(products_to_filter),
-            Image.objects.all(),
+            products_to_filter, Image.objects.all(),
         ).context()
 
     def render_siblings_on_404(
@@ -189,15 +128,14 @@ class IndexPage(pages_views.CustomPageView):
         tile_products = []
         top_products = (
             models.Product.objects.active()
+            .bind_fields()
             .filter(id__in=settings.TOP_PRODUCTS)
-            .prefetch_related('category')
-            .select_related('page')
         )
         if not mobile_view:
             tile_products = top_products
 
         images_ctx = newcontext.products.ProductImages(
-            newcontext.Products(tile_products),
+            tile_products,
             Image.objects.all(),
         ).context()
         return {
@@ -210,68 +148,29 @@ class IndexPage(pages_views.CustomPageView):
 
 
 @set_csrf_cookie
-class CategoryPage(catalog.CategoryPage):
+class CategoryPage(catalog.CategoryPageTemplate):
 
     def get_context_data(self, **kwargs):
         """Add sorting options and view_types in context."""
-        sorting_index = int(self.kwargs.get('sorting', 0))
-
-        contexts = get_catalog_context(
-            request=self.request,
-            page=self.object,
-            category=self.object.model,
-            raw_tags=self.kwargs.get('tags'),
-            page_number=int(self.request.GET.get('page', 1)),
-            per_page=int(self.request.GET.get(
-                'step', get_products_count(self.request),
-            )),
-            sorting_index=sorting_index,
-        )
-
+        request_data_ = request_data.Catalog(self.request, self.kwargs)
         return {
             **super().get_context_data(**kwargs),
-            **contexts.context(),
-            'view_type': get_view_type(self.request),
-            'sorting_options': settings.CATEGORY_SORTING_OPTIONS.values(),
-            'limits': settings.CATEGORY_STEP_MULTIPLIERS,
-            'sort': sorting_index,
+            **se_context.Catalog(request_data_).context(),
         }
 
 
-def load_more(request, slug, offset=0, limit=0, sorting=0, tags=None):
-    """
-    Load more products of a given category.
-
-    :param sorting: preferred sorting index from CATEGORY_SORTING tuple
-    :param request: HttpRequest object
-    :param slug: Slug for a given category
-    :param offset: used for slicing QuerySet.
-    :return: products list in html format
-    """
-    products_on_page = limit or get_products_count(request)
-    offset = int(offset)
-    if offset < 0:
+def load_more(request, **url_kwargs):
+    try:
+        request_data_ = request_data.LoadMore(request, url_kwargs)
+    except Http400:
         return http.HttpResponseBadRequest(
             'The offset is wrong. An offset should be greater than or equal to 0.'
         )
-    # increment page number because:
-    # 11 // 12 = 0, 0 // 12 = 0 but it should be the first page
-    # 12 // 12 = 1, 23 // 12 = 1, but it should be the second page
-    page_number = (offset // products_on_page) + 1
-    page = get_object_or_404(models.CategoryPage, slug=slug)
-    sorting_index = int(sorting)
-
-    contexts = get_catalog_context(
-        request=request,
-        page=page,
-        category=page.model,
-        raw_tags=tags,
-        page_number=page_number,
-        per_page=products_on_page,
-        sorting_index=sorting_index,
+    return render(
+        request,
+        'catalog/category_products.html',
+        se_context.Catalog(request_data_).context()
     )
-
-    return render(request, 'catalog/category_products.html', contexts.context())
 
 
 @require_POST
