@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from catalog import newcontext
 from images.models import Image
-from pages import models as pages_models
+from pages import models as pages_models, newcontext as pages_newcontext
 from shopelectro import models, request_data
 
 
@@ -113,7 +113,7 @@ class Catalog(newcontext.Context):
 
         return {
             **params,
-            **newcontext.Contexts([
+            **pages_newcontext.Contexts([
                 page, category, paginated,
                 images, brands, grouped_tags
             ]).context()

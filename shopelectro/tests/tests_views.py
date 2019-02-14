@@ -488,8 +488,8 @@ class CategoryPage(BaseCatalogTestCase):
             'some text{% else %}alt text{% endif %}'
         )
         db_template.save()
-        rendered_text = db_template.render(
-            field=db_template.seo_text,
+        rendered_text = db_template.render_field(
+            field='seo_text',
             context={'page': self.category.page}
         )
         self.assertEqual('alt text', rendered_text)
