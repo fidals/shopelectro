@@ -20,6 +20,8 @@ from django.utils.translation import ugettext as _
 from itertools import chain
 
 from catalog.helpers import reverse_catalog_url
+from pages.models import CustomPage
+
 from shopelectro import models
 from shopelectro import views
 from shopelectro.tests.helpers import create_doubled_tag
@@ -535,6 +537,8 @@ class CategoryPage(BaseCatalogTestCase):
 @tag('fast')
 class IndexPage(TestCase):
 
+    fixtures = ['dump.json']
+
     MAIN_PAGE_TILE = {
         'some_section': [
             {'name': 'Has url', 'url': '/section/first/'},
@@ -543,13 +547,30 @@ class IndexPage(TestCase):
         ]
     }
 
+    @property
+    def page(self):
+        return CustomPage.objects.get(slug='')
+
     @override_settings(MAIN_PAGE_TILE=MAIN_PAGE_TILE)
-    def test_get_category_tile(self):
+    def test_category_tile_links(self):
         tile = views.IndexPage.get_categories_tile()
         first_url, second_url, third_url = [link['url'] for link in tile['some_section']]
         self.assertEqual('/section/first/', first_url)
         self.assertEqual('/section/second/', second_url)
         self.assertEqual('/catalog/categories/third/', third_url)
+
+    def test_index_page_url(self):
+        self.assertTrue(self.page.url)
+
+    def test_product_tile(self):
+        product = (
+            models.Product.objects.active()
+            .filter(id__in=settings.TOP_PRODUCTS)
+            .first()
+        )
+        response = self.client.get(self.page.url)
+        self.assertIn(product, response.context['tile_products'])
+        self.assertIn(product.id, response.context['product_images'])
 
 
 @tag('fast')
