@@ -72,7 +72,7 @@ def recalculate_price(cart: Cart):
         If price_type is NoneType, then it is retail price, set price from
         Product.price.
         """
-        cart.update_product_prices(get_product_data(price_type))
+        cart.update_position_prices(get_product_data(price_type))
 
     set_position_prices(define_price_type())
 
@@ -83,7 +83,7 @@ class SECart(Cart):
     def get_product_data(self, product):
         """Add vendor_code to cart's positions data."""
         return {
-            **super().get_product_data(product),
+            **super().get_position_data(product),
             'vendor_code': product.vendor_code,
             'purchase_price': product.purchase_price,
         }
@@ -95,7 +95,7 @@ class SECart(Cart):
 
     @recalculate
     def set_product_quantity(self, product: Model, quantity: int):
-        super().set_product_quantity(product, quantity)
+        super().set_position_quantity(product, quantity)
         return self
 
     @recalculate
