@@ -80,27 +80,27 @@ def recalculate_price(cart: Cart):
 class SECart(Cart):
     """Override Cart class for Wholesale features."""
 
-    def get_product_data(self, product):
+    def get_position_data(self, position):
         """Add vendor_code to cart's positions data."""
         return {
-            **super().get_position_data(product),
-            'vendor_code': product.vendor_code,
-            'purchase_price': product.purchase_price,
+            **super().get_position_data(position),
+            'vendor_code': position.vendor_code,
+            'purchase_price': position.purchase_price,
         }
 
     @recalculate
-    def add(self, product: Model, quantity=1):
-        super().add(product, quantity)
+    def add(self, position: Model, quantity=1):
+        super().add(position, quantity)
         return self
 
     @recalculate
-    def set_product_quantity(self, product: Model, quantity: int):
-        super().set_position_quantity(product, quantity)
+    def set_position_quantity(self, position: Model, quantity: int):
+        super().set_position_quantity(position, quantity)
         return self
 
     @recalculate
-    def remove(self, product: Model):
-        super().remove(product)
+    def remove(self, position: Model):
+        super().remove(position)
         return self
 
     def total_revenue(self):
