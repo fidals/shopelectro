@@ -2,7 +2,7 @@
 {% load se_extras %}
 
 <meta charset="UTF-8">
-<title>{{ page.display_title }}</title>
+<title>{{ page.display.title }}</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1d5d87">
@@ -15,13 +15,13 @@
   <meta name="robots" content="index, follow">
 {% endif %}
 
-<meta name="keywords" content="{{ page.display_keywords }}">
-<meta name="description" content="{{ page.display_description }}">
-<meta property="og:title" content="{{ page.display_title }}">
+<meta name="keywords" content="{{ page.display.keywords }}">
+<meta name="description" content="{{ page.display.description }}">
+<meta property="og:title" content="{{ page.display.title }}">
 <meta property="og:url" content="{{ page.url }}">
 <meta property="og:article:published_time" content="{{ page.date_published|date:'d.m.Y' }}">
-<meta property="og:name" content="{{ page.display_title }}">
-<meta property="og:description" content="{% if page.display_description %}{{ page.display_description }}{% else %}{{ page.content|striptags }}{% endif %}">
+<meta property="og:name" content="{{ page.display.title }}">
+<meta property="og:description" content="{% if page.display.description %}{{ page.display.description }}{% else %}{{ page.content|striptags }}{% endif %}">
 <meta property="og:image" content="{% main_image_or_logo page %}">
 
 <meta property="og:site_name" content="ShopElectro">

@@ -36,8 +36,8 @@
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
           {% comment "Description in an issue #257" %}
-            {% if product.page.display_description and not utm == 'GM' %}
-              <description>{{ product.page.display_description }}</description>
+            {% if product.page.display.description and not utm == 'GM' %}
+              <description>{{ product.page.display.description }}</description>
             {% endif %}
           {% endcomment %}
           <description></description>
