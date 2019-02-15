@@ -1,11 +1,9 @@
-from functools import partial
-
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from catalog import newcontext
 from images.models import Image
-from pages import models as pages_models, newcontext as pages_newcontext
+from pages import display, models as pages_models, newcontext as pages_newcontext
 from shopelectro import models, request_data
 
 
@@ -31,18 +29,18 @@ class Page(newcontext.Context):
         self._tags = tags
 
     def context(self):
-        def template_context(page, tag_titles, tags):
-            return {
-                'page': page,
-                'tag_titles': tag_titles,
-                'tags': tags,
-            }
-
         tags_qs = self._tags.qs()
-        self._page.get_template_render_context = partial(
-            template_context, self._page, tags_qs.as_title(), tags_qs
+        # use dirty patch here, because it's the most simple method
+        # to make shared templates work.
+        # For example `templates/layout/metadata.html`.
+        self._page.display = display.Page(
+            page=self._page,
+            context={
+                'page': self._page,
+                'tag_titles': tags_qs.as_title(),
+                'tags': tags_qs,
+            }
         )
-
         return {
             'page': self._page,
         }
