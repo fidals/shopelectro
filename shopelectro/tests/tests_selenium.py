@@ -1086,7 +1086,7 @@ class Search(helpers.SeleniumTestCase):
         self.browser.find_element_by_class_name('search-form').submit()
         self.wait.until(EC.url_contains('/search/'))
         self.wait.until(EC.visibility_of_element_located(
-            (By.TAG_NAME, 'h1')
+            (By.CLASS_NAME, 'search-result-link')
         ))
 
     def test_autocomplete_can_expand_and_collapse(self):
