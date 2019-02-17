@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from catalog import newcontext
 from images.models import Image
-from pages import display, models as pages_models, newcontext as pages_newcontext
+from pages import models as pages_models, newcontext as pages_newcontext
 from shopelectro import models, request_data
 
 
@@ -33,14 +33,11 @@ class Page(newcontext.Context):
         # use dirty patch here, because it's the most simple method
         # to make shared templates work.
         # For example `templates/layout/metadata.html`.
-        self._page.display = display.Page(
-            page=self._page,
-            context={
-                'page': self._page,
-                'tag_titles': tags_qs.as_title(),
-                'tags': tags_qs,
-            }
-        )
+        self._page.display = {
+            'page': self._page,
+            'tag_titles': tags_qs.as_title(),
+            'tags': tags_qs,
+        }
         return {
             'page': self._page,
         }

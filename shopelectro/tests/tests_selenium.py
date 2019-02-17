@@ -1085,9 +1085,6 @@ class Search(helpers.SeleniumTestCase):
     def search(self):
         self.browser.find_element_by_class_name('search-form').submit()
         self.wait.until(EC.url_contains('/search/'))
-        self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'search-result-link')
-        ))
 
     def test_autocomplete_can_expand_and_collapse(self):
         self.fill_input()
@@ -1140,6 +1137,9 @@ class Search(helpers.SeleniumTestCase):
         """Search results page should contain links on relevant pages."""
         self.fill_input()
         self.search()
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'search-result-link')
+        ))
 
         self.assertTrue(self.browser.find_element_by_link_text(
             'Category #0 of #Category #0 of #Category #0'
@@ -1150,6 +1150,9 @@ class Search(helpers.SeleniumTestCase):
         """Search results for wrong term should contain empty result set."""
         self.input.send_keys('Not existing search query')
         self.search()
+        self.wait.until(EC.visibility_of_element_located(
+            (By.TAG_NAME, 'h1')
+        ))
 
         h1 = self.browser.find_element_by_tag_name('h1')
 
