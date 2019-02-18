@@ -156,7 +156,7 @@
         {% for root in root_categories %}
           <li class="mobile-catalog-list-item js-mobile-menu-item">
             <a class="mobile-catalog-link" href="{{ root.url }}">
-              {{ root.page.display_menu_title }}
+              {{ root.page.display.menu_title }}
               <i class="fa fa-chevron-down mobile-catalog-link-icon js-mobile-link-arrow"
                  aria-hidden="true"></i>
             </a>
@@ -165,7 +165,7 @@
                 {% for child in root.get_children %}
                   <li>
                     <a class="mobile-catalog-sub-link" href="{{ child.url }}">
-                      {{ child.page.display_menu_title }}
+                      {{ child.page.display.menu_title }}
                     </a>
                   </li>
                 {% endfor %}
