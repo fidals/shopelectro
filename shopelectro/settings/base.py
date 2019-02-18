@@ -13,6 +13,10 @@ import os
 import socket
 from datetime import datetime
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
@@ -512,3 +516,13 @@ TG_REPORT_ADDRESSEES = os.environ.get(
     'TG_REPORT_ADDRESSEES', '@shopelectro_reports'
 ).split(',')
 CHECK_PURCHASE_RETRIES = int(os.environ.get('CHECK_PURCHASE_RETRIES', '3'))
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(),
+            CeleryIntegration(),
+        ]
+    )
