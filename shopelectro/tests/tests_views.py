@@ -21,7 +21,6 @@ from itertools import chain
 
 from catalog.helpers import reverse_catalog_url
 from pages.models import CustomPage
-
 from shopelectro import models
 from shopelectro import views
 from shopelectro.tests.helpers import create_doubled_tag
@@ -631,6 +630,18 @@ class ProductPage(TestCase):
         )
         # app shows logo image if preview can't generated
         self.assertNotIn('logo', img_path)
+
+    def test_page_obj(self):
+        """Page object in context should be relevant to product object."""
+        product = self.product
+        response = self.get_product_page(product=product)
+        self.assertEqual(response.context['page'], product.page)
+
+    def test_page_contains_h1(self):
+        """Page object in context should be relevant to product object."""
+        product = self.product
+        response = self.get_product_page(product=product)
+        self.assertContains(response, product.page.display.h1)
 
 
 @tag('fast')
