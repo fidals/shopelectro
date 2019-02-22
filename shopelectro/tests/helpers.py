@@ -45,17 +45,6 @@ def context_click(browser, element):
     ActionChains(browser).context_click(element).perform()
 
 
-def create_doubled_tag(tag_from: Tag=None):
-    tag_from = tag_from or Tag.objects.first()
-    group_to = TagGroup.objects.exclude(id=tag_from.group.id).first()
-    tag_to = Tag.objects.create(
-        group=group_to, name=tag_from.name, position=tag_from.position
-    )
-    tag_to.products.set(tag_from.products.all())
-    tag_to.save()
-    return tag_to
-
-
 class SeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
 
