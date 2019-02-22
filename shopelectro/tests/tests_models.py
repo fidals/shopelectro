@@ -1,9 +1,9 @@
-from itertools import chain
 from functools import partial
 
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase, TransactionTestCase, tag
+from itertools import chain
 
 from shopelectro.models import Product, Tag, TagGroup
 from shopelectro.tests.helpers import create_doubled_tag
@@ -55,11 +55,14 @@ class TagModel(TestCase):
             ))),
         )
 
-    def test_double_named_tag_saving(self):
-        """Two tags with the same name should have unique slugs."""
+    def test_doubled_tags_saving(self):
+        """Two tags with the same name should have unique group-slug pairs."""
         tag_from = Tag.objects.first()
         tag_to = create_doubled_tag(tag_from)
-        self.assertNotEqual(tag_from.slug, tag_to.slug)
+        self.assertNotEqual(
+            (tag_from.group, tag_from.slug),
+            (tag_to.group, tag_to.slug)
+        )
 
 
 @tag('fast')

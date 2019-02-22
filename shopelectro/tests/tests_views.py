@@ -23,7 +23,6 @@ from catalog.helpers import reverse_catalog_url
 from pages.models import CustomPage
 from shopelectro import models
 from shopelectro import views
-from shopelectro.tests.helpers import create_doubled_tag
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
@@ -150,17 +149,6 @@ class CatalogTags(BaseCatalogTestCase):
         self.assertEqual(response.status_code, 200)
         tag_names = ', '.join([t.name for t in tags])
         self.assertContains(response, tag_names)
-
-    def test_doubled_tag(self):
-        """Category tags page filtered by the same tag from different tag groups."""
-        tag_ = create_doubled_tag()
-        response = self.get_category_page(
-            tags=models.Tag.objects.filter(id=tag_.id)
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, tag_.name)
-        delimiter = settings.TAG_GROUPS_TITLE_DELIMITER
-        self.assertNotContains(response, delimiter.join(2 * [tag_.name]))
 
     def test_product_tag_linking(self):
         """Product should contain links on CategoryTagPage for it's every tag."""
