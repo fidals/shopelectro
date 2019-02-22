@@ -14,8 +14,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from seleniumrequests import Remote  # We use this instead of standard selenium
 
-from shopelectro.models import Tag, TagGroup
-
 disable_celery = override_settings(USE_CELERY=False)
 enable_russian_language = override_settings(
     LANGUAGE_CODE='ru-ru', LANGUAGES=(('ru', 'Russian'),)
