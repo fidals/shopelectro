@@ -506,7 +506,7 @@ class CategoryPage(BaseCatalogTestCase):
                 models.Product.objects.all()
                 .filter_descendants(self.category)
             )
-        )[:1]
+        )
 
         not_paginated_url = self.get_category_url(
             tags=tags
