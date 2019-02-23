@@ -6,7 +6,6 @@ from django.test import TestCase, TransactionTestCase, tag
 from itertools import chain
 
 from shopelectro.models import Product, Tag, TagGroup
-from shopelectro.tests.helpers import create_doubled_tag
 
 
 @tag('fast')
@@ -53,15 +52,6 @@ class TagModel(TestCase):
             sort_by_id(list(set(
                 chain.from_iterable(product.tags.all() for product in products)
             ))),
-        )
-
-    def test_doubled_tags_saving(self):
-        """Two tags with the same name should have unique group-slug pairs."""
-        tag_from = Tag.objects.first()
-        tag_to = create_doubled_tag(tag_from)
-        self.assertNotEqual(
-            (tag_from.group, tag_from.slug),
-            (tag_to.group, tag_to.slug)
         )
 
 
