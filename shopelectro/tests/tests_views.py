@@ -7,7 +7,6 @@ They all should be using Django's TestClient.
 import json
 from functools import partial
 from operator import attrgetter
-import unittest
 from urllib.parse import urlparse, quote
 from xml.etree import ElementTree as ET
 
