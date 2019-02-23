@@ -496,8 +496,6 @@ class CategoryPage(BaseCatalogTestCase):
             CANONICAL_HTML_TAG.format(path=path),
         )
 
-    # @todo #283:30m Fix test_tags_pagination_has_canonical_links
-    # @unittest.skip("Ordering issue with grouped tags.")
     def test_tags_pagination_has_canonical_links(self):
         """
         Paginated tags page should contain canonical link.
