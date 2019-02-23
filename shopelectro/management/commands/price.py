@@ -164,7 +164,7 @@ class ProductsPatch:
             (group, tags[0].name)
             for (group, tags) in filter(
                 lambda x: x[0].name != 'Производитель',
-                product.get_params()
+                product.get_params().items()
             ) if tags
         ]
         return product
