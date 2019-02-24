@@ -1,5 +1,8 @@
 FROM python:3.6-slim
 
+# ARG sets variables that only live during the build process
+# It stops interactive prompts
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     # wget is needed for working with ftp
     # netcat is needed for waiting of postgres at `dc up -d app`

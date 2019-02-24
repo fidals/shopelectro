@@ -372,8 +372,6 @@ TAG_GROUPS_URL_DELIMITER = '-and-'
 TAGS_TITLE_DELIMITER = ' или '
 TAG_GROUPS_TITLE_DELIMITER = ' и '
 
-TAGS_ORDER = ['group__position', 'group__name', 'position', 'name']
-
 # -- App business logic --
 # every product price will be multiplied on this value
 # during import from 1C.

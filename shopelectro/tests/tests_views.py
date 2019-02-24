@@ -42,7 +42,7 @@ class BaseCatalogTestCase(TestCase):
 
     def setUp(self):
         self.category = models.Category.objects.root_nodes().select_related('page').first()
-        self.tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
+        self.tags = models.Tag.objects.order_by_alphanumeric().all()
 
     def get_category_url(
         self,
@@ -114,7 +114,7 @@ class CatalogTags(BaseCatalogTestCase):
         should contain tag_titles var content: "6В или 24В".
         """
         tag_group = models.TagGroup.objects.first()
-        tags = tag_group.tags.order_by(*settings.TAGS_ORDER).all()
+        tags = tag_group.tags.order_by_alphanumeric().all()
         response = self.get_category_page(tags=tags)
         self.assertEqual(response.status_code, 200)
         delimiter = settings.TAGS_TITLE_DELIMITER
@@ -144,7 +144,7 @@ class CatalogTags(BaseCatalogTestCase):
         "tags" db template at CategoryTagsPage
         should render tag names. For example "1 м, 20 кг".
         """
-        tags = models.Tag.objects.order_by(*settings.TAGS_ORDER).all()
+        tags = models.Tag.objects.order_by_alphanumeric().all()
         response = self.get_category_page(tags=tags)
         self.assertEqual(response.status_code, 200)
         tag_names = ', '.join([t.name for t in tags])
