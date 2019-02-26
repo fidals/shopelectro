@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     # wget is needed for working with ftp
     # netcat is needed for waiting of postgres at `dc up -d app`
-    && apt-get install --no-install-recommends --no-install-suggests -y wget git netcat \
+    && apt-get install --no-install-recommends --no-install-suggests -y wget git netcat gettext \
     && apt-get -y --purge autoremove \
     && rm -rf /var/lib/apt/lists/*
 
