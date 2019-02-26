@@ -79,6 +79,13 @@ deploy-dev:
     # to make fresh collected static visible immediately
 	$(dc) stop app && $(MAKE) upd-dev
 
+# update internationalization messages
+i18n:
+	$(dc) run --rm app bash -c "\
+		python manage.py makemessages --ignore 'venv/**' \
+		&& python manage.py compilemessages -l ru \
+	"
+
 
 # ---------------------- Production deploy section ----------------------
 backup:

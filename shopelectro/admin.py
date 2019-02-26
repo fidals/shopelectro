@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.redirects.models import Redirect
@@ -8,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_select2.forms import ModelSelect2Widget
 
+from ecommerce import mailer
 from ecommerce.models import Position
 from pages.models import CustomPage, FlatPage, PageTemplate
 from generic_admin import inlines, mixins, models, sites
@@ -234,6 +236,27 @@ class TagAdmin(admin.ModelAdmin):
     custom_group.short_description = _('Group')
 
 
+def send_order_emails(admin_model, request, order_qs):
+    for order in order_qs:
+        context = {'shop': settings.SHOP}
+        if order.email:
+            mailer.send_order(
+                subject=settings.EMAIL_SUBJECTS['order'],
+                order=order,
+                extra_context=context,
+            )
+        else:
+            mailer.send_order(
+                subject=settings.EMAIL_SUBJECTS['one_click'],
+                order=order,
+                to_customer=False,
+                extra_context=context,
+            )
+
+
+send_order_emails.short_description = _('Sends email notifications about placed orders')
+
+
 class OrderAdmin(mixins.PermissionsControl):
 
     add = False
@@ -241,6 +264,7 @@ class OrderAdmin(mixins.PermissionsControl):
     list_display = ['id_', 'name', 'email', 'phone', 'total_price', 'payment_type', 'paid']
     search_fields = ['name', 'email', 'phone']
     list_display_links = ['name']
+    actions = [send_order_emails]
 
     def id_(self, obj):
         return obj.fake_order_number
