@@ -252,6 +252,8 @@ def send_order_emails(admin_model, request, order_qs):
                 to_customer=False,
                 extra_context=context,
             )
+
+
 send_order_emails.short_description = _('Sends email notifications about placed orders')
 
 
