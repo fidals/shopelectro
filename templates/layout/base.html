@@ -60,6 +60,14 @@
 
   {% block jslinks %}
     <script src="{% static 'js/main.min.js' %}"></script>
+
+    <script>
+      try {
+        Sentry.init({ dsn: '{{ SENTRY_FRONT_DSN }}' });
+      } catch (error) {
+        console.error(`Sentry failed to load. Traceback: ${error}`);
+      }
+    </script>
   {% endblock %}
 
   {% include 'layout/marketing.html' %}

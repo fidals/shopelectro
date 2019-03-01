@@ -12,4 +12,5 @@ def shop(request):
         'shop': settings.SHOP,
         'DEBUG': settings.DEBUG,
         'BASE_URL': settings.BASE_URL,
+        'SENTRY_FRONT_DSN': settings.SENTRY_FRONT_DSN,
     }
