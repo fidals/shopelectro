@@ -88,6 +88,7 @@ const path = {
         'front/js/vendors/bootstrap-select.js',
         'front/js/vendors/jquery.fancybox.min.js',
         'front/js/vendors/slick.min.js',
+        'front/js/vendors/sentry-4.6.4.min.js',
       ],
 
       main: [
@@ -257,7 +258,7 @@ function appJS(source, destination, fileName) {
     .pipe($.if(
       env.production,
       $.uglify({
-        mangle: { reserved: ['ga'] },
+        mangle: { reserved: ['ga', 'Sentry'] },
       })
     ))
     .pipe($.if(env.development, $.sourcemaps.write('.')))
