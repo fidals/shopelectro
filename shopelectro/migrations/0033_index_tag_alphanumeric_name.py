@@ -13,6 +13,4 @@ class Migration(migrations.Migration):
         ('shopelectro', '0032_drop_tag_slug_uniq_constraint'),
     ]
 
-    operations = [
-        *IndexTagAlphanumeric().v1()
-    ]
+    operations = IndexTagAlphanumeric().v1()

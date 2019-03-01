@@ -13,6 +13,4 @@ class Migration(migrations.Migration):
         ('shopelectro', '0033_index_tag_alphanumeric_name'),
     ]
 
-    operations = [
-        *IndexTagAlphanumeric().v2()
-    ]
+    operations = IndexTagAlphanumeric().v2()
