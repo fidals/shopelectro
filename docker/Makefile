@@ -115,6 +115,7 @@ deploy:
 	# to flush nginx's inner static caches
 	$(dcp) rm -f app nginx && $(dcp) up -d app nginx
 	$(dcp) exec app python manage.py migrate
+	$(dcp) exec app python manage.py custom_pages
 	$(MAKE) -j generate-production-static-data
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(dcp) exec app python manage.py collectstatic --noinput
