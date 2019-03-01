@@ -516,6 +516,7 @@ TG_REPORT_ADDRESSEES = os.environ.get(
 CHECK_PURCHASE_RETRIES = int(os.environ.get('CHECK_PURCHASE_RETRIES', '3'))
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
+SENTRY_FRONT_DSN = os.environ.get('SENTRY_FRONT_DSN')
 if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
