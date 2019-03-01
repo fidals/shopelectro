@@ -108,7 +108,7 @@ class Product(catalog_models.AbstractProduct, pages_models.SyncPageMixin):
         return self.product_feedbacks.all().order_by('-date')
 
     def get_params(self):
-        return Tag.objects.filter_by_products([self]).get_group_tags_pairs()
+        return Tag.objects.filter_by_products([self]).group_tags()
 
     def get_brand_name(self) -> str:
         brand: typing.Optional['Tag'] = Tag.objects.get_brands([self]).get(self)

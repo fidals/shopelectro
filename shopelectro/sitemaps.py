@@ -4,7 +4,6 @@ from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
 from pages.models import CustomPage, Page, PageManager
-
 from shopelectro.models import Category, Product, Tag
 
 
@@ -44,7 +43,7 @@ def get_categories_with_tags() -> Generator[
     for category in Category.objects.filter(page__is_active=True):
         products = Product.objects.filter_descendants(category)
         tags = Tag.objects.filter_by_products(products)
-        for group_name, group_tags in tags.get_group_tags_pairs().items():
+        for group_name, group_tags in tags.group_tags().items():
             for group_tag in group_tags:
                 yield category, group_tag
 
