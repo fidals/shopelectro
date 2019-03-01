@@ -21,6 +21,7 @@
   try {
     ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
   } catch (e) {
+    Sentry.captureException(e);
     var ga = console.log;  // Ignore ESLintBear (no-var)
     console.error(`GaTracker failed to load. Traceback: ${e}`);
   }
@@ -98,6 +99,7 @@
     try {
       yaCounter20644114.reachGoal(goal);
     } catch (e) {
+      Sentry.captureException(e);
       console.error('YaCounter did not loaded. Perhaps the reason for this ' +
         `maybe AdBlock. Traceback: ${e}`);
     }
