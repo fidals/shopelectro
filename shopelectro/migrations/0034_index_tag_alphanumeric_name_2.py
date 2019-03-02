@@ -10,7 +10,7 @@ from catalog.models_operations import IndexTagAlphanumeric
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopelectro', '0032_drop_tag_slug_uniq_constraint'),
+        ('shopelectro', '0033_index_tag_alphanumeric_name'),
     ]
 
-    operations = IndexTagAlphanumeric().v1()
+    operations = IndexTagAlphanumeric().v2()

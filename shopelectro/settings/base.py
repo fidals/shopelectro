@@ -14,8 +14,8 @@ import socket
 from datetime import datetime
 
 import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(
@@ -166,8 +166,6 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-DATABASE_URL = os.environ["POSTGRES_URL"]
 
 # to activate django connections pool for persistent connections.
 # https://docs.djangoproject.com/en/1.11/ref/databases/#persistent-connections
