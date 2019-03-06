@@ -76,7 +76,7 @@
 
     purchase(productsData, txData) {
       const publishOnce = () => {
-          // Publishe only once
+          // Publish only once
           if (this.published) return;
 
           // Load ecommerce plugin for gaTracker
