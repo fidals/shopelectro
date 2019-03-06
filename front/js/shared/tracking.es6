@@ -17,17 +17,8 @@
 
   // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
-  // Load ecommerce plugin for gaTracker
-  try {
-    ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
-  } catch (e) {
-    Sentry.captureException(e);  // Ignore ESLintBear (no-undef)
-    var ga = console.log;  // Ignore ESLintBear (no-var)
-    console.error(`GaTracker failed to load. Traceback: ${e}`);
-  }
-
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
-  const gaTracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+  const gaTracker = new PublishedGATracker();  // Ignore ESLintBear (block-scoped-var)
 
   const init = () => {
     setUpListeners();
@@ -74,6 +65,44 @@
         reachGoal('PUT_IN_CART_FROM_CATEGORY');
         reachGoal('CMN_PUT_IN_CART');
       });
+  }
+
+  // @todo #759:30m Move PublishedGATracker to a separate file.
+
+  class PublishedGATracker {
+    constructor() {
+      this.published = false;
+    }
+
+    purchase(productsData, txData) {
+      const publishOnce = () => {
+          // Publishe only once
+          if (this.published) return;
+
+          // Load ecommerce plugin for gaTracker
+          ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+          const tracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+
+          tracker.purchase(productsData, txData);
+          this.published = true;
+      };
+
+      window.addEventListener('gtm_loaded', () => {
+        try {
+          publishOnce();
+        } catch (e) {
+          Sentry.captureException(e);  // Ignore ESLintBear (no-undef)
+          console.error(e);
+        }
+      });
+
+      try {
+        publishOnce();
+      } catch(e) {
+        // Error occured because of unloaded Google tag manager.
+        // `gtm_loaded` event will try to publish again.
+      }
+    }
   }
 
   function publishPurchase() {
