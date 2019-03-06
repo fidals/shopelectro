@@ -29,8 +29,6 @@
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
   const gaTracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
 
-  // @todo #504:30m Send info about product's brand to YA and GA.
-
   const init = () => {
     setUpListeners();
     publishPurchase();
