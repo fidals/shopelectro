@@ -17,8 +17,12 @@
 
   // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
+
+  // @todo #759:60m Create tests for eCommerce tracking.
+  //  Test all events, these perform tracking operations.
+
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
-  const gaTracker = new PublishedGATracker();  // Ignore ESLintBear (block-scoped-var)
+  const gaTracker = new LoadedGATracker();  // Ignore ESLintBear (block-scoped-var)
 
   const init = () => {
     setUpListeners();
@@ -67,29 +71,36 @@
       });
   }
 
-  // @todo #759:30m Move PublishedGATracker to a separate file.
+  // @todo #759:30m Move LoadedGATracker to the refarm.
 
-  class PublishedGATracker {
+  /**
+   * Reliably submit a purchase transaction.
+   *
+   * The tracker depends on Google Analytics scripts (GA), those are loading by
+   * the Google tag manager (GTM).
+   * In case GA scripts are unloaded the tracker can't submit a transaction,
+   * so it will wait GTM onload event.
+   */
+  class LoadedGATracker {
     constructor() {
-      this.published = false;
+      this.purchased = false;
     }
 
     purchase(productsData, txData) {
-      const publishOnce = () => {
-          // Publish only once
-          if (this.published) return;
+      const purchaseOnce = () => {
+          if (this.purchased) return;
 
           // Load ecommerce plugin for gaTracker
           ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
           const tracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
-
           tracker.purchase(productsData, txData);
-          this.published = true;
+
+          this.purchased = true;
       };
 
       window.addEventListener('gtm_loaded', () => {
         try {
-          publishOnce();
+          purchaseOnce();
         } catch (e) {
           Sentry.captureException(e);  // Ignore ESLintBear (no-undef)
           console.error(e);
@@ -97,10 +108,10 @@
       });
 
       try {
-        publishOnce();
+        purchaseOnce();
       } catch(e) {
         // Error occured because of unloaded Google tag manager.
-        // `gtm_loaded` event will try to publish again.
+        // listener of `gtm_loaded` event will try again.
       }
     }
   }
