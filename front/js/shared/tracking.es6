@@ -15,21 +15,58 @@
     $purchasedOrder: $('.js-purchased-order'),
   };
 
-  // Sync container for yaTracker
-  window.dataLayer = window.dataLayer || [];
-  // Load ecommerce plugin for gaTracker
-  try {
-    ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
-  } catch (e) {
-    Sentry.captureException(e);  // Ignore ESLintBear (no-undef)
-    var ga = console.log;  // Ignore ESLintBear (no-var)
-    console.error(`GaTracker failed to load. Traceback: ${e}`);
+  // @todo #759:30m Move LoadedGATracker to the refarm.
+
+  /**
+   * Reliably submit a purchase transaction.
+   *
+   * The tracker depends on Google Analytics scripts (GA), those are loading by
+   * the Google tag manager (GTM).
+   * In case GA scripts are unloaded the tracker can't submit a transaction,
+   * so it will wait GTM onload event.
+   */
+  class LoadedGATracker {
+    constructor() {
+      this.purchased = false;
+    }
+
+    purchase(productsData, txData) {
+      const purchaseOnce = () => {
+        if (this.purchased) return;
+
+        // Load ecommerce plugin for gaTracker
+        ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+        const tracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+        tracker.purchase(productsData, txData);
+
+        this.purchased = true;
+      };
+
+      window.addEventListener('gtm_loaded', () => {
+        try {
+          purchaseOnce();
+        } catch (e) {
+          Sentry.captureException(e);  // Ignore ESLintBear (no-undef)
+          console.error(e);
+        }
+      });
+
+      try {
+        purchaseOnce();
+      } catch (e) {
+        // Error occured because of unloaded Google tag manager.
+        // listener of `gtm_loaded` event will try again.
+      }
+    }
   }
 
-  const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
-  const gaTracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+  // @todo #759:60m Create tests for eCommerce tracking.
+  //  Test all events, these perform tracking operations.
 
-  // @todo #504:30m Send info about product's brand to YA and GA.
+  // Sync container for yaTracker
+  window.dataLayer = window.dataLayer || [];
+  const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
+  const gaTracker = new LoadedGATracker();  // Ignore ESLintBear (block-scoped-var)
 
   const init = () => {
     setUpListeners();
