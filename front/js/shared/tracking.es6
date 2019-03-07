@@ -26,21 +26,20 @@
    * so it will wait GTM onload event.
    */
   class LoadedGATracker {
-
     constructor() {
       this.purchased = false;
     }
 
     purchase(productsData, txData) {
       const purchaseOnce = () => {
-          if (this.purchased) return;
+        if (this.purchased) return;
 
-          // Load ecommerce plugin for gaTracker
-          ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
-          const tracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
-          tracker.purchase(productsData, txData);
+        // Load ecommerce plugin for gaTracker
+        ga('require', 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+        const tracker = new GATracker(ga, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
+        tracker.purchase(productsData, txData);
 
-          this.purchased = true;
+        this.purchased = true;
       };
 
       window.addEventListener('gtm_loaded', () => {
@@ -54,7 +53,7 @@
 
       try {
         purchaseOnce();
-      } catch(e) {
+      } catch (e) {
         // Error occured because of unloaded Google tag manager.
         // listener of `gtm_loaded` event will try again.
       }
