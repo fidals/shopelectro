@@ -31,15 +31,19 @@
 {% else %}
   {% if is_head_tag %}
     <script>
-      var ga = (function() {
+      var gaObject = (function() {
         var results = [];
 
         var fn = function(action, params) {
           results.push([action, params]);
           console.log('GA:', JSON.stringify([action, params]));
         };
-        return fn;
+        return {
+          fn: fn,
+          results: results,
+        };
       }());
+      var ga = gaObject.fn;
 
       window.dataLayer = (function() {
         var results = [];
