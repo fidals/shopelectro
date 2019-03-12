@@ -73,7 +73,7 @@ class Header(helpers.SeleniumTestCase):
 
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
-        self.browser.get()
+        self.browser.get('/')
         wait_page_loading(self.browser)
 
     def test_call_modal_not_visible(self):
@@ -503,9 +503,9 @@ class ProductPage(helpers.SeleniumTestCase):
         self.browser.find_element_by_id(
             'input-one-click-phone').send_keys('2222222222')
         self.one_click.click()
-        self.wait.until(EC.url_to_be(self.success_order))
+        self.wait.until(EC.url_contains(self.success_order))
 
-        self.assertEqual(self.browser.current_url, self.success_order)
+        self.assertIn(self.success_order, self.browser.current_url)
 
     @helpers.disable_celery
     def test_one_click_buy_order_email(self):
@@ -524,7 +524,7 @@ class ProductPage(helpers.SeleniumTestCase):
         phone_field = self.browser.find_element_by_id('input-one-click-phone')
         phone_field.send_keys('2222222222')
         self.one_click.click()
-        self.wait.until(EC.url_to_be(self.success_order))
+        self.wait.until(EC.url_contains(self.success_order))
 
         sent_mail_body = mail.outbox[0].body
         self.assertIn('+7 (222) 222 22 22', sent_mail_body)
@@ -755,7 +755,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.append_products_to_cart()
         self.fill_contacts_data()
         self.submit_form()
-        self.wait.until(EC.url_to_be(self.success_order_url))
+        self.wait.until(EC.url_contains(self.success_order_url))
         self.assertIn(
             reverse(CustomPage.ROUTE, args=('order-success', )),
             self.browser.current_url,
@@ -772,7 +772,7 @@ class OrderPage(helpers.SeleniumTestCase):
 
         self.fill_contacts_data()
         self.submit_form()
-        self.wait.until(EC.url_to_be(self.success_order_url))
+        self.wait.until(EC.url_contains(self.success_order_url))
         self.assertEqual(len(mail.outbox), 1)
         sent_mail_body = mail.outbox[0].body
 
@@ -895,7 +895,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.category_page = reverse(
             'category', args=(Category.objects.first().page.slug,))
         self.order_page_url = reverse(CustomPage.ROUTE, args=('order',))
-        self.browser.get()
+        self.browser.get('/')
         wait_page_loading(self.browser)
 
     @property
@@ -1040,7 +1040,7 @@ class Search(helpers.SeleniumTestCase):
     INPUT_LOCATOR = (By.CLASS_NAME, 'js-search-input')
 
     def setUp(self):
-        self.browser.get()
+        self.browser.get('/')
         wait_page_loading(self.browser)
 
     def tearDown(self):

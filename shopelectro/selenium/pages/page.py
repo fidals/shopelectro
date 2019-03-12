@@ -1,7 +1,18 @@
+from functools import wraps
+
 from shopelectro.selenium import SiteDriver
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+
+
+def matched_url(fn):
+    """Match a driver's url and a Page's path."""
+    @wraps(fn)
+    def wrapped(self, *args, **kwargs):
+        self.driver.wait.until(EC.url_contains(self.path))
+        return fn(self, *args, **kwargs)
+    return wrapped
 
 
 class Page:
