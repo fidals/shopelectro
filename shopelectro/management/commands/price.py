@@ -70,6 +70,7 @@ class CategoriesFilter:
     # dict keys are url targets for every service
     IGNORED_CATEGORIES_MAP = defaultdict(list, {
         'GM': ['Усилители звука для слабослышащих'],
+        'YM': ['Пиротехника'],
         # will be ignored by every category
         'default': [
             'Измерительные приборы', 'Новогодние вращающиеся светодиодные лампы',
