@@ -45,8 +45,8 @@ def show_cart_dropdown(browser):
     ))
 
 
-def add_to_cart(browser, live_server_url):
-    browser.get(live_server_url + Product.objects.first().url)
+def add_to_cart(browser):
+    browser.get(Product.objects.first().url)
     browser.find_element_by_class_name('btn-to-basket').click()
 
 
@@ -73,7 +73,7 @@ class Header(helpers.SeleniumTestCase):
 
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
-        self.browser.get(self.live_server_url)
+        self.browser.get()
         wait_page_loading(self.browser)
 
     def test_call_modal_not_visible(self):
@@ -113,7 +113,7 @@ class Header(helpers.SeleniumTestCase):
 
     def test_cart_flush(self):
         """We can flush cart from header's cart dropdown."""
-        add_to_cart(self.browser, self.live_server_url)
+        add_to_cart(self.browser)
         show_cart_dropdown(self.browser)
         self.wait.until(EC.visibility_of_element_located(
             (By.CLASS_NAME, 'basket-reset')
@@ -125,7 +125,7 @@ class Header(helpers.SeleniumTestCase):
         self.assertTrue(is_cart_empty(self.browser))
 
     def test_product_total_price_in_dropdown(self):
-        add_to_cart(self.browser, self.live_server_url)
+        add_to_cart(self.browser)
         product_price = int(Product.objects.first().price)
         show_cart_dropdown(self.browser)
         product_total_price = self.wait.until(EC.visibility_of_element_located(
@@ -143,7 +143,7 @@ class CategoryPage(helpers.SeleniumTestCase):
 
     def setUp(self):
         def get_testing_url(slug):
-            return self.live_server_url + reverse('category', args=(slug,))
+            return reverse('category', args=(slug,))
 
         root_category = Category.objects.filter(parent=None).first()
         children_category = Category.objects.filter(parent=root_category).first()
@@ -422,9 +422,8 @@ class ProductPage(helpers.SeleniumTestCase):
         """Set up testing url and dispatch selenium webdriver."""
         self.browser.delete_all_cookies()
         self.product = Product.objects.get(id=self.PRODUCT_ID)
-        server = self.live_server_url
-        self.test_product_page = server + self.product.url
-        self.success_order = server + reverse(CustomPage.ROUTE, args=('order-success',))
+        self.test_product_page = self.product.url
+        self.success_order = reverse(CustomPage.ROUTE, args=('order-success',))
         self.product_name = self.product.name
         self.browser.get(self.test_product_page)
         wait_page_loading(self.browser)
@@ -637,13 +636,10 @@ class OrderPage(helpers.SeleniumTestCase):
         self.product_count = self.get_cell(pos=4, col='count') + '/div[2]/input'
         self.add_product = self.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
         self.category = reverse('category', args=(Category.objects.first().page.slug,))
-        self.success_order_url = '{}{}'.format(
-            self.live_server_url,
-            reverse(CustomPage.ROUTE, args=('order-success',))
-        )
+        self.success_order_url = reverse(CustomPage.ROUTE, args=('order-success',))
         self.buy_products()
         self.wait.until_not(is_cart_empty)
-        self.browser.get(self.live_server_url + self.order_page.url)
+        self.browser.get(self.order_page.url)
         wait_page_loading(self.browser)
 
     def tearDown(self):
@@ -653,7 +649,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.browser.execute_script('localStorage.clear();')
 
     def buy_products(self):
-        self.browser.get(self.live_server_url + self.category)
+        self.browser.get(self.category)
         for i in range(1, 6):
             self.browser.find_element_by_xpath(
                 '//*[@id="products-wrapper"]/div[{}]/div[2]/div[5]/button'
@@ -760,9 +756,9 @@ class OrderPage(helpers.SeleniumTestCase):
         self.fill_contacts_data()
         self.submit_form()
         self.wait.until(EC.url_to_be(self.success_order_url))
-        self.assertEqual(
+        self.assertIn(
+            reverse(CustomPage.ROUTE, args=('order-success', )),
             self.browser.current_url,
-            self.live_server_url + reverse(CustomPage.ROUTE, args=('order-success', ))
         )
 
     @helpers.disable_celery
@@ -843,7 +839,7 @@ class SitePage(helpers.SeleniumTestCase):
             parent=self.page_top
         )
         self.browser.delete_all_cookies()
-        self.browser.get(self.live_server_url + self.page_last.url)
+        self.browser.get(self.page_last.url)
         wait_page_loading(self.browser)
 
     def tearDown(self):
@@ -894,16 +890,12 @@ class YandexMetrika(helpers.SeleniumTestCase):
     CART_LOCATOR = (By.CLASS_NAME, 'js-go-to-cart')
 
     def setUp(self):
-        server = self.live_server_url
         product_vendor_code = Product.objects.first().vendor_code
-        self.product_page = server + reverse('product', args=(product_vendor_code,))
-        self.category_page = server + reverse(
+        self.product_page = reverse('product', args=(product_vendor_code,))
+        self.category_page = reverse(
             'category', args=(Category.objects.first().page.slug,))
-        self.order_page_url = '{}{}'.format(
-            self.live_server_url,
-            reverse(CustomPage.ROUTE, args=('order',))
-        )
-        self.browser.get(self.live_server_url)
+        self.order_page_url = reverse(CustomPage.ROUTE, args=('order',))
+        self.browser.get()
         wait_page_loading(self.browser)
 
     @property
@@ -1048,7 +1040,7 @@ class Search(helpers.SeleniumTestCase):
     INPUT_LOCATOR = (By.CLASS_NAME, 'js-search-input')
 
     def setUp(self):
-        self.browser.get(self.live_server_url)
+        self.browser.get()
         wait_page_loading(self.browser)
 
     def tearDown(self):

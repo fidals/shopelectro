@@ -62,9 +62,8 @@ class AdminPage(AdminSeleniumTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.admin_page = cls.live_server_url + reverse('admin:index')
-        cls.change_products_url = cls.live_server_url + reverse(
-            'admin:shopelectro_productpage_changelist')
+        cls.admin_page = reverse('admin:index')
+        cls.change_products_url = reverse('admin:shopelectro_productpage_changelist')
         cls.title_text = 'Shopelectro administration'
         cls.active_products = '//*[@id="changelist-filter"]/ul[1]/li[2]/a'
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[1]/li[3]/a'
@@ -354,7 +353,7 @@ class TableEditor(AdminSeleniumTestCase):
 
     @property
     def admin_page(self):
-        return self.live_server_url + reverse('admin:index')
+        return reverse('admin:index')
 
     def wait_tableeditor_loading(self):
         self.wait_page_loading()

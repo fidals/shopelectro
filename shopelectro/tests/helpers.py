@@ -14,6 +14,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from seleniumrequests import Remote  # We use this instead of standard selenium
 
+from shopelectro.selenium import SiteDriver
+
 disable_celery = override_settings(USE_CELERY=False)
 enable_russian_language = override_settings(
     LANGUAGE_CODE='ru-ru', LANGUAGES=(('ru', 'Russian'),)
@@ -53,13 +55,9 @@ class SeleniumTestCase(LiveServerTestCase):
     def setUpClass(cls):
         """Instantiate browser instance."""
         super().setUpClass()
-        cls.browser = Remote(
-            command_executor=settings.SELENIUM_URL,
-            desired_capabilities=DesiredCapabilities.CHROME
-        )
+        cls.browser = SiteDriver()
         # @todo #371:15m Move selenium timeout to env var. stb2
         #  To be able to change it from drone without touching code.
-        cls.wait = WebDriverWait(cls.browser, settings.SELENIUM_WAIT_SECONDS)
         cls.browser.implicitly_wait(30)
         cls.browser.set_page_load_timeout(settings.SELENIUM_TIMEOUT_SECONDS)
         # Fresh created browser failures on maximizing window.
@@ -72,6 +70,10 @@ class SeleniumTestCase(LiveServerTestCase):
             cls.browser.maximize_window()
         except WebDriverException:
             print('Failed to maximize window')
+
+    @property
+    def wait(self):
+        return cls.browser.wait
 
     @classmethod
     def tearDownClass(cls):

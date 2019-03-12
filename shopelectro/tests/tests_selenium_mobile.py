@@ -51,7 +51,7 @@ class Mobile(MobileSeleniumTestCase):
 
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
-        self.browser.get(self.live_server_url)
+        self.browser.get()
         self.wait_page_loading()
 
     def wait_page_loading(self):
@@ -154,7 +154,7 @@ class Mobile(MobileSeleniumTestCase):
             ))
 
         product_vendor_code = Product.objects.first().vendor_code
-        product_page = self.live_server_url + reverse('product', args=(product_vendor_code,))
+        product_page = reverse('product', args=(product_vendor_code,))
         self.browser.get(product_page)
         self.wait_page_loading()
 
