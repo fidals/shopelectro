@@ -73,7 +73,7 @@ class SeleniumTestCase(LiveServerTestCase):
 
     @property
     def wait(self):
-        return cls.browser.wait
+        return self.browser.wait
 
     @classmethod
     def tearDownClass(cls):
