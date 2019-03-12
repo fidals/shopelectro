@@ -55,7 +55,7 @@ class SeleniumTestCase(LiveServerTestCase):
     def setUpClass(cls):
         """Instantiate browser instance."""
         super().setUpClass()
-        cls.browser = SiteDriver()
+        cls.browser = SiteDriver(site_url=cls.live_server_url)
         # @todo #371:15m Move selenium timeout to env var. stb2
         #  To be able to change it from drone without touching code.
         cls.browser.implicitly_wait(30)

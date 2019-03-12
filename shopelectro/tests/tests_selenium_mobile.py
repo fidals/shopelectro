@@ -51,7 +51,7 @@ class Mobile(MobileSeleniumTestCase):
 
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
-        self.browser.get()
+        self.browser.get('/')
         self.wait_page_loading()
 
     def wait_page_loading(self):
