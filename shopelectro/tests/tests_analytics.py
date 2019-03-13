@@ -1,13 +1,14 @@
 from django.test import override_settings, tag
 
 from shopelectro import selenium
+from shopelectro.tests import helpers
 from shopelectro.models import CategoryPage, Order
-from shopelectro.tests.helpers import SeleniumTestCase
 
 
 @tag('slow')
+@helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
-class GoogleEcommerce(SeleniumTestCase):
+class GoogleEcommerce(helpers.SeleniumTestCase):
 
     fixtures = ['dump.json']
 
