@@ -11,12 +11,11 @@ import unittest
 import urllib.parse
 import uuid
 from collections import defaultdict
-from unittest import mock
 from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
@@ -213,10 +212,21 @@ class GeneratePrices(TestCase):
 
     fixtures = ['dump.json']
     CATEGORY_TO_EXCLUDE = 'Category #1 of #Category #0 of #Category #1'
+    PRICE_IGNORED_CATEGORIES_MAP = defaultdict(
+        list, {'GM': [CATEGORY_TO_EXCLUDE]}
+    )
+    ignore_categories = override_settings(
+        PRICE_IGNORED_CATEGORIES_MAP=PRICE_IGNORED_CATEGORIES_MAP
+    )
+    PRODUCTS_TO_EXCLUDE = [1, 2, 3]
+    ignore_products = override_settings(
+        PRICE_IGNORED_PRODUCTS_MAP=defaultdict(list, {'YM': PRODUCTS_TO_EXCLUDE})
+    )
 
     @classmethod
     def setUpTestData(cls):
-        cls.call_command_patched('price')
+        with cls.ignore_categories, cls.ignore_products:
+            call_command('price')
         super(GeneratePrices, cls).setUpTestData()
         cls.prices = Prices(settings.UTM_PRICE_MAP.keys())
 
@@ -224,18 +234,6 @@ class GeneratePrices(TestCase):
     def tearDownClass(cls):
         cls.prices.remove()
         super(GeneratePrices, cls).tearDownClass()
-
-    @classmethod
-    def call_command_patched(cls, name):
-        """Patch with test constants and call."""
-        with mock.patch(
-            'shopelectro.management.commands.price.CategoriesFilter.IGNORED_CATEGORIES_MAP',
-            new_callable=mock.PropertyMock
-        ) as target:
-            target.return_value = defaultdict(list, {
-                'GM': [cls.CATEGORY_TO_EXCLUDE]
-            })
-            call_command(name)
 
     def test_prices_exists(self):
         """Price command should generate various price-list files."""
@@ -257,6 +255,7 @@ class GeneratePrices(TestCase):
             Category.objects.get_categories_tree_with_pictures().count()
         )
 
+    @ignore_categories
     def test_categories_excluded_by_utm(self):
         """Price file should not contain it's excluded category."""
         def find_category(categories, name):
@@ -282,6 +281,15 @@ class GeneratePrices(TestCase):
             )
         )
 
+    @ignore_products
+    def test_products_excluded_by_id(self):
+        to_ignore = set(settings.PRICE_IGNORED_PRODUCTS_MAP['YM'])
+        ignored = set(
+            offer.attrib['id']
+            for offer in self.prices['YM'].offers_node.findall('offer')
+        )
+        self.assertFalse(to_ignore.intersection(ignored))
+
     def test_products_in_price(self):
         products = self.prices['priceru'].offers_node
         self.assertEqual(len(products), Product.objects.count())
@@ -296,10 +304,16 @@ class GeneratePrices(TestCase):
         self.assertTrue(prices_are_in_bounds)
 
     def test_products_in_yandex_price(self):
-        products = self.prices['YM'].offers_node
+        origin = (
+            Product.objects
+            .exclude(id__in=self.PRODUCTS_TO_EXCLUDE)
+            .filter(page__images__isnull=False)
+            .distinct()
+        )
+        result = self.prices['YM'].offers_node
         self.assertEqual(
-            len(products),
-            Product.objects.filter(page__images__isnull=False).distinct().count()
+            len(result),
+            origin.count()
         )
 
     def test_brands(self):

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 import os
 import socket
+from collections import defaultdict
 from datetime import datetime
 
 import sentry_sdk
@@ -498,6 +499,23 @@ UTM_PRICE_MAP = {
     'GM': 'gm.yml',
     'SE78': 'se78.yml',
 }
+
+PRICE_IGNORED_CATEGORIES_MAP = defaultdict(list, {
+    'GM': ['Усилители звука для слабослышащих'],
+    'YM': ['Пиротехника'],
+    # will be ignored by every category
+    'default': [
+        'Измерительные приборы', 'Новогодние вращающиеся светодиодные лампы',
+        'Новогодние лазерные проекторы', 'MP3- колонки', 'Беспроводные звонки',
+        'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
+    ]
+})
+
+
+# contains some values for example. Local.py will contain the real values
+PRICE_IGNORED_PRODUCTS_MAP = defaultdict(list, {
+    'YM': [1, 2, 3],
+})
 
 # Number of pagination neighbors shown for page.
 # If PAGINATION_NEIGHBORS = 4 and number of a page = 5,

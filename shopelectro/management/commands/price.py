@@ -67,23 +67,11 @@ class Context(newcontext.Context):
 class CategoriesFilter:
     """Categories list for particular market place."""
 
-    # dict keys are url targets for every service
-    IGNORED_CATEGORIES_MAP = defaultdict(list, {
-        'GM': ['Усилители звука для слабослышащих'],
-        'YM': ['Пиротехника'],
-        # will be ignored by every category
-        'default': [
-            'Измерительные приборы', 'Новогодние вращающиеся светодиодные лампы',
-            'Новогодние лазерные проекторы', 'MP3- колонки', 'Беспроводные звонки',
-            'Радиоприёмники', 'Фонари', 'Отвертки', 'Весы электронные портативные',
-        ]
-    })
-
     @property
     def ignored(self) -> typing.List[str]:
         return (
-            self.IGNORED_CATEGORIES_MAP['default']
-            + self.IGNORED_CATEGORIES_MAP[self.target]
+            settings.PRICE_IGNORED_CATEGORIES_MAP['default']
+            + settings.PRICE_IGNORED_CATEGORIES_MAP[self.target]
         )
 
     def __init__(self, target: str):
@@ -121,6 +109,10 @@ class CategoriesFilter:
 class ProductsFilter:
     """Filter offers with individual price requirements."""
 
+    @property
+    def ignored(self) -> typing.List[str]:
+        return settings.PRICE_IGNORED_PRODUCTS_MAP[self.target]
+
     FILTERS = defaultdict(
         lambda: (lambda qs: qs),
         # Yandex Market feed requires picture for every offer
@@ -145,6 +137,7 @@ class ProductsFilter:
         return self.FILTERS[self.target](
             models.Product.objects.active()
             .filter(category__in=self.categories, price__gt=0)
+            .exclude(id__in=self.ignored)
         )
 
 
