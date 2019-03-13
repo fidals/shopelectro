@@ -41,7 +41,7 @@
             {% endif %}
           {% endcomment %}
           <description></description>
-          {% if not utm == 'GM' %}
+          {% if not utm == 'GM' and not utm == 'YM' %}
             <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>
           {% endif %}
           {% if product.brand %}<vendor>{{ product.brand.name }}</vendor>{% endif %}
