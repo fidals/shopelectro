@@ -218,10 +218,14 @@ class GeneratePrices(TestCase):
     ignore_categories = override_settings(
         PRICE_IGNORED_CATEGORIES_MAP=PRICE_IGNORED_CATEGORIES_MAP
     )
+    PRODUCTS_TO_EXCLUDE = [1, 2, 3]
+    ignore_products = override_settings(
+        PRICE_IGNORED_PRODUCTS_MAP=defaultdict(list, {'YM': PRODUCTS_TO_EXCLUDE})
+    )
 
     @classmethod
     def setUpTestData(cls):
-        with cls.ignore_categories:
+        with cls.ignore_categories, cls.ignore_products:
             call_command('price')
         super(GeneratePrices, cls).setUpTestData()
         cls.prices = Prices(settings.UTM_PRICE_MAP.keys())
@@ -277,7 +281,7 @@ class GeneratePrices(TestCase):
             )
         )
 
-    @override_settings(PRICE_IGNORED_PRODUCTS_MAP={'YM': [1, 2, 3]})
+    @ignore_products
     def test_products_excluded_by_id(self):
         to_ignore = set(settings.PRICE_IGNORED_PRODUCTS_MAP['YM'])
         ignored = set(
@@ -300,10 +304,16 @@ class GeneratePrices(TestCase):
         self.assertTrue(prices_are_in_bounds)
 
     def test_products_in_yandex_price(self):
-        products = self.prices['YM'].offers_node
+        origin = (
+             Product.objects
+             .exclude(id__in=self.PRODUCTS_TO_EXCLUDE)
+             .filter(page__images__isnull=False)
+             .distinct()
+        )
+        result = self.prices['YM'].offers_node
         self.assertEqual(
-            len(products),
-            Product.objects.filter(page__images__isnull=False).distinct().count()
+            len(result),
+            origin.count()
         )
 
     def test_brands(self):
