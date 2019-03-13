@@ -305,10 +305,10 @@ class GeneratePrices(TestCase):
 
     def test_products_in_yandex_price(self):
         origin = (
-             Product.objects
-             .exclude(id__in=self.PRODUCTS_TO_EXCLUDE)
-             .filter(page__images__isnull=False)
-             .distinct()
+            Product.objects
+            .exclude(id__in=self.PRODUCTS_TO_EXCLUDE)
+            .filter(page__images__isnull=False)
+            .distinct()
         )
         result = self.prices['YM'].offers_node
         self.assertEqual(
