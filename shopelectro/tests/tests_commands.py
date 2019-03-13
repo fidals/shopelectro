@@ -21,6 +21,7 @@ from django.test import TestCase, tag
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
 )
+from shopelectro.management.commands.price import ProductsFilter
 from shopelectro.models import Category, Product, ProductPage, Tag, TagGroup
 
 """
@@ -281,6 +282,14 @@ class GeneratePrices(TestCase):
                 name=self.CATEGORY_TO_EXCLUDE
             )
         )
+
+    def test_products_excluded_by_id(self):
+        to_ignore = set(ProductsFilter.IGNORED_PRODUCTS_MAP['YM'])
+        ignored = set(
+            offer.attrib['id']
+            for offer in self.prices['YM'].offers_node.findall('offer')
+        )
+        self.assertFalse(to_ignore.intersection(ignored))
 
     def test_products_in_price(self):
         products = self.prices['priceru'].offers_node

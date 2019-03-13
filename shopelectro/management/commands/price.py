@@ -121,6 +121,15 @@ class CategoriesFilter:
 class ProductsFilter:
     """Filter offers with individual price requirements."""
 
+    # dict keys are url targets for every service
+    IGNORED_PRODUCTS_MAP = defaultdict(list, {
+        'YM': [1, 2, 3],
+    })
+
+    @property
+    def ignored(self) -> typing.List[str]:
+        return self.IGNORED_PRODUCTS_MAP[self.target]
+
     FILTERS = defaultdict(
         lambda: (lambda qs: qs),
         # Yandex Market feed requires picture for every offer
@@ -145,6 +154,7 @@ class ProductsFilter:
         return self.FILTERS[self.target](
             models.Product.objects.active()
             .filter(category__in=self.categories, price__gt=0)
+            .exclude(id__in=self.ignored)
         )
 
 
