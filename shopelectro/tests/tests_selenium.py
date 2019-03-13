@@ -934,7 +934,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def go_to_cart(self):
         self.click(self.CART_LOCATOR)
-        self.wait.until(EC.url_to_be(self.order_page_url))
+        self.wait.until(EC.url_contains(self.order_page_url))
 
     def test_download_header_price(self):
         """User clicks Download price button in site's header."""

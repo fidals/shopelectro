@@ -27,7 +27,7 @@ class GoogleEcommerce(SeleniumTestCase):
         order_page.make_order()
 
         success_page = selenium.SuccessPage(self.browser)
-        assert success_page.is_success()
+        self.assertTrue(success_page.is_success())
 
         order = Order.objects.order_by('-created').first()
         reached = self.browser.execute_script('return gaObject.results;')
