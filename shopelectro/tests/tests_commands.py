@@ -212,10 +212,17 @@ class GeneratePrices(TestCase):
 
     fixtures = ['dump.json']
     CATEGORY_TO_EXCLUDE = 'Category #1 of #Category #0 of #Category #1'
+    PRICE_IGNORED_CATEGORIES_MAP = defaultdict(
+        list, {'GM': [CATEGORY_TO_EXCLUDE]}
+    )
+    ignore_categories = override_settings(
+        PRICE_IGNORED_CATEGORIES_MAP=PRICE_IGNORED_CATEGORIES_MAP
+    )
 
     @classmethod
     def setUpTestData(cls):
-        call_command('price')
+        with cls.ignore_categories:
+            call_command('price')
         super(GeneratePrices, cls).setUpTestData()
         cls.prices = Prices(settings.UTM_PRICE_MAP.keys())
 
@@ -244,10 +251,7 @@ class GeneratePrices(TestCase):
             Category.objects.get_categories_tree_with_pictures().count()
         )
 
-    @override_settings(
-        PRICE_IGNORED_CATEGORIES_MAP=
-        defaultdict(list, {'GM': [CATEGORY_TO_EXCLUDE]})
-    )
+    @ignore_categories
     def test_categories_excluded_by_utm(self):
         """Price file should not contain it's excluded category."""
         def find_category(categories, name):

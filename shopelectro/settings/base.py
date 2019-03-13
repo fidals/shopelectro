@@ -512,6 +512,7 @@ PRICE_IGNORED_CATEGORIES_MAP = defaultdict(list, {
 })
 
 
+# contains some values for example. Local.py will contain the real values
 PRICE_IGNORED_PRODUCTS_MAP = defaultdict(list, {
     'YM': [1, 2, 3],
 })
