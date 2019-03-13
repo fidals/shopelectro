@@ -11,17 +11,15 @@ import unittest
 import urllib.parse
 import uuid
 from collections import defaultdict
-from unittest import mock
 from xml.etree import ElementTree
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags
 )
-from shopelectro.management.commands.price import ProductsFilter
 from shopelectro.models import Category, Product, ProductPage, Tag, TagGroup
 
 """
@@ -217,7 +215,7 @@ class GeneratePrices(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.call_command_patched('price')
+        call_command('price')
         super(GeneratePrices, cls).setUpTestData()
         cls.prices = Prices(settings.UTM_PRICE_MAP.keys())
 
@@ -225,18 +223,6 @@ class GeneratePrices(TestCase):
     def tearDownClass(cls):
         cls.prices.remove()
         super(GeneratePrices, cls).tearDownClass()
-
-    @classmethod
-    def call_command_patched(cls, name):
-        """Patch with test constants and call."""
-        with mock.patch(
-            'shopelectro.management.commands.price.CategoriesFilter.IGNORED_CATEGORIES_MAP',
-            new_callable=mock.PropertyMock
-        ) as target:
-            target.return_value = defaultdict(list, {
-                'GM': [cls.CATEGORY_TO_EXCLUDE]
-            })
-            call_command(name)
 
     def test_prices_exists(self):
         """Price command should generate various price-list files."""
@@ -258,6 +244,10 @@ class GeneratePrices(TestCase):
             Category.objects.get_categories_tree_with_pictures().count()
         )
 
+    @override_settings(
+        PRICE_IGNORED_CATEGORIES_MAP=
+        defaultdict(list, {'GM': [CATEGORY_TO_EXCLUDE]})
+    )
     def test_categories_excluded_by_utm(self):
         """Price file should not contain it's excluded category."""
         def find_category(categories, name):
@@ -283,8 +273,9 @@ class GeneratePrices(TestCase):
             )
         )
 
+    @override_settings(PRICE_IGNORED_PRODUCTS_MAP={'YM': [1, 2, 3]})
     def test_products_excluded_by_id(self):
-        to_ignore = set(ProductsFilter.IGNORED_PRODUCTS_MAP['YM'])
+        to_ignore = set(settings.PRICE_IGNORED_PRODUCTS_MAP['YM'])
         ignored = set(
             offer.attrib['id']
             for offer in self.prices['YM'].offers_node.findall('offer')
