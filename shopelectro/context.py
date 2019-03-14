@@ -22,27 +22,6 @@ class SortingOption:
         return self.direction + self.field
 
 
-class Page(newcontext.Context):
-
-    def __init__(self, page, tags: newcontext.Tags):
-        self._page = page
-        self._tags = tags
-
-    def context(self) -> typing.ContextDict:
-        tags_qs = self._tags.qs()
-        # use dirty patch here, because it's the most simple method
-        # to make shared templates work.
-        # For example `templates/layout/metadata.html`.
-        self._page.display = {
-            'page': self._page,
-            'tag_titles': tags_qs.as_title(),
-            'tags': tags_qs,
-        }
-        return {
-            'page': self._page,
-        }
-
-
 class Catalog(newcontext.Context):
 
     def __init__(self, request_data_: request_data.Catalog):
@@ -97,7 +76,7 @@ class Catalog(newcontext.Context):
         grouped_tags = newcontext.tags.GroupedTags(
             tags=newcontext.tags.TagsByProducts(all_tags, products)
         )
-        page = Page(self.page, selected_tags)
+        page = newcontext.pages.Page(self.page, selected_tags)
         category = newcontext.category.Context(self.category)
         params = {
             'view_type': self.request_data.get_view_type(),
