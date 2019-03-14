@@ -7,12 +7,12 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django_user_agents.utils import get_user_agent
 
+from catalog import context
+from catalog.views import catalog
+from images.models import Image
 # can't do `import pages` because of django error.
 # Traceback: https://gist.github.com/duker33/685e8a9f59fc5dbd243e297e77aaca42
 from pages import views as pages_views
-from catalog import newcontext
-from catalog.views import catalog
-from images.models import Image
 from shopelectro import context as se_context, models, request_data
 from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
@@ -76,7 +76,7 @@ class ProductPage(catalog.ProductPage):
     def get_images_context_data(self, products) -> dict:
         """Return images for given products."""
         products_to_filter = [self.product, *products]
-        return newcontext.products.ProductImages(
+        return context.products.ProductImages(
             products_to_filter, Image.objects.all(),
         ).context()
 
@@ -134,7 +134,7 @@ class IndexPage(pages_views.CustomPageView):
         if not mobile_view:
             tile_products = top_products
 
-        images_ctx = newcontext.products.ProductImages(
+        images_ctx = context.products.ProductImages(
             tile_products,
             Image.objects.all(),
         ).context()

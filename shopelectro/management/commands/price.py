@@ -15,7 +15,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
-from catalog import newcontext
+from catalog import context
 from shopelectro import models
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class Files:
             file.create()
 
 
-class Context(newcontext.Context):
+class Context(context.Context):
     """DB data, extracted for price file."""
 
     def __init__(self, target: str):
