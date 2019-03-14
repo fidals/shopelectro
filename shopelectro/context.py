@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
-from catalog import newcontext
+from catalog import newcontext, typing
 from images.models import Image
 from pages import models as pages_models, newcontext as pages_newcontext
 from shopelectro import models, request_data
@@ -28,7 +28,7 @@ class Page(newcontext.Context):
         self._page = page
         self._tags = tags
 
-    def context(self):
+    def context(self) -> typing.ContextDict:
         tags_qs = self._tags.qs()
         # use dirty patch here, because it's the most simple method
         # to make shared templates work.
@@ -59,7 +59,7 @@ class Catalog(newcontext.Context):
     def category(self):
         return self.page.model
 
-    def context(self) -> dict:
+    def context(self) -> typing.ContextDict:
         all_tags = newcontext.Tags(models.Tag.objects.all())
 
         selected_tags = newcontext.tags.ParsedTags(
