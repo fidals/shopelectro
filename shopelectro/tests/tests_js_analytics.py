@@ -29,8 +29,8 @@ class GoogleEcommerce(helpers.SeleniumTestCase):
         success_page.wait_loaded()
         self.assertTrue(success_page.is_success())
 
-        order = Order.objects.order_by('-created').first()
-        reached = self.browser.execute_script('return gaObject.results;')
+        order = Order.objects.order_by('-created').first()  # Ignore PyFlakesBear
+        reached = self.browser.execute_script('return gaObject.results;')  # Ignore PyFlakesBear
 
         # @todo #762:30m Match an order with a transaction of Google eCommerce analytics.
         #  The transaction must contain correct order data and related products.

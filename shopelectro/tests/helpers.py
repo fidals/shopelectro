@@ -8,11 +8,8 @@ from django.test import LiveServerTestCase, override_settings
 from selenium.common.exceptions import InvalidElementStateException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from seleniumrequests import Remote  # We use this instead of standard selenium
 
 from shopelectro.selenium import SiteDriver
 
@@ -69,7 +66,7 @@ class SeleniumTestCase(LiveServerTestCase):
         try:
             cls.browser.maximize_window()
         except WebDriverException:
-            print('Failed to maximize window')
+            print('Failed to maximize window')  # Ignore CPDBear
 
     @property
     def wait(self):
