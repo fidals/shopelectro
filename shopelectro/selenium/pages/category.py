@@ -1,7 +1,7 @@
 import typing
 
 from shopelectro.selenium.elements import ProductCard
-from shopelectro.selenium.pages import Page, matched_url
+from shopelectro.selenium.pages import Page
 
 from django.urls import reverse
 
@@ -18,11 +18,9 @@ class CategoryPage(Page):
     def path(self):
         return reverse('category', args=(self.slug,))
 
-    @matched_url
     def product_cards(self) -> typing.List[ProductCard]:
         raise NotImplementedError
 
-    @matched_url
     def add_to_cart(self, product_cards: typing.List[ProductCard]=None):
         default_cards = [ProductCard(self.driver, i) for i in range(1, 7)]
         product_cards = product_cards or default_cards

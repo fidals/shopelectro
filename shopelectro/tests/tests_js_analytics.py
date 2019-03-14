@@ -12,8 +12,6 @@ class GoogleEcommerce(helpers.SeleniumTestCase):
 
     fixtures = ['dump.json']
 
-    order: Order
-
     def test_google_ecommerce_purchase(self):
         category_page = selenium.CategoryPage(
             self.browser,
@@ -28,9 +26,11 @@ class GoogleEcommerce(helpers.SeleniumTestCase):
         order_page.make_order()
 
         success_page = selenium.SuccessPage(self.browser)
+        success_page.wait_loaded()
         self.assertTrue(success_page.is_success())
 
         order = Order.objects.order_by('-created').first()
         reached = self.browser.execute_script('return gaObject.results;')
 
-        # @todo #762:30m Implement assertion of an order and reached targets for test_google_ecommerce_purchase.
+        # @todo #762:30m Match an order with a transaction of Google eCommerce analytics.
+        #  The transaction must contain correct order data and related products.

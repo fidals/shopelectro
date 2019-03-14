@@ -882,6 +882,9 @@ class SitePage(helpers.SeleniumTestCase):
         self.assertFalse(accordion_content.is_displayed())
 
 
+# @todo #762:30m Move Ya.Metrica tests to tests_js_counters.py
+
+
 @tag('slow')
 @helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
