@@ -3,6 +3,7 @@ from shopelectro.selenium.elements import Input, Button
 from shopelectro.selenium.pages import Page
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 from pages.models import CustomPage
 
@@ -34,6 +35,7 @@ class OrderPage(Page):
 
     def make_order(self):
         self.submit_button.click()
+        self.driver.wait.until(EC.url_changes(self.path))
 
     def select_payment_type(self, payment_option: PaymentOptions):
         if payment_option not in PaymentOptions:

@@ -8,11 +8,10 @@ from django.test import LiveServerTestCase, override_settings
 from selenium.common.exceptions import InvalidElementStateException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from seleniumrequests import Remote  # We use this instead of standard selenium
+
+from shopelectro.selenium import SiteDriver
 
 disable_celery = override_settings(USE_CELERY=False)
 enable_russian_language = override_settings(
@@ -53,13 +52,9 @@ class SeleniumTestCase(LiveServerTestCase):
     def setUpClass(cls):
         """Instantiate browser instance."""
         super().setUpClass()
-        cls.browser = Remote(
-            command_executor=settings.SELENIUM_URL,
-            desired_capabilities=DesiredCapabilities.CHROME
-        )
+        cls.browser = SiteDriver(site_url=cls.live_server_url)
         # @todo #371:15m Move selenium timeout to env var. stb2
         #  To be able to change it from drone without touching code.
-        cls.wait = WebDriverWait(cls.browser, settings.SELENIUM_WAIT_SECONDS)
         cls.browser.implicitly_wait(30)
         cls.browser.set_page_load_timeout(settings.SELENIUM_TIMEOUT_SECONDS)
         # Fresh created browser failures on maximizing window.
@@ -71,7 +66,11 @@ class SeleniumTestCase(LiveServerTestCase):
         try:
             cls.browser.maximize_window()
         except WebDriverException:
-            print('Failed to maximize window')
+            print('Failed to maximize window')  # Ignore CPDBear
+
+    @property
+    def wait(self):
+        return self.browser.wait
 
     @classmethod
     def tearDownClass(cls):

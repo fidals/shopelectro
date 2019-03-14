@@ -7,11 +7,10 @@ Every Selenium-based test suite uses fixture called dump.json.
 from django.conf import settings
 from django.test import LiveServerTestCase, override_settings, tag
 from django.urls import reverse
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
+from shopelectro.selenium import SiteDriver
 from shopelectro.models import Product
 
 
@@ -31,13 +30,16 @@ class MobileSeleniumTestCase(LiveServerTestCase):
                 'deviceName': 'Apple iPhone 5',
             },
         }
-        cls.browser = webdriver.Remote(
-            command_executor=settings.SELENIUM_URL,
-            desired_capabilities=capabilities
+        cls.browser = SiteDriver(
+            site_url=cls.live_server_url,
+            desired_capabilities=capabilities,
         )
-        cls.wait = WebDriverWait(cls.browser, 120)
         cls.browser.set_window_size(400, 800)
         cls.browser.implicitly_wait(10)
+
+    @property
+    def wait(self):
+        return self.browser.wait
 
     @classmethod
     def tearDownClass(cls):
@@ -51,7 +53,7 @@ class Mobile(MobileSeleniumTestCase):
 
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
-        self.browser.get(self.live_server_url)
+        self.browser.get('/')
         self.wait_page_loading()
 
     def wait_page_loading(self):
@@ -154,7 +156,7 @@ class Mobile(MobileSeleniumTestCase):
             ))
 
         product_vendor_code = Product.objects.first().vendor_code
-        product_page = self.live_server_url + reverse('product', args=(product_vendor_code,))
+        product_page = reverse('product', args=(product_vendor_code,))
         self.browser.get(product_page)
         self.wait_page_loading()
 

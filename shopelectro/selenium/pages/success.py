@@ -1,3 +1,6 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
 from shopelectro.selenium.pages import Page
 
 from pages.models import CustomPage
@@ -7,7 +10,10 @@ class SuccessPage(Page):
 
     @property
     def path(self):
-        CustomPage.objects.get(slug='order-success').url
+        return CustomPage.objects.get(slug='order-success').url
 
     def is_success(self):
-        return 'Заказ принят' in self.driver.find_element_by_tag_name('h1').text
+        h1 = self.driver.wait.until(
+            EC.visibility_of_element_located((By.TAG_NAME, 'h1'))
+        ).text
+        return 'Заказ принят' in h1

@@ -1,3 +1,5 @@
+from functools import wraps
+
 from shopelectro.selenium import SiteDriver
 
 from selenium.webdriver.common.by import By
@@ -17,10 +19,17 @@ class Page:
         self.driver = driver
         self.path: str
 
+    def wait_loaded(self):
+        def loaded(driver):
+            is_sync = EC.url_contains(self.path)
+            is_rendered = EC.visibility_of_element_located(
+                (By.TAG_NAME, 'body')
+            )
+            return is_sync(driver) and is_rendered(driver)
+        self.driver.wait.until(loaded)
+
     def load(self):
         if not self.path:
             raise ValueError(f'Set a page path to {self.__class__.__name__}')
         self.driver.get(self.path)
-        self.driver.wait.until(EC.visibility_of_element_located(
-            (By.TAG_NAME, 'body')
-        ))
+        self.wait_loaded()
