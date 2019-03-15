@@ -42,7 +42,6 @@
       'onCartUpdate', renderTable, fillSavedInputs,
       touchSpinReinit, restoreSelectedPayment, cityAutocomplete,
     );
-    $(DOM.fullForm).submit(() => mediator.publish('onOrderSend'));
 
     /**
      * Bind events to parent's elements, because of dynamic elements.
@@ -217,6 +216,7 @@
         .then(formData => renderYandexForm(formData))
         .then(() => submit(DOM.yandexForm));
     } else {
+      mediator.publish('onOrderSend');
       submit(DOM.fullForm);
     }
   }
