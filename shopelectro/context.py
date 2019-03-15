@@ -76,7 +76,7 @@ class Catalog(context.Context):
         grouped_tags = context.tags.GroupedTags(
             tags=context.tags.TagsByProducts(all_tags, products)
         )
-        page = context.pages.Page(self.page, selected_tags)
+        page = context.Page(self.page, selected_tags)
         category = context.category.Context(self.category)
         params = {
             'view_type': self.request_data.get_view_type(),
