@@ -37,14 +37,14 @@ services:
       # contains refarm-site modules
       - $DEPS_DIR
       # Thus, you can work with apps related to the refarm-site
-      - $REFARM_DIR/catalog:/usr/local/lib/python3.6/site-packages/catalog
-      - $REFARM_DIR/images:/usr/local/lib/python3.6/site-packages/images
-      - $REFARM_DIR/ecommerce:/usr/local/lib/python3.6/site-packages/ecommerce
-      - $REFARM_DIR/pages:/usr/local/lib/python3.6/site-packages/pages
-      - $REFARM_DIR/search:/usr/local/lib/python3.6/site-packages/search
-      - $REFARM_DIR/refarm_test_utils:/usr/local/lib/python3.6/site-packages/refarm_test_utils
-      - $REFARM_DIR/refarm_pagination:/usr/local/lib/python3.6/site-packages/refarm_pagination
-      - $REFARM_DIR/generic_admin:/usr/local/lib/python3.6/site-packages/generic_admin
+      #- $REFARM_DIR/catalog:/usr/local/lib/python3.6/site#-packages/catalog
+      #- $REFARM_DIR/images:/usr/local/lib/python3.6/site#-packages/images
+      #- $REFARM_DIR/ecommerce:/usr/local/lib/python3.6/site#-packages/ecommerce
+      #- $REFARM_DIR/pages:/usr/local/lib/python3.6/site#-packages/pages
+      #- $REFARM_DIR/search:/usr/local/lib/python3.6/site#-packages/search
+      #- $REFARM_DIR/refarm_test_utils:/usr/local/lib/python3.6/site#-packages/refarm_test_utils
+      #- $REFARM_DIR/refarm_pagination:/usr/local/lib/python3.6/site#-packages/refarm_pagination
+      #- $REFARM_DIR/generic_admin:/usr/local/lib/python3.6/site-packages/generic_admin
 
   app-drone:
     <<: *app-base
