@@ -216,6 +216,7 @@
         .then(formData => renderYandexForm(formData))
         .then(() => submit(DOM.yandexForm));
     } else {
+      // onOrderSend must be triggered before submit
       mediator.publish('onOrderSend');
       submit(DOM.fullForm);
     }
