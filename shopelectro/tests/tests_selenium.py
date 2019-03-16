@@ -1015,7 +1015,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.prevent_default('submit', '#order-form-full')
         self.browser.find_element_by_id('id_phone').send_keys('22222222222')
         self.browser.find_element_by_id('id_email').send_keys('test@test.ru')
-        self.browser.find_element_by_id('order-form-full').submit()
+        self.browser.find_element_by_id('submit-order').submit()
 
         self.assertTrue('FULL_BUY_SEND' in self.reached_goals)
         self.assertTrue('CMN_BUY_SEND' in self.reached_goals)
