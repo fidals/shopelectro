@@ -58,7 +58,7 @@ class LoadMore(Catalog):
         super().__init__(request, url_kwargs)
         self.offset = int(self.url_kwargs.get('offset', 0))
         if self.offset < 0:
-            raise Http400()
+            raise Http400('"offset" param should contain a positive number.')
 
     @property
     def pagination_page_number(self):
