@@ -1010,12 +1010,16 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def test_full_buy_goal(self):
         """User successfully made full Order."""
+        submit_button_id = 'submit-order'
         self.buy_product()
         self.go_to_cart()
         self.prevent_default('submit', '#order-form-full')
         self.browser.find_element_by_id('id_phone').send_keys('22222222222')
         self.browser.find_element_by_id('id_email').send_keys('test@test.ru')
-        self.browser.find_element_by_id('order-form-full').submit()
+        self.browser.find_element_by_id(submit_button_id).click()
+        self.wait.until_not(EC.element_to_be_clickable(
+            (By.ID, submit_button_id)
+        ))
 
         self.assertTrue('FULL_BUY_SEND' in self.reached_goals)
         self.assertTrue('CMN_BUY_SEND' in self.reached_goals)
