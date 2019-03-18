@@ -89,6 +89,7 @@ const path = {
         'front/js/vendors/jquery.fancybox.min.js',
         'front/js/vendors/slick.min.js',
         'front/js/vendors/sentry-4.6.4.min.js',
+        'front/js/vendors/block-ya-adviser.min.js',
       ],
 
       main: [
