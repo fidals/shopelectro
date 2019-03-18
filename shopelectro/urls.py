@@ -105,8 +105,6 @@ custom_pages = [
     custom_page_url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view())),
     custom_page_url(r'^(?P<page>sitemap)/$', SitemapPage.as_view()),
     # this pages should show only actual state
-    # @todo #763:60m Create a condition for cache control.
-    #  Remove this never_cache in favor of the new condition.
     custom_page_url(r'^shop/(?P<page>order)/$', never_cache(views.OrderPage.as_view())),
     custom_page_url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view()),
 ]
