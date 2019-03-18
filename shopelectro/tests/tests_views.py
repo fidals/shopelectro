@@ -773,3 +773,18 @@ class TestSearch(TestCase):
             f'?term={self.QUOTED_SIGNLE_RESULT_TERM}&pageType=category'
         )
         self.assertTrue(len(json_to_dict(response)) == 1)
+
+
+@tag('fast')
+class Order(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_disabled_cache(self):
+        """Cache-Control is disabled for the order page."""
+        # @todo 30m Create reverse_custom_page function.
+        url = reverse(CustomPage.ROUTE, kwargs={'page': 'order'})
+        self.assertEqual(
+            self.client.get(url)['Cache-Control'],
+            'max-age=0, no-cache, no-store, must-revalidate',
+        )
