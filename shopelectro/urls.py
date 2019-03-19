@@ -104,9 +104,9 @@ custom_pages = [
     custom_page_url(r'^(?P<page>search)/$', views.Search.as_view()),
     custom_page_url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view())),
     custom_page_url(r'^(?P<page>sitemap)/$', SitemapPage.as_view()),
-    # this pages should show only actual state
+    # these pages should show only actual state
     custom_page_url(r'^shop/(?P<page>order)/$', never_cache(views.OrderPage.as_view())),
-    custom_page_url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view()),
+    custom_page_url(r'^shop/(?P<page>order-success)/$', never_cache(views.OrderSuccess.as_view())),
 ]
 
 urlpatterns = [

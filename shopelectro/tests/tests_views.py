@@ -782,7 +782,7 @@ class Order(TestCase):
 
     def test_disabled_cache(self):
         """Cache-Control is disabled for the order page."""
-        # @todo 30m Create reverse_custom_page function.
+        # @todo #776:30m Create reverse_custom_page function.
         url = reverse(CustomPage.ROUTE, kwargs={'page': 'order'})
         self.assertEqual(
             self.client.get(url)['Cache-Control'],
