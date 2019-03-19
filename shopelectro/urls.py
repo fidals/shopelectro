@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page, never_cache
 
 from pages.views import RobotsView, SitemapPage
 from pages.urls import custom_page_url
@@ -103,9 +103,10 @@ custom_pages = [
     custom_page_url(r'^(?P<page>robots\.txt)$', RobotsView.as_view()),
     custom_page_url(r'^(?P<page>search)/$', views.Search.as_view()),
     custom_page_url(r'^(?P<page>catalog)/$', cached_2h(views.CategoryTree.as_view())),
-    custom_page_url(r'^shop/(?P<page>order)/$', views.OrderPage.as_view()),
-    custom_page_url(r'^shop/(?P<page>order-success)/$', views.OrderSuccess.as_view()),
     custom_page_url(r'^(?P<page>sitemap)/$', SitemapPage.as_view()),
+    # these pages should show only actual state
+    custom_page_url(r'^shop/(?P<page>order)/$', never_cache(views.OrderPage.as_view())),
+    custom_page_url(r'^shop/(?P<page>order-success)/$', never_cache(views.OrderSuccess.as_view())),
 ]
 
 urlpatterns = [
