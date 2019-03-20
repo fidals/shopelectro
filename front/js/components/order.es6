@@ -210,14 +210,15 @@
     const submit = selector => setTimeout(() => $(selector).submit(), 100);
     const isYandex = () => !config.sePayments.includes(getSelectedPayment());
 
+    // onOrderSend must be triggered before submit
+    mediator.publish('onOrderSend');
+
     if (isYandex()) {
       // @todo #473:30m Test order redirect to ya.kassa
       server.sendYandexOrder(orderInfo)
         .then(formData => renderYandexForm(formData))
         .then(() => submit(DOM.yandexForm));
     } else {
-      // onOrderSend must be triggered before submit
-      mediator.publish('onOrderSend');
       submit(DOM.fullForm);
     }
   }
