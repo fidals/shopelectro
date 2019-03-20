@@ -9,7 +9,7 @@ from selenium.common.exceptions import InvalidElementStateException, WebDriverEx
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as EC, ui
 
 from shopelectro.selenium import SiteDriver
 
@@ -42,6 +42,31 @@ def context_click(browser, element):
     ActionChains(browser).context_click(element).perform()
 
 
+def make_backcall(browser):
+    """Trigger backcall modal. Fill it and submit."""
+    wait = ui.WebDriverWait(browser, 60)
+    browser.find_element_by_class_name('js-backcall-order').click()
+    wait.until(EC.visibility_of_element_located(
+        (By.ID, 'back-call-modal-label')
+    ))
+    browser.find_element_by_id('back-call-phone').send_keys('2222222222')
+    browser.find_element_by_xpath(
+        '//*[@id="back-call-time"]/option[3]').click()
+    browser.find_element_by_class_name('js-send-backcall').click()
+    wait.until(EC.visibility_of_element_located(
+        (By.CLASS_NAME, 'js-backcall-success')
+    ))
+
+
+def show_cart_dropdown(browser):
+    wait = ui.WebDriverWait(browser, 60)
+    cart_parent = browser.find_element_by_class_name('basket-parent')
+    hover(browser, cart_parent)
+    wait.until(EC.visibility_of_element_located(
+        (By.CLASS_NAME, 'js-cart-wrapper')
+    ))
+
+
 class SeleniumTestCase(LiveServerTestCase):
     """Common superclass for running selenium-based tests."""
 
@@ -71,6 +96,13 @@ class SeleniumTestCase(LiveServerTestCase):
     @property
     def wait(self):
         return self.browser.wait
+
+    def wait_page_loading(self):
+        ui.WebDriverWait(self.browser, 60).until(
+            EC.visibility_of_element_located(
+                (By.CLASS_NAME, 'content')
+            )
+        )
 
     @classmethod
     def tearDownClass(cls):

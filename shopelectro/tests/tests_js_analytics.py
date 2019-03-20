@@ -1,8 +1,15 @@
+import unittest
+
 from django.test import override_settings, tag
+from django.urls import reverse
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 from shopelectro import selenium
 from shopelectro.tests import helpers
-from shopelectro.models import CategoryPage, Order
+from shopelectro.models import Category, CategoryPage, Order, Product
+
+from pages.models import CustomPage
 
 
 @tag('slow')
@@ -29,11 +36,30 @@ class GoogleEcommerce(helpers.SeleniumTestCase):
         success_page.wait_loaded()
         self.assertTrue(success_page.is_success())
 
-        order = Order.objects.order_by('-created').first()  # Ignore PyFlakesBear
-        reached = self.browser.execute_script('return gaObject.results;')  # Ignore PyFlakesBear
+        order = Order.objects.order_by('-created').first()
+        order_positions = order.positions.all()
+        reached = self.browser.execute_script('return gaObject.results;')
+        require, transaction, *positions, send = reached
 
-        # @todo #762:30m Match an order with a transaction of Google eCommerce analytics.
-        #  The transaction must contain correct order data and related products.
+        self.assertEqual(require, ['require', 'ecommerce'])
+        self.assertEqual(
+            transaction,
+            ['ecommerce:addTransaction', {
+                'id': order.fake_order_number, 'revenue': order.revenue,
+            }],
+        )
+        for pos, order_pos in zip(positions, order_positions):
+            self.assertEqual(
+                pos,
+                ['ecommerce:addItem', {
+                    'name': order_pos.name,
+                    'price': order_pos.price,
+                    'quantity': order_pos.quantity,
+                }],
+            )
+        self.assertEqual(send, ['ecommerce:send', None])
+
+    # @todo #771:60m Test Yandex eCommerce
 
 
 @tag('slow')
@@ -50,7 +76,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
             'category', args=(Category.objects.first().page.slug,))
         self.order_page_url = reverse(CustomPage.ROUTE, args=('order',))
         self.browser.get('/')
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
 
     @property
     def reached_goals(self):
@@ -80,7 +106,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def buy_product(self):
         self.browser.get(self.product_page)
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
         self.click((By.ID, 'btn-to-basket'))
         self.wait.until_not(EC.text_to_be_present_in_element(
             (By.CLASS_NAME, 'js-mobile-cart-price'), '0'
@@ -155,7 +181,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def test_backcall_request(self):
         """Test goal when user requested backcall successfully."""
-        make_backcall(self.browser)
+        helpers.make_backcall(self.browser)
 
         self.assertTrue('BACK_CALL_SEND' in self.reached_goals)
 
@@ -185,7 +211,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
         self.assertTrue('CART_OPEN' in self.reached_goals)
 
         self.prevent_default('click', '.btn-to-order')
-        show_cart_dropdown(self.browser)
+        helpers.show_cart_dropdown(self.browser)
         self.click((By.CLASS_NAME, 'btn-to-order'))
         self.wait_page_loaded()
         self.assertTrue('CART_OPEN' in self.reached_goals)
