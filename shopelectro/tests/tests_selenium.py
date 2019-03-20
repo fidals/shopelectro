@@ -13,36 +13,12 @@ from django.test import override_settings, tag
 from django.urls import reverse  # Ignore CPDBear
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC, ui
+from selenium.webdriver.support import expected_conditions as EC
 
-from pages.models import FlatPage, CustomPage
 from shopelectro.models import Category, Product
 from shopelectro.tests import helpers
 
-
-def make_backcall(browser):
-    """Trigger backcall modal. Fill it and submit."""
-    wait = ui.WebDriverWait(browser, 60)
-    browser.find_element_by_class_name('js-backcall-order').click()
-    wait.until(EC.visibility_of_element_located(
-        (By.ID, 'back-call-modal-label')
-    ))
-    browser.find_element_by_id('back-call-phone').send_keys('2222222222')
-    browser.find_element_by_xpath(
-        '//*[@id="back-call-time"]/option[3]').click()
-    browser.find_element_by_class_name('js-send-backcall').click()
-    wait.until(EC.visibility_of_element_located(
-        (By.CLASS_NAME, 'js-backcall-success')
-    ))
-
-
-def show_cart_dropdown(browser):
-    wait = ui.WebDriverWait(browser, 60)
-    cart_parent = browser.find_element_by_class_name('basket-parent')
-    helpers.hover(browser, cart_parent)
-    wait.until(EC.visibility_of_element_located(
-        (By.CLASS_NAME, 'js-cart-wrapper')
-    ))
+from pages.models import FlatPage, CustomPage
 
 
 def add_to_cart(browser):
@@ -52,18 +28,8 @@ def add_to_cart(browser):
 
 @helpers.try_again_on_stale_element(3)
 def is_cart_empty(browser):
-    show_cart_dropdown(browser)
+    helpers.show_cart_dropdown(browser)
     return browser.find_element_by_class_name('js-cart-is-empty').is_displayed()
-
-
-# @todo #494:15m Rm `wait_page_loading` function in favor of analogous method.
-#  In favor of `helpers.SeleniumTestCase.wait_page_loaded`
-def wait_page_loading(browser):
-    ui.WebDriverWait(browser, 60).until(
-        EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'content')
-        )
-    )
 
 
 @tag('slow')
@@ -74,7 +40,7 @@ class Header(helpers.SeleniumTestCase):
     def setUp(self):
         """Set up testing urls and dispatch selenium webdriver."""
         self.browser.get('/')
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
 
     def test_call_modal_not_visible(self):
         """By default we shouldn't see call modal."""
@@ -83,7 +49,7 @@ class Header(helpers.SeleniumTestCase):
 
     def test_order_backcall(self):
         """After filling modal fields user can successfully order backcall."""
-        make_backcall(self.browser)
+        helpers.make_backcall(self.browser)
         self.assertTrue(
             self.browser
             .find_element_by_class_name('js-backcall-success')
@@ -93,7 +59,7 @@ class Header(helpers.SeleniumTestCase):
     @helpers.disable_celery
     def test_order_backcall_email(self):
         """Back call phone number should be same in sent email."""
-        make_backcall(self.browser)
+        helpers.make_backcall(self.browser)
         sent_mail = mail.outbox[0]
         self.assertEqual(sent_mail.subject, settings.EMAIL_SUBJECTS['call'])
         self.assertIn('+7 (222) 222 22 22', sent_mail.body)
@@ -107,14 +73,14 @@ class Header(helpers.SeleniumTestCase):
     def test_cart_hover(self):
         """Cart dropdown should be visible on hover."""
         cart = self.browser.find_element_by_class_name('basket-wrapper')
-        show_cart_dropdown(self.browser)
+        helpers.show_cart_dropdown(self.browser)
 
         self.assertTrue(cart.is_displayed())
 
     def test_cart_flush(self):
         """We can flush cart from header's cart dropdown."""
         add_to_cart(self.browser)
-        show_cart_dropdown(self.browser)
+        helpers.show_cart_dropdown(self.browser)
         self.wait.until(EC.visibility_of_element_located(
             (By.CLASS_NAME, 'basket-reset')
         )).click()
@@ -127,7 +93,7 @@ class Header(helpers.SeleniumTestCase):
     def test_product_total_price_in_dropdown(self):
         add_to_cart(self.browser)
         product_price = int(Product.objects.first().price)
-        show_cart_dropdown(self.browser)
+        helpers.show_cart_dropdown(self.browser)
         product_total_price = self.wait.until(EC.visibility_of_element_located(
             (By.CLASS_NAME, 'js-basket-sum'))
         ).text
@@ -173,9 +139,6 @@ class CategoryPage(helpers.SeleniumTestCase):
         return self.wait.until(EC.visibility_of_element_located(
             (By.CLASS_NAME, 'product-card')
         ))
-
-    def wait_page_loading(self):
-        wait_page_loading(self.browser)
 
     @property
     def load_more_button(self):
@@ -426,7 +389,7 @@ class ProductPage(helpers.SeleniumTestCase):
         self.success_order = reverse(CustomPage.ROUTE, args=('order-success',))
         self.product_name = self.product.name
         self.browser.get(self.test_product_page)
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
         self.one_click = self.browser.find_element_by_id('btn-one-click-order')
 
     def test_breadcrumbs(self):
@@ -549,7 +512,7 @@ class ProductPage(helpers.SeleniumTestCase):
 
     def test_product_name_in_cart_dropdown(self):
         self.browser.find_element_by_class_name('btn-to-basket').click()
-        show_cart_dropdown(self.browser)
+        helpers.show_cart_dropdown(self.browser)
         cart_parent = self.browser.find_element_by_class_name('basket-parent')
         cart = cart_parent.find_element_by_class_name('basket-wrapper')
 
@@ -589,7 +552,7 @@ class ProductPage(helpers.SeleniumTestCase):
 
         # check for new feedback on page with `text_of_feedback`
         self.browser.refresh()
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
         feedback_list = self.browser.find_element_by_id('feedback-list')
         text = feedback_list.find_element_by_class_name('feedback-block-content').text
 
@@ -640,7 +603,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.buy_products()
         self.wait.until_not(is_cart_empty)
         self.browser.get(self.order_page.url)
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
 
     def tearDown(self):
         # Delete only a session cookie to flush a cart.
@@ -840,7 +803,7 @@ class SitePage(helpers.SeleniumTestCase):
         )
         self.browser.delete_all_cookies()
         self.browser.get(self.page_last.url)
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
 
     def tearDown(self):
         self.browser.execute_script('localStorage.clear();')
@@ -882,164 +845,6 @@ class SitePage(helpers.SeleniumTestCase):
         self.assertFalse(accordion_content.is_displayed())
 
 
-# @todo #762:30m Move Ya.Metrica tests to tests_js_counters.py
-
-
-@tag('slow')
-@helpers.disable_celery
-@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
-class YandexMetrika(helpers.SeleniumTestCase):
-
-    CART_LOCATOR = (By.CLASS_NAME, 'js-go-to-cart')
-
-    def setUp(self):
-        product_vendor_code = Product.objects.first().vendor_code
-        self.product_page = reverse('product', args=(product_vendor_code,))
-        self.category_page = reverse(
-            'category', args=(Category.objects.first().page.slug,))
-        self.order_page_url = reverse(CustomPage.ROUTE, args=('order',))
-        self.browser.get('/')
-        wait_page_loading(self.browser)
-
-    @property
-    def reached_goals(self):
-        """Return yaCounter.goals array after triggering goal."""
-        return self.browser.execute_script('return yaCounter20644114.goals;')
-
-    def prevent_default(self, event, selector):
-        """Use event.preventDefault() to prevent web page reloading."""
-        self.browser.execute_script(
-            'var target = document.querySelector("' + selector + '");'
-            'console.log(target);'
-            'target.on' + event + ' = function(event) {'
-            'event.preventDefault();'
-            'return false;};'
-        )
-
-    def select_text(self, class_name):
-        """Programmatically select text on page."""
-        self.browser.execute_script(
-            'var target = document.getElementsByClassName("' + class_name + '")[0];'
-            'var range = document.createRange();'
-            'var selection = window.getSelection();'
-            'range.selectNode(target);'
-            'selection.removeAllRanges();'
-            'selection.addRange(range);'
-        )
-
-    def buy_product(self):
-        self.browser.get(self.product_page)
-        wait_page_loading(self.browser)
-        self.click((By.ID, 'btn-to-basket'))
-        self.wait.until_not(EC.text_to_be_present_in_element(
-            (By.CLASS_NAME, 'js-mobile-cart-price'), '0'
-        ))
-
-    def go_to_cart(self):
-        self.click(self.CART_LOCATOR)
-        self.wait.until(EC.url_contains(self.order_page_url))
-
-    def test_download_header_price(self):
-        """User clicks Download price button in site's header."""
-        self.browser.find_element_by_class_name('js-download-price').click()
-        self.assertTrue('PRICE_HEADER' in self.reached_goals)
-
-    def test_download_footer_price(self):
-        """User clicks Download price button in site's footer."""
-        self.browser.find_element_by_class_name('js-download-price-footer').click()
-        self.assertTrue('PRICE_FOOTER' in self.reached_goals)
-
-    def test_backcall_open(self):
-        """User clicks Backcall button."""
-        self.browser.find_element_by_class_name('js-backcall-order').click()
-        self.assertTrue('BACK_CALL_OPEN' in self.reached_goals)
-
-    def test_browse_product_goal_on_index_page(self):
-        """User browses to product's page from Index page."""
-        self.prevent_default('click', '.js-browse-product')
-        self.click((By.CLASS_NAME, 'js-browse-product'))
-
-        self.assertTrue('PROD_BROWSE' in self.reached_goals)
-
-    def test_add_product_from_product_page(self):
-        """User adds Product to Cart on Product's page."""
-        self.buy_product()
-
-        self.assertTrue('PUT_IN_CART_FROM_PRODUCT' in self.reached_goals)
-        self.assertTrue('CMN_PUT_IN_CART' in self.reached_goals)
-
-    def test_add_product_from_category_page(self):
-        """"User adds Product to Cart on Category's page."""
-        self.browser.get(self.category_page)
-        self.browser.find_element_by_class_name('js-product-to-cart').click()
-
-        self.assertTrue('PUT_IN_CART_FROM_CATEGORY' in self.reached_goals)
-        self.assertTrue('CMN_PUT_IN_CART' in self.reached_goals)
-
-    def test_delete_from_dropdown(self):
-        """User removes Product from Cart dropdown."""
-        self.browser.get(self.product_page)
-        self.buy_product()
-        removed_el = self.click((By.CLASS_NAME, 'js-cart-remove'))
-        with self.screen_fail('test_delete_from_dropdown'):
-            self.wait.until(EC.staleness_of(removed_el))
-
-        self.assertTrue('DELETE_PRODUCT' in self.reached_goals)
-
-    def test_delete_from_cart_page(self):
-        """User removes Product from Cart."""
-        self.browser.get(self.product_page)
-        self.buy_product()
-        self.go_to_cart()
-        self.browser.find_element_by_class_name('js-remove').click()
-
-        self.assertTrue('DELETE_PRODUCT' in self.reached_goals)
-
-    def test_use_search(self):
-        """User uses search field."""
-        self.prevent_default('submit', '.js-search-form')
-        self.browser.find_element_by_class_name('js-search-form').submit()
-
-        self.assertTrue('USE_SEARCH_FORM' in self.reached_goals)
-
-    def test_backcall_request(self):
-        """Test goal when user requested backcall successfully."""
-        make_backcall(self.browser)
-
-        self.assertTrue('BACK_CALL_SEND' in self.reached_goals)
-
-    def test_full_buy_goal(self):
-        """User successfully made full Order."""
-        submit_button_id = 'submit-order'
-        self.buy_product()
-        self.go_to_cart()
-        self.prevent_default('submit', '#order-form-full')
-        self.browser.find_element_by_id('id_phone').send_keys('22222222222')
-        self.browser.find_element_by_id('id_email').send_keys('test@test.ru')
-        self.browser.find_element_by_id(submit_button_id).click()
-        self.wait.until_not(EC.element_to_be_clickable(
-            (By.ID, submit_button_id)
-        ))
-
-        self.assertTrue('FULL_BUY_SEND' in self.reached_goals)
-        self.assertTrue('CMN_BUY_SEND' in self.reached_goals)
-
-    # @todo #718:30m Resurrect `test_cart_page_open` test.
-    @unittest.skip
-    def test_cart_page_open(self):
-        self.buy_product()
-        self.prevent_default('click', '.js-go-to-cart')
-        self.click(self.CART_LOCATOR)
-        self.wait_page_loaded()
-        self.assertTrue('CART_OPEN' in self.reached_goals)
-
-        self.prevent_default('click', '.btn-to-order')
-        show_cart_dropdown(self.browser)
-        self.click((By.CLASS_NAME, 'btn-to-order'))
-        self.wait_page_loaded()
-        self.assertTrue('CART_OPEN' in self.reached_goals)
-
-
 @tag('slow')
 class Search(helpers.SeleniumTestCase):
 
@@ -1048,7 +853,7 @@ class Search(helpers.SeleniumTestCase):
 
     def setUp(self):
         self.browser.get('/')
-        wait_page_loading(self.browser)
+        self.wait_page_loading()
 
     def tearDown(self):
         self.clear_input()
