@@ -71,9 +71,11 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def setUp(self):
         product_vendor_code = Product.objects.first().vendor_code
-        self.product_page = reverse('product', args=(product_vendor_code,))
-        self.category_page = reverse(
-            'category', args=(Category.objects.first().page.slug,))
+        self.product_path = reverse('product', args=(product_vendor_code,))
+        self.category_path = reverse(
+            'category',
+            args=(Category.objects.first().page.slug,),
+        )
         self.order_page_url = reverse(CustomPage.ROUTE, args=('order',))
         self.browser.get('/')
         self.wait_page_loading()
@@ -86,9 +88,9 @@ class YandexMetrika(helpers.SeleniumTestCase):
     def prevent_default(self, event, selector):
         """Use event.preventDefault() to prevent web page reloading."""
         self.browser.execute_script(
-            'var target = document.querySelector("' + selector + '");'
+            f'var target = document.querySelector("{selector}");'
             'console.log(target);'
-            'target.on' + event + ' = function(event) {'
+            f'target.on{event} = function(event) {{'
             'event.preventDefault();'
             'return false;};'
         )
@@ -96,7 +98,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
     def select_text(self, class_name):
         """Programmatically select text on page."""
         self.browser.execute_script(
-            'var target = document.getElementsByClassName("' + class_name + '")[0];'
+            f'var target = document.getElementsByClassName("{class_name}")[0];'
             'var range = document.createRange();'
             'var selection = window.getSelection();'
             'range.selectNode(target);'
@@ -105,7 +107,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
         )
 
     def buy_product(self):
-        self.browser.get(self.product_page)
+        self.browser.get(self.product_path)
         self.wait_page_loading()
         self.click((By.ID, 'btn-to-basket'))
         self.wait.until_not(EC.text_to_be_present_in_element(
@@ -147,7 +149,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def test_add_product_from_category_page(self):
         """"User adds Product to Cart on Category's page."""
-        self.browser.get(self.category_page)
+        self.browser.get(self.category_path)
         self.browser.find_element_by_class_name('js-product-to-cart').click()
 
         self.assertTrue('PUT_IN_CART_FROM_CATEGORY' in self.reached_goals)
@@ -155,7 +157,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def test_delete_from_dropdown(self):
         """User removes Product from Cart dropdown."""
-        self.browser.get(self.product_page)
+        self.browser.get(self.product_path)
         self.buy_product()
         removed_el = self.click((By.CLASS_NAME, 'js-cart-remove'))
         with self.screen_fail('test_delete_from_dropdown'):
@@ -165,7 +167,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
 
     def test_delete_from_cart_page(self):
         """User removes Product from Cart."""
-        self.browser.get(self.product_page)
+        self.browser.get(self.product_path)
         self.buy_product()
         self.go_to_cart()
         self.browser.find_element_by_class_name('js-remove').click()
