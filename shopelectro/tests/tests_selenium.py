@@ -383,11 +383,12 @@ class CategoryPage(helpers.SeleniumTestCase):
 
         self.assertEqual(new_product_cards, 96)
 
+    @override_settings(DEBUG=True)
     def test_cached_cart(self):
         """
         The cart state shouldn't be cached on a category page.
 
-        @todo #783:60m Lazily load the cart.
+        @todo #783:60m Load the cart lazily.
          It will solve the issue with invalid cart data and
          bring ability to create cache shared among users.
         """
