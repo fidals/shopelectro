@@ -20,6 +20,9 @@ from shopelectro.tests import helpers
 
 from pages.models import FlatPage, CustomPage
 
+# @todo #783:60m Create Cart class for tests.
+#  The class should replace batch of methods from this file.
+
 
 def add_to_cart(browser):
     browser.get(Product.objects.first().url)
@@ -295,7 +298,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         """We can add item to cart from it's category page."""
         self.browser.get(self.children_category)
         self.wait_page_loading()
-        self.add_to_cart(0)
+        self.add_to_cart(index=0)
         self.assertFalse(self.is_empty_cart)
 
     def test_add_to_cart_after_load_more(self):
@@ -303,7 +306,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.wait_page_loading()
         # Let's load another PRODUCTS_TO_LOAD products.
         self.load_more_products()
-        self.add_to_cart(self.PRODUCTS_TO_LOAD + 1)
+        self.add_to_cart(index=self.PRODUCTS_TO_LOAD + 1)
         self.assertFalse(self.is_empty_cart)
 
     def test_apply_filter_state(self):
@@ -396,7 +399,7 @@ class CategoryPage(helpers.SeleniumTestCase):
             self.browser.get(url)
             self.wait_page_loading()
             for i in range(3):
-                self.add_to_cart(i)
+                self.add_to_cart(index=i)
 
         add_products_from(self.root_category)
         add_products_from(self.children_category)
