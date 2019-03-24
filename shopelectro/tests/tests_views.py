@@ -799,3 +799,10 @@ class Cart(TestCase):
         response = self.client.get(reverse('cart_get'))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(json_to_dict(response))
+
+    def test_disabled_cache(self):
+        """Cache-Control is disabled for the cart-get."""
+        self.assertEqual(
+            self.client.get(reverse('cart_get'))['Cache-Control'],
+            'max-age=0, no-cache, no-store, must-revalidate',
+        )
