@@ -61,7 +61,7 @@ class Cart(ec_views.CartModifier):
         # Prevent django cache middleware to add default max-age
         # this view should always revalidate a request.
         force_revalidate = cache_control(max_age=0, must_revalidate=True)
-        # Add ETag for revalidation
+        # Add ETag to preserve cache
         etag_hasher = etag(cart_etag)
         view = super().as_view(*args, **kwargs)
         return force_revalidate(etag_hasher(view))

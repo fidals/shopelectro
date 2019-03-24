@@ -77,6 +77,8 @@ INSTALLED_APPS = [
     'shopelectro',
 ]
 
+# Stick to this ordering
+# https://docs.djangoproject.com/en/1.11/ref/middleware/#middleware-ordering
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
