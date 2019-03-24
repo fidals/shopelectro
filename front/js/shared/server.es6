@@ -6,6 +6,7 @@ const server = (() => {  // Ignore ESLintBear (no-unused-vars)
     changeCartUrl: '/shop/cart-change/',
     removeFromCartUrl: '/shop/cart-remove/',
     flushCartUrl: '/shop/cart-flush/',
+    getCartUrl: '/shop/cart-get/',
     yandexOrderUrl: '/shop/yandex-order/',
     setViewTypeUrl: '/set-view-type/',
     saveFeedback: '/save-feedback/',
@@ -103,12 +104,20 @@ const server = (() => {  // Ignore ESLintBear (no-unused-vars)
     );
   }
 
+  /**
+   * Return $.get request, which gives Cart data.
+   */
+  function getCart() {
+    return $.get(config.getCartUrl);
+  }
+
   const sendYandexOrder = data => $.post(config.yandexOrderUrl, data);
 
   return {
     addToCart,
     changeInCart,
     deleteFeedback,
+    getCart,
     loadProducts,
     flushCart,
     oneClickBuy,
