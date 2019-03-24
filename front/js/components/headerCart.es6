@@ -8,6 +8,8 @@
   };
 
   const init = () => {
+    // @todo #789:60m Load cart lazily.
+    //  See the parent task for details.
     setUpListeners();
   };
 

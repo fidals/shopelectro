@@ -4,7 +4,9 @@ from django.conf import settings
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.cache import cache_control
+from django.views.decorators.http import etag, require_POST
+from django.utils.http import quote_etag
 
 from ecommerce import mailer, views as ec_views
 from pages.models import CustomPage
@@ -36,6 +38,14 @@ class OrderPage(ec_views.OrderPage):
 
 # @todo #789:60m Make cart routes REST style instead of RPC.
 
+# @todo #789:15m Test http cache for cart-get route.
+
+
+def cart_etag(request):
+    cart = SECart(request.session)
+    positions = ','.join(f'{id}:{pos["quantity"]}' for id, pos in cart)
+    return quote_etag(f'{len(cart)}={positions}')
+
 
 class Cart(ec_views.CartModifier):
 
@@ -45,6 +55,16 @@ class Cart(ec_views.CartModifier):
 
     def get(self, request):
         return self.json_response(request)
+
+    @classmethod
+    def as_view(cls, *args, **kwargs):
+        # Prevent django cache middleware to add default max-age
+        # this view should always revalidate a request.
+        force_revalidate = cache_control(max_age=0, must_revalidate=True)
+        # Add ETag for revalidation
+        etag_hasher = etag(cart_etag)
+        view = super().as_view(*args, **kwargs)
+        return force_revalidate(etag_hasher(view))
 
 
 class AddToCart(ec_views.AddToCart):
