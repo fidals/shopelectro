@@ -20,6 +20,9 @@ from shopelectro.tests import helpers
 
 from pages.models import FlatPage, CustomPage
 
+# @todo #783:60m Create Cart class for tests.
+#  The class should replace batch of methods from this file.
+
 
 def add_to_cart(browser):
     browser.get(Product.objects.first().url)
@@ -30,6 +33,12 @@ def add_to_cart(browser):
 def is_cart_empty(browser):
     helpers.show_cart_dropdown(browser)
     return browser.find_element_by_class_name('js-cart-is-empty').is_displayed()
+
+
+def cart_total(browser):
+    return browser.wait.until(EC.visibility_of_element_located(
+        (By.CLASS_NAME, 'price-in-cart'))
+    ).text
 
 
 @tag('slow')
@@ -94,9 +103,7 @@ class Header(helpers.SeleniumTestCase):
         add_to_cart(self.browser)
         product_price = int(Product.objects.first().price)
         helpers.show_cart_dropdown(self.browser)
-        product_total_price = self.wait.until(EC.visibility_of_element_located(
-            (By.CLASS_NAME, 'js-basket-sum'))
-        ).text
+        product_total_price = cart_total(self.browser)
         product_total_price_in_cart = int(product_total_price.split(' ')[0])
 
         self.assertTrue(product_price == product_total_price_in_cart)
@@ -165,6 +172,14 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.browser.find_element_by_class_name(self.apply_btn).click()
         self.wait.until(EC.url_changes(old_url))
         self.wait_page_loading()
+
+    def add_to_cart(self, index):
+        self.wait.until(EC.presence_of_all_elements_located(
+            (By.CLASS_NAME, 'js-product-to-cart')
+        ))[index].click()
+        self.wait.until(EC.visibility_of_element_located(
+            (By.CLASS_NAME, 'js-cart-wrapper')
+        ))
 
     def test_breadcrumbs(self):
         """
@@ -283,8 +298,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         """We can add item to cart from it's category page."""
         self.browser.get(self.children_category)
         self.wait_page_loading()
-        self.browser.find_elements_by_class_name(
-            'js-product-to-cart')[0].click()
+        self.add_to_cart(index=0)
         self.assertFalse(self.is_empty_cart)
 
     def test_add_to_cart_after_load_more(self):
@@ -292,10 +306,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.wait_page_loading()
         # Let's load another PRODUCTS_TO_LOAD products.
         self.load_more_products()
-        recently_loaded_product = self.browser.find_elements_by_class_name(
-            'js-product-to-cart'
-        )[self.PRODUCTS_TO_LOAD + 1]
-        recently_loaded_product.click()
+        self.add_to_cart(index=self.PRODUCTS_TO_LOAD + 1)
         self.assertFalse(self.is_empty_cart)
 
     def test_apply_filter_state(self):
@@ -374,6 +385,35 @@ class CategoryPage(helpers.SeleniumTestCase):
         new_product_cards = len(self.browser.find_elements_by_class_name('product-card'))
 
         self.assertEqual(new_product_cards, 96)
+
+    @override_settings(DEBUG=True)
+    @unittest.expectedFailure
+    def test_cached_cart(self):
+        """
+        The cart state shouldn't be cached on a category page.
+
+        @todo #783:60m Load the cart lazily.
+         It will solve the issue with invalid cart data and
+         bring ability to create cache shared among users.
+        """
+        def add_products_from(url):
+            self.browser.get(url)
+            self.wait_page_loading()
+            for i in range(3):
+                self.add_to_cart(index=i)
+
+        add_products_from(self.root_category)
+        add_products_from(self.children_category)
+        final_total = cart_total(self.browser)
+
+        self.browser.get(self.root_category)
+        self.wait_page_loading()
+        self.browser.get(self.children_category)
+        self.wait_page_loading()
+
+        total = cart_total(self.browser)
+
+        self.assertEqual(final_total, total)
 
 
 @tag('slow')
