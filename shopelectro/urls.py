@@ -87,6 +87,7 @@ search_urls = [
 ]
 
 ecommerce_urls = [
+    url(r'^cart-get/$', views.Cart.as_view(), name='cart_get'),
     url(r'^cart-add/$', views.AddToCart.as_view(), name='cart_add'),
     url(r'^cart-change/$', views.ChangeCount.as_view(), name='cart_set_count'),
     url(r'^cart-flush/$', views.FlushCart.as_view(), name='cart_flush'),
