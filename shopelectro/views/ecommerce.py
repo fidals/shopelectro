@@ -4,9 +4,7 @@ from django.conf import settings
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.views.decorators.cache import cache_control
-from django.views.decorators.http import etag, require_POST
-from django.utils.http import quote_etag
+from django.views.decorators.http import require_POST
 
 from ecommerce import mailer, views as ec_views
 from pages.models import CustomPage
