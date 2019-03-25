@@ -77,18 +77,20 @@ INSTALLED_APPS = [
     'shopelectro',
 ]
 
+# Stick to this ordering
+# https://docs.djangoproject.com/en/1.11/ref/middleware/#middleware-ordering
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'refarm_redirects.middleware.RedirectAllMiddleware',

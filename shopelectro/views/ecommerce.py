@@ -34,6 +34,19 @@ class OrderPage(ec_views.OrderPage):
         }
 
 
+# @todo #789:60m Make cart routes REST style instead of RPC.
+
+
+class Cart(ec_views.CartModifier):
+
+    cart = SECart
+    position_model = Product
+    order_form = OrderForm
+
+    def get(self, request):
+        return self.json_response(request)
+
+
 class AddToCart(ec_views.AddToCart):
     cart = SECart
     position_model = Product

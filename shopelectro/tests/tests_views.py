@@ -788,3 +788,21 @@ class Order(TestCase):
             self.client.get(url)['Cache-Control'],
             'max-age=0, no-cache, no-store, must-revalidate',
         )
+
+
+@tag('fast')
+class Cart(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_get_cart(self):
+        response = self.client.get(reverse('cart_get'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json_to_dict(response))
+
+    def test_disabled_cache(self):
+        """Cache-Control is disabled for the cart-get."""
+        self.assertEqual(
+            self.client.get(reverse('cart_get'))['Cache-Control'],
+            'max-age=0, no-cache, no-store, must-revalidate',
+        )
