@@ -9,7 +9,7 @@ from shopelectro import selenium
 from shopelectro.tests import helpers
 from shopelectro.models import Category, CategoryPage, Order, Product
 
-from pages.models import CustomPage
+from pages.urls import reverse_custom_page
 
 
 @tag('slow')
@@ -76,7 +76,7 @@ class YandexMetrika(helpers.SeleniumTestCase):
             'category',
             args=(Category.objects.first().page.slug,),
         )
-        self.order_page_url = reverse(CustomPage.ROUTE, args=('order',))
+        self.order_page_url = reverse_custom_page('order')
         self.browser.get('/')
         self.wait_page_loading()
 

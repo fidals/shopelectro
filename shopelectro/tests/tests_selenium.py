@@ -19,6 +19,7 @@ from shopelectro.models import Category, Product
 from shopelectro.tests import helpers
 
 from pages.models import FlatPage, CustomPage
+from pages.urls import reverse_custom_page
 
 # @todo #783:60m Create Cart class for tests.
 #  The class should replace batch of methods from this file.
@@ -426,7 +427,7 @@ class ProductPage(helpers.SeleniumTestCase):
         self.browser.delete_all_cookies()
         self.product = Product.objects.get(id=self.PRODUCT_ID)
         self.test_product_page = self.product.url
-        self.success_order = reverse(CustomPage.ROUTE, args=('order-success',))
+        self.success_order = reverse_custom_page('order-success')
         self.product_name = self.product.name
         self.browser.get(self.test_product_page)
         self.wait_page_loading()
@@ -639,7 +640,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.product_count = self.get_cell(pos=4, col='count') + '/div[2]/input'
         self.add_product = self.get_cell(pos=4, col='count') + '/div[2]/span[3]/button[1]'
         self.category = reverse('category', args=(Category.objects.first().page.slug,))
-        self.success_order_url = reverse(CustomPage.ROUTE, args=('order-success',))
+        self.success_order_url = reverse_custom_page('order-success')
         self.buy_products()
         self.wait.until_not(is_cart_empty)
         self.browser.get(self.order_page.url)
@@ -760,7 +761,7 @@ class OrderPage(helpers.SeleniumTestCase):
         self.submit_form()
         self.wait.until(EC.url_contains(self.success_order_url))
         self.assertIn(
-            reverse(CustomPage.ROUTE, args=('order-success', )),
+            reverse_custom_page('order-success'),
             self.browser.current_url,
         )
 

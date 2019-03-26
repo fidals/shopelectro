@@ -20,7 +20,9 @@ from django.utils.translation import ugettext as _
 from itertools import chain
 
 from catalog.helpers import reverse_catalog_url
+from pages.urls import reverse_custom_page
 from pages.models import CustomPage
+
 from shopelectro import models
 from shopelectro import views
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
@@ -396,7 +398,7 @@ class SitemapPage(TestCase):
         self.assertFalse(len(paginator_links) == 0)
 
     def test_sitemap_self_link_on_page(self):
-        sitemap_url_slug = reverse('custom_page', args=('sitemap', ))
+        sitemap_url_slug = reverse_custom_page('sitemap')
         self.assertIn(sitemap_url_slug, self.response.content.decode('utf-8'))
 
 
@@ -782,8 +784,7 @@ class Order(TestCase):
 
     def test_disabled_cache(self):
         """Cache-Control is disabled for the order page."""
-        # @todo #776:30m Create reverse_custom_page function.
-        url = reverse(CustomPage.ROUTE, kwargs={'page': 'order'})
+        url = reverse_custom_page('order')
         self.assertEqual(
             self.client.get(url)['Cache-Control'],
             'max-age=0, no-cache, no-store, must-revalidate',
