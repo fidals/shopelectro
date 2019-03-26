@@ -20,7 +20,7 @@
 
   // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
-  const loadedGa = loadGaTransport('gtm_loaded');
+  const loadedGa = loadGaTransport('gtm_loaded');  // Ignore ESLintBear (no-undef)
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
   const gaTracker = new GATracker(loadedGa, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
 
