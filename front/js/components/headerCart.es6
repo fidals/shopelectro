@@ -7,18 +7,55 @@
     removeFromCart: '.js-cart-remove',
   };
 
+  const config = {
+    storageKey: 'rendered-cart'
+  };
+
   const init = () => {
-    // @todo #789:60m Load cart lazily.
-    //  See the parent task for details.
+    loadCart();
     setUpListeners();
   };
 
   function setUpListeners() {
-    mediator.subscribe('onCartUpdate', render, configs.initScrollbar, showCart);
+    mediator.subscribe(
+      'onCartUpdate',
+      (_, data) => {
+        render(data.header);
+        saveCart(data.header);
+      },
+      configs.initScrollbar,
+      showCart,
+    );
 
     // Since product's list in Cart dropdown is dynamic, we bind events on static parent
     DOM.$cart.on('click', DOM.resetCart, clear);
     DOM.$cart.on('click', DOM.removeFromCart, remove);
+  }
+
+  /**
+   * Load cart lazily to prevent caching of its content
+   * and reach ability to store shared cache for pages.
+   */
+  function loadCart() {
+    const renderedCart = localStorage.getItem(config.storageKey);
+    const renderCart = (html) => {
+        render(html);
+        configs.initScrollbar();
+    };
+
+    if (renderedCart) {
+      renderCart(renderedCart);
+    } else {
+      server.getCart()
+        .then((data) => {
+          renderCart(data.header);
+          saveCart(data.header);
+        });
+    }
+  }
+
+  function saveCart(state) {
+    localStorage.setItem(config.storageKey, state);
   }
 
   /**
@@ -70,10 +107,10 @@
 
   /**
    * Render new Cart's html.
-   * @param data
+   * @param html
    */
-  function render(_, data) {
-    DOM.$cart.html(data.header);
+  function render(html) {
+    DOM.$cart.html(html);
   }
 
   init();
