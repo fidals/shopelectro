@@ -8,7 +8,7 @@
   };
 
   const config = {
-    storageKey: 'rendered-cart'
+    storageKey: 'rendered-cart',
   };
 
   const init = () => {
@@ -39,8 +39,8 @@
   function loadCart() {
     const renderedCart = localStorage.getItem(config.storageKey);
     const renderCart = (html) => {
-        render(html);
-        configs.initScrollbar();
+      render(html);
+      configs.initScrollbar();
     };
 
     if (renderedCart) {
