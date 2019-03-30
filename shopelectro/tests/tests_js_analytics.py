@@ -16,7 +16,7 @@ class Ecommerce(helpers.SeleniumTestCase):
 
     fixtures = ['dump.json']
 
-    def buy(self):
+    def add_to_cart(self):
         category_page = selenium.CategoryPage(
             self.browser,
             CategoryPage.objects.first().slug,
@@ -24,6 +24,7 @@ class Ecommerce(helpers.SeleniumTestCase):
         category_page.load()
         category_page.add_to_cart()
 
+    def purchase(self):
         order_page = selenium.OrderPage(self.browser)
         order_page.load()
         order_page.fill_contacts()
@@ -32,6 +33,10 @@ class Ecommerce(helpers.SeleniumTestCase):
         success_page = selenium.SuccessPage(self.browser)
         success_page.wait_loaded()
         self.assertTrue(success_page.is_success())
+
+    def buy(self):
+        self.add_to_cart()
+        self.purchase()
 
     def last_order(self):
         return Order.objects.order_by('-created').first()
@@ -77,33 +82,15 @@ class YandexEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
+    # @todo #785:60m Test Yandex ecommerce goals.
+    #  Here goals are left to test:
+    #  - onCartClear from cart
+    #  - onProductAdd from catalog, product and order pages
+    #  - onProductRemove from cart and order page
+    #  - onProductDetail from product page
+
     def reached_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
-
-    def test_purchase(self):
-        self.buy()
-        order = self.last_order()
-        positions = order.positions.all()
-        reached = self.reached_goals()[0][0]
-
-        self.assertIn('ecommerce', reached)
-        self.assertEqual(reached['ecommerce']['currencyCode'], 'RUB')
-
-        reached_purchase = reached['ecommerce']['purchase']
-        self.assertEqual(
-            reached_purchase['actionField'],
-            {'id': order.fake_order_number, 'revenue': order.revenue},
-        )
-
-        for reached_pos, order_pos in zip(reached_purchase['products'], positions):
-            self.assertEqual(
-                reached_pos,
-                {
-                    'name': order_pos.name,
-                    'price': order_pos.price,
-                    'quantity': order_pos.quantity,
-                },
-            )
 
     def test_purchase(self):
         self.buy()
