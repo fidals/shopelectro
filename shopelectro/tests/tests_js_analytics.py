@@ -12,14 +12,11 @@ from shopelectro.models import Category, CategoryPage, Order, Product
 from pages.urls import reverse_custom_page
 
 
-@tag('slow')
-@helpers.disable_celery
-@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
-class GoogleEcommerce(helpers.SeleniumTestCase):
+class Ecommerce(helpers.SeleniumTestCase):
 
     fixtures = ['dump.json']
 
-    def test_google_ecommerce_purchase(self):
+    def add_to_cart(self):
         category_page = selenium.CategoryPage(
             self.browser,
             CategoryPage.objects.first().slug,
@@ -27,6 +24,7 @@ class GoogleEcommerce(helpers.SeleniumTestCase):
         category_page.load()
         category_page.add_to_cart()
 
+    def purchase(self):
         order_page = selenium.OrderPage(self.browser)
         order_page.load()
         order_page.fill_contacts()
@@ -36,7 +34,24 @@ class GoogleEcommerce(helpers.SeleniumTestCase):
         success_page.wait_loaded()
         self.assertTrue(success_page.is_success())
 
-        order = Order.objects.order_by('-created').first()
+    def buy(self):
+        self.add_to_cart()
+        self.purchase()
+
+    def last_order(self):
+        return Order.objects.order_by('-created').first()
+
+
+@tag('slow')
+@helpers.disable_celery
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
+class GoogleEcommerce(Ecommerce):
+
+    fixtures = ['dump.json']
+
+    def test_purchase(self):
+        self.buy()
+        order = self.last_order()
         order_positions = order.positions.all()
         reached = self.browser.execute_script('return gaObject.results;')
         require, transaction, *positions, send = reached
@@ -59,7 +74,48 @@ class GoogleEcommerce(helpers.SeleniumTestCase):
             )
         self.assertEqual(send, ['ecommerce:send', None])
 
-    # @todo #771:60m Test Yandex eCommerce
+
+@tag('slow')
+@helpers.disable_celery
+@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
+class YandexEcommerce(Ecommerce):
+
+    fixtures = ['dump.json']
+
+    # @todo #785:60m Test Yandex ecommerce goals.
+    #  Here are goals left to test:
+    #  - onCartClear from cart
+    #  - onProductAdd from catalog, product and order pages
+    #  - onProductRemove from cart and order page
+    #  - onProductDetail from product page
+
+    def reached_goals(self):
+        return self.browser.execute_script('return window.dataLayer.results;')
+
+    def test_purchase(self):
+        self.buy()
+        order = self.last_order()
+        positions = order.positions.all()
+        reached = self.reached_goals()[0][0]
+
+        self.assertIn('ecommerce', reached)
+        self.assertEqual(reached['ecommerce']['currencyCode'], 'RUB')
+
+        reached_purchase = reached['ecommerce']['purchase']
+        self.assertEqual(
+            reached_purchase['actionField'],
+            {'id': order.fake_order_number, 'revenue': order.revenue},
+        )
+
+        for reached_pos, order_pos in zip(reached_purchase['products'], positions):
+            self.assertEqual(
+                reached_pos,
+                {
+                    'name': order_pos.name,
+                    'price': order_pos.price,
+                    'quantity': order_pos.quantity,
+                },
+            )
 
 
 @tag('slow')
