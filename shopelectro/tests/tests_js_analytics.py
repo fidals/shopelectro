@@ -88,7 +88,7 @@ class YandexEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
-    # @todo #785:120m Test Yandex ecommerce goals.
+    # @todo #799:120m Test Yandex ecommerce goals.
     #  Here are goals left to test:
     #  - onCartClear from cart
     #  - onProductAdd from catalog, product and order pages
