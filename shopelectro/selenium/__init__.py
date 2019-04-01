@@ -13,4 +13,4 @@ https://selenium-python.readthedocs.io/page-objects.html
 """
 
 from .driver import SiteDriver
-from .pages import CategoryPage, OrderPage, SuccessPage
+from .pages import *

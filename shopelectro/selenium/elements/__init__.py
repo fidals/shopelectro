@@ -1,3 +1,3 @@
 from .input import Input
 from .button import Button
-from .product_card import ProductCard
+from .product import CatalogProduct, CartPosition
