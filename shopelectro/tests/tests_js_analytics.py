@@ -79,29 +79,40 @@ class GoogleEcommerce(Ecommerce):
 @helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class YandexEcommerce(Ecommerce):
+    """
+    Test reaching of goals.
+
+    Match submitted results with Yandex spec for message representation.
+    Yandex docs: https://yandex.com/support/metrica/data/e-commerce.html
+    """
 
     fixtures = ['dump.json']
 
-    # @todo #785:60m Test Yandex ecommerce goals.
+    # @todo #785:120m Test Yandex ecommerce goals.
     #  Here are goals left to test:
     #  - onCartClear from cart
     #  - onProductAdd from catalog, product and order pages
     #  - onProductRemove from cart and order page
-    #  - onProductDetail from product page
 
     def reached_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
+
+    def get_first(self, reached):
+        """Get the first reached goal and unfold it."""
+        return reached[0][0]['ecommerce']
 
     def test_purchase(self):
         self.buy()
         order = self.last_order()
         positions = order.positions.all()
-        reached = self.reached_goals()[0][0]
 
-        self.assertIn('ecommerce', reached)
-        self.assertEqual(reached['ecommerce']['currencyCode'], 'RUB')
+        reached_goals = self.reached_goals()
+        self.assertTrue(reached_goals)
 
-        reached_purchase = reached['ecommerce']['purchase']
+        reached = self.get_first(reached_goals)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_purchase = reached['purchase']
         self.assertEqual(
             reached_purchase['actionField'],
             {'id': order.fake_order_number, 'revenue': order.revenue},
@@ -116,6 +127,32 @@ class YandexEcommerce(Ecommerce):
                     'quantity': order_pos.quantity,
                 },
             )
+
+    def test_product_detail(self):
+        product = Product.objects.first()
+        selenium.ProductPage(self.browser, product.vendor_code).load()
+
+        reached_goals = self.reached_goals()
+        self.assertTrue(reached_goals)
+
+        reached = self.get_first(reached_goals)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+        self.assertEqual(
+            len(reached['detail']['products']),
+            1,
+        )
+
+        product_detail = reached['detail']['products'][0]
+        self.assertEqual(
+            product_detail,
+            {
+                'id': product.id,
+                'name': product.name,
+                'brand': product.get_brand_name(),
+                'quantity': 1,
+                'category': product.category.name,
+            }
+        )
 
 
 @tag('slow')
