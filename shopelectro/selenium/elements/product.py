@@ -1,16 +1,10 @@
 import abc
 
-from shopelectro.selenium.elements import Button
+from shopelectro.selenium.elements import Button, Unavailable
 from shopelectro.selenium.driver import SiteDriver
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-
-
-class Unavailable(NotImplementedError):
-
-    def __init__(self, msg, *args, **kwargs):
-        super().__init__(f'The element doesn\'t provide ability to {msg}', *args, **kwargs)
 
 
 class Product(abc.ABC):
