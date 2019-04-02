@@ -154,3 +154,8 @@ for info about both of them.
 It's good to print list.
 - [Link to no-images prods in admin panel](https://www.shopelectro.ru/admin/shopelectro/productpage/?has_images=no&is_active__exact=1).
 It has filters.
+
+## Оптовые цены
+Убрали их с интерфейса в этой задаче.
+Есть небольшая вероятность, что вернём.
+https://github.com/fidals/shopelectro/issues/801
