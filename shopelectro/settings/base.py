@@ -481,12 +481,6 @@ FOOTER_LINKS = {
     ],
 }
 
-PRICE_BOUNDS = {
-    'wholesale_large': 100000,
-    'wholesale_medium': 50000,
-    'wholesale_small': 20000,
-}
-
 BRAND_TAG_GROUP_NAME = 'Производитель'
 
 # products with price lower this value should not be presented at gm.yml price

@@ -19,7 +19,6 @@ from django.core.management.base import BaseCommand
 from images.models import Image, model_directory_path
 from pages.models import Page, FlatPage, PageTemplate
 from pages.utils import save_custom_pages, init_redirects_app
-
 from shopelectro import models as se_models, tests as se_tests
 
 
@@ -151,7 +150,7 @@ class Command(BaseCommand):
                 id=self.product_id,
                 # vendor_code should be differ from id for tests.
                 vendor_code=self._product_id + 1,
-                name='Product #{} of {}'.format(price_factor, parent),
+                name=f'Product #{price_factor} of {parent}',
                 in_stock=price_factor % 3,
                 price=price_factor * 100,
                 category=parent,

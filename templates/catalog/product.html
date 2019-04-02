@@ -34,26 +34,6 @@
         <p class="product-label-price-retail">Розничная цена:</p>
         <p class="product-price active">{{ product.price|humanize_price }} руб / шт</p>
 
-        {% if product.wholesale_small %}
-          <p class="product-label-price-whole">Оптовая цена:</p>
-          <table class="product-table table table-bordered">
-            <thead>
-            <tr>
-              <th>от {{ price_bounds.wholesale_small }} руб</th>
-              <th>от {{ price_bounds.wholesale_medium }} руб</th>
-              <th>от {{ price_bounds.wholesale_large }} руб</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td>{{ product.wholesale_small|floatformat:2 }} руб</td>
-              <td>{{ product.wholesale_medium|floatformat:2 }} руб</td>
-              <td>{{ product.wholesale_large|floatformat:2 }} руб</td>
-            </tr>
-            </tbody>
-          </table>
-        {% endif %}
-
         {% include 'catalog/product_in_stock.html' %}
 
         <div class="product-price-btn-wrapper">

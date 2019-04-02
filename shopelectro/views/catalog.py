@@ -68,7 +68,6 @@ class ProductPage(catalog.ProductPage):
         return {
             **context_,
             **product_images,
-            'price_bounds': settings.PRICE_BOUNDS,
             'group_tags_pairs': self.product.get_params().items(),
             'tile_products': tile_products,
         }
