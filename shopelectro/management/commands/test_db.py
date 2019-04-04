@@ -21,6 +21,8 @@ from pages.models import Page, FlatPage, PageTemplate
 from pages.utils import save_custom_pages, init_redirects_app
 from shopelectro import models as se_models, tests as se_tests
 
+TEST_DB = 'test_se'
+
 
 class Command(BaseCommand):
 
@@ -70,11 +72,9 @@ class Command(BaseCommand):
         self.save_dump()
 
     def prepare_db(self):
-        # @todo #389:60m Set db name in `test_db` command. stb2
-        #  Set name instead of asserting.
-        #  You also should create/drop it with postgres driver.
-        is_test_db = settings.DATABASES['default']['NAME'] == 'test'
-        assert is_test_db, 'To create fixtures you have to create a database named "test".'
+        is_test_db = settings.DATABASES['default']['NAME'] == TEST_DB
+        assert is_test_db, \
+            f'To create fixtures you have to create a databasenamed "{TEST_DB}".'
         call_command('migrate')
         self.purge_tables()
 
