@@ -56,7 +56,11 @@ class Category(catalog_models.AbstractCategory, pages_models.SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class Product(catalog_models.AbstractProduct, pages_models.SyncPageMixin):
+class Product(
+    catalog_models.AbstractProduct,
+    catalog_models.AbstractPosition,
+    pages_models.SyncPageMixin
+):
 
     # That's why we are needed to explicitly add objects manager here
     # because of Django special managers behaviour.
