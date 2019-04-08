@@ -1,3 +1,4 @@
+from shopelectro.selenium import SiteDriver
 from shopelectro.selenium.elements import Unavailable
 
 # @todo #799:120m Reuse shopelectro.selenium.elements.cart.Cart for selenium tests.

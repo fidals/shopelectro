@@ -83,7 +83,7 @@ class YandexEcommerce(Ecommerce):
     Test reaching of goals.
 
     Match submitted results with Yandex spec for message representation.
-    Yandex docs: https://yandex.com/support/metrica/data/e-commerce.html
+    Docs with spec: https://yandex.com/support/metrica/data/e-commerce.html
     """
 
     fixtures = ['dump.json']
@@ -94,6 +94,7 @@ class YandexEcommerce(Ecommerce):
     #  - onProductAdd from catalog, product and order pages
     #  - onProductRemove from cart and order page
 
+    @property
     def reached_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
 
@@ -106,7 +107,7 @@ class YandexEcommerce(Ecommerce):
         order = self.last_order()
         positions = order.positions.all()
 
-        reached_goals = self.reached_goals()
+        reached_goals = self.reached_goals
         self.assertTrue(reached_goals)
 
         reached = self.get_first(reached_goals)
@@ -130,9 +131,9 @@ class YandexEcommerce(Ecommerce):
 
     def test_product_detail(self):
         product = Product.objects.first()
-        selenium.ProductPage(self.browser, product.vendor_code).load()
+        selenium.Product(self.browser, product.vendor_code).load()
 
-        reached_goals = self.reached_goals()
+        reached_goals = self.reached_goals
         self.assertTrue(reached_goals)
 
         reached = self.get_first(reached_goals)

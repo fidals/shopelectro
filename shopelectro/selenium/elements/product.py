@@ -4,11 +4,9 @@ from shopelectro.selenium.elements import Button, Unavailable
 from shopelectro.selenium.driver import SiteDriver
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 
 
 class Product(abc.ABC):
-    """"Represent a product at the site."""
 
     def name(self):
         raise Unavailable('determine the product name.')
@@ -26,9 +24,7 @@ class Product(abc.ABC):
         raise Unavailable('remove the product from the card.')
 
 
-
-class CatalogProduct(Product):
-    """"Represent a product card from a catalog."""
+class CatalogCard(Product):
 
     def __init__(self, driver: SiteDriver, card_index: int):
         """
@@ -47,14 +43,10 @@ class CatalogProduct(Product):
 
 
 class CartPosition(Product):
-    """"Represent a position from cart."""
 
     def __init__(self, driver: SiteDriver, pos_index: int):
         self.driver = driver
-        self.pos_index = pos_index
-
-    def xpath_to(self, path):
-        return (By.XPATH, f'//ul[@id="basket-list"]/li[{self.pos_index}]/' + path)
+        self.xpath = f'//ul[@id="basket-list"]/li[{pos_index}]/'
 
     def name(self):
         raise Unavailable('determine the position name.')

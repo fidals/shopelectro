@@ -1,14 +1,12 @@
-import typing
-
 from django.urls import reverse
 
 from shopelectro.selenium.pages import Page
 
 
-# @todo #682:120m Implement and reuse shopelectro.selenium.ProductPage for selenium tests.
+# @todo #682:120m Implement and reuse shopelectro.selenium.Product for selenium tests.
 
 
-class ProductPage(Page):
+class Product(Page):
 
     def __init__(self, driver, vendor_code):
         super().__init__(driver)

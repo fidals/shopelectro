@@ -1,4 +1,4 @@
 from .button import Button
 from .exceptions import Unavailable
 from .input import Input
-from .product import CatalogProduct, CartPosition
+from .product import CatalogCard, CartPosition

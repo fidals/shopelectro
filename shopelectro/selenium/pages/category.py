@@ -1,6 +1,6 @@
 import typing
 
-from shopelectro.selenium.elements import CatalogProduct
+from shopelectro.selenium.elements import CatalogCard
 from shopelectro.selenium.pages import Page
 
 from django.urls import reverse
@@ -18,11 +18,11 @@ class CategoryPage(Page):
     def path(self):
         return reverse('category', args=(self.slug,))
 
-    def products(self) -> typing.List[CatalogProduct]:
+    def product_cards(self) -> typing.List[CatalogCard]:
         raise NotImplementedError
 
-    def add_to_cart(self, products: typing.List[CatalogProduct]=None):
-        default = [CatalogProduct(self.driver, i) for i in range(1, 7)]
+    def add_to_cart(self, products: typing.List[CatalogCard]=None):
+        default = [CatalogCard(self.driver, i) for i in range(1, 7)]
         products = products or default
         for product in products:
             product.add_to_cart()
