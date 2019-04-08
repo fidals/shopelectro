@@ -21,9 +21,6 @@ from shopelectro.tests import helpers
 from pages.models import FlatPage, CustomPage
 from pages.urls import reverse_custom_page
 
-# @todo #783:60m Create Cart class for tests.
-#  The class should replace batch of methods from this file.
-
 
 def add_to_cart(browser):
     browser.get(Product.objects.first().url)
