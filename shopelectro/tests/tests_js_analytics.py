@@ -48,10 +48,6 @@ class GoogleEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
-    # @todo #RF320:30m  Resurrect shopelectro.tests.tests_js_analytics.YandexEcommerce#test_purchase
-    #  It was failed after this PR:
-    #  https://github.com/fidals/refarm-site/pull/321
-    @unittest.skip
     def test_purchase(self):
         self.buy()
         order = self.last_order()
