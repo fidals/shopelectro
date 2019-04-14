@@ -6,14 +6,7 @@
       (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;
-
-        j.addEventListener('load', function() {
-          // notify listeners about loaded gtm
-          d.dispatchEvent(new CustomEvent('gtm_loaded', { bubbles: true }));
-        });
-
-        f.parentNode.insertBefore(j,f);
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
       })(window,document,'script','dataLayer','GTM-P6RH2S');
     </script>
     <!-- End Google Tag Manager -->
@@ -43,7 +36,7 @@
           results: results,
         };
       }());
-      var ga = gaObject.fn;
+      window.ga = gaObject.fn;
 
       window.dataLayer = (function() {
         var results = [];
