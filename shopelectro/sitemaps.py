@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Generator, Tuple
 
 from django.contrib.sitemaps import Sitemap
@@ -23,6 +24,9 @@ class IndexSitemap(Sitemap):
     # https://docs.djangoproject.com/ja/1.9/ref/contrib/sitemaps/#django.contrib.sitemaps.Sitemap.items
     def items(self):
         return [CustomPage.objects.get(slug='')]
+
+    def lastmod(self, _):
+        return datetime.now()
 
 
 class CategorySitemap(AbstractSitemap):
