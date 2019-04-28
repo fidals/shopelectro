@@ -5,6 +5,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.generic.list import ListView
 from django_user_agents.utils import get_user_agent
 
 from catalog import context
@@ -12,15 +13,33 @@ from catalog.views import catalog
 from images.models import Image
 # can't do `import pages` because of django error.
 # Traceback: https://gist.github.com/duker33/685e8a9f59fc5dbd243e297e77aaca42
-from pages import views as pages_views
+from pages import models as pages_models, views as pages_views
 from shopelectro import context as se_context, models, request_data
 from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
 
 
-# CATALOG VIEWS
-class CategoryTree(catalog.CategoryTree):
-    category_model = models.Category
+class CategoryMatrix(ListView):
+    """The list of root categories."""
+
+    template_name = 'catalog/catalog.html'
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        return (
+            models.Category.objects
+            .bind_fields()
+            .active()
+            .filter(level=0)
+            .order_by('page__position', 'name')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return {
+            **context,
+            'page': pages_models.CustomPage.objects.get(slug='catalog'),
+        }
 
 
 @set_csrf_cookie
