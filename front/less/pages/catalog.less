@@ -1,5 +1,24 @@
 @import "../common/utilities/mixins";
 
+.category-block {
+  margin: 0 auto;
+
+  .Q(600; {
+    float: left;
+    width: 48%;
+  });
+
+  .Q(@sm; {
+    width: 32%;
+  });
+
+  &:not(:last-child) {
+    .Q(600; {
+      margin: 0 2% 0 0;
+    });
+  }
+}
+
 .catalog-list {
   padding: 0 0 0 30px;
 

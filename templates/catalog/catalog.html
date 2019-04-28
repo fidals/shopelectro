@@ -10,7 +10,7 @@
   <div class="container container-fluid">
     <div class="row around-xs">
       {% for root in categories %}
-        <div class="col-md">
+        <div class="category-block">
           <h2>{{ root.name }}</h2>
           <ul>
             {% for category in root.children.active %}
