@@ -462,7 +462,7 @@ class YandexKassa(TestCase):
 
 
 @tag('fast', 'catalog')
-class CategoryPage(BaseCatalogTestCase):
+class Category(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
 
@@ -521,6 +521,21 @@ class CategoryPage(BaseCatalogTestCase):
         self.assertContains(
             response, CANONICAL_HTML_TAG.format(path=not_paginated_url)
         )
+
+    def test_category_matrix_page(self):
+        """Matrix page should contain all second level categories."""
+        page = CustomPage.objects.get(slug='catalog')
+        response = self.client.get(page.url)
+        soup = BeautifulSoup(
+            response.content.decode('utf-8'),
+            'html.parser'
+        )
+        self.assertEqual(200, response.status_code)
+
+        categories_db = models.Category.objects.active()
+        categories_app = soup.find_all(tag='a', class_='catalog-list-item')
+        for from_db, from_app in zip(categories_db, categories_app):
+            self.assertEqual(from_db.name, from_app.a.text)
 
 
 @tag('fast')
