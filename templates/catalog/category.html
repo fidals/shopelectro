@@ -11,7 +11,7 @@
     <div class="col-md-3 category-left-block">
       {% include 'catalog/category_children.html' with category=category tags=tags only %}
 
-      {% include 'catalog/category_tags.html' with group_tags_pairs=group_tags_pairs only %}
+      {% include 'catalog/category_tags.html' with group_tags_pairs=group_tags_pairs request=request only %}
 
       {% if group_tags_pairs %}
         <div class="tags-btns">
