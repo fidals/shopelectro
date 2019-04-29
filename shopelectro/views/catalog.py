@@ -1,11 +1,11 @@
 import typing
+from collections import OrderedDict
 
 from django import http
 from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from django.views.generic.list import ListView
 from django_user_agents.utils import get_user_agent
 
 from catalog import context
@@ -19,27 +19,33 @@ from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
 
 
-class CategoryMatrix(ListView):
-    """The list of root categories."""
+# block numeric indexes to limit
+MATRIX_BLOCKS_TO_LIMIT = [3, 5]
+MATRIX_BLOCK_SIZE = 7
 
-    template_name = 'catalog/catalog.html'
-    context_object_name = 'categories'
 
-    def get_queryset(self):
-        return (
-            models.Category.objects
-            .bind_fields()
-            .active()
-            .filter(level=0)
-            .order_by('page__position', 'name')
+def category_matrix(request, page: str):
+    assert page == 'catalog'
+    roots = (
+        models.Category.objects
+        .bind_fields()
+        .active()
+        .filter(level=0)
+        .order_by('page__position', 'name')
+    )
+    matrix = OrderedDict()
+    for i, root in enumerate(roots):
+        children = root.children.active()
+        matrix[root.name] = (
+            children
+            if i not in MATRIX_BLOCKS_TO_LIMIT
+            else children[:MATRIX_BLOCK_SIZE]
         )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return {
-            **context,
-            'page': pages_models.CustomPage.objects.get(slug='catalog'),
-        }
+    context_ = {
+        'matrix': matrix,
+        'page': pages_models.CustomPage.objects.get(slug=page),
+    }
+    return render(request, 'catalog/catalog.html', context_)
 
 
 @set_csrf_cookie
