@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 from shopelectro.selenium import SiteDriver
-from shopelectro.models import Product
+from shopelectro.models import Category, Product
 
 
 class MobileSeleniumTestCase(LiveServerTestCase):
@@ -69,7 +69,7 @@ class Mobile(MobileSeleniumTestCase):
             (By.CLASS_NAME, 'js-search-input')
         ))
 
-    def toogle_menu(self):
+    def toggle_menu(self):
         self.wait.until(EC.element_to_be_clickable(
             (By.CLASS_NAME, 'js-mobile-menu-toggler')
         )).click()
@@ -89,12 +89,12 @@ class Mobile(MobileSeleniumTestCase):
         - bottom fixed mobile cart;
         - off-canvas menu search input;
         """
-        self.toogle_menu()
+        self.toggle_menu()
         self.assertTrue(self.search_input.is_displayed())
 
     def test_search_autocomplete(self):
         """Autocomplete in mobile search should work."""
-        self.toogle_menu()
+        self.toggle_menu()
         self.search_input.send_keys('Cate')
         suggestions = self.wait.until(EC.visibility_of_any_elements_located(
             (By.CLASS_NAME, 'autocomplete-suggestion')
@@ -105,7 +105,7 @@ class Mobile(MobileSeleniumTestCase):
 
     def test_search_submit(self):
         """Mobile search form has submit button."""
-        self.toogle_menu()
+        self.toggle_menu()
         self.search_input.send_keys('Cate')
         self.submit_search()
         result, *_ = self.wait.until(EC.visibility_of_any_elements_located(
@@ -132,6 +132,17 @@ class Mobile(MobileSeleniumTestCase):
             'mobile-catalog-sub-link'
         )
         self.assertTrue(catalog_subitem.is_displayed())
+
+    def test_tags_collapse_state(self):
+        """Tags are collapsed by default."""
+        self.browser.get(Category.objects.first().url)
+        self.wait_page_loading()
+
+        tags = self.browser.wait.until(EC.presence_of_all_elements_located(
+            (By.CLASS_NAME, 'js-tags-inputs')
+        ))
+
+        self.assertFalse(all(t.is_displayed() for t in tags))
 
     # CarrotQuest outer js service produces error on this test.
     # Enabled debug makes it off.
