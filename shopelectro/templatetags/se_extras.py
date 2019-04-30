@@ -11,7 +11,7 @@ from django.urls import reverse
 from images.models import ImageMixin
 from pages.models import Page
 
-from shopelectro.models import Category, CategoryPage
+from shopelectro.models import CategoryPage
 
 register = template.Library()
 
