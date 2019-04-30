@@ -1,5 +1,8 @@
+{% load user_agents %}
+
 {% for group, tags in group_tags_pairs %}
-  <div class="tags-list custom-checkbox-radio">
+  <div class="tags-list custom-checkbox-radio js-tags-list"
+    data-default-collapse="{% if request|is_mobile %}true{% else %}false{% endif %}">
     <p class="tags-list-title js-toggle-tag-group" data-tag-group="{{ group.id }}">
       {{ group.name }} <i class="fa fa-chevron-down"></i>
     </p>

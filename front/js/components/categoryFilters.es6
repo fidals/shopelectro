@@ -11,7 +11,8 @@
 
   const config = {
     hiddenFilterGroupIds: getHiddenFilterGroupIds(),
-    filterGroup: 'data-tag-group',
+    filterGroup: 'tag-group',
+    isCollapseInversed: $('.js-tags-list').data('default-collapse'),
   };
 
   const init = () => {
@@ -25,7 +26,7 @@
    */
   function setUpListeners() {
     DOM.$filtersApplyBtn.click(loadFilteredProducts);
-    DOM.$filterTitle.click(toggleFilterGroup);
+    DOM.$filterTitle.click(toggleClickedGroup);
     DOM.$filtersClearBtn.click(clearFilters);
     DOM.$filtersWrapper.on('click', 'input', toggleApplyBtnState);
   }
@@ -91,8 +92,7 @@
    */
   function storeFilterGroupState(index) {
     if (config.hiddenFilterGroupIds.includes(index)) {
-      const removeIndex = config.hiddenFilterGroupIds.indexOf(index);
-      config.hiddenFilterGroupIds.splice(removeIndex, 1);
+      config.hiddenFilterGroupIds = config.hiddenFilterGroupIds.filter(i => i !== index);
     } else {
       config.hiddenFilterGroupIds.push(index);
     }
@@ -103,8 +103,7 @@
   /**
    * Toggle filter groups.
    */
-  function toggleFilterGroup() {
-    const $group = $(this);
+  function toggleGroup($group) {
     const targetClass = 'opened';
 
     if ($group.hasClass(targetClass)) {
@@ -114,7 +113,12 @@
     }
 
     $group.next().slideToggle();
-    storeFilterGroupState($group.attr(`${config.filterGroup}`));
+  }
+
+  function toggleClickedGroup() {
+    const $group = $(this);
+    toggleGroup($group);
+    storeFilterGroupState($group.data(config.filterGroup));
   }
 
   /**
@@ -129,13 +133,16 @@
   }
 
   /**
-   * Set up filter group toggle state based on localStorage.
+   * Set up filter group toggle state based on localStorage and collapse mode.
    */
   function setUpFilterGroups() {
+    if (config.isCollapseInversed) {
+      DOM.$filterTitle.each((_, e) => toggleGroup($(e)));
+    }
     if (!config.hiddenFilterGroupIds.length) return;
-
     config.hiddenFilterGroupIds.forEach((index) => {
-      DOM.$filterTitle.filter(`[${config.filterGroup}=${index}]`).next().slideUp();
+      const $el = DOM.$filterTitle.filter(`[data-${config.filterGroup}=${index}]`);
+      toggleGroup($el);
     });
   }
 
