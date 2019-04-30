@@ -1,4 +1,5 @@
 import typing
+from collections import OrderedDict
 
 from django import http
 from django.conf import settings
@@ -12,15 +13,44 @@ from catalog.views import catalog
 from images.models import Image
 # can't do `import pages` because of django error.
 # Traceback: https://gist.github.com/duker33/685e8a9f59fc5dbd243e297e77aaca42
-from pages import views as pages_views
+from pages import models as pages_models, views as pages_views
 from shopelectro import context as se_context, models, request_data
 from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
 
 
-# CATALOG VIEWS
-class CategoryTree(catalog.CategoryTree):
-    category_model = models.Category
+# block numeric indexes to limit
+MATRIX_BLOCKS_TO_LIMIT = [3, 5]
+MATRIX_BLOCK_SIZE = 7
+
+
+# @todo #822:60m  Create tests for the catalog matrix.
+#  This cases are would be good to test:
+#  - Matrix sorting by page position
+#  - Block items limiting
+def category_matrix(request, page: str):
+    assert page == 'catalog'
+    roots = (
+        models.Category.objects
+        .bind_fields()
+        .active()
+        .filter(level=0)
+        .order_by('page__position', 'name')
+    )
+    matrix = OrderedDict()
+    for i, root in enumerate(roots):
+        children = root.children.active()
+        # @todo #822:30m  Doc category matrix blocks.
+        matrix[root.name] = (
+            children
+            if i not in MATRIX_BLOCKS_TO_LIMIT
+            else children[:MATRIX_BLOCK_SIZE]
+        )
+    context_ = {
+        'matrix': matrix,
+        'page': pages_models.CustomPage.objects.get(slug=page),
+    }
+    return render(request, 'catalog/catalog.html', context_)
 
 
 @set_csrf_cookie

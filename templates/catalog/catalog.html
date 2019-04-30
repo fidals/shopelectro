@@ -7,16 +7,21 @@
   {% breadcrumbs_with_siblings page %}
   <h1>{{ page.display.h1 }}</h1>
 
-  <ul class="catalog-list">
-    {% recursetree nodes %}
-      <li class="catalog-list-item">
-        <a href="{{ node.url }}" class="catalog-list-item">{{ node.name }}</a>
-        {% if not node.is_leaf_node %}
-          <ul class="catalog-list-children">
-            {{ children }}
+  <div class="container container-fluid">
+    <div class="row around-xs">
+      {% for root_name, children in matrix.items %}
+        <div class="category-block">
+          <h2>{{ root_name }}</h2>
+          <ul>
+            {% for category in children %}
+              <li class="second-level-category">
+                <a href="{{ category.url }}">{{ category.name }}</a>
+              </li>
+            {% endfor %}
           </ul>
-        {% endif %}
-      </li>
-    {% endrecursetree %}
-  </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
 {% endblock %}
