@@ -92,7 +92,7 @@
    */
   function storeFilterGroupState(index) {
     if (config.hiddenFilterGroupIds.includes(index)) {
-      config.hiddenFilterGroupIds = config.hiddenFilterGroupIds.filter((i) => i != index);
+      config.hiddenFilterGroupIds = config.hiddenFilterGroupIds.filter(i => i !== index);
     } else {
       config.hiddenFilterGroupIds.push(index);
     }
