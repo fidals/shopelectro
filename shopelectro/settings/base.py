@@ -470,6 +470,7 @@ MAIN_PAGE_TILE = {
 
 HEADER_LINKS = {
     'exclude': ['besprovodnye-zvonki-241'],
+    'add': ['remont-akkumulyatorov'],
 }
 
 FOOTER_LINKS = {

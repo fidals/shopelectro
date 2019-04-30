@@ -1,5 +1,6 @@
 import datetime
 import math
+from itertools import chain
 
 from django import template
 from django.conf import settings
@@ -18,15 +19,15 @@ register = template.Library()
 @register.simple_tag
 def roots():
     return sorted(
-        [
-            Page.objects.filter(slug='remont-akkumulyatorov').first(),
-            *filter(
+        chain(
+            Page.objects.filter(slug__in=settings.HEADER_LINKS['add']),
+            filter(
                 lambda x: x.is_active,
                 CategoryPage.objects.exclude(slug__in=settings.HEADER_LINKS['exclude'])
                 # about get_cached_trees: https://goo.gl/rFKiku
                 .get_cached_trees()
             ),
-        ],
+        ),
         key=lambda x: x.position,
     )
 
