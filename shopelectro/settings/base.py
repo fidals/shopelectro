@@ -81,7 +81,7 @@ INSTALLED_APPS = [
 # https://docs.djangoproject.com/en/1.11/ref/middleware/#middleware-ordering
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # 'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -89,7 +89,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -466,6 +466,11 @@ MAIN_PAGE_TILE = {
         {'id': 1, 'name': 'Трансформаторные',
          'slug': 'bloki-pitaniia-transformatornye'},
     ],
+}
+
+HEADER_LINKS = {
+    'exclude': ['radiopriiomniki'],
+    'add': ['remont-akkumulyatorov'],
 }
 
 FOOTER_LINKS = {
