@@ -10,7 +10,7 @@ from django.urls import reverse
 from images.models import ImageMixin
 from pages.models import Page
 
-from shopelectro.models import Category
+from shopelectro.models import Category, CategoryPage
 
 register = template.Library()
 
@@ -18,14 +18,16 @@ register = template.Library()
 @register.simple_tag
 def roots():
     return sorted(
-        filter(
-            lambda x: x.page.is_active,
-            Category.objects
-            .select_related('page')
-            # about get_cached_trees: https://goo.gl/rFKiku
-            .get_cached_trees()
-        ),
-        key=lambda x: x.page.position,
+        [
+            Page.objects.filter(slug='remont-akkumulyatorov').first(),
+            *filter(
+                lambda x: x.is_active,
+                CategoryPage.objects.exclude(slug__in=settings.HEADER_LINKS['exclude'])
+                # about get_cached_trees: https://goo.gl/rFKiku
+                .get_cached_trees()
+            ),
+        ],
+        key=lambda x: x.position,
     )
 
 
