@@ -40,6 +40,7 @@ def category_matrix(request, page: str):
     matrix = OrderedDict()
     for i, root in enumerate(roots):
         children = root.children.active()
+        # @todo #822:30m  Doc category matrix blocks.
         matrix[root.name] = (
             children
             if i not in MATRIX_BLOCKS_TO_LIMIT
