@@ -38,7 +38,7 @@ class MobileSeleniumTestCase(LiveServerTestCase):
             site_url=cls.live_server_url,
             desired_capabilities=chrome_options.to_capabilities(),
         )
-        cls.browser.set_window_size(400, 800)
+        # cls.browser.set_window_size(400, 800)
         cls.browser.implicitly_wait(10)
 
     @property
