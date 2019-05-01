@@ -123,6 +123,40 @@ div.info {
   width: 145px;
 }
 
+.privacy-policy-form {
+  position: relative;
+  line-height: 1.8;
+  margin: 0 0 15px;
+  color: @c-privacy-check;
+  font-size: @f-size-base - 4;
+
+  input {
+    border: none;
+    background: @c-privacy-check;
+    color: @c-privacy-check;
+    cursor: pointer;
+
+    &:checked {
+      border: transparent;
+      box-shadow: 0 1px 1px transparent inset;
+      opacity: 1;
+    }
+  }
+
+  label {
+    a {
+      color: @c-privacy-check;
+    }
+
+    cursor: pointer;
+    width: 83%;
+
+    .Q(@sm; {
+      width: auto;
+    });
+  }
+}
+
 .payment-types-form {
   position: relative;
 }

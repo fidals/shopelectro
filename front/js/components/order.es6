@@ -1,7 +1,8 @@
 (() => {
   const DOM = {
     $fancybox: $('.fancybox'),
-    $formErrorText: $('.js-form-error-text'),
+    $contactsError: $('.js-contacts-error'),
+    $privacyPolicyError: $('.js-privacy-policy-error'),
     $order: $('.js-order-contain'),
     yandexFormWrapper: '#yandex-form-wrapper',
     yandexForm: '#yandex-form',
@@ -13,6 +14,7 @@
     paymentOptions: 'input[name=payment_type]',
     defaultPaymentOptions: 'input[for=id_payment_type_0]',
     orderFieldData: $('#order-form-full').data('fields'),
+    privacyCheckbox: '.js-privacy-checkbox',
   };
 
   const config = {
@@ -161,12 +163,17 @@
     return orderInfo;
   };
 
-  /**
-   * Return true if form has valid phone & email.
-   */
-  function isValid(customerInfo) {
+  function isContactsValid(customerInfo) {
     return helpers.isPhoneValid(customerInfo.phone) &&
            helpers.isEmailValid(customerInfo.email);
+  }
+
+  function isPrivacyPolicyAccepted() {
+    return $(DOM.privacyCheckbox).is(':checked');
+  }
+
+  function showFormError($error) {
+    $error.removeClass('hidden').addClass('shake animated');
   }
 
   function renderYandexForm(formData) {
@@ -198,8 +205,13 @@
     event.preventDefault();
     const orderInfo = getOrderInfo();
 
-    if (!isValid(orderInfo)) {
-      DOM.$formErrorText.removeClass('hidden').addClass('shake animated');
+    if (!isContactsValid(orderInfo)) {
+      showFormError(DOM.$contactsError);
+      return;
+    }
+
+    if (!isPrivacyPolicyAccepted()) {
+      showFormError(DOM.$privacyPolicyError);
       return;
     }
 
