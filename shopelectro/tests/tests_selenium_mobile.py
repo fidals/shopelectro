@@ -4,11 +4,10 @@ Selenium-based tests.
 If you need to create new test-suite, subclass it from SeleniumTestCase class.
 Every Selenium-based test suite uses fixture called dump.json.
 """
-import unittest
-
 from django.conf import settings
 from django.test import LiveServerTestCase, override_settings, tag
 from django.urls import reverse
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -26,17 +25,17 @@ class MobileSeleniumTestCase(LiveServerTestCase):
     def setUpClass(cls):
         """Instantiate browser instance."""
         super().setUpClass()
-        capabilities = {
-            'browserName': 'chrome',
-            'mobileEmulation': {
-                'deviceName': 'Apple iPhone 5',
-            },
-        }
+        # http://chromedriver.chromium.org/mobile-emulation
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_experimental_option(
+            'mobileEmulation',
+            {'deviceName': 'iPhone 6'},
+        )
+
         cls.browser = SiteDriver(
             site_url=cls.live_server_url,
-            desired_capabilities=capabilities,
+            desired_capabilities=chrome_options.to_capabilities(),
         )
-        cls.browser.set_window_size(400, 800)
         cls.browser.implicitly_wait(10)
 
     @property
@@ -135,10 +134,6 @@ class Mobile(MobileSeleniumTestCase):
         )
         self.assertTrue(catalog_subitem.is_displayed())
 
-    # @todo #826:60m Fix mobile selenium driver. STB2
-    #  The test shows, that the driver is broken.
-    #  Probably we should properly setup desired capabilities of the driver.
-    @unittest.expectedFailure
     def test_tags_collapse_state(self):
         """Tags are collapsed by default."""
         self.browser.get(Category.objects.first().url)
