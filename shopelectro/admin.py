@@ -34,7 +34,7 @@ def prepare_has_filter_queryset(value, db_table, queryset):
     return queryset.filter(**{query: value != 'yes'})
 
 
-class ProductPriceFilter(filter.PriceRange):
+class ProductPriceFilter(filters.PriceRange):
 
     price_lookup = 'shopelectro_product__price'
 
