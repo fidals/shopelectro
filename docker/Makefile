@@ -13,6 +13,9 @@ generate-production-static-data deploy
 
 
 # ---------------------- Dev section ----------------------
+shell:
+	$(dc) run --rm app python manage.py shell
+
 migrate:
 	$(dc) run --rm app python manage.py migrate
 
