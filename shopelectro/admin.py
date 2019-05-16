@@ -166,6 +166,7 @@ class ProductPageAdmin(models.ProductPageAdmin):
         HasTagsFilter,
         HasCategoryFilter,
     ]
+    list_display = ['model_id', 'name', 'custom_parent', 'price', 'links', 'is_active']
     inlines = [ProductInline, inlines.ImageInline]
     search_fields = [
         'shopelectro_product__vendor_code', 'name', 'slug',
@@ -177,10 +178,16 @@ class ProductPageAdmin(models.ProductPageAdmin):
     model_id.short_description = _('Vendor code')
     model_id.admin_order_field = 'shopelectro_product__vendor_code'
 
+    def price(self, obj):
+        return obj.model.price
+
+    price.short_description = _('Price')
+    price.admin_order_field = '_product_price'
+
     def get_queryset(self, request):
+        qs = super().get_queryset(request)
         return (
-            super()
-            .get_queryset(request)
+            self.add_reference_to_field_on_related_model(qs, _product_price='price')
             .select_related('shopelectro_product')
         )
 
