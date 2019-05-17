@@ -1,12 +1,13 @@
 {% load pages_extras %}
 
+{% comment %} @todo #844:60m Add a html validator to CI pipeline{% endcomment %}
+
 <div class="hidden-xs hidden-sm breadcrumbs-wrapper"
      itemscope itemtype="https://schema.org/BreadcrumbList">
   {% for name, url, siblings in crumbs_list %}
       {% if url %}
         <span class="breadcrumbs-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
           <a href="{{ base_url }}{{ url }}" itemprop="item" class="breadcrumbs-link">
-             class="breadcrumbs-link">
             <span itemprop="name">{{ name }}</span>
           </a>
 
