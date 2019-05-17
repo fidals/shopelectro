@@ -59,6 +59,10 @@ class AdminSeleniumTestCase(helpers.SeleniumTestCase):
 class AdminPage(AdminSeleniumTestCase):
     """Selenium-based tests for Admin page UI."""
 
+    # @todo #835:60m Fix admin filter tests
+    #  Tests rely upon order of html markup.
+    #  It is fragile and always breaks after admin filter modifications.
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -67,11 +71,11 @@ class AdminPage(AdminSeleniumTestCase):
         cls.title_text = 'Shopelectro administration'
         cls.active_products = '//*[@id="changelist-filter"]/ul[1]/li[2]/a'
         cls.inactive_products = '//*[@id="changelist-filter"]/ul[1]/li[3]/a'
-        cls.price_filter = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
-        cls.filter_by_has_content = '//*[@id="changelist-filter"]/ul[3]/li[2]/a'
-        cls.filter_by_has_not_content = '//*[@id="changelist-filter"]/ul[3]/li[3]/a'
-        cls.filter_by_has_image = '//*[@id="changelist-filter"]/ul[4]/li[2]/a'
-        cls.filter_by_has_not_image = '//*[@id="changelist-filter"]/ul[4]/li[3]/a'
+        cls.price_filter = '//*[@id="changelist-filter"]/ul[4]/li[3]/a'
+        cls.filter_by_has_content = '//*[@id="changelist-filter"]/ul[2]/li[2]/a'
+        cls.filter_by_has_not_content = '//*[@id="changelist-filter"]/ul[2]/li[3]/a'
+        cls.filter_by_has_image = '//*[@id="changelist-filter"]/ul[3]/li[2]/a'
+        cls.filter_by_has_not_image = '//*[@id="changelist-filter"]/ul[3]/li[3]/a'
         cls.is_active_img = 'field-is_active'
         cls.autocomplete_text = 'Prod'
         cls.jstree_children = 'jstree-children'
@@ -159,7 +163,7 @@ class AdminPage(AdminSeleniumTestCase):
         ))
         product_price = int(float(product.text.replace(',', '.')))
 
-        self.assertTrue(product_price >= 1000)
+        self.assertTrue(product_price >= 1000 and product_price < 2000)
 
     def test_image_filter(self):
         """Image filter is able to filter pages by the presence of the image."""
