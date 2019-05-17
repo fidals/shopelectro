@@ -25,4 +25,4 @@ sorl-thumbnail==12.5.0
 python-telegram-bot==11.1.0
 sentry-sdk==0.7.2
 https://github.com/selwin/django-user_agents/archive/master.zip
-https://github.com/fidals/refarm-site/archive/0.5.11.zip
+https://github.com/fidals/refarm-site/archive/0.5.12.zip

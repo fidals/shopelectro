@@ -12,7 +12,7 @@ from django_select2.forms import ModelSelect2Widget
 from ecommerce import mailer
 from ecommerce.models import Position
 from pages.models import CustomPage, FlatPage, PageTemplate
-from generic_admin import inlines, mixins, models, sites
+from generic_admin import inlines, mixins, models, sites, filters
 
 from shopelectro import models as se_models
 from shopelectro.views.admin import TableEditor
@@ -32,6 +32,11 @@ def prepare_has_filter_queryset(value, db_table, queryset):
 
     # Use brackets, because `Explicit is better than implicit`.
     return queryset.filter(**{query: value != 'yes'})
+
+
+class ProductPriceFilter(filters.PriceRange):
+
+    price_lookup = 'shopelectro_product__price'
 
 
 class HasTagsFilter(admin.SimpleListFilter):
@@ -155,7 +160,13 @@ class ProductPageAdmin(models.ProductPageAdmin):
     add = False
     delete = False
     category_page_model = se_models.CategoryPage
-    list_filter = [*models.ProductPageAdmin.list_filter, HasTagsFilter, HasCategoryFilter]
+    list_filter = [
+        *models.ProductPageAdmin.list_filter,
+        ProductPriceFilter,
+        HasTagsFilter,
+        HasCategoryFilter,
+    ]
+    list_display = ['model_id', 'name', 'custom_parent', 'price', 'links', 'is_active']
     inlines = [ProductInline, inlines.ImageInline]
     search_fields = [
         'shopelectro_product__vendor_code', 'name', 'slug',
@@ -167,10 +178,16 @@ class ProductPageAdmin(models.ProductPageAdmin):
     model_id.short_description = _('Vendor code')
     model_id.admin_order_field = 'shopelectro_product__vendor_code'
 
+    def price(self, obj):
+        return obj.model.price
+
+    price.short_description = _('Price')
+    price.admin_order_field = '_product_price'
+
     def get_queryset(self, request):
+        qs = super().get_queryset(request)
         return (
-            super(ProductPageAdmin, self)
-            .get_queryset(request)
+            self.add_reference_to_field_on_related_model(qs, _product_price='price')
             .select_related('shopelectro_product')
         )
 
