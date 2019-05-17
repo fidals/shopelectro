@@ -2,7 +2,6 @@
   const DOM = {
     $fancybox: $('.fancybox'),
     $contactsError: $('.js-contacts-error'),
-    $privacyPolicyError: $('.js-privacy-policy-error'),
     $order: $('.js-order-contain'),
     yandexFormWrapper: '#yandex-form-wrapper',
     yandexForm: '#yandex-form',
@@ -14,7 +13,6 @@
     paymentOptions: 'input[name=payment_type]',
     defaultPaymentOptions: 'input[for=id_payment_type_0]',
     orderFieldData: $('#order-form-full').data('fields'),
-    privacyCheckbox: '.js-privacy-checkbox',
   };
 
   const config = {
@@ -168,10 +166,6 @@
            helpers.isEmailValid(customerInfo.email);
   }
 
-  function isPrivacyPolicyAccepted() {
-    return $(DOM.privacyCheckbox).is(':checked');
-  }
-
   function showFormError($error) {
     $error.removeClass('hidden').addClass('shake animated');
   }
@@ -207,11 +201,6 @@
 
     if (!isContactsValid(orderInfo)) {
       showFormError(DOM.$contactsError);
-      return;
-    }
-
-    if (!isPrivacyPolicyAccepted()) {
-      showFormError(DOM.$privacyPolicyError);
       return;
     }
 

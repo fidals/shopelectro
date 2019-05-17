@@ -82,12 +82,10 @@
         <div class="payment-types-form">
           {% include 'ecommerce/order/payment_types.html' %}
         </div>
-        {% comment %} @todo #816:30m Test privacy policy agreement.{% endcomment %}
-
         {% comment %} @todo #816:30m Make the checkbox to the same color as its text.{% endcomment %}
         <div class="privacy-policy-form">
           <label>
-            <input class="js-privacy-checkbox" type="checkbox" required checked>
+            <input class="js-privacy-checkbox" type="checkbox" checked>
             Я согласен на <a href="/media/privacy-policy.pdf">обработку персональных данных</a>
           </label>
         </div>
@@ -97,9 +95,6 @@
         <div class="order-info-header text-center">ФОРМА ЗАКАЗА</div>
         <p class="error-msg hidden js-contacts-error">
           Введите ваш телефон, почтовый адрес.
-        </p>
-        <p class="error-msg hidden js-privacy-policy-error">
-          Примите соглашение на обработку персональных данных.
         </p>
 
         <div class="order-form-right form-horizontal">
