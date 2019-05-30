@@ -93,6 +93,11 @@ class Product(
     wholesale_large = models.FloatField(
         default=0, verbose_name=_('wholesale_large'))
 
+    in_pack = models.PositiveSmallIntegerField(
+        default=1,
+        verbose_name=_('in pack'),
+    )
+
     def get_absolute_url(self):
         return reverse('product', args=(self.vendor_code,))
 
