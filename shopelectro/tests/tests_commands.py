@@ -45,20 +45,16 @@ class UpdatePack(TestCase):
     fixtures = ['dump.json']
 
     def test_update_prices(self):
-        def get_products(tags):
-            return list(chain.from_iterable(t.products.all() for t in tags))
-
         # @todo #859:30m Create fixture products with in_pack = 2
 
         mul = 2
         tags = Tag.objects.all()
-        for t in tags:
-            t.products.update(in_pack=mul)
-        products = get_products(tags)
+        tags.products().update(in_pack=mul)
+        products = list(tags.products())
 
         update_pack.update_prices(tags)
 
-        for new, old in zip(get_products(tags), products):
+        for new, old in zip(tags.products(), products):
             self.assertEqual(new.id, old.id)
             for price in update_pack.PRICES:
                 self.assertEqual(getattr(new, price) / mul, getattr(old, price))

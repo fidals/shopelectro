@@ -8,7 +8,7 @@ The update_catalog command always resets product prices to per unit format, so:
 import logging
 from itertools import chain
 
-from django.db import transaction, models
+from django.db import models, transaction
 
 from shopelectro.models import Product, TagQuerySet, TagGroup
 
