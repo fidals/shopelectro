@@ -237,6 +237,15 @@ class TagGroup(catalog_models.TagGroup):
 
 
 class TagQuerySet(catalog_models.TagQuerySet):
+
+    def products(self):
+        id_list = Tag.objects.all().values_list('products__id')
+        # [(1,), (2,), ...] -> (1, 2, ...)
+        ids = set(list(zip(*id_list))[0])
+        return Product.objects.filter(id__in=ids)
+
+
+class TagManager(catalog_models.TagManager.from_queryset(TagQuerySet)):
     pass
 
 
@@ -244,3 +253,5 @@ class Tag(catalog_models.Tag):
     group = models.ForeignKey(
         TagGroup, on_delete=models.CASCADE, null=True, related_name='tags',
     )
+
+    objects = TagManager()
