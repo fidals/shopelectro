@@ -11,6 +11,7 @@ import unittest
 import urllib.parse
 import uuid
 from collections import defaultdict
+from itertools import chain
 from xml.etree import ElementTree
 
 from django.conf import settings
@@ -18,7 +19,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings, tag
 
 from shopelectro.management.commands._update_catalog import (
-    update_products, update_tags
+    update_products, update_tags, update_pack,
 )
 from shopelectro.models import Category, Product, ProductPage, Tag, TagGroup
 
@@ -36,6 +37,31 @@ def get_tag_as_dict(group: str, tag: str):
             'tags': {uuid.uuid4(): {'name': tag}}
         }
     }
+
+
+@tag('fast')
+class UpdatePack(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_update_prices(self):
+        def get_products(tags):
+            return list(chain.from_iterable(t.products.all() for t in tags))
+
+        # @todo #859:30m Create fixture products with in_pack = 2
+
+        mul = 2
+        tags = Tag.objects.all()
+        for t in tags:
+            t.products.update(in_pack=mul)
+        products = get_products(tags)
+
+        update_pack.update_prices(tags)
+
+        for new, old in zip(get_products(tags), products):
+            self.assertEqual(new.id, old.id)
+            for price in update_pack.PRICES:
+                self.assertEqual(getattr(new, price) / mul, getattr(old, price))
 
 
 @tag('fast')
