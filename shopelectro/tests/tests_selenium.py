@@ -161,7 +161,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         )
 
     @property
-    def is_empty_cart(self):
+    def is_cart_empty(self):
         return is_cart_empty(self.browser)
 
     def apply_tags(self):
@@ -297,7 +297,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.browser.get(self.children_category)
         self.wait_page_loading()
         self.add_to_cart(index=0)
-        self.assertFalse(self.is_empty_cart)
+        self.assertFalse(self.is_cart_empty)
 
     def test_add_to_cart_after_load_more(self):
         self.browser.get(self.root_category)
@@ -305,7 +305,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         # Let's load another PRODUCTS_TO_LOAD products.
         self.load_more_products()
         self.add_to_cart(index=self.PRODUCTS_TO_LOAD + 1)
-        self.assertFalse(self.is_empty_cart)
+        self.assertFalse(self.is_cart_empty)
 
     def test_apply_filter_state(self):
         """Apply filters btn should be disabled with no checked tags."""
@@ -817,6 +817,13 @@ class OrderPage(helpers.SeleniumTestCase):
         self.submit_form()
         self.wait.until(EC.url_contains(success_page_domain))
         self.assertIn(success_page_domain, self.browser.current_url)
+
+    def test_cart_after_order(self):
+        self.append_products_to_cart()
+        self.fill_contacts_data()  # Ignore CPDBear
+        self.submit_form()
+        self.wait.until(EC.url_contains(self.success_order_url))
+        self.assertTrue(is_cart_empty(self.browser))
 
 
 @tag('slow')

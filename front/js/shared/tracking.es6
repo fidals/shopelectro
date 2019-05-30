@@ -29,7 +29,6 @@
 
   const init = () => {
     setUpListeners();
-    publishPurchase();
   };
 
   function setUpListeners() {
@@ -54,6 +53,10 @@
     });
     mediator.subscribe('onProductDetail', (_, data) => yaTracker.detail([data]));
     mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
+    mediator.subscribe('onSuccessOrder', (_, orderPositions, orderData) => {
+      yaTracker.purchase(orderPositions, orderData);
+      gaTracker.purchase(orderPositions, orderData);
+    });
 
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));
     DOM.$removeFromCart.click(() => reachGoal('DELETE_PRODUCT'));
@@ -72,19 +75,6 @@
         reachGoal('PUT_IN_CART_FROM_CATEGORY');
         reachGoal('CMN_PUT_IN_CART');
       });
-  }
-
-  function publishPurchase() {
-    if (!DOM.$purchasedOrder.length) return;
-    const orderData = {
-      id: DOM.$purchasedOrder.data('id'),
-      revenue: parseFloat(DOM.$purchasedOrder.data('total-revenue'), 10),
-    };
-    const orderPositions = DOM.$purchasedOrder.data('positions')
-      .map(val => val.fields);
-
-    yaTracker.purchase(orderPositions, orderData);
-    gaTracker.purchase(orderPositions, orderData);
   }
 
   function reachGoal(goal) {

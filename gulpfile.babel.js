@@ -114,6 +114,7 @@ const path = {
         'front/js/components/order.es6',
         'front/js/components/accordion.es6',
         'front/js/components/staticPages.es6',
+        'front/js/components/successOrder.es6',
       ],
 
       adminVendors: [
