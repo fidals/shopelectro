@@ -239,9 +239,7 @@ class TagGroup(catalog_models.TagGroup):
 class TagQuerySet(catalog_models.TagQuerySet):
 
     def products(self):
-        id_list = Tag.objects.all().values_list('products__id')
-        # [(1,), (2,), ...] -> (1, 2, ...)
-        ids = set(list(zip(*id_list))[0])
+        ids = Tag.objects.all().values_list('products__id', flat=True)
         return Product.objects.filter(id__in=ids)
 
 

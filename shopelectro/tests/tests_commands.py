@@ -45,7 +45,8 @@ class UpdatePack(TestCase):
     fixtures = ['dump.json']
 
     def test_update_prices(self):
-        # @todo #859:30m Create fixture products with in_pack = 2
+        # @todo #859:60m Create fixture products with in_pack = 2
+        #  Resuse the fixture in related tests.
 
         mul = 2
         tags = Tag.objects.all()
@@ -57,7 +58,7 @@ class UpdatePack(TestCase):
         for new, old in zip(tags.products(), products):
             self.assertEqual(new.id, old.id)
             for price in update_pack.PRICES:
-                self.assertEqual(getattr(new, price) / mul, getattr(old, price))
+                self.assertEqual(getattr(new, price), getattr(old, price) * mul)
 
 
 @tag('fast')
