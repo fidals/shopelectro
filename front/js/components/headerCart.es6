@@ -25,7 +25,7 @@
       },
       showCart,
     );
-    mediator.subscribe('onSuccessOrder', () => reloadCart());
+    mediator.subscribe('onSuccessOrder', reloadCart);
 
     // Since product's list in Cart dropdown is dynamic, we bind events on static parent
     DOM.$cart.on('click', DOM.resetCart, clear);

@@ -4,15 +4,18 @@
   };
 
   const init = () => {
-  	publishSuccessOrder();
+    publishSuccessOrder();
   };
 
   function publishSuccessOrder() {
-    if (!DOM.$purchasedOrder.length) {
-    	if (window.location.href.includes('order-success')) {
-	      console.error('Success page doesn\'t contain purchased order data.');
-    	}
-    	return;
+    const isSuccessPage = window.location.href.includes('order-success');
+    const hasData = DOM.$purchasedOrder.length;
+
+    if (!isSuccessPage) {
+      return;
+    } else if (!hasData) {
+      console.error('Success page doesn\'t contain purchased order data.');
+      return;
     }
 
     const orderData = {
