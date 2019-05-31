@@ -528,11 +528,6 @@ class TableEditor(AdminSeleniumTestCase):
 
         self.assertNotEqual(first_product_id_before, first_product_id_after)
 
-    # @todo #827:30m Fix tests for TableEditor.
-    #  They depend on dom element positions, which leads to broken tests
-    #  after adding new fields to a model.
-
-    @unittest.expectedFailed
     def test_save_and_drop_custom_filters(self):  # Ignore PyDocStyleBear
         """
         Headers in TE should be generated based on user settings in localStorage.
@@ -556,7 +551,6 @@ class TableEditor(AdminSeleniumTestCase):
         self.wait_tableeditor_loading()
         self.check_filters_and_table_headers_equality()
 
-    @unittest.expectedFailed
     def test_sort_table_by_price(self):
         """We could sort products in TE by price."""
         first_product_price_before = self.get_cell(1).text

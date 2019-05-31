@@ -1,5 +1,24 @@
 const customColModels = [
   {
+    name: 'in_pack',
+    // @todo #858:15m Localize Product.in_pack field
+    label: 'in pack',
+    editable: true,
+    editoptions: {
+      type: 'number',
+      step: '1',
+      min: '0',
+      pattern: '[0-9]',
+    },
+    editrules: {
+      minValue: 1,
+      number: true,
+    },
+    formatter: 'integer',
+    sorttype: 'integer',
+    width: 30,
+  },
+  {
     name: 'wholesale_small',
     label: 'мелкий опт',
     editable: true,
