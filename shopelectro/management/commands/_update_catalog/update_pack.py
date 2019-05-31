@@ -6,11 +6,10 @@ The update_catalog command always resets product prices to per unit format, so:
 2. Multiply product prices by in_pack value and save.
 """
 import logging
-from itertools import chain
 
 from django.db import models, transaction
 
-from shopelectro.models import Product, TagQuerySet, TagGroup
+from shopelectro.models import TagQuerySet, TagGroup
 
 logger = logging.getLogger(__name__)
 PRICES = ['price', 'purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large']

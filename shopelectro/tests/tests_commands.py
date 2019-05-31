@@ -11,7 +11,6 @@ import unittest
 import urllib.parse
 import uuid
 from collections import defaultdict
-from itertools import chain
 from xml.etree import ElementTree
 
 from django.conf import settings
