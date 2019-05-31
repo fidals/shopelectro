@@ -23,9 +23,9 @@
         render(data.header);
         saveCart(data.header);
       },
-      configs.initScrollbar,
       showCart,
     );
+    mediator.subscribe('onSuccessOrder', reloadCart);
 
     // Since product's list in Cart dropdown is dynamic, we bind events on static parent
     DOM.$cart.on('click', DOM.resetCart, clear);
@@ -38,24 +38,24 @@
    */
   function loadCart() {
     const renderedCart = localStorage.getItem(config.storageKey);
-    const renderCart = (html) => {
-      render(html);
-      configs.initScrollbar();
-    };
 
     if (renderedCart) {
-      renderCart(renderedCart);
+      render(renderedCart);
     } else {
-      server.getCart()
-        .then((data) => {
-          renderCart(data.header);
-          saveCart(data.header);
-        });
+      reloadCart();
     }
   }
 
   function saveCart(state) {
     localStorage.setItem(config.storageKey, state);
+  }
+
+  function reloadCart() {
+    server.getCart()
+      .then((data) => {
+        render(data.header);
+        saveCart(data.header);
+      });
   }
 
   /**
@@ -111,6 +111,7 @@
    */
   function render(html) {
     DOM.$cart.html(html);
+    configs.initScrollbar();
   }
 
   init();

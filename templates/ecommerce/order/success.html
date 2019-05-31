@@ -1,13 +1,8 @@
-{% extends 'layout/base.html' %}
+{% extends 'layout/inner_page.html' %}
 
 {% load se_extras %}
 {% load pages_extras %}
 {% load static %}
-
-{% block stylesheets %}
-  {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages.min.css' %}">
-{% endblock %}
 
 {% block title %}Спасибо за Ваш заказ{% endblock %}
 
