@@ -18,7 +18,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings, tag
 
 from shopelectro.management.commands._update_catalog import (
-    update_products, update_tags
+    update_products, update_tags, update_pack,
 )
 from shopelectro.models import Category, Product, ProductPage, Tag, TagGroup
 
@@ -36,6 +36,28 @@ def get_tag_as_dict(group: str, tag: str):
             'tags': {uuid.uuid4(): {'name': tag}}
         }
     }
+
+
+@tag('fast')
+class UpdatePack(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_update_prices(self):
+        # @todo #859:60m Create fixture products with in_pack = 2
+        #  Resuse the fixture in related tests.
+
+        mul = 2
+        tags = Tag.objects.all()
+        tags.products().update(in_pack=mul)
+        products = list(tags.products())
+
+        update_pack.update_prices(tags)
+
+        for new, old in zip(tags.products(), products):
+            self.assertEqual(new.id, old.id)
+            for price in update_pack.PRICES:
+                self.assertEqual(getattr(new, price), getattr(old, price) * mul)
 
 
 @tag('fast')
