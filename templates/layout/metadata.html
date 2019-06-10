@@ -38,12 +38,12 @@
 <meta name="cmsmagazine" content="8a67cdaf9ded6448bd3626abd67b56e4">
 
 {# request path is current path, but without http url's query string #}
-<link rel="canonical" href="{{ request.path }}">
+<link rel="canonical" href="{{ base_url }}{{ request.path }}">
 {% if paginated.page.has_previous %}
-  <link rel="prev" href="{{ request.path }}{% if paginated.page.previous_page_number > 1 %}?page={{ paginated.page.previous_page_number }}{% endif %}">
+  <link rel="prev" href="{{ base_url }}{{ request.path }}{% if paginated.page.previous_page_number > 1 %}?page={{ paginated.page.previous_page_number }}{% endif %}">
 {% endif %}
 {% if paginated.page.has_next %}
-  <link rel="next" href="{{ request.path }}?page={{ paginated.page.next_page_number }}">
+  <link rel="next" href="{{ base_url }}{{ request.path }}?page={{ paginated.page.next_page_number }}">
 {% endif %}
 
 <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
