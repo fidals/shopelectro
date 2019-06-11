@@ -6,6 +6,7 @@ They all should be using Django's TestClient.
 """
 import json
 from functools import partial
+from itertools import chain
 from operator import attrgetter
 from urllib.parse import urlparse, quote
 from xml.etree import ElementTree as ET
@@ -17,17 +18,15 @@ from django.http import HttpResponse
 from django.test import override_settings, TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-from itertools import chain
 
 from catalog.helpers import reverse_catalog_url
-from pages.urls import reverse_custom_page
 from pages.models import CustomPage
-
+from pages.urls import reverse_custom_page
 from shopelectro import models
 from shopelectro import views
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
-CANONICAL_HTML_TAG = '<link rel="canonical" href="{path}">'
+CANONICAL_HTML_TAG = '<link rel="canonical" href="{base_url}{path}">'
 
 
 def get_page_number(response):
@@ -494,7 +493,10 @@ class Category(BaseCatalogTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            CANONICAL_HTML_TAG.format(path=path),
+            CANONICAL_HTML_TAG.format(
+                base_url=settings.BASE_URL,
+                path=path
+            ),
         )
 
     def test_tags_pagination_has_canonical_links(self):
@@ -519,7 +521,10 @@ class Category(BaseCatalogTestCase):
         )
         response = self.client.get(paginated_url)
         self.assertContains(
-            response, CANONICAL_HTML_TAG.format(path=not_paginated_url)
+            response, CANONICAL_HTML_TAG.format(
+                base_url=settings.BASE_URL,
+                path=not_paginated_url
+            )
         )
 
     def test_category_matrix_page(self):
