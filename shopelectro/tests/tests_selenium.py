@@ -15,11 +15,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 
-from shopelectro.models import Category, Product
-from shopelectro.tests import helpers
-
 from pages.models import FlatPage, CustomPage
 from pages.urls import reverse_custom_page
+from shopelectro.models import Category, Product
+from shopelectro.tests import helpers
 
 
 def add_to_cart(browser):
@@ -133,7 +132,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         )
 
         self.apply_btn = 'js-apply-filter'
-        self.filter_tag = 'label[for="tag-24-v"]'
+        self.filter_tag = 'label[for="tag-napriazhenie__24-v"]'
 
     def tearDown(self):
         self.browser.delete_all_cookies()

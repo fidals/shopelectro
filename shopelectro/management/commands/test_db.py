@@ -9,14 +9,13 @@ Usage:
 - now you have json file, that'll be used by our TDD tests
 """
 import os
-import shutil
 
 from django.conf import settings
 from django.core.files.images import ImageFile
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from images.models import Image, model_directory_path
+from images.models import Image
 from pages.models import Page, FlatPage, PageTemplate
 from pages.utils import save_custom_pages, init_redirects_app
 from shopelectro import models as se_models, tests as se_tests
@@ -130,17 +129,11 @@ class Command(BaseCommand):
                 # save files to media folder
                 with open(file_path, mode='rb') as file_src:
                     # product "/catalog/products/2/" contains image
-                    image = Image.objects.create(
+                    Image.objects.create(
                         model=page,
                         slug=slug,
                         image=ImageFile(file_src)
                     )
-                    file_name = os.path.basename(file_src.name)
-                    file_dst_path = os.path.join(
-                        settings.MEDIA_ROOT,
-                        model_directory_path(image, file_name)
-                    )
-                    shutil.copyfile(file_src.name, file_dst_path)
 
             create_image(file_path=self.FIRST_IMAGE, slug='deer')
             create_image(file_path=self.SECOND_IMAGE, slug='gold')
@@ -163,7 +156,6 @@ class Command(BaseCommand):
                 product.tags.add(tag)
 
             if product.id in self.PRODUCTS_WITH_IMAGE:
-                create_images(product.page)
                 create_images(product.page)
 
         def fill_with_products(to_fill, tags_, count):
