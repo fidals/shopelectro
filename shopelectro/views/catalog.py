@@ -35,7 +35,16 @@ def category_matrix(request, page: str):
     matrix = OrderedDict()
     for i, root in enumerate(roots):
         children = root.children.active()
-        # @todo #822:30m  Doc category matrix blocks.
+        # Categories matrix is UI element supposed to preview
+        # the whole catalog structure at with a single page.
+        # The matrix consists of blocks.
+        # Every block is a list of categories with links.
+        # How the matrix looks like:
+        # https://github.com/fidals/shopelectro/issues/837#issuecomment-501161967
+
+        # @todo #837:60m  Improve categories matrix arch.
+        #  Now it's untyped data structure with common comments.
+        #  Turn it to the set of object with clear names.
         matrix[(root.name, root.url)] = (
             children
             if i not in MATRIX_BLOCKS_TO_LIMIT
