@@ -16,7 +16,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse
 from django.test import override_settings, TestCase, tag
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from catalog.helpers import reverse_catalog_url
@@ -547,10 +547,11 @@ class Category(BaseCatalogTestCase):
 class CategoriesMatrix(BaseCatalogTestCase):
 
     fixtures = ['dump.json']
-    URL = reverse_lazy('custom_page', kwargs={'page': 'catalog'})
 
     def get_page(self):
-        return self.client.get(self.URL)
+        return self.client.get(
+            url=reverse('custom_page', kwargs={'page': 'catalog'})
+        )
 
     def get_soup(self) -> BeautifulSoup:
         return BeautifulSoup(
