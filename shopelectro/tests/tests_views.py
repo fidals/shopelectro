@@ -550,7 +550,7 @@ class CategoriesMatrix(BaseCatalogTestCase):
 
     def get_page(self):
         return self.client.get(
-            url=reverse('custom_page', kwargs={'page': 'catalog'})
+            path=reverse('custom_page', kwargs={'page': 'catalog'})
         )
 
     def get_soup(self) -> BeautifulSoup:
