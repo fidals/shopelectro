@@ -9,9 +9,9 @@
 
   <div class="container container-fluid">
     <div class="row around-xs">
-      {% for root_name, children in matrix.items %}
+      {% for root, children in matrix.items %}
         <div class="category-block">
-          <h2>{{ root_name }}</h2>
+          <h2><a href="{{ root.1 }}" class="h2">{{ root.0 }}</a></h2>
           <ul>
             {% for category in children %}
               <li class="second-level-category">
