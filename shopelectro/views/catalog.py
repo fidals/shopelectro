@@ -23,10 +23,6 @@ MATRIX_BLOCKS_TO_LIMIT = [3, 5]
 MATRIX_BLOCK_SIZE = 7
 
 
-# @todo #822:60m  Create tests for the catalog matrix.
-#  This cases are would be good to test:
-#  - Matrix sorting by page position
-#  - Block items limiting
 def category_matrix(request, page: str):
     assert page == 'catalog'
     roots = (

@@ -543,6 +543,46 @@ class Category(BaseCatalogTestCase):
             self.assertEqual(from_db.name, from_app.a.text)
 
 
+@tag('fast', 'catalog')
+class CategoriesMatrix(BaseCatalogTestCase):
+
+    fixtures = ['dump.json']
+
+    def get_page(self):
+        return self.client.get(
+            path=reverse('custom_page', kwargs={'page': 'catalog'})
+        )
+
+    def get_soup(self) -> BeautifulSoup:
+        return BeautifulSoup(
+            self.get_page().content.decode('utf-8'),
+            'html.parser'
+        )
+
+    def test_roots_sorting(self):
+        soup = self.get_soup()
+        from_page = soup.find_all('h2')
+        from_db = (
+            models.Category.objects.bind_fields().active()
+            .filter(level=0)
+            .order_by('page__position', 'name')
+        ).values_list('name', flat=True)
+        self.assertEqual([c.text for c in from_page], list(from_db))
+
+    def test_second_level_sorting(self):
+        soup = self.get_soup()
+        from_page = soup.select('.second-level-category > a')
+        from_db = (
+            models.Category.objects.bind_fields().active()
+            .filter(level=1)
+            .order_by(
+                'parent__page__position', 'parent__name',
+                'page__position', 'name'
+            )
+        ).values_list('name', flat=True)
+        self.assertEqual([c.text for c in from_page], list(from_db))
+
+
 @tag('fast')
 class IndexPage(TestCase):
 
