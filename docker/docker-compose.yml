@@ -59,11 +59,11 @@ services:
       #  Link on error:
       #  https://ci.fidals.com/fidals/shopelectro/468/7
 
-      #- ../gulpfile.babel.js:/usr/app/src/gulpfile.babel.js
+      - ../gulpfile.babel.js:/usr/app/src/gulpfile.babel.js
       - ../front:/usr/app/src/front
       - ../front_build:/usr/app/src/front_build
       # Uncomment next line if you dev refarm-site's front
-      #- $REFARM_DIR/:$DEPS_DIR/
+      - $REFARM_DIR/:$DEPS_DIR/
     env_file:
       - env_files/paths
 
@@ -100,7 +100,7 @@ services:
       - 6382:6379
 
   selenium:
-    image: selenium/standalone-chrome-debug:3.141.59
+    image: selenium/standalone-chrome-debug:3.141.59-oxygen
     restart: always
     ports:
       - 4444
