@@ -197,7 +197,7 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.browser.get(self.children_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
 
-        self.assertEqual(len(crumbs), 4)
+        self.assertEqual(len(crumbs), 3)
 
     def test_loaded_products_count(self):
         """Any CategoryPage should contain predefined products count by default."""
