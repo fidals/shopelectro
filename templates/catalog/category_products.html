@@ -19,7 +19,8 @@
     <div class="product-card-text" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
       <div class="product-card-articul">Артикул: {{ product.vendor_code }}</div>
       <div class="product-card-desc-wrapper">
-        <a class="product-card-desc js-browse-product" href="{{ product.url }}"
+        <a class="product-card-desc js-browse-product"
+            href="{{ product.url }}" title="{{ product.name }}"
            {% if not request|is_mobile %}target="_blank"{% endif %}>
           {{ product.name }}
         </a>
