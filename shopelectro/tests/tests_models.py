@@ -15,7 +15,7 @@ class Category(TestCase):
 
     fixtures = ['dump.json']
 
-    def test_siblings_is_active(self):
+    def test_crumb_siblings_are_active(self):
         category = se_models.Category.objects.raw(
             'SELECT * FROM shopelectro_category AS P'
             ' WHERE P.id = ('
