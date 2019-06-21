@@ -354,3 +354,8 @@ class GeneratePrices(TestCase):
         url = offer.find('url').text
         get_attrs = urllib.parse.parse_qs(url)
         self.assertEqual('cpc-market', get_attrs['utm_medium'][0])
+
+    def test_price_value(self):
+        offer = self.prices['YM'].offers_node[0]
+        product = Product.objects.get(vendor_code=offer.attrib['id'])
+        self.assertEqual(product.price, float(offer.find('price').text))

@@ -30,7 +30,7 @@ def update_prices(packs: TagQuerySet):
         packs.products().update(**fields_to_update)
 
 
-def main(*args, kwargs):
+def main(*args, **kwargs):
     uuid = 'ae30f766-0bb8-11e6-80ea-02d2cc20e118'
     pack_group = TagGroup.objects.filter(uuid=uuid).first()
     if not pack_group:
