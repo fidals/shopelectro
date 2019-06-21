@@ -530,6 +530,30 @@ class Category(BaseCatalogTestCase):
             )
         )
 
+    def test_crumb_siblings_are_active(self):
+        category = models.Category.objects.raw(
+            'SELECT * FROM shopelectro_category AS P'
+            ' WHERE P.id = ('
+            '    SELECT C.parent_id FROM shopelectro_category as C'
+            '    GROUP BY C.parent_id'
+            '    HAVING COUNT(C.parent_id) > 1'
+            '    LIMIT 1'
+            ' )'
+        )[0]
+        (
+            pages_models.Page.objects
+            .filter(id=category.children.first().page.id)
+            .update(is_active=False)
+        )
+        soup = self.get_category_soup(category.children.active().first())
+        siblings = soup.select('.breadcrumbs-siblings-links a')
+        self.assertTrue(all([
+            c.page.is_active for c in (
+                models.Category.objects
+                .filter(name__in=[s.text.strip() for s in siblings])
+            )
+        ]))
+
 
 @tag('fast', 'catalog')
 class CategoriesMatrix(BaseCatalogTestCase):
