@@ -530,6 +530,9 @@ class Category(BaseCatalogTestCase):
             )
         )
 
+    # @todo #887:30m  Continue not active crumb siblings bug investigation.
+    #  The test below proves that bug described at #887 is not reproduced.
+    #  However prod contains this bug. Continue investigation.
     def test_crumb_siblings_are_active(self):
         category = models.Category.objects.raw(
             'SELECT * FROM shopelectro_category AS P'

@@ -16,7 +16,7 @@ class Category(TestCase):
     fixtures = ['dump.json']
 
     def test_crumb_siblings_are_active(self):
-        category = se_models.Category.objects.raw(
+        category = se_models.Category.objects.raw(  # Ignore CPDBear
             'SELECT * FROM shopelectro_category AS P'
             ' WHERE P.id = ('
             '    SELECT C.parent_id FROM shopelectro_category as C'
