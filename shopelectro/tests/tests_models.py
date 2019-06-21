@@ -1,11 +1,36 @@
 from functools import partial
+from itertools import chain
 
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase, TransactionTestCase, tag
-from itertools import chain
 
+from pages import models as pages_models
+from shopelectro import models as se_models
 from shopelectro.models import Product, Tag, TagGroup
+
+
+@tag('fast')
+class Category(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_siblings_is_active(self):
+        category = se_models.Category.objects.raw(
+            'SELECT * FROM shopelectro_category AS P'
+            ' WHERE P.id = ('
+            '    SELECT C.parent_id FROM shopelectro_category as C'
+            '    GROUP BY C.parent_id'
+            '    HAVING COUNT(C.parent_id) > 1'
+            '    LIMIT 1'
+            ' )'
+        )[0]
+        (
+            pages_models.Page.objects
+            .filter(id=category.children.first().page.id)
+            .update(is_active=False)
+        )
+        self.assertTrue(all((c.page.is_active for c in category.get_siblings())))
 
 
 @tag('fast')
