@@ -530,11 +530,10 @@ class Category(BaseCatalogTestCase):
             )
         )
 
-    # @todo #887:30m  Continue not active crumb siblings bug investigation.
-    #  The test below proves that bug described at #887 is not reproduced.
-    #  However prod contains this bug. Continue investigation.
+    # @todo #887:30m  Fix not active crumbs siblings bug.
+    #  The test below proves the bug. Now fix it.
     def test_crumb_siblings_are_active(self):
-        category = models.Category.objects.raw(
+        parent = models.Category.objects.raw(
             'SELECT * FROM shopelectro_category AS P'
             ' WHERE P.id = ('
             '    SELECT C.parent_id FROM shopelectro_category as C'
@@ -545,9 +544,10 @@ class Category(BaseCatalogTestCase):
         )[0]
         (
             pages_models.Page.objects
-            .filter(id=category.children.first().page.id)
+            .filter(id=parent.children.first().page.id)
             .update(is_active=False)
         )
+        category = parent.children.active().first()
         soup = self.get_category_soup(category.children.active().first())
         siblings = soup.select('.breadcrumbs-siblings-links a')
         self.assertTrue(all([
