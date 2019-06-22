@@ -6,7 +6,7 @@
 
 {% if tile_products %}
   <div itemscope itemtype="https://schema.org/Product" class="stuff-top">
-    <p class="stuff-top-title text-center">{{ tile_title }}</p>
+    <p class="stuff-top-title">{{ tile_title }}</p>
     {% for product in tile_products %}
       <p class="hidden" itemprop="description">
         {% with description=product.page.display.description %}
