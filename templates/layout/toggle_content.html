@@ -6,7 +6,9 @@
     <span class="content-more">
       {{ content|linebreaksbr }}
     </span>
-    <a href="#" class="js-more-text">Развернуть описание</a>
+    <a href="#" class="more-text js-more-text">
+      Развернуть описание <i class="fa fa-chevron-down"></i>
+    </a>
   {% else %}
     {{ content|linebreaksbr }}
   {% endif %}
