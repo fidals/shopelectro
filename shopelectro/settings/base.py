@@ -36,7 +36,8 @@ THUMBNAIL_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-if os.environ.get('TEST_ENV', False):
+TEST_ENV = os.environ.get('TEST_ENV', False)
+if TEST_ENV:
     # disable https in CI
     # https://docs.djangoproject.com/en/1.9/ref/settings/#secure-proxy-ssl-header
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
