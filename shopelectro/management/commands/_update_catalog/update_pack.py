@@ -26,7 +26,8 @@ def find_pack_group() -> typing.Optional[TagGroup]:
     #  Remove Optional type as returning value and test find_pack_group.
     if not pack_group:
         logger.error(
-            f'Couldn\'t find "{settings.PACK_GROUP_NAME}" tag group by UUID="{settings.PACK_GROUP_UUID}".\n'
+            f'Couldn\'t find "{settings.PACK_GROUP_NAME}" tag group by'
+            f'UUID="{settings.PACK_GROUP_UUID}".\n'
             'Update the PACK_GROUP_UUID environ variable to set the new relevant UUID.'
         )
         pack_group = None
