@@ -45,7 +45,7 @@ class UpdatePack(TestCase):
 
     def test_command(self):
         """The command updates only packed products."""
-        # @todo 864:30m Test update_pack command.
+        # @todo #864:30m Test update_pack command.
 
     def test_update_in_packs(self):
         name_in_pack_map = {
