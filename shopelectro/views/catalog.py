@@ -23,6 +23,10 @@ MATRIX_BLOCKS_TO_LIMIT = [3, 5]
 MATRIX_BLOCK_SIZE = 7
 
 
+def pages(request):
+    return render(request, 'contacts.html', {})
+
+
 def category_matrix(request, page: str):
     assert page == 'catalog'
     roots = (

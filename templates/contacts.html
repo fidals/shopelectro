@@ -1,0 +1,198 @@
+{% extends 'layout/inner_page.html' %}
+
+{% load pages_extras %}
+{% load se_extras %}
+
+{% block content %}
+
+  <div class="row">
+    <div class="col-sm-3 p-article-sidebar">
+      some block
+    </div>
+
+    <div class="col-sm-9 right-col">
+      <h1>Контакты</h1>
+
+
+<h2>В Санкт-Петербурге</h2>
+<div itemscope itemtype="http://schema.org/ElectronicsStore">
+	<span itemprop="logo" class="hide">
+		<a href="/" class="header-logo"><img src="/static/images/logo.png"></a>
+	</span>
+
+  <div itemprop="department">
+    <h3 style="margin-top:40px;" id="elizarova">ДЦ "Елизаровский"</h3>
+    <span itemprop="name" class="hide">ShopElectro Елизаровский</span>
+
+    <div class="row contacts-department">
+      <div class="col-sm-4 text">
+        <div>
+        <ul class="items">
+          <li>One</li>
+          <li>One</li>
+          <li>One</li>
+          <li>One</li>
+        </ul>
+        </div>
+      </div>
+      <div class="col-sm-8 map">
+        <script charset="utf-8" src="https://api-maps.yandex.ru/services/constructor/1.0/js/?sid=uHnZXURYLxFOwRdU-GJ1kqHWoLaRIwyX&width=480&height=288&lang=ru_RU&sourceType=constructor"></script>
+      </div>
+    </div>
+
+    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+      <span itemprop="streetAddress" class="hide">пр. Елизарова 38А, офис 312</span>
+      <span itemprop="postalCode" class="hide"> 192148</span>
+      <span itemprop="addressLocality" class="hide">Санкт-Петербург</span>
+    </div>
+    <span itemprop="telephone" class="hide">+7 812 416-32-00</span>
+
+    <table cellspacing="20px" class="contacts">
+      <tr>
+        <td width=170>Телефон/факс:</td>
+        <td>+7 (812) <span class="ya-opt-phone">416-32-00</span></span></td>
+      </tr>
+      <tr>
+        <td>Электронная почта:</td>
+        <td style="vertical-align:top">
+          <a href="mailto:info@shopelectro.ru"><span class="font-bold"> <span itemprop="email">info@shopelectro.ru</span></span></a>
+        </td>
+      </tr>
+      <tr>
+        <td>Адрес шоу-рума:</td>
+        <td>192148, г. Санкт-Петербург, пр. Елизарова 38А, офис 312</td>
+      </tr>
+      <tr>
+        <td>Режим работы:</td>
+        <td><time itemprop="openingHours" datetime="Mo-Th 10:00−18:00">ПН-ЧТ с 10:00 до 18:00,   ПТ с 10:00 до 17:00</time></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+        <a href="/pages/rekvisity/">Реквизиты</a> ООО "Исток-Плюс"</td>
+      </tr>
+    </table>
+    <a class="js-toggle-map" href="#" style="margin-top: -5%;
+      display: block;">Показать карту</a>
+    <div class="hide">
+      <script charset="utf-8" src="https://api-maps.yandex.ru/services/constructor/1.0/js/?sid=uHnZXURYLxFOwRdU-GJ1kqHWoLaRIwyX&width=690&height=450&lang=ru_RU&sourceType=constructor"></script>
+    </div>
+
+    <br>
+  </div>
+
+  <div itemprop="department">
+    <span itemprop="name" class="hide">ShopElectro Юнона</span>
+    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+      <span itemprop="streetAddress" class="hide">ул. Маршала Казакова, д. 35, БК &laquo;Юнона&raquo;, павильоны №660, 662</span>
+      <span itemprop="postalCode" class="hide"> 198332</span>
+      <span itemprop="addressLocality" class="hide">Санкт-Петербург</span>
+    </div>
+    <span itemprop="telephone" class="hide">+7 812 416-32-00</span>
+
+    <h3 id="yunona"> Пункт выдачи БК "Юнона"</h3>
+    <table cellspacing="20px" class="contacts">
+      <tr>
+        <td style="vertical-align:top" width=170>Адрес:</td>
+        <td style="vertical-align:top">
+          198332, г. Санкт-Петербург, ул. Маршала Казакова, д. 35, БК &laquo;Юнона&raquo;, павильоны № 660, 662.
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top">Телефон:</td>
+        <td style="vertical-align:top">
+          +7 (812) <span class="ya-opt-phone">416-32-00</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top">Электронная почта:</td>
+        <td style="vertical-align:top">
+          <a href="mailto:info@shopelectro.ru"><span class="font-bold"> <span itemprop="email">info@shopelectro.ru</span></span></a>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top">Режим работы:</td>
+        <td style="vertical-align:top">
+          <p><time itemprop="openingHours" datetime="Mo 11:00−17:00">ПН 11:00 - 17:00</time><time itemprop="openingHours" datetime="Tu-Su 10:00−18:00"> ВТ-ВС 10:00 - 18:00</time></p>
+        </td> <b>По ценам сайта выдаются только ранее оплаченные заказы. Без этого цены/ассортимент будут отличаться.<b>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <a href="/pages/rekvisity/">Реквизиты</a> ООО "Исток-Плюс"
+        </td>
+      </tr>
+    </table>
+
+    <a class="js-toggle-map" href="#" style="margin-top: -5%;
+      display: block;">Показать карту</a>
+    <div class="hide">
+      <script charset="utf-8" src="//api-maps.yandex.ru/services/constructor/1.0/js/?sid=UGFfDAGiY931LPgHn0w72ASNTWLkYw39&width=690&height=450"></script>
+    </div>
+    <p></p>
+    <br>
+
+    <h2>В Москве</h2>
+    <h3 id="moscow">Центр обработки заявок и звонков</h3>
+    <p>Центр обработки заявок — это не склад, поэтому купить и забрать товар в центре нельзя. <br>В центре работает два оператора, которые по телефону примут ваш заказ и оформят заявку<br> в интернет-магазине.  Удобно для тех, кому проще продиктовать заказ по телефону.  </p>
+    <table cellspacing="20px" class="contacts">
+      <tr>
+        <td style="vertical-align:top" width=170>Адрес:</td>
+        <td style="vertical-align:top">
+        27018, г. Москва, ул. Сущёвский Вал, д. 5, строение 20, павильон 2Е88
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top">Телефон:</td>
+        <td style="vertical-align:top">
+          +7 (499) <span class="ya-opt-phone">647-61-49</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top">Электронная почта:</td>
+        <td style="vertical-align:top">
+          <a href="mailto:info@shopelectro.ru"><span class="font-bold"> <span itemprop="email">info@shopelectro.ru</span></span></a>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align:top">Режим работы:</td>
+        <td style="vertical-align:top">
+          <p><time itemprop="openingHours" datetime="Mo-Th 10:00−18:00">ПН-ЧТ с 10:00 до 18:00, ПТ с 10:00 до 17:00</time></p>
+        </td>
+      </tr>
+    </table>
+  <a class="js-toggle-map" href="#" style="margin-top: -5%;
+      display: block;">Показать карту</a>
+    <div class="hide">
+      <script charset="utf-8" async src="//api-maps.yandex.ru/services/constructor/1.0/js/?sid=Mt-AIY4v97AAeAknHJcRvrQNqHze_0SV&width=690&height=450&lang=ru_RU&sourceType=constructor&scroll=true"></script>
+    </div>
+    <p></p>
+    <br>
+  </div>
+
+  <div style="clear: both"></div>
+  <div id="YMapsID-5817" class="map-yandex"></div>
+</div>
+
+</div></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var elementList = document.querySelectorAll('.js-toggle-map');
+        [].forEach.call(elementList, function(item) {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                var mapTag = this.nextElementSibling;
+                mapTag.classList.toggle('hide');
+            });
+        });
+    });
+
+    function removeClass(el, className) {
+        if (el.classList) el.classList.remove(className);
+        else el.className = el.className.replace(new RegExp('\\b'+ className+'\\b', 'g'), '');
+    }
+</script>
+
+{% endblock %}

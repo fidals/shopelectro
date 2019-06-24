@@ -111,6 +111,7 @@ custom_pages = [
 ]
 
 urlpatterns = [
+    url(r'^contacts/', views.pages),
     url('', include(custom_pages)),
     url(r'^admin/', include(admin_urls)),
     url(r'^catalog/', include(catalog_urls)),
