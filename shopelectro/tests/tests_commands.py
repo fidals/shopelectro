@@ -43,12 +43,41 @@ class UpdatePack(TestCase):
 
     fixtures = ['dump.json']
 
+    def test_command(self):
+        """The command updates only packed products."""
+        # @todo 864:30m Test update_pack command.
+
+    def test_update_in_packs(self):
+        name_in_pack_map = {
+            'в пакете': 1,
+            '6+2 в блистере': 8,
+            '2 в блистере': 2,
+            '10 в стяжке': 10,
+        }
+
+        for pack, name in zip(TagGroup.objects.first().tags.all(), name_in_pack_map):
+            pack.name = name
+            pack.save()
+
+        def get_packs():
+            return Tag.objects.filter(name__in=name_in_pack_map)
+
+        update_pack.update_in_packs(get_packs())
+
+        for pack in get_packs():
+            for product in pack.products.all():
+                self.assertEqual(
+                    product.in_pack,
+                    name_in_pack_map[pack.name],
+                    f'Product: {product}, Pack: {pack}'
+                )
+
     def test_update_prices(self):
         # @todo #859:60m Create fixture products with in_pack = 2
         #  Resuse the fixture in related tests.
 
         mul = 2
-        tags = Tag.objects.all()
+        tags = TagGroup.objects.first().tags.all()
         tags.products().update(in_pack=mul)
         products = list(tags.products())
 
