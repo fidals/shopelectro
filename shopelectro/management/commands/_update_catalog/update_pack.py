@@ -10,7 +10,6 @@ import typing
 
 from django.conf import settings
 from django.db import models, transaction
-from django.shortcuts import _get_queryset
 
 from catalog.models_expressions import Substring
 
