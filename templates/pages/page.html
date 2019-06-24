@@ -13,6 +13,10 @@
 
     <div class="col-sm-9 right-col">
       <h1>{{ page.display.h1 }}</h1>
+      {% comment %}
+        @todo #890:60m  Remove date_published outside of base template.
+         Pages whose are needed at date_pubslished should use it explicitly.
+      {% endcomment %}
       {% if page.type != 'navigation' and page.date_published %}
         <p class="date-pub-article">
           {{ page.date_published|date:'d.m.Y' }}
