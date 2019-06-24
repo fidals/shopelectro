@@ -86,7 +86,7 @@ def humanize_price(price):
 
 
 @register.filter
-def show_units(item):
+def show_price_units(item):
     if (getattr(item, 'in_pack', 1) > 1):
         return 'руб / упаковка'
     return 'руб / шт'

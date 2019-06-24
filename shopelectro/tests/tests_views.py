@@ -5,6 +5,7 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
+import re
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -37,13 +38,14 @@ def json_to_dict(response: HttpResponse) -> dict:
     return json.loads(response.content)
 
 
-class BaseCatalogTestCase(TestCase):
+class ViewsTestCase(TestCase):
 
     fixtures = ['dump.json']
 
     def setUp(self):
         self.category = models.Category.objects.root_nodes().select_related('page').first()
         self.tags = models.Tag.objects.order_by_alphanumeric().all()
+        self.product = models.Product.objects.first()
 
     def get_category_url(
         self,
@@ -70,16 +72,26 @@ class BaseCatalogTestCase(TestCase):
         """See `self.get_category_url()` interface."""
         return self.client.get(self.get_category_url(*args, **kwargs))
 
-    def get_category_soup(self, *args, **kwargs) -> BeautifulSoup:
-        category_page = self.get_category_page(*args, **kwargs)
+    def get_product_page(self, product: models.Product=None):
+        product = product or self.product
+        return self.client.get(product.url)
+
+    def get_category_soup(self, *args, **kwargs):
         return BeautifulSoup(
-            category_page.content.decode('utf-8'),
+            self.get_category_page(*args, **kwargs).content.decode('utf-8'),
+            'html.parser'
+        )
+
+    def get_product_soup(self, product: models.Product=None) -> BeautifulSoup:
+        product_page = self.get_product_page(product)
+        return BeautifulSoup(
+            product_page.content.decode('utf-8'),
             'html.parser'
         )
 
 
 @tag('fast', 'catalog')
-class CatalogTags(BaseCatalogTestCase):
+class CatalogTags(ViewsTestCase):
 
     def test_category_page_contains_all_tags(self):
         """Category contains all Product's tags."""
@@ -198,7 +210,7 @@ class CatalogTags(BaseCatalogTestCase):
 
 
 @tag('fast', 'catalog')
-class CatalogPagination(BaseCatalogTestCase):
+class CatalogPagination(ViewsTestCase):
 
     def get_pagination_links_soup(self, page_number: int):
         return (
@@ -274,7 +286,7 @@ class CatalogPagination(BaseCatalogTestCase):
 
 
 @tag('fast')
-class LoadMore(BaseCatalogTestCase):
+class LoadMore(ViewsTestCase):
 
     fixtures = ['dump.json']
     DEFAULT_LIMIT = 48
@@ -464,7 +476,7 @@ class YandexKassa(TestCase):
 
 
 @tag('fast', 'catalog')
-class Category(BaseCatalogTestCase):
+class Category(ViewsTestCase):
 
     fixtures = ['dump.json']
 
@@ -549,7 +561,7 @@ class Category(BaseCatalogTestCase):
 
 
 @tag('fast', 'catalog')
-class CategoriesMatrix(BaseCatalogTestCase):
+class CategoriesMatrix(ViewsTestCase):
 
     fixtures = ['dump.json']
 
@@ -628,23 +640,9 @@ class IndexPage(TestCase):
 
 
 @tag('fast')
-class ProductPage(TestCase):
+class ProductPage(ViewsTestCase):
 
     fixtures = ['dump.json']
-
-    def setUp(self):
-        self.product = models.Product.objects.first()
-
-    def get_product_page(self, product: models.Product=None):
-        product = product or self.product
-        return self.client.get(product.url)
-
-    def get_product_soup(self, product: models.Product=None) -> BeautifulSoup:
-        product_page = self.get_product_page(product)
-        return BeautifulSoup(
-            product_page.content.decode('utf-8'),
-            'html.parser'
-        )
 
     def test_orphan_product(self):
         self.product.category = None
@@ -872,3 +870,33 @@ class Cart(TestCase):
             self.client.get(reverse('cart_get'))['Cache-Control'],
             'max-age=0, no-cache, no-store, must-revalidate',
         )
+
+
+@tag('fast', 'catalog')
+class InPack(ViewsTestCase):
+
+    fixtures = ['dump.json']
+
+    def make_product_in_pack(self):
+        product = models.Product.objects.first()
+        product.in_pack = 2
+        product.save()
+        return product
+
+    def test_catalog_in_pack_units(self):
+        product = self.make_product_in_pack()
+
+        soup = self.get_category_soup(category=product.category)
+        results = soup.find_all(string=re.compile('упаковка'))
+
+        self.assertEqual(len(results), 1, results)
+        self.assertIn(str(int(product.price)), results[0], results[0])
+
+    def test_product_in_pack_units(self):
+        product = self.make_product_in_pack()
+
+        soup = self.get_product_soup(product)
+        results = soup.find_all(string=re.compile('упаковка'))
+
+        self.assertEqual(len(results), 1, results)
+        self.assertIn(str(int(product.price)), results[0], results[0])
