@@ -113,7 +113,7 @@ class ProductInline(inlines.ProductInline):
         'fields': (
             ('name', 'id', 'vendor_code'),
             ('category', 'correct_category_id'),
-            ('price', 'in_stock'),
+            ('price', 'in_stock', 'in_pack'),
             'is_popular',
             ('purchase_price', 'wholesale_small'),
             ('wholesale_medium', 'wholesale_large'),
@@ -130,7 +130,7 @@ class ProductInline(inlines.ProductInline):
                     'pk__startswith',
                 ],
             )
-        return super(ProductInline, self).formfield_for_dbfield(
+        return super().formfield_for_dbfield(
             db_field,
             **kwargs,
         )
