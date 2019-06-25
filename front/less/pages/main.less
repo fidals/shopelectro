@@ -310,7 +310,8 @@
 
   &-title {
     font-size: @f-size-base + 12;
-    margin-bottom: 22px;
+    margin: 80px 0 22px 0;
+    text-align: center;
   }
 
   &-item {
@@ -435,5 +436,26 @@
     .Q(@md; {
       height: 285px;
     });
+  }
+}
+
+.page-tile-about {
+  & .tile-item {
+    height: 330px;
+
+    &-content {
+      background-color: @c-white;
+      height: 100%;
+      padding: 50px 31px 0 31px;
+
+      & .image {
+        width: 64px;
+        margin: 0 auto 34px auto;
+      }
+
+      & .text {
+        text-align: center;
+      }
+    }
   }
 }
