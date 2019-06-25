@@ -312,6 +312,13 @@
     font-size: @f-size-base + 12;
     margin: 80px 0 22px 0;
     text-align: center;
+
+    &-text {
+      font-size: @f-size-base + 12;
+      margin: 80px 0 22px 0;
+      text-align: left;
+      padding-left: 15px;
+    }
   }
 
   &-item {
@@ -456,6 +463,21 @@
       & .text {
         text-align: center;
       }
+    }
+  }
+}
+
+.page-text {
+  & .text-col {
+    & .h3 {
+      font-size: @font-size-large;
+      font-weight: bold;
+    }
+    & p {
+      margin-bottom: 20px;
+    }
+    & .bullshit-large {
+      font-size: @font-size-base + 1;
     }
   }
 }
