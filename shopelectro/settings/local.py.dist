@@ -8,6 +8,13 @@ USE_CELERY = False
 # http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = True
 
+# https://docs.djangoproject.com/en/1.11/topics/cache/#dummy-caching-for-development
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
 # to disable django connection pool.
 # See .base.CONN_MAX_AGE for details
 CONN_MAX_AGE = 0

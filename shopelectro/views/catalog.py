@@ -104,6 +104,7 @@ class ProductPage(catalog.ProductPage):
             **product_images,
             'group_tags_pairs': self.product.get_params().items(),
             'tile_products': tile_products,
+            'tile_title': 'Вас может заинтересовать',
         }
 
     def get_images_context_data(self, products) -> dict:
