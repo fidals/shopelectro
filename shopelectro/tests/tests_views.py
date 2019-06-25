@@ -5,7 +5,6 @@ Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
 import json
-import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -14,7 +13,7 @@ from xml.etree import ElementTree as ET
 
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.test import override_settings, TestCase, tag
 from django.urls import reverse
@@ -531,19 +530,8 @@ class Category(BaseCatalogTestCase):
             )
         )
 
-    # @todo #887:30m  Fix not active crumbs siblings bug.
-    #  The test below proves the bug. Now fix it.
-    @unittest.expectedFailure
     def test_crumb_siblings_are_active(self):
-        parent = models.Category.objects.raw(
-            'SELECT * FROM shopelectro_category AS P'
-            ' WHERE P.id = ('
-            '    SELECT C.parent_id FROM shopelectro_category as C'
-            '    GROUP BY C.parent_id'
-            '    HAVING COUNT(C.parent_id) > 1'
-            '    LIMIT 1'
-            ' )'
-        )[0]
+        parent = models.Category.objects.annotate(c=Count('children')).filter(c__gt=1).first()
         (
             pages_models.Page.objects
             .filter(id=parent.children.first().page.id)
@@ -552,12 +540,12 @@ class Category(BaseCatalogTestCase):
         category = parent.children.active().first()
         soup = self.get_category_soup(category.children.active().first())
         siblings = soup.select('.breadcrumbs-siblings-links a')
-        self.assertTrue(all([
-            c.page.is_active for c in (
-                models.Category.objects
-                .filter(name__in=[s.text.strip() for s in siblings])
-            )
-        ]))
+        self.assertFalse(
+            models.Category.objects
+            .filter(name__in=[s.text.strip() for s in siblings])
+            .filter(page__is_active=False)
+            .exists()
+        )
 
 
 @tag('fast', 'catalog')
