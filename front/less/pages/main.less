@@ -310,7 +310,15 @@
 
   &-title {
     font-size: @f-size-base + 12;
-    margin-bottom: 22px;
+    margin: 80px 0 22px 0;
+    text-align: center;
+
+    &-text {
+      font-size: @f-size-base + 12;
+      margin: 80px 0 22px 0;
+      text-align: left;
+      padding-left: 15px;
+    }
   }
 
   &-item {
@@ -435,5 +443,42 @@
     .Q(@md; {
       height: 285px;
     });
+  }
+}
+
+// @todo #891:30m Markup mobile tile-about and text for main page.
+.tile-about {
+  & .tile-item {
+    height: 330px;
+
+    &-content {
+      background-color: @c-white;
+      height: 100%;
+      padding: 50px 31px 0 31px;
+
+      & .image {
+        width: 64px;
+        margin: 0 auto 34px auto;
+      }
+
+      & .text {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.pitch {
+  & .text-col {
+    & .h3 {
+      font-size: @font-size-large;
+      font-weight: bold;
+    }
+    & p {
+      margin-bottom: 20px;
+    }
+    & .bullshit-large {
+      font-size: @font-size-base + 1;
+    }
   }
 }
