@@ -28,7 +28,7 @@ def find_pack_group() -> typing.Optional[TagGroup]:
         logger.error(
             f'Couldn\'t find "{settings.PACK_GROUP_NAME}" tag group by'
             f'UUID="{settings.PACK_GROUP_UUID}".\n'
-            'Update the PACK_GROUP_UUID environ variable to set the new relevant UUID.'
+            'Update the PACK_GROUP_UUID django settings variable to set the new relevant UUID.'
         )
         pack_group = None
     if not settings.PACK_GROUP_NAME.lower() not in pack_group.name.lower():
@@ -36,7 +36,7 @@ def find_pack_group() -> typing.Optional[TagGroup]:
             'The pack group name isn\'t matched with the set name:'
             f' Pack group name: {pack_group.name}\n'
             f' Set name: {settings.PACK_GROUP_NAME}\n'
-            'Update the PACK_GROUP_NAME environ variable to set the new relevant name.'
+            'Update the PACK_GROUP_NAME django settings variable to set the new relevant name.'
         )
         pack_group = None
 
