@@ -1,4 +1,4 @@
-{% if not DEBUG %}
+{% if not DEBUG and not TEST_ENV %}
 
   {% if is_head_tag %}
     <!-- Google Tag Manager -->
