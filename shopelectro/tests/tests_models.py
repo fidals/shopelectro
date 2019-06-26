@@ -1,9 +1,9 @@
 from functools import partial
+from itertools import chain
 
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase, TransactionTestCase, tag
-from itertools import chain
 
 from shopelectro.models import Product, Tag, TagGroup
 

@@ -13,14 +13,14 @@ from xml.etree import ElementTree as ET
 
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.test import override_settings, TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from catalog.helpers import reverse_catalog_url
-from pages.models import CustomPage
+from pages import models as pages_models
 from pages.urls import reverse_custom_page
 from shopelectro import models
 from shopelectro import views
@@ -69,6 +69,13 @@ class BaseCatalogTestCase(TestCase):
     def get_category_page(self, *args, **kwargs):
         """See `self.get_category_url()` interface."""
         return self.client.get(self.get_category_url(*args, **kwargs))
+
+    def get_category_soup(self, *args, **kwargs) -> BeautifulSoup:
+        category_page = self.get_category_page(*args, **kwargs)
+        return BeautifulSoup(
+            category_page.content.decode('utf-8'),
+            'html.parser'
+        )
 
 
 @tag('fast', 'catalog')
@@ -193,6 +200,13 @@ class CatalogTags(BaseCatalogTestCase):
 @tag('fast', 'catalog')
 class CatalogPagination(BaseCatalogTestCase):
 
+    def get_pagination_links_soup(self, page_number: int):
+        return (
+            self.get_category_soup(query_string={'page': page_number})
+            .find(class_='js-catalog-pagination')
+            .find_all('a')
+        )
+
     def test_pagination_numbering(self):
         page_number = 1
         response = self.get_category_page(query_string={'page': page_number})
@@ -226,13 +240,6 @@ class CatalogPagination(BaseCatalogTestCase):
             page_number,
         )
 
-    def get_category_soup(self, page_number: int) -> BeautifulSoup:
-        category_page = self.get_category_page(query_string={'page': page_number})
-        return BeautifulSoup(
-            category_page.content.decode('utf-8'),
-            'html.parser'
-        )
-
     def test_category_200(self):
         category_page = self.get_category_page()
         assert category_page.status_code == 200
@@ -240,25 +247,21 @@ class CatalogPagination(BaseCatalogTestCase):
     def test_numbered_pagination_links(self):
         """Forward to numbered pagination pages."""
         page_number = 3
-        _, *numbered, _ = self.get_category_soup(page_number).find(
-            class_='js-catalog-pagination').find_all('a')
-
+        _, *numbered, _ = self.get_pagination_links_soup(page_number)
         for slice, link in zip([-2, -1, 1, 2], numbered):
             self.assert_pagination_link(link, page_number + slice)
 
     def test_arrow_pagination_links(self):
         """Each button forward to a previous and a next pagination pages."""
         page_number = 3
-        prev, *_, next_ = self.get_category_soup(page_number).find(
-            class_='js-catalog-pagination').find_all('a')
-
+        prev, *_, next_ = self.get_pagination_links_soup(page_number)
         self.assert_pagination_link(next_, page_number + 1)
         self.assert_pagination_link(prev, page_number - 1)
 
     def test_pagination_canonical(self):
         """Canonical links forward to a previous and a next pagination pages."""
         page_number = 3
-        soup = self.get_category_soup(page_number)
+        soup = self.get_category_soup(query_string={'page': page_number})
 
         self.assert_pagination_link(
             soup.find('link', attrs={'rel': 'next'}),
@@ -527,20 +530,22 @@ class Category(BaseCatalogTestCase):
             )
         )
 
-    def test_category_matrix_page(self):
-        """Matrix page should contain all second level categories."""
-        page = CustomPage.objects.get(slug='catalog')
-        response = self.client.get(page.url)
-        soup = BeautifulSoup(
-            response.content.decode('utf-8'),
-            'html.parser'
+    def test_crumb_siblings_are_active(self):
+        parent = models.Category.objects.annotate(c=Count('children')).filter(c__gt=1).first()
+        (
+            pages_models.Page.objects
+            .filter(id=parent.children.first().page.id)
+            .update(is_active=False)
         )
-        self.assertEqual(200, response.status_code)
-
-        categories_db = models.Category.objects.active()
-        categories_app = soup.find_all(tag='a', class_='catalog-list-item')
-        for from_db, from_app in zip(categories_db, categories_app):
-            self.assertEqual(from_db.name, from_app.a.text)
+        category = parent.children.active().first()
+        soup = self.get_category_soup(category.children.active().first())
+        siblings = soup.select('.breadcrumbs-siblings-links a')
+        self.assertFalse(
+            models.Category.objects
+            .filter(name__in=[s.text.strip() for s in siblings])
+            .filter(page__is_active=False)
+            .exists()
+        )
 
 
 @tag('fast', 'catalog')
@@ -598,7 +603,7 @@ class IndexPage(TestCase):
 
     @property
     def page(self):
-        return CustomPage.objects.get(slug='')
+        return pages_models.CustomPage.objects.get(slug='')
 
     @override_settings(MAIN_PAGE_TILE=MAIN_PAGE_TILE)
     def test_category_tile_links(self):
