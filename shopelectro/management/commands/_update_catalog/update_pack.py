@@ -6,8 +6,12 @@ The update_catalog command always resets product prices to per unit format, so:
 2. Multiply product prices by in_pack value and save.
 """
 import logging
+import typing
 
+from django.conf import settings
 from django.db import models, transaction
+
+from catalog.models_expressions import Substring
 
 from shopelectro.models import TagQuerySet, TagGroup
 
@@ -15,9 +19,44 @@ logger = logging.getLogger(__name__)
 PRICES = ['price', 'purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large']
 
 
+def find_pack_group() -> typing.Optional[TagGroup]:
+    pack_group = TagGroup.objects.filter(uuid=settings.PACK_GROUP_UUID).first()
+
+    # @todo #864:60m Raise errors in find_pack_group.
+    #  Remove Optional type as returning value and test find_pack_group.
+    if not pack_group:
+        logger.error(
+            f'Couldn\'t find "{settings.PACK_GROUP_NAME}" tag group by'
+            f'UUID="{settings.PACK_GROUP_UUID}".\n'
+            'Update the PACK_GROUP_UUID django settings variable to set the new relevant UUID.'
+        )
+        pack_group = None
+    if not settings.PACK_GROUP_NAME.lower() not in pack_group.name.lower():
+        logger.error(
+            'The pack group name isn\'t matched with the set name:'
+            f' Pack group name: {pack_group.name}\n'
+            f' Set name: {settings.PACK_GROUP_NAME}\n'
+            'Update the PACK_GROUP_NAME django settings variable to set the new relevant name.'
+        )
+        pack_group = None
+
+    return pack_group
+
+
 def update_in_packs(packs: TagQuerySet):
     """Parse and save in pack quantity values."""
-    # @todo #859:60m Implement update_pack and render prices properly.
+    packs = (
+        packs
+        .annotate(
+            in_pack_str=Substring(
+                models.F('name'),
+                models.Value('[0-9]+\+?[0-9]*')))
+        .exclude(in_pack_str__exact='')
+    )
+
+    for pack in packs:
+        in_pack = sum(map(int, pack.in_pack_str.split('+')))
+        pack.products.all().update(in_pack=max(in_pack, 1))
 
 
 def update_prices(packs: TagQuerySet):
@@ -31,10 +70,8 @@ def update_prices(packs: TagQuerySet):
 
 
 def main(*args, **kwargs):
-    uuid = 'ae30f766-0bb8-11e6-80ea-02d2cc20e118'
-    pack_group = TagGroup.objects.filter(uuid=uuid).first()
+    pack_group = find_pack_group()
     if not pack_group:
-        logger.error(f'Couldn\'t find "Упаковка" tag group with uuid = "{uuid}".')
         return
 
     return

@@ -542,3 +542,7 @@ if SENTRY_DSN:
             CeleryIntegration(),
         ]
     )
+
+# At 17.05.2019 it's relevant pack group data
+PACK_GROUP_UUID = 'ae30f766-0bb8-11e6-80ea-02d2cc20e118'
+PACK_GROUP_NAME = 'Упаковка'

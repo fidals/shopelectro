@@ -239,7 +239,7 @@ class TagGroup(catalog_models.TagGroup):
 class TagQuerySet(catalog_models.TagQuerySet):
 
     def products(self):
-        ids = Tag.objects.all().values_list('products__id', flat=True)
+        ids = self.values_list('products__id', flat=True)
         return Product.objects.filter(id__in=ids).distinct()
 
 
