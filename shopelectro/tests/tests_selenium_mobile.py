@@ -7,7 +7,7 @@ Every Selenium-based test suite uses fixture called dump.json.
 import unittest
 
 from django.conf import settings
-from django.test import LiveServerTestCase, override_settings, tag
+from django.test import LiveServerTestCase, tag
 from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
