@@ -32,7 +32,7 @@
 
       <div class="product-price-wrapper" id="product-price">
         <p class="product-label-price-retail">Розничная цена:</p>
-        <p class="product-price active">{{ product.price|humanize_price }} руб / шт</p>
+        <p class="product-price active">{{ product.price|humanize_price }} {{ product|show_price_in_units }}</p>
 
         {% include 'catalog/product_in_stock.html' %}
 

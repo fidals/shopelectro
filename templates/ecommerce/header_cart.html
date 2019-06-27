@@ -15,7 +15,7 @@
 </div>
 
 <div class="basket-wrapper js-cart-wrapper">
-  <p>В корзине <span class="js-basket-amount-count">{{ cart|length }}</span> позиций</p>
+  <p>В корзине {{ cart|length }} позиций</p>
   <div class="scroll-wrapper {% if cart.total_price == 0 %}empty{% endif %}" id="scroll-wrapper">
     <ul class="basket-list list-unstyled" id="basket-list">
       {% for id, position in cart %}
@@ -35,9 +35,9 @@
             {% endif %}
           </p>
           <div class="basket-stuff-price">
-            <span class="basket-price js-basket-price">{{ position.price|humanize_price }} руб</span> х
-            <span class="basket-count js-basket-count">{{ position.quantity }} шт.</span> =
-            <span class="basket-sum js-basket-sum">{{ position.total_price|humanize_price }} руб.</span>
+            <span class="basket-price">{{ position.price|humanize_price }} руб</span> х
+            <span class="basket-count">{{ position.quantity }} шт.</span> =
+            <span class="basket-sum">{{ position.total_price|humanize_price }} руб.</span>
           </div>
           <i class="basket-remove js-cart-remove fa fa-close" data-product-id="{{ id }}" data-product-count="{{ position.quantity }}" title="Удалить товар"></i>
         </li>
@@ -45,11 +45,10 @@
     </ul>
   </div>
 
-  <div class="basket-calculations text-right {% if cart.total_price == 0 %}hidden{% endif %}
-     js-basket-calculations">
+  <div class="basket-calculations text-right {% if cart.total_price == 0 %}hidden{% endif %}">
     <p class="basket-price-sum">
       Итого:
-      <span class="js-basket-price-sum">{{ cart.total_price|humanize_price }}</span>
+      {{ cart.total_price|humanize_price }}
       <span class="table-units"> руб.</span>
     </p>
     <p class="basket-info">без учета стоимости доставки</p>

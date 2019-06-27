@@ -85,6 +85,13 @@ def humanize_price(price):
     return intcomma(floatformat(price, 0))
 
 
+@register.filter
+def show_price_in_units(item):
+    if (getattr(item, 'in_pack', 1) > 1):
+        return 'руб / упаковка'
+    return 'руб / шт'
+
+
 # Not good code, but duker at 06/10/2016 don't know how to fix it.
 # It makes Image model very complex.
 @register.simple_tag

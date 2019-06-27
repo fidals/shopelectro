@@ -25,7 +25,7 @@
           {{ product.name }}
         </a>
       </div>
-      <div class="product-card-price">{{ product.price|humanize_price }} руб / шт</div>
+      <div class="product-card-price">{{ product.price|humanize_price }} {{ product|show_price_in_units }}</div>
       <meta property="description" itemprop="description" content="{{ product.page.display.description }}">
       <meta property="price" itemprop="price" content="{{ product.price }}">
       <meta property="priceCurrency" itemprop="priceCurrency" content="RUB">
