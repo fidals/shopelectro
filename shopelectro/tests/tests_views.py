@@ -877,26 +877,28 @@ class InPack(ViewsTestCase):
 
     fixtures = ['dump.json']
 
-    def make_product_in_pack(self):
+    def pack_product(self):
         product = models.Product.objects.first()
         product.in_pack = 2
         product.save()
         return product
 
-    def test_catalog_in_pack_units(self):
-        product = self.make_product_in_pack()
-
-        soup = self.get_category_soup(category=product.category)
+    def assert_in_pack_units(self, soup, product):
         results = soup.find_all(string=re.compile('упаковка'))
 
         self.assertEqual(len(results), 1, results)
         self.assertIn(str(int(product.price)), results[0], results[0])
+
+    def test_catalog_in_pack_units(self):
+        product = self.pack_product()
+        self.assert_in_pack_units(
+            self.get_category_soup(product.category),
+            product,
+        )
 
     def test_product_in_pack_units(self):
-        product = self.make_product_in_pack()
-
-        soup = self.get_product_soup(product)
-        results = soup.find_all(string=re.compile('упаковка'))
-
-        self.assertEqual(len(results), 1, results)
-        self.assertIn(str(int(product.price)), results[0], results[0])
+        product = self.pack_product()
+        self.assert_in_pack_units(
+            self.get_product_soup(product),
+            product,
+        )
