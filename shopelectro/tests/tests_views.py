@@ -878,16 +878,21 @@ class InPack(ViewsTestCase):
 
     def test_catalog_in_pack_units(self):
         category = (
-            models.Category.objects
-            .annotate(products_count=Count('products'))
-            .filter(products__in_pack__gt=1, products_count__lt=settings.PRODUCTS_ON_PAGE_PC)
+            models.Product.objects
+            .annotate(category_size=Count('category__products'))
+            .filter(in_pack__gt=1, category_size__lt=settings.PRODUCTS_ON_PAGE_PC)
             .first()
+            .category
         )
 
         soup = self.get_category_soup(category)
         results = soup.find_all(string=re.compile('упаковка'))
 
-        self.assertEqual(len(results), category.products.filter(in_pack__gt=1).count(), results)
+        self.assertEqual(
+            len(results),
+            category.products.filter(in_pack__gt=1).count(),
+            results,
+        )
 
     def test_product_in_pack_units(self):
         product = models.Product.objects.filter(in_pack__gt=1).first()
