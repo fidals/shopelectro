@@ -137,7 +137,7 @@ class ProductsFilter:
         return self.FILTERS[self.target](
             models.Product.objects.active()
             .filter(category__in=self.categories, price__gt=0)
-            .exclude(id__in=self.ignored)
+            .exclude(vendor_code__in=self.ignored)
         )
 
 

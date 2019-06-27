@@ -339,6 +339,7 @@ class GeneratePrices(TestCase):
             offer.attrib['id']
             for offer in self.prices['YM'].offers_node.findall('offer')
         )
+        self.assertTrue(ignored)
         self.assertFalse(to_ignore.intersection(ignored))
 
     def test_products_in_price(self):
