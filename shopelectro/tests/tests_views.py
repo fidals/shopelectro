@@ -23,8 +23,7 @@ from django.utils.translation import ugettext as _
 from catalog.helpers import reverse_catalog_url
 from pages import models as pages_models
 from pages.urls import reverse_custom_page
-from shopelectro import models
-from shopelectro import views
+from shopelectro import models, views
 from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
 
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{base_url}{path}">'
@@ -877,28 +876,24 @@ class InPack(ViewsTestCase):
 
     fixtures = ['dump.json']
 
-    def pack_product(self):
-        product = models.Product.objects.first()
-        product.in_pack = 2
-        product.save()
-        return product
+    def test_catalog_in_pack_units(self):
+        category = (
+            models.Category.objects
+            .annotate(products_count=Count('products'))
+            .filter(products__in_pack__gt=1, products_count__lt=settings.PRODUCTS_ON_PAGE_PC)
+            .first()
+        )
 
-    def assert_in_pack_units(self, soup, product):
+        soup = self.get_category_soup(category)
+        results = soup.find_all(string=re.compile('упаковка'))
+
+        self.assertEqual(len(results), category.products.filter(in_pack__gt=1).count(), results)
+
+    def test_product_in_pack_units(self):
+        product = models.Product.objects.filter(in_pack__gt=1).first()
+
+        soup = self.get_product_soup(product)
         results = soup.find_all(string=re.compile('упаковка'))
 
         self.assertEqual(len(results), 1, results)
         self.assertIn(str(int(product.price)), results[0], results[0])
-
-    def test_catalog_in_pack_units(self):
-        product = self.pack_product()
-        self.assert_in_pack_units(
-            self.get_category_soup(product.category),
-            product,
-        )
-
-    def test_product_in_pack_units(self):
-        product = self.pack_product()
-        self.assert_in_pack_units(
-            self.get_product_soup(product),
-            product,
-        )

@@ -49,15 +49,17 @@ class UpdatePack(TestCase):
 
     def test_update_in_packs(self):
         name_in_pack_map = {
-            'в пакете': 1,
-            '6+2 в блистере': 8,
-            '2 в блистере': 2,
-            '10 в стяжке': 10,
+            '? в упаковке': 1,
+            '1+2 в блистере': 3,
+            '42 в блистере': 42,
         }
 
-        for pack, name in zip(TagGroup.objects.first().tags.all(), name_in_pack_map):
-            pack.name = name
-            pack.save()
+        tags = Tag.objects.bulk_create([
+            Tag(name=name) for name in name_in_pack_map
+        ])
+        for product, pack in zip(Product.objects.filter(in_pack=1), tags):
+            product.tags.add(pack)
+            product.save()
 
         def get_packs():
             return Tag.objects.filter(name__in=name_in_pack_map)
@@ -73,12 +75,7 @@ class UpdatePack(TestCase):
                 )
 
     def test_update_prices(self):
-        # @todo #859:60m Create fixture products with in_pack = 2
-        #  Resuse the fixture in related tests.
-
-        mul = 2
-        tags = TagGroup.objects.first().tags.all()
-        tags.products().update(in_pack=mul)
+        tags = Tag.objects.get_packs()
         products = list(tags.products())
 
         update_pack.update_prices(tags)
@@ -86,7 +83,7 @@ class UpdatePack(TestCase):
         for new, old in zip(tags.products(), products):
             self.assertEqual(new.id, old.id)
             for price in update_pack.PRICES:
-                self.assertEqual(getattr(new, price), getattr(old, price) * mul)
+                self.assertEqual(getattr(new, price), getattr(old, price) * old.in_pack)
 
 
 @tag('fast')
