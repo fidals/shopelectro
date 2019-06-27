@@ -12,7 +12,7 @@ from django.db import models, transaction
 
 from catalog.models_expressions import Substring
 
-from shopelectro.exceptions import UpdateCatalogException
+from shopelectro.exception import UpdateCatalogException
 from shopelectro.models import TagQuerySet, TagGroup
 
 logger = logging.getLogger(__name__)

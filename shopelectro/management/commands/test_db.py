@@ -41,20 +41,18 @@ class Command(BaseCommand):
         super(BaseCommand, self).__init__()
         self._product_id = 0
         self.group_names = [
-            'Напряжение', 'Сила тока',
-            'Мощность', settings.BRAND_TAG_GROUP_NAME,
+            'Напряжение',
+            'Сила тока',
+            'Мощность',
+            settings.BRAND_TAG_GROUP_NAME,
+            settings.PACK_GROUP_NAME,
         ]
-        self.pack_name_count_map = {
-            'в пакете': 1,
-            '6+2 в блистере': 8,
-            '10 в стяжке': 10,
-        }
         self.tag_names = [
-            list(self.pack_name_count_map),
             ['6 В', '24 В'],
             ['1.2 А', '10 А'],
             ['7.2 Вт', '240 Вт'],
             ['Apple', 'Microsoft'],
+            ['2 в блистере', '2 в стяжке'],
         ]
 
     def handle(self, *args, **options):
@@ -178,16 +176,14 @@ class Command(BaseCommand):
             to_fill=categories[:4], tags_=zipped_tags[1], count=50)
 
     def create_tag_groups(self):
-        yield se_models.TagGroup.objects.create(
-            name=settings.PACK_GROUP_NAME,
-            uuid=settings.PACK_GROUP_UUID,
-        )
-
         for i, name in enumerate(self.group_names, start=1):
             yield se_models.TagGroup.objects.create(
                 name=name,
                 position=i,
             )
+        pack = se_models.TagGroup.objects.get(name=settings.PACK_GROUP_NAME)
+        pack.uuid = settings.PACK_GROUP_UUID
+        pack.save()
 
     def create_tags(self, groups):
         def create_tag(group_, position, name):
@@ -255,8 +251,7 @@ class Command(BaseCommand):
         se_models.CategoryPage.objects.update(template=page_template)
 
     def pack_products(self):
-        for pack in Tag.objects.packs():
-            pack.products().update(in_pack=self.pack_name_count_map[pack.name])
+        se_models.Tag.objects.get_packs().products().update(in_pack=2)
 
     @staticmethod
     def rebuild_mptt_tree():
