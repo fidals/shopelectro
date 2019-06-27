@@ -22,7 +22,7 @@ PRICES = ['price', 'purchase_price', 'wholesale_small', 'wholesale_medium', 'who
 def find_pack_group() -> TagGroup:
     try:
         pack_group = TagGroup.objects.get_pack()
-    except models.DoesNotExist as error:
+    except TagGroup.DoesNotExist as error:
         raise UpdateCatalogException(
             'Update the PACK_GROUP_UUID django settings variable to set the new relevant UUID. '
             + str(error)

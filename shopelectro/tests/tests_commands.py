@@ -17,6 +17,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase, override_settings, tag
 
+from shopelectro.exception import UpdateCatalogException
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags, update_pack,
 )
@@ -43,9 +44,32 @@ class UpdatePack(TestCase):
 
     fixtures = ['dump.json']
 
+    def assert_prices(self, old, new):
+        for price in update_pack.PRICES:
+            self.assertEqual(getattr(new, price), getattr(old, price) * new.in_pack)
+
     def test_command(self):
         """The command updates only packed products."""
-        # @todo #864:30m Test update_pack command.
+        products = list(Product.objects.all().order_by('id'))
+
+        update_pack.main()
+
+        for old, new in zip(products, Product.objects.all().order_by('id')):
+            self.assert_prices(old, new)
+
+    def test_find_pack_group(self):
+        pack = update_pack.find_pack_group()
+        self.assertEqual(str(pack.uuid), settings.PACK_GROUP_UUID)
+        self.assertEqual(pack.name, settings.PACK_GROUP_NAME)
+
+        pack.name = 'new name'
+        pack.save()
+        with self.assertRaises(UpdateCatalogException):
+            update_pack.find_pack_group()
+
+        pack.delete()
+        with self.assertRaises(UpdateCatalogException):
+            update_pack.find_pack_group()
 
     def test_update_in_packs(self):
         name_in_pack_map = {
@@ -82,8 +106,7 @@ class UpdatePack(TestCase):
 
         for new, old in zip(tags.products(), products):
             self.assertEqual(new.id, old.id)
-            for price in update_pack.PRICES:
-                self.assertEqual(getattr(new, price), getattr(old, price) * old.in_pack)
+            self.assert_prices(old, new)
 
 
 @tag('fast')

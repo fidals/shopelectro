@@ -235,7 +235,7 @@ class ProductPage(pages_models.ModelPage):
 class TagGroupManager(models.Manager):
 
     def get_pack(self):
-        return self.get_queryset().select_related('tags').get(uuid=settings.PACK_GROUP_UUID)
+        return self.get_queryset().get(uuid=settings.PACK_GROUP_UUID)
 
 
 class TagGroup(catalog_models.TagGroup):
