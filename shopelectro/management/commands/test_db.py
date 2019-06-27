@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.files.images import ImageFile
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+from django.db import models
 
 from images.models import Image
 from pages.models import Page, FlatPage, PageTemplate
@@ -43,7 +44,13 @@ class Command(BaseCommand):
             'Напряжение', 'Сила тока',
             'Мощность', settings.BRAND_TAG_GROUP_NAME,
         ]
+        self.pack_name_count_map = {
+            'в пакете': 1,
+            '6+2 в блистере': 8,
+            '10 в стяжке': 10,
+        }
         self.tag_names = [
+            list(self.pack_name_count_map),
             ['6 В', '24 В'],
             ['1.2 А', '10 А'],
             ['7.2 Вт', '240 Вт'],
@@ -63,6 +70,7 @@ class Command(BaseCommand):
         tags = self.create_tags(groups)
 
         self.create_products(deep_children, tags)
+        self.pack_products()
         self.create_page()
         self.create_order()
         self.create_feedbacks()
@@ -170,6 +178,11 @@ class Command(BaseCommand):
             to_fill=categories[:4], tags_=zipped_tags[1], count=50)
 
     def create_tag_groups(self):
+        yield se_models.TagGroup.objects.create(
+            name=settings.PACK_GROUP_NAME,
+            uuid=settings.PACK_GROUP_UUID,
+        )
+
         for i, name in enumerate(self.group_names, start=1):
             yield se_models.TagGroup.objects.create(
                 name=name,
@@ -240,6 +253,10 @@ class Command(BaseCommand):
 
         se_models.ProductPage.objects.update(template=page_template)
         se_models.CategoryPage.objects.update(template=page_template)
+
+    def pack_products(self):
+        for pack in Tag.objects.packs():
+            pack.products().update(in_pack=self.pack_name_count_map[pack.name])
 
     @staticmethod
     def rebuild_mptt_tree():
