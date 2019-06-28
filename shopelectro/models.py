@@ -83,7 +83,6 @@ class Product(
     )
 
     # @todo #910:30m  Explore and doc what is vendor_code.
-    #  And render it as some hidden option on the product page.
     vendor_code = models.SmallIntegerField(verbose_name=_('vendor_code'))
     uuid = models.UUIDField(default=uuid4, editable=False)
     purchase_price = models.FloatField(
