@@ -6,39 +6,34 @@ The update_catalog command always resets product prices to per unit format, so:
 2. Multiply product prices by in_pack value and save.
 """
 import logging
-import typing
 
 from django.conf import settings
 from django.db import models, transaction
 
 from catalog.models_expressions import Substring
 
+from shopelectro.exception import UpdateCatalogException
 from shopelectro.models import TagQuerySet, TagGroup
 
 logger = logging.getLogger(__name__)
 PRICES = ['price', 'purchase_price', 'wholesale_small', 'wholesale_medium', 'wholesale_large']
 
 
-def find_pack_group() -> typing.Optional[TagGroup]:
-    pack_group = TagGroup.objects.filter(uuid=settings.PACK_GROUP_UUID).first()
-
-    # @todo #864:60m Raise errors in find_pack_group.
-    #  Remove Optional type as returning value and test find_pack_group.
-    if not pack_group:
-        logger.error(
-            f'Couldn\'t find "{settings.PACK_GROUP_NAME}" tag group by'
-            f'UUID="{settings.PACK_GROUP_UUID}".\n'
-            'Update the PACK_GROUP_UUID django settings variable to set the new relevant UUID.'
+def find_pack_group() -> TagGroup:
+    try:
+        pack_group = TagGroup.objects.get_pack()
+    except TagGroup.DoesNotExist as error:
+        raise UpdateCatalogException(
+            'Update the PACK_GROUP_UUID django settings variable to set the new relevant UUID. '
+            + str(error)
         )
-        pack_group = None
-    if not settings.PACK_GROUP_NAME.lower() not in pack_group.name.lower():
-        logger.error(
+    if settings.PACK_GROUP_NAME.lower() not in pack_group.name.lower():
+        raise UpdateCatalogException(
             'The pack group name isn\'t matched with the set name:'
             f' Pack group name: {pack_group.name}\n'
             f' Set name: {settings.PACK_GROUP_NAME}\n'
             'Update the PACK_GROUP_NAME django settings variable to set the new relevant name.'
         )
-        pack_group = None
 
     return pack_group
 
@@ -70,12 +65,6 @@ def update_prices(packs: TagQuerySet):
 
 
 def main(*args, **kwargs):
-    pack_group = find_pack_group()
-    if not pack_group:
-        return
-
-    return
-
-    packs = pack_group.tags.all().prefetch_related('products')
+    packs = find_pack_group().tags.all().prefetch_related('products')
     update_in_packs(packs)
     update_prices(packs)

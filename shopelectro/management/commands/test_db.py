@@ -40,14 +40,18 @@ class Command(BaseCommand):
         super(BaseCommand, self).__init__()
         self._product_id = 0
         self.group_names = [
-            'Напряжение', 'Сила тока',
-            'Мощность', settings.BRAND_TAG_GROUP_NAME,
+            'Напряжение',
+            'Сила тока',
+            'Мощность',
+            settings.BRAND_TAG_GROUP_NAME,
+            settings.PACK_GROUP_NAME,
         ]
         self.tag_names = [
             ['6 В', '24 В'],
             ['1.2 А', '10 А'],
             ['7.2 Вт', '240 Вт'],
             ['Apple', 'Microsoft'],
+            ['2 в блистере', '2 в стяжке'],
         ]
 
     def handle(self, *args, **options):
@@ -63,6 +67,7 @@ class Command(BaseCommand):
         tags = self.create_tags(groups)
 
         self.create_products(deep_children, tags)
+        self.pack_products()
         self.create_page()
         self.create_order()
         self.create_feedbacks()
@@ -175,6 +180,9 @@ class Command(BaseCommand):
                 name=name,
                 position=i,
             )
+        pack = se_models.TagGroup.objects.get(name=settings.PACK_GROUP_NAME)
+        pack.uuid = settings.PACK_GROUP_UUID
+        pack.save()
 
     def create_tags(self, groups):
         def create_tag(group_, position, name):
@@ -240,6 +248,9 @@ class Command(BaseCommand):
 
         se_models.ProductPage.objects.update(template=page_template)
         se_models.CategoryPage.objects.update(template=page_template)
+
+    def pack_products(self):
+        se_models.Tag.objects.get_packs().products().update(in_pack=2)
 
     @staticmethod
     def rebuild_mptt_tree():

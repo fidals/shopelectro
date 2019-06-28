@@ -17,6 +17,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase, override_settings, tag
 
+from shopelectro.exception import UpdateCatalogException
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags, update_pack,
 )
@@ -43,21 +44,46 @@ class UpdatePack(TestCase):
 
     fixtures = ['dump.json']
 
+    def assert_prices(self, old: Product, new: Product):
+        for price in update_pack.PRICES:
+            self.assertEqual(getattr(new, price), getattr(old, price) * new.in_pack)
+
     def test_command(self):
         """The command updates only packed products."""
-        # @todo #864:30m Test update_pack command.
+        products = list(Product.objects.all().order_by('id'))
+
+        update_pack.main()
+
+        for old, new in zip(products, Product.objects.all().order_by('id')):
+            self.assert_prices(old, new)
+
+    def test_find_pack_group(self):
+        pack = update_pack.find_pack_group()
+        self.assertEqual(str(pack.uuid), settings.PACK_GROUP_UUID)
+        self.assertEqual(pack.name, settings.PACK_GROUP_NAME)
+
+        pack.name = 'new name'
+        pack.save()
+        with self.assertRaises(UpdateCatalogException):
+            update_pack.find_pack_group()
+
+        pack.delete()
+        with self.assertRaises(UpdateCatalogException):
+            update_pack.find_pack_group()
 
     def test_update_in_packs(self):
         name_in_pack_map = {
-            'в пакете': 1,
-            '6+2 в блистере': 8,
-            '2 в блистере': 2,
-            '10 в стяжке': 10,
+            '? в упаковке': 1,
+            '1+2 в блистере': 3,
+            '42 в блистере': 42,
         }
 
-        for pack, name in zip(TagGroup.objects.first().tags.all(), name_in_pack_map):
-            pack.name = name
-            pack.save()
+        tags = Tag.objects.bulk_create([
+            Tag(name=name) for name in name_in_pack_map
+        ])
+        for product, pack in zip(Product.objects.filter(in_pack=1), tags):
+            product.tags.add(pack)
+            product.save()
 
         def get_packs():
             return Tag.objects.filter(name__in=name_in_pack_map)
@@ -73,20 +99,14 @@ class UpdatePack(TestCase):
                 )
 
     def test_update_prices(self):
-        # @todo #859:60m Create fixture products with in_pack = 2
-        #  Resuse the fixture in related tests.
-
-        mul = 2
-        tags = TagGroup.objects.first().tags.all()
-        tags.products().update(in_pack=mul)
+        tags = Tag.objects.get_packs()
         products = list(tags.products())
 
         update_pack.update_prices(tags)
 
-        for new, old in zip(tags.products(), products):
-            self.assertEqual(new.id, old.id)
-            for price in update_pack.PRICES:
-                self.assertEqual(getattr(new, price), getattr(old, price) * mul)
+        for old, new in zip(products, tags.products()):
+            self.assertEqual(old.id, new.id)
+            self.assert_prices(old, new)
 
 
 @tag('fast')
