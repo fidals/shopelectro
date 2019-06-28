@@ -44,7 +44,7 @@ class UpdatePack(TestCase):
 
     fixtures = ['dump.json']
 
-    def assert_prices(self, old, new):
+    def assert_prices(self, old: Product, new: Product):
         for price in update_pack.PRICES:
             self.assertEqual(getattr(new, price), getattr(old, price) * new.in_pack)
 
@@ -104,8 +104,8 @@ class UpdatePack(TestCase):
 
         update_pack.update_prices(tags)
 
-        for new, old in zip(tags.products(), products):
-            self.assertEqual(new.id, old.id)
+        for old, new in zip(products, tags.products()):
+            self.assertEqual(old.id, new.id)
             self.assert_prices(old, new)
 
 

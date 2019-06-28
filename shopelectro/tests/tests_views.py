@@ -876,7 +876,7 @@ class InPack(ViewsTestCase):
 
     fixtures = ['dump.json']
 
-    def test_catalog_in_pack_units(self):
+    def test_category_packs(self):
         category = (
             models.Product.objects
             .annotate(category_size=Count('category__products'))
@@ -894,7 +894,7 @@ class InPack(ViewsTestCase):
             results,
         )
 
-    def test_product_in_pack_units(self):
+    def test_product_pack(self):
         product = models.Product.objects.filter(in_pack__gt=1).first()
 
         soup = self.get_product_soup(product)
