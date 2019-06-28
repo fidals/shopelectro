@@ -82,6 +82,7 @@ class Product(
         verbose_name=_('tags'),
     )
 
+    # @todo #910:30m  Explore and doc what is vendor_code.
     vendor_code = models.SmallIntegerField(verbose_name=_('vendor_code'))
     uuid = models.UUIDField(default=uuid4, editable=False)
     purchase_price = models.FloatField(
