@@ -85,7 +85,7 @@ pipeline:
   slow-test:
     <<: *test
     commands:
-      - python manage.py test --parallel --tag slow -k -v 3
+      - python manage.py test --parallel --tag slow -k --rerun-failed 2 -v 3
 
   lint-coala:
     <<: *lint
