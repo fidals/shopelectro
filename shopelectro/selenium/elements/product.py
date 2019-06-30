@@ -59,7 +59,8 @@ class CartPosition(Product):
 
     def __init__(self, driver: SiteDriver, pos_index: int):
         self.driver = driver
-        self.xpath = f'//ul[@id="basket-list"]/li[{pos_index}]/'
+        # xpath indexes starts from 1
+        self.xpath = f'//ul[@id="basket-list"]/li[{pos_index + 1}]/'
 
     def name(self):
         raise Unavailable('determine the position name.')
@@ -71,4 +72,4 @@ class CartPosition(Product):
         raise Unavailable('determine the position quantity.')
 
     def remove_from_cart(self):
-        raise Unavailable('remove the position from the card.')
+        Button(self.driver, (By.XPATH, f'{self.xpath}i')).click()

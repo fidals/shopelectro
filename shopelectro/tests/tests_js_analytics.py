@@ -87,10 +87,10 @@ class YandexEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
-    # @todo #799:120m Test Yandex ecommerce goals.
+    # @todo #808:120m Test Yandex ecommerce goals.
     #  Here are goals left to test:
     #  - onProductAdd from catalog, product and order pages
-    #  - onProductRemove from cart and order page
+    #  - onProductRemove from order page
 
     def get_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
@@ -188,7 +188,8 @@ class YandexEcommerce(Ecommerce):
         page = selenium.Product(self.browser, product.vendor_code)
         page.load()
         page.add_to_cart()
-        page.cart().remove()
+        cart = page.cart()
+        cart.remove(cart.positions()[0])
 
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)

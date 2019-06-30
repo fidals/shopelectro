@@ -23,10 +23,14 @@ class Cart:
         ))
 
     def positions(self) -> [elements.CartPosition]:
-        positions_count = len(self.driver.wait.until(EC.presence_of_elements_located(
+        positions_count = len(self.driver.wait.until(EC.presence_of_all_elements_located(
             (By.CLASS_NAME, 'basket-item')
         )))
-        return [elements.CartPosition(i) for i in range(positions_count)]
+        return [elements.CartPosition(self.driver, i) for i in range(positions_count)]
+
+    def remove(self, position: elements.CartPosition):
+        self._hover()
+        position.remove_from_cart()
 
     def clear(self):
         self._hover()
