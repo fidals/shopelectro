@@ -42,6 +42,19 @@ class CatalogCard(Product):
         self.button.click()
 
 
+class ProductCard(Product):
+
+    def __init__(self, driver: SiteDriver):
+        self.driver = driver
+        self.button = Button(
+            self.driver,
+            (By.CLASS_NAME, 'js-to-cart-on-product-page')
+        )
+
+    def add_to_cart(self):
+        self.button.click()
+
+
 class CartPosition(Product):
 
     def __init__(self, driver: SiteDriver, pos_index: int):
