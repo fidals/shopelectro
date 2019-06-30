@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from shopelectro.selenium.elements import ProductCard
+from shopelectro.selenium import elements
 from shopelectro.selenium.pages import Page
 
 
@@ -18,4 +18,11 @@ class Product(Page):
         return reverse('product', args=(self.vendor_code,))
 
     def add_to_cart(self):
-        ProductCard(self.driver).add_to_cart()
+        def wait_adding(browser):
+            # @todo #808:60m Create a context manager for cart-related tests.
+            #  It should wait position changes after inner block.
+            return len(elements.Cart(browser).positions()) > old_count
+
+        old_count = len(self.cart().positions())
+        elements.ProductCard(self.driver).add_to_cart()
+        self.driver.wait.until(wait_adding)

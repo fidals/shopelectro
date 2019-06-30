@@ -33,26 +33,19 @@ class CatalogCard(Product):
         :param int card_index: The index number of the product card at a category page
         """
         self.driver = driver
-        self.button = Button(
-            self.driver,
-            (By.XPATH, f'//*[@id="products-wrapper"]/div[{card_index}]/div[2]/div[5]/button')
-        )
+        self.xpath = f'//*[@id="products-wrapper"]/div[{card_index}]/div[2]/div[5]/'
 
     def add_to_cart(self):
-        self.button.click()
+        Button(self.driver, (By.XPATH, f'{self.xpath}button')).click()
 
 
 class ProductCard(Product):
 
     def __init__(self, driver: SiteDriver):
         self.driver = driver
-        self.button = Button(
-            self.driver,
-            (By.CLASS_NAME, 'js-to-cart-on-product-page')
-        )
 
     def add_to_cart(self):
-        self.button.click()
+        Button(self.driver, (By.CLASS_NAME, 'js-to-cart-on-product-page')).click()
 
 
 class CartPosition(Product):

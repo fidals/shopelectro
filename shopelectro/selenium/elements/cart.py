@@ -1,8 +1,8 @@
-from shopelectro.selenium import SiteDriver, elements
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+
+from shopelectro.selenium import SiteDriver, elements
 
 # @todo #799:120m Reuse shopelectro.selenium.elements.cart.Cart for selenium tests.
 
@@ -23,9 +23,9 @@ class Cart:
         ))
 
     def positions(self) -> [elements.CartPosition]:
-        positions_count = len(self.driver.wait.until(EC.presence_of_all_elements_located(
-            (By.CLASS_NAME, 'basket-item')
-        )))
+        positions_count = len(self.driver.find_elements(
+            By.CLASS_NAME, 'basket-item'
+        ))
         return [elements.CartPosition(self.driver, i) for i in range(positions_count)]
 
     def remove(self, position: elements.CartPosition):
