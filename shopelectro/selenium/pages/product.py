@@ -20,7 +20,7 @@ class Product(Page):
     def add_to_cart(self):
         def wait_adding(browser):
             # @todo #808:60m Create a context manager for cart-related tests.
-            #  It should wait position changes after inner block.
+            #  It should wait position changes after completed inner block.
             return len(elements.Cart(browser).positions()) > old_count
 
         old_count = len(self.cart().positions())

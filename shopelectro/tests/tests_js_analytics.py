@@ -138,7 +138,7 @@ class YandexEcommerce(Ecommerce):
         self.assertIn('detail', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
-        reached_detail = reached['detail']
+        reached_detail = reached['detail']  # Ignore CPDBear
         self.assertEqual(
             len(reached_detail['products']),
             1,
@@ -155,12 +155,12 @@ class YandexEcommerce(Ecommerce):
             }
         )
 
-    def test_clear_cart(self):
+    def test_clear_cart(self):  # Ignore CPDBear
         product = Product.objects.first()
         page = selenium.Product(self.browser, product.vendor_code)
         page.load()
         page.add_to_cart()
-        page.cart().clear()
+        page.cart().clear()  # Ignore CPDBear
 
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
