@@ -82,8 +82,10 @@ class Product(
         verbose_name=_('tags'),
     )
 
-    # `vendor_code` is "public id". Use this to publicly identify a product.
-    # We bring it from 1C database and sync with products.
+    # `vendor_code` is a code that refers to the particular stock keeping unit (SKU).
+    # You can treat it as public unique id. Use it to publicly identify a product.
+
+    # We bring codes from 1C database and sync with products.
     # We doesn't use the id field instead, because it is auto-increment sequence,
     # that can't be changed easily. We decided to avoid that complexity.
     # https://www.postgresql.org/docs/current/functions-sequence.html
