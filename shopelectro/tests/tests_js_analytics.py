@@ -92,6 +92,12 @@ class YandexEcommerce(Ecommerce):
     #  - onProductAdd from catalog and order pages
     #  - onProductRemove from order page
 
+    def tearDown(self):
+        # delete the session to clear the cart
+        self.browser.delete_cookie('sessionid')
+        self.browser.execute_script('localStorage.clear();')
+        super().setUp()
+
     def get_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
 

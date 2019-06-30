@@ -29,8 +29,13 @@ class Cart:
         return [elements.CartPosition(self.driver, i) for i in range(positions_count)]
 
     def remove(self, position: elements.CartPosition):
+        def wait_removing(browser):
+            return len(Cart(browser).positions()) < old_count
+
+        old_count = len(self.positions())
         self._hover()
         position.remove_from_cart()
+        self.driver.wait.until(wait_removing)
 
     def clear(self):
         self._hover()
