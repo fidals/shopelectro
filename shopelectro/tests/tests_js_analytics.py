@@ -89,7 +89,7 @@ class YandexEcommerce(Ecommerce):
 
     # @todo #808:120m Test Yandex ecommerce goals.
     #  Here are goals left to test:
-    #  - onProductAdd from catalog, product and order pages
+    #  - onProductAdd from catalog and order pages
     #  - onProductRemove from order page
 
     def get_goals(self):
@@ -209,6 +209,36 @@ class YandexEcommerce(Ecommerce):
             {
                 'id': product.id,
                 'quantity': 1,
+            }
+        )
+
+    def test_add_from_product_page(self):
+        product = Product.objects.first()
+        page = selenium.Product(self.browser, product.vendor_code)
+        page.load()
+        page.add_to_cart()
+
+        reached_goals = self.get_goals()
+        self.assertTrue(reached_goals)
+
+        reached = self.get_goal(reached_goals, 1)
+        self.assertIn('add', reached)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_detail = reached['add']
+        self.assertEqual(
+            len(reached_detail['products']),
+            1,
+        )
+
+        self.assertEqual(
+            reached_detail['products'][0],
+            {
+                'id': product.id,
+                'name': product.name,
+                'brand': product.get_brand_name(),
+                'quantity': 1,
+                'category': product.category.name,
             }
         )
 
