@@ -1,5 +1,6 @@
 from django.urls import reverse
 
+from shopelectro.selenium.elements import ProductCard
 from shopelectro.selenium.pages import Page
 
 
@@ -15,3 +16,6 @@ class Product(Page):
     @property
     def path(self):
         return reverse('product', args=(self.vendor_code,))
+
+    def add_to_cart(self):
+        ProductCard(self.driver).add_to_cart()

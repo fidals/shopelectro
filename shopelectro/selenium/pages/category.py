@@ -21,7 +21,7 @@ class CategoryPage(Page):
     def product_cards(self) -> typing.List[CatalogCard]:
         raise NotImplementedError
 
-    def add_to_cart(self, products: typing.List[CatalogCard]=None):
+    def add_to_cart(self, products: typing.List[CatalogCard] = None):
         default = [CatalogCard(self.driver, i) for i in range(1, 7)]
         products = products or default
         for product in products:
