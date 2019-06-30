@@ -1,6 +1,7 @@
 from functools import wraps
 
 from shopelectro.selenium import SiteDriver
+from shopelectro.selenium.elements import Cart
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -33,3 +34,6 @@ class Page:
             raise ValueError(f'Set a page path to {self.__class__.__name__}')
         self.driver.get(self.path)
         self.wait_loaded()
+
+    def cart(self):
+        return Cart(self.driver)

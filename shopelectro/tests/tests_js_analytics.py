@@ -87,29 +87,34 @@ class YandexEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
-    # @todo #799:120m Test Yandex ecommerce goals.
+    # @todo #808:120m Test Yandex ecommerce goals.
     #  Here are goals left to test:
-    #  - onCartClear from cart
-    #  - onProductAdd from catalog, product and order pages
-    #  - onProductRemove from cart and order page
+    #  - onProductAdd from catalog and order pages
+    #  - onProductRemove from order page
 
-    @property
-    def reached_goals(self):
+    def tearDown(self):
+        # delete the session to clear the cart
+        self.browser.delete_cookie('sessionid')
+        self.browser.execute_script('localStorage.clear();')
+        super().setUp()
+
+    def get_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
 
-    def get_first(self, reached):
+    def get_goal(self, reached, index=0):
         """Get the first reached goal and unfold it."""
-        return reached[0][0]['ecommerce']
+        return reached[index][0]['ecommerce']
 
     def test_purchase(self):
         self.buy()
         order = self.last_order()
         positions = order.positions.all()
 
-        reached_goals = self.reached_goals
+        reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_first(reached_goals)
+        reached = self.get_goal(reached_goals)
+        self.assertIn('purchase', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
         reached_purchase = reached['purchase']
@@ -132,19 +137,108 @@ class YandexEcommerce(Ecommerce):
         product = Product.objects.first()
         selenium.Product(self.browser, product.vendor_code).load()
 
-        reached_goals = self.reached_goals
+        reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_first(reached_goals)
+        reached = self.get_goal(reached_goals)
+        self.assertIn('detail', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_detail = reached['detail']  # Ignore CPDBear
         self.assertEqual(
-            len(reached['detail']['products']),
+            len(reached_detail['products']),
             1,
         )
 
-        product_detail = reached['detail']['products'][0]
         self.assertEqual(
-            product_detail,
+            reached_detail['products'][0],
+            {
+                'id': product.id,
+                'name': product.name,
+                'brand': product.get_brand_name(),
+                'quantity': 1,
+                'category': product.category.name,
+            }
+        )
+
+    def test_clear_cart(self):  # Ignore CPDBear
+        product = Product.objects.first()
+        page = selenium.Product(self.browser, product.vendor_code)
+        page.load()
+        page.add_to_cart()
+        page.cart().clear()  # Ignore CPDBear
+
+        reached_goals = self.get_goals()
+        self.assertTrue(reached_goals)
+
+        reached = self.get_goal(reached_goals, 2)
+        self.assertIn('remove', reached)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_remove = reached['remove']
+        self.assertEqual(
+            len(reached_remove['products']),
+            1,
+        )
+
+        self.assertEqual(
+            reached_remove['products'][0],
+            {
+                'id': product.id,
+                'quantity': 1,
+            }
+        )
+
+    def test_remove_from_cart(self):
+        product = Product.objects.first()
+        page = selenium.Product(self.browser, product.vendor_code)
+        page.load()
+        page.add_to_cart()
+        cart = page.cart()
+        cart.remove(cart.positions()[0])
+
+        reached_goals = self.get_goals()
+        self.assertTrue(reached_goals)
+
+        reached = self.get_goal(reached_goals, 2)
+        self.assertIn('remove', reached)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_remove = reached['remove']
+        self.assertEqual(
+            len(reached_remove['products']),
+            1,
+        )
+
+        self.assertEqual(
+            reached_remove['products'][0],
+            {
+                'id': product.id,
+                'quantity': 1,
+            }
+        )
+
+    def test_add_from_product_page(self):
+        product = Product.objects.first()
+        page = selenium.Product(self.browser, product.vendor_code)
+        page.load()
+        page.add_to_cart()
+
+        reached_goals = self.get_goals()
+        self.assertTrue(reached_goals)
+
+        reached = self.get_goal(reached_goals, 1)
+        self.assertIn('add', reached)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_detail = reached['add']
+        self.assertEqual(
+            len(reached_detail['products']),
+            1,
+        )
+
+        self.assertEqual(
+            reached_detail['products'][0],
             {
                 'id': product.id,
                 'name': product.name,
