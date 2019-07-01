@@ -8,7 +8,25 @@
     $timeTag: $('.js-select-time'),
   };
 
+  // @todo #903:30m  Move SCREENS const to configs.es6 file.
+
+  // variables.less contains the same values
+  const SCREENS = {
+    xs: 480,
+    sm: 768,
+    md: 992,
+    lg: 1200,
+  };
+
   const init = () => {
+    if ($(window).width() < SCREENS.sm) {
+      $('.tile-about .row').slick({
+        dots: true,
+        arrows: true,
+        mobileFirst: true,
+      });
+    }
+
     fillInUserData({
       phone: localStorage.getItem(configs.labels.phone),
       time: localStorage.getItem(configs.labels.callTime),
