@@ -19,19 +19,12 @@
   };
 
   const init = () => {
-    if ($(window).width() < SCREENS.sm) {
-      $('.tile-about .row').slick({
-        dots: true,
-        arrows: true,
-        mobileFirst: true,
-      });
-    }
-
     fillInUserData({
       phone: localStorage.getItem(configs.labels.phone),
       time: localStorage.getItem(configs.labels.callTime),
     });
     setUpListeners();
+    initSlider();
   };
 
   /**
@@ -54,6 +47,16 @@
       helpers.debounce(toggleSubmenu(true), 200),
       toggleSubmenu(false),
     );
+  }
+
+  function initSlider() {
+    if ($(window).width() < SCREENS.sm) {
+      $('.tile-about .row').slick({
+        dots: true,
+        arrows: true,
+        mobileFirst: true,
+      });
+    }
   }
 
   function scrollToTop() {
