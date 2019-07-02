@@ -98,6 +98,8 @@ class YandexEcommerce(Ecommerce):
         self.browser.execute_script('localStorage.clear();')
         super().tearDown()
 
+    # @todo #808:30m Create Goals class for tests.
+    #  Remove these utility functions in favor of the class.
     def get_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
 
