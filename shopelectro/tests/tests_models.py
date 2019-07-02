@@ -5,7 +5,7 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.test import TestCase, TransactionTestCase, tag
 
-from shopelectro.models import Product, Tag, TagGroup
+from shopelectro.models import Category, CatalogBlock, Product, Tag, TagGroup
 
 
 @tag('fast')
@@ -86,3 +86,32 @@ class QueryQuantities(TransactionTestCase):
                 p: p.tags.filter(group__name=settings.BRAND_TAG_GROUP_NAME).first()
                 for p in products
             }
+
+    def test_get_catalog_blocks(self):
+        """Perform four queries to fetch in batch blocks, categories, pages and category's children."""
+        roots = Category.objects.filter(level=0)
+        roots_count = roots.count()
+        for category in roots:
+            CatalogBlock.objects.create(category=category)
+
+        with self.assertNumQueries(4):
+            blocks = list(CatalogBlock.objects.blocks())
+            self.assertEquals(roots_count, len(blocks))
+            for block in blocks:
+                self.assertTrue(block.category)
+                self.assertTrue(block.category.page)
+                self.assertTrue(block.rows())
+
+
+@tag('fast')
+class CatalogBlockModel(TestCase):
+
+    fixtures = ['dump.json']
+
+    def test_rows_count(self):
+        first, second, *_  = Category.objects.all()
+        block = CatalogBlock.objects.create(category=first)
+        sized_block = CatalogBlock.objects.create(category=second, block_size=2)
+
+        self.assertNotEquals(first.children.active(), len(sized_block.rows()))
+        self.assertEquals(sized_block.block_size, len(sized_block.rows()))
