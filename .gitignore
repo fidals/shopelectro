@@ -26,4 +26,6 @@ database/
 .DS_store
 *.orig
 venv/
+.sublime-project
+.sublime-workspace
 
