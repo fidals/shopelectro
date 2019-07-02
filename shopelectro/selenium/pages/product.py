@@ -18,11 +18,5 @@ class Product(Page):
         return reverse('product', args=(self.vendor_code,))
 
     def add_to_cart(self):
-        def wait_adding(browser):
-            # @todo #808:60m Create a context manager for cart-related tests.
-            #  It should wait position changes after completed inner block.
-            return len(elements.Cart(browser).positions()) > old_count
-
-        old_count = len(self.cart().positions())
-        elements.ProductCard(self.driver).add_to_cart()
-        self.driver.wait.until(wait_adding)
+        with self.cart().wait_changes():
+            elements.ProductCard(self.driver).add_to_cart()
