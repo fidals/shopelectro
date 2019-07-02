@@ -11,7 +11,7 @@ docker-compose: &docker-compose
 test: &test
   <<: *when-pr-push
   image: fidals/se:dev
-  secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS ]
+  secrets: [ FTP_IP, FTP_USER, FTP_PASS, SELENIUM_WAIT_SECONDS, SELENIUM_TIMEOUT_SECONDS, SELENIUM_IMPLICIT_WAIT ]
   environment:
     - TEST_ENV=true
     - DJANGO_SETTINGS_MODULE=shopelectro.settings.drone
@@ -29,6 +29,7 @@ test: &test
     - FTP_PASS=${FTP_PASS}
     - SELENIUM_WAIT_SECONDS=${SELENIUM_WAIT_SECONDS}
     - SELENIUM_TIMEOUT_SECONDS=${SELENIUM_TIMEOUT_SECONDS}
+    - SELENIUM_IMPLICIT_WAIT=${SELENIUM_IMPLICIT_WAIT}
 
 lint: &lint
   <<: *when-pr-push
