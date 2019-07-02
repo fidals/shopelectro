@@ -87,7 +87,7 @@ class YandexEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
-    # @todo #808:120m Test Yandex ecommerce add and remove goals from the order page.
+    # @todo #820:120m Test Yandex ecommerce add and remove goals from the order page.
     #  Get rid of code duplications.
 
     def tearDown(self):
