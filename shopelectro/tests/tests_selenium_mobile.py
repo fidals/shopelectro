@@ -38,7 +38,7 @@ class MobileSeleniumTestCase(LiveServerTestCase):
             site_url=cls.live_server_url,
             desired_capabilities=chrome_options.to_capabilities(),
         )
-        cls.browser.implicitly_wait(10)
+        cls.browser.implicitly_wait(settings.SELENIUM_IMPLICIT_WAIT)
 
     @property
     def wait(self):
