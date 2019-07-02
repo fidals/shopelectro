@@ -857,6 +857,10 @@ class SitePage(helpers.SeleniumTestCase):
             'js-accordion-content-{}'.format(self.page_top.id)
         )
 
+    # @todo #808:15m Resurrect test_accordion_minimized.
+    #  The test is unstable. https://ci.fidals.com/fidals/shopelectro/1617/10
+
+    @unittest.skip
     def test_accordion_minimized(self):
         """Accordion item should be minimized by default."""
         self.assertFalse(self.accordion_content.is_displayed())
