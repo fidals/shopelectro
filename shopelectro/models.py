@@ -56,60 +56,6 @@ class Category(catalog_models.AbstractCategory, pages_models.SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class CatalogBlockManager(models.Manager):
-
-    def blocks(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related('category', 'category__page')
-            .prefetch_related('category__children')
-            .filter(category__level=0, category__page__is_active=True)
-        )
-
-
-class CatalogBlock(models.Model):
-    """Catalog block is an element of catalog matrix UI element."""
-
-    # @todo #880:60m Add it to the admin panel, use it in the matrix view.
-    #  Get the block_size data from the matrix view and fill out the model from admin.
-
-    class Meta:
-        verbose_name = _('Catalog block')
-        verbose_name_plural = _('Catalog blocks')
-        ordering = ['category__page__position', 'category__name']
-
-    objects = CatalogBlockManager()
-
-    category = models.OneToOneField(
-        Category,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        verbose_name=_('category'),
-        related_name=_('catalog_block'),
-        limit_choices_to={'level': 0},
-    )
-
-    block_size = models.PositiveSmallIntegerField(
-        null=True,
-        verbose_name=_('block size'),
-    )
-
-    @property
-    def name(self):
-        self.category.name
-
-    @property
-    def url(self):
-        self.category.url
-
-    def rows(self):
-        rows = self.category.children.active()
-        if self.block_size:
-            return rows[:self.block_size]
-        return rows
-
-
 class Product(
     catalog_models.AbstractProduct,
     catalog_models.AbstractPosition,
