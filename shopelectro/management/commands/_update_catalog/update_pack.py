@@ -11,7 +11,6 @@ from django.conf import settings
 from django.db import models, transaction
 
 from catalog.models_expressions import Substring
-
 from shopelectro.exception import UpdateCatalogException
 from shopelectro.models import TagQuerySet, TagGroup
 
@@ -58,7 +57,7 @@ def update_prices(packs: TagQuerySet):
     """Multiply product prices on in pack quantity."""
     fields_to_update = {}
     for price in PRICES:
-        fields_to_update[price] = models.F(price) * models.F('in_pack')
+        fields_to_update[price] = models.F(price)
 
     with transaction.atomic():
         packs.products().update(**fields_to_update)
