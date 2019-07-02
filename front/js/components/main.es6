@@ -8,7 +8,7 @@
     $timeTag: $('.js-select-time'),
   };
 
-  // @todo #903:30m  Move SCREENS const to configs.es6 file.
+  // @todo #903:15m  Move SCREENS const to configs.es6 file.
 
   // variables.less contains the same values
   const SCREENS = {
@@ -50,6 +50,8 @@
   }
 
   function initSlider() {
+    // @todo #903:30m  Toggle slider on window resize.
+    //  Now slider is toggled based only on initial window size.
     if ($(window).width() < SCREENS.sm) {
       $('.tile-about .row').slick({
         dots: true,

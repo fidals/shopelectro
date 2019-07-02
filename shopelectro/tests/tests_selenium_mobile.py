@@ -127,6 +127,13 @@ class Mobile(MobileSeleniumTestCase):
         ))
         self.assertIn('Cate', result.text)
 
+    def test_info_slider_is_mobile(self):
+        """Informational slider should appear only on mobile devices."""
+        page = self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '.tile-about .row')
+        ))
+        self.assertIn('slick-slider', page.get_attribute('class'))
+
     def test_catalog(self):
         """Catalog should expand on click on fa fa-chevron icons."""
         catalog = self.browser.find_element_by_class_name('js-mobile-catalog-btn')
