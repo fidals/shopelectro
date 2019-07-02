@@ -96,13 +96,13 @@ class YandexEcommerce(Ecommerce):
         # delete the session to clear the cart
         self.browser.delete_cookie('sessionid')
         self.browser.execute_script('localStorage.clear();')
-        super().setUp()
+        super().tearDown()
 
     def get_goals(self):
         return self.browser.execute_script('return window.dataLayer.results;')
 
     def get_goal(self, reached, index=0):
-        """Get the first reached goal and unfold it."""
+        """Get a goal with the given index and unfold it."""
         return reached[index][0]['ecommerce']
 
     def test_purchase(self):
