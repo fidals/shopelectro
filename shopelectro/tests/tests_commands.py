@@ -98,21 +98,6 @@ class UpdatePack(TestCase):
                     f'Product: {product}, Pack: {pack}'
                 )
 
-    def test_update_prices(self):
-        """
-        Update pack should preserve stock prices.
-
-        Since stock multiplies them itself.
-        """
-        tags = Tag.objects.get_packs()
-        products = list(tags.products())
-
-        update_pack.update_prices(tags)
-
-        for old, new in zip(products, tags.products()):
-            self.assertEqual(old.id, new.id)
-            self.assert_prices(old, new)
-
 
 @tag('fast')
 class UpdateProductsUnit(TestCase):
