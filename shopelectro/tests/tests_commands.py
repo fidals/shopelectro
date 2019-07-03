@@ -46,7 +46,7 @@ class UpdatePack(TestCase):
 
     def assert_prices(self, old: Product, new: Product):
         for price in update_pack.PRICES:
-            self.assertEqual(getattr(new, price), getattr(old, price) * new.in_pack)
+            self.assertEqual(getattr(new, price), getattr(old, price))
 
     def test_command(self):
         """The command updates only packed products."""
@@ -97,16 +97,6 @@ class UpdatePack(TestCase):
                     name_in_pack_map[pack.name],
                     f'Product: {product}, Pack: {pack}'
                 )
-
-    def test_update_prices(self):
-        tags = Tag.objects.get_packs()
-        products = list(tags.products())
-
-        update_pack.update_prices(tags)
-
-        for old, new in zip(products, tags.products()):
-            self.assertEqual(old.id, new.id)
-            self.assert_prices(old, new)
 
 
 @tag('fast')

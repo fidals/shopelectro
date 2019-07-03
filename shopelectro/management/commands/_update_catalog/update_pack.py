@@ -8,10 +8,9 @@ The update_catalog command always resets product prices to per unit format, so:
 import logging
 
 from django.conf import settings
-from django.db import models, transaction
+from django.db import models
 
 from catalog.models_expressions import Substring
-
 from shopelectro.exception import UpdateCatalogException
 from shopelectro.models import TagQuerySet, TagGroup
 
@@ -54,17 +53,6 @@ def update_in_packs(packs: TagQuerySet):
         pack.products.all().update(in_pack=max(in_pack, 1))
 
 
-def update_prices(packs: TagQuerySet):
-    """Multiply product prices on in pack quantity."""
-    fields_to_update = {}
-    for price in PRICES:
-        fields_to_update[price] = models.F(price) * models.F('in_pack')
-
-    with transaction.atomic():
-        packs.products().update(**fields_to_update)
-
-
 def main(*args, **kwargs):
     packs = find_pack_group().tags.all().prefetch_related('products')
     update_in_packs(packs)
-    update_prices(packs)
