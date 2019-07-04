@@ -2,10 +2,11 @@ from functools import partial
 from itertools import chain
 
 from django.conf import settings
+from django.db.utils import IntegrityError
 from django.forms.models import model_to_dict
 from django.test import TestCase, TransactionTestCase, tag
 
-from shopelectro.models import Category, CatalogBlock, Product, Tag, TagGroup
+from shopelectro.models import Category, MatrixBlock, Product, Tag, TagGroup
 
 
 @tag('fast')
@@ -87,31 +88,74 @@ class QueryQuantities(TransactionTestCase):
                 for p in products
             }
 
-    def test_get_catalog_blocks(self):
-        """Perform four queries to fetch in batch blocks, categories, pages and category's children."""
+    def test_get_matrix_blocks(self):
         roots = Category.objects.filter(level=0)
         roots_count = roots.count()
         for category in roots:
-            CatalogBlock.objects.create(category=category)
+            MatrixBlock.objects.create(category=category)
 
-        with self.assertNumQueries(4):
-            blocks = list(CatalogBlock.objects.blocks())
+        blocks = MatrixBlock.objects.blocks()
+
+        # 2 queries: MatrixBlock + Category joined with CategoryPage
+        # select_related doesn't deffer the queries
+        with self.assertNumQueries(2):
             self.assertEquals(roots_count, len(blocks))
             for block in blocks:
                 self.assertTrue(block.category)
                 self.assertTrue(block.category.page)
+
+        with self.assertNumQueries(2):
+            for block in blocks:
                 self.assertTrue(block.rows())
 
 
 @tag('fast')
-class CatalogBlockModel(TestCase):
+class MatrixBlockModel(TestCase):
 
     fixtures = ['dump.json']
 
-    def test_rows_count(self):
-        first, second, *_  = Category.objects.all()
-        block = CatalogBlock.objects.create(category=first)
-        sized_block = CatalogBlock.objects.create(category=second, block_size=2)
+    def test_block_category_relation_uniqueness(self):
+        category = Category.objects.first()
 
-        self.assertNotEquals(first.children.active(), len(sized_block.rows()))
-        self.assertEquals(sized_block.block_size, len(sized_block.rows()))
+        with self.assertRaises(IntegrityError):
+            MatrixBlock.objects.create(category=category)
+            MatrixBlock.objects.create(category=category)
+
+    def test_unsized_rows_count(self):
+        block = MatrixBlock.objects.create(category=Category.objects.first())
+
+        self.assertEquals(
+            block.category.children.active().count(),
+            block.rows().count(),
+        )
+
+    def test_sized_rows_count(self):
+        sized_category, oversized_category = Category.objects.all()[:2]
+
+        # block_size < category's children quantity
+        sized_block = MatrixBlock.objects.create(
+            category=sized_category,
+            block_size=sized_category.children.count() - 1,
+        )
+        self.assertNotEquals(
+            sized_category.children.active().count(),
+            sized_block.rows().count(),
+        )
+        self.assertEquals(
+            sized_block.block_size,
+            sized_block.rows().count(),
+        )
+
+        # block_size > category's children quantity
+        oversized_block = MatrixBlock.objects.create(
+            category=oversized_category,
+            block_size=oversized_category.children.count() + 1,
+        )
+        self.assertEquals(
+            oversized_category.children.active().count(),
+            oversized_block.rows().count(),
+        )
+        self.assertNotEquals(
+            oversized_block.block_size,
+            oversized_block.rows().count(),
+        )
