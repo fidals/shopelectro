@@ -8,16 +8,6 @@
     $timeTag: $('.js-select-time'),
   };
 
-  // @todo #903:15m  Move SCREENS const to configs.es6 file.
-
-  // variables.less contains the same values
-  const SCREENS = {
-    xs: 480,
-    sm: 768,
-    md: 992,
-    lg: 1200,
-  };
-
   const init = () => {
     fillInUserData({
       phone: localStorage.getItem(configs.labels.phone),
@@ -47,17 +37,24 @@
       helpers.debounce(toggleSubmenu(true), 200),
       toggleSubmenu(false),
     );
+    window.addEventListener(
+      'resize',
+      helpers.debounce(() => initSlider(), 200),
+    );
   }
 
   function initSlider() {
-    // @todo #903:30m  Toggle slider on window resize.
-    //  Now slider is toggled based only on initial window size.
-    if ($(window).width() < SCREENS.sm) {
-      $('.tile-about .row').slick({
+    const $toSlick = $('.tile-about .row');
+    const $slicked = $('.tile-about .slick-initialized');
+
+    if ($(window).width() < configs.screenSizes.sm) {
+      $toSlick.slick({
         dots: true,
         arrows: true,
         mobileFirst: true,
       });
+    } else if ($slicked.length) {
+      $slicked.slick('unslick');
     }
   }
 
