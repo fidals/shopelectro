@@ -636,10 +636,8 @@ class OrderPage(helpers.SeleniumTestCase):
         self.wait_page_loading()
 
     def tearDown(self):
-        # Delete only a session cookie to flush a cart.
         # If we will flush all cookies it will probably rise csrf-protection errors.
-        self.browser.delete_cookie('sessionid')
-        self.browser.execute_script('localStorage.clear();')
+        self.browser.delete_session()
 
     def buy_products(self):
         self.browser.get(self.category)
