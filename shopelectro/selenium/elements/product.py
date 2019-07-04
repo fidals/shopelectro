@@ -2,7 +2,6 @@ import abc
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 from shopelectro.selenium.elements import Button, Unavailable
 from shopelectro.selenium.driver import SiteDriver
@@ -102,7 +101,11 @@ class CartPosition(Product):
 
     def __hash__(self):
         el = self._data_element()
-        return hash(el.get_attribute('data-product-id') + '/' + el.get_attribute('data-product-count'))
+        return hash(
+            el.get_attribute('data-product-id')
+            + '/'
+            + el.get_attribute('data-product-count')
+        )
 
     def __eq__(self, other: 'CartPosition'):
         return hash(self) == hash(other)
