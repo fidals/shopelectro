@@ -56,7 +56,7 @@ class Category(catalog_models.AbstractCategory, pages_models.SyncPageMixin):
         return reverse('category', args=(self.page.slug,))
 
 
-class CatalogBlockManager(models.Manager):
+class MatrixBlockManager(models.Manager):
 
     def blocks(self):
         return (
@@ -68,25 +68,28 @@ class CatalogBlockManager(models.Manager):
         )
 
 
-class CatalogBlock(models.Model):
-    """Catalog block is an element of catalog matrix UI element."""
+class MatrixBlock(models.Model):
+    """It is an UI element of catalog matrix."""
 
-    # @todo #880:60m Add it to the admin panel, use it in the matrix view.
-    #  Get the block_size data from the matrix view and fill out the model from admin.
+    # @todo #880:30m Add MatrixBlock to the admin panel.
+    #  Inline it on Category Edit page.
+
+    # @todo #880:60m Use MatrixBlock in the matrix view.
+    #  Get the block_size data from the matrix view and fill out the model.
 
     class Meta:
-        verbose_name = _('Catalog block')
-        verbose_name_plural = _('Catalog blocks')
+        verbose_name = _('Matrix block')
+        verbose_name_plural = _('Matrix blocks')
         ordering = ['category__page__position', 'category__name']
 
-    objects = CatalogBlockManager()
+    objects = MatrixBlockManager()
 
     category = models.OneToOneField(
         Category,
         on_delete=models.CASCADE,
         primary_key=True,
         verbose_name=_('category'),
-        related_name=_('catalog_block'),
+        related_name=_('matrix_block'),
         limit_choices_to={'level': 0},
     )
 
@@ -103,7 +106,7 @@ class CatalogBlock(models.Model):
     def url(self):
         self.category.url
 
-    def rows(self):
+    def rows(self) -> SECategoryQuerySet:
         rows = self.category.children.active()
         if self.block_size:
             return rows[:self.block_size]
