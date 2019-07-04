@@ -89,11 +89,7 @@ class QueryQuantities(TransactionTestCase):
             }
 
     def test_get_matrix_blocks(self):
-        roots = Category.objects.filter(level=0)
-        roots_count = roots.count()
-        for category in roots:
-            MatrixBlock.objects.create(category=category)
-
+        roots_count = Category.objects.active().filter(level=0).count()
         blocks = MatrixBlock.objects.blocks()
 
         # 2 queries: MatrixBlock + Category joined with CategoryPage
@@ -115,14 +111,13 @@ class MatrixBlockModel(TestCase):
     fixtures = ['dump.json']
 
     def test_block_category_relation_uniqueness(self):
-        category = Category.objects.first()
+        block = MatrixBlock.objects.first()
 
         with self.assertRaises(IntegrityError):
-            MatrixBlock.objects.create(category=category)
-            MatrixBlock.objects.create(category=category)
+            MatrixBlock.objects.create(category=block.category)
 
     def test_unsized_rows_count(self):
-        block = MatrixBlock.objects.create(category=Category.objects.first())
+        block = MatrixBlock.objects.filter(block_size=None).first()
 
         self.assertEquals(
             block.category.children.active().count(),
@@ -130,15 +125,14 @@ class MatrixBlockModel(TestCase):
         )
 
     def test_sized_rows_count(self):
-        sized_category, oversized_category = Category.objects.all()[:2]
+        sized_block, oversized_block = MatrixBlock.objects.all()[:2]
 
         # block_size < category's children quantity
-        sized_block = MatrixBlock.objects.create(
-            category=sized_category,
-            block_size=sized_category.children.count() - 1,
-        )
+        sized_block.block_size = sized_block.category.children.count() - 1
+        sized_block.save()
+
         self.assertNotEquals(
-            sized_category.children.active().count(),
+            sized_block.category.children.active().count(),
             sized_block.rows().count(),
         )
         self.assertEquals(
@@ -147,12 +141,11 @@ class MatrixBlockModel(TestCase):
         )
 
         # block_size > category's children quantity
-        oversized_block = MatrixBlock.objects.create(
-            category=oversized_category,
-            block_size=oversized_category.children.count() + 1,
-        )
+        oversized_block.block_size = oversized_block.category.children.count() + 1
+        oversized_block.save()
+
         self.assertEquals(
-            oversized_category.children.active().count(),
+            oversized_block.category.children.active().count(),
             oversized_block.rows().count(),
         )
         self.assertNotEquals(
