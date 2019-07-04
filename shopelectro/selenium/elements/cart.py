@@ -25,6 +25,9 @@ class Cart:
             (By.CLASS_NAME, 'js-cart-wrapper')
         ))
 
+    # @todo #920:15m Document the Cart.wait_changes.
+    #  Cover corner cases with TimeoutException.
+
     @contextmanager
     def wait_changes(self):
         def wait_changes(browser):
@@ -44,7 +47,7 @@ class Cart:
                 (By.CLASS_NAME, 'basket-item')
             )))
         except TimeoutException:
-            return []
+            positions_count = 0
 
         return [elements.CartPosition(self.driver, i) for i in range(positions_count)]
 

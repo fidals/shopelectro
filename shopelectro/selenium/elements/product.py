@@ -14,7 +14,7 @@ class Product(abc.ABC):
         raise Unavailable('determine the product name.')
 
     def vendor_code(self):
-        raise Unavailable('determine the product name.')
+        raise Unavailable('determine the vendor code.')
 
     def price(self):
         raise Unavailable('determine the product price.')
@@ -35,20 +35,36 @@ class CatalogCard(Product):
         self,
         driver: SiteDriver,
         *,
-        index: int = None,
-        id_: int = None,
+        _index: int = None,
+        _id: int = None,
     ):
         """
         Ctor.
 
-        :param int index: The index number of the product card at a category page
+        :param int _index: The index number of the product card at a category page
         """
         self.driver = driver
 
-        if (index is None and not id_) or (index and id_):
-            raise ValueError('Provide either index or id_ to work with card.')
-        self._id = id_
-        self._index = index
+        if (_index is None and not _id) or (_index and _id):
+            raise ValueError('Provide either _index or _id to work with card.')
+        self._id = _id
+        self._index = _index
+
+    @classmethod
+    def with_id(
+        cls,
+        driver: SiteDriver,
+        id_: int,
+    ):
+        return cls(driver, _id=id_)
+
+    @classmethod
+    def with_index(
+        cls,
+        driver: SiteDriver,
+        index: int,
+    ):
+        return cls(driver, _index=index)
 
     def _build_xpath(self, path=''):
         product_xpath = '//*[@id="products-wrapper"]'
@@ -60,8 +76,6 @@ class CatalogCard(Product):
         return f'{product_xpath}/div[{self._index + 1}]/{path}'
 
     def vendor_code(self):
-        if self._id:
-            return self._id
         return self.driver.wait.until(EC.visibility_of_element_located(
             (By.XPATH, self._build_xpath('div[2]/div[1]'))
         )).text.split(' ')[1]
