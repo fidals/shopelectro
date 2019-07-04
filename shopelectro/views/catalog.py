@@ -42,9 +42,6 @@ def category_matrix(request, page: str):
         # How the matrix looks like:
         # https://github.com/fidals/shopelectro/issues/837#issuecomment-501161967
 
-        # @todo #837:60m  Improve categories matrix arch.
-        #  Now it's untyped data structure with common comments.
-        #  Turn it to the set of object with clear names.
         matrix[(root.name, root.url)] = (
             children
             if i not in MATRIX_BLOCKS_TO_LIMIT
