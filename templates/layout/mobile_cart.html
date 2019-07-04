@@ -1,11 +1,7 @@
 {% load catalog_extras %}
 {% load pages_extras %}
 
-{% if cart.total_quantity == 0 %}
-<div class="mobile-cart js-mobile-cart hidden">
-{% else %}
-<div class="mobile-cart js-mobile-cart">
-{% endif %}
+<div class="mobile-cart js-mobile-cart {% if cart.total_quantity == 0 %}hidden{% endif %}">
   <span>Товаров:</span>
   <span class="mobile-cart-count">
     <span class="js-cart-size">

@@ -887,6 +887,19 @@ class SitePage(helpers.SeleniumTestCase):
 
 
 @tag('slow')
+class MainPage(helpers.SeleniumTestCase):
+
+    def test_info_slider_is_desktop(self):
+        """Informational slider should appear only on mobile devices."""
+        self.browser.get('/')
+        self.wait_page_loading()
+        page = self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '.tile-about .row')
+        ))
+        self.assertNotIn('slick-slider', page.get_attribute('class'))
+
+
+@tag('slow')
 class Search(helpers.SeleniumTestCase):
 
     QUERY = 'Cate'
