@@ -100,11 +100,11 @@ class MatrixBlock(models.Model):
 
     @property
     def name(self):
-        self.category.name
+        return self.category.name
 
     @property
     def url(self):
-        self.category.url
+        return self.category.url
 
     def rows(self) -> SECategoryQuerySet:
         rows = self.category.children.active()
