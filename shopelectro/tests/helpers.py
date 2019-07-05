@@ -78,9 +78,7 @@ class SeleniumTestCase(LiveServerTestCase):
         """Instantiate browser instance."""
         super().setUpClass()
         cls.browser = SiteDriver(site_url=cls.live_server_url)
-        # @todo #371:15m Move selenium timeout to env var. stb2
-        #  To be able to change it from drone without touching code.
-        cls.browser.implicitly_wait(30)
+        cls.browser.implicitly_wait(settings.SELENIUM_IMPLICIT_WAIT)
         cls.browser.set_page_load_timeout(settings.SELENIUM_TIMEOUT_SECONDS)
         # Fresh created browser failures on maximizing window.
         # This bug is won't fixed by selenium guys https://goo.gl/6Ttguf

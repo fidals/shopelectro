@@ -87,10 +87,8 @@ class YandexEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
-    # @todo #808:120m Test Yandex ecommerce goals.
-    #  Here are goals left to test:
-    #  - onProductAdd from catalog and order pages
-    #  - onProductRemove from order page
+    # @todo #820:120m Test Yandex ecommerce add and remove goals from the order page.
+    #  Get rid of code duplications.
 
     def tearDown(self):
         # delete the session to clear the cart
@@ -229,7 +227,38 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_goal(reached_goals, 1)
+        reached = self.get_goal(reached_goals, 1)  # Ignore CPDBear
+        self.assertIn('add', reached)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_detail = reached['add']
+        self.assertEqual(
+            len(reached_detail['products']),
+            1,
+        )
+
+        self.assertEqual(
+            reached_detail['products'][0],
+            {
+                'id': product.id,
+                'name': product.name,
+                'brand': product.get_brand_name(),
+                'quantity': 1,
+                'category': product.category.name,
+            }
+        )
+
+    def test_add_from_category_page(self):
+        product = Product.objects.first()
+        page = selenium.CategoryPage(self.browser, product.category.page.slug)
+        page.load()
+        card = page.find_card(product.id)
+        page.add_to_cart([card])
+
+        reached_goals = self.get_goals()
+        self.assertTrue(reached_goals)
+
+        reached = self.get_goal(reached_goals)
         self.assertIn('add', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 

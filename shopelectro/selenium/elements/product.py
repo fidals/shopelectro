@@ -1,15 +1,19 @@
 import abc
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
 from shopelectro.selenium.elements import Button, Unavailable
 from shopelectro.selenium.driver import SiteDriver
-
-from selenium.webdriver.common.by import By
 
 
 class Product(abc.ABC):
 
     def name(self):
         raise Unavailable('determine the product name.')
+
+    def vendor_code(self):
+        raise Unavailable('determine the vendor code.')
 
     def price(self):
         raise Unavailable('determine the product price.')
@@ -26,17 +30,57 @@ class Product(abc.ABC):
 
 class CatalogCard(Product):
 
-    def __init__(self, driver: SiteDriver, card_index: int):
+    def __init__(
+        self,
+        driver: SiteDriver,
+        *,
+        _index: int = None,
+        _id: int = None,
+    ):
         """
         Ctor.
 
-        :param int card_index: The index number of the product card at a category page
+        :param int _index: The index number of the product card at a category page
         """
         self.driver = driver
-        self.xpath = f'//*[@id="products-wrapper"]/div[{card_index}]/div[2]/div[5]/'
+
+        if (_index is None and not _id) or (_index and _id):
+            raise ValueError('Provide either _index or _id to work with card.')
+        self._id = _id
+        self._index = _index
+
+    @classmethod
+    def with_id(
+        cls,
+        driver: SiteDriver,
+        id_: int,
+    ):
+        return cls(driver, _id=id_)
+
+    @classmethod
+    def with_index(
+        cls,
+        driver: SiteDriver,
+        index: int,
+    ):
+        return cls(driver, _index=index)
+
+    def _build_xpath(self, path=''):
+        product_xpath = '//*[@id="products-wrapper"]'
+
+        if self._id:
+            return f'{product_xpath}//*[@data-product-id="{self._id}"]/{path}'
+
+        # xpath indexes starts from 1
+        return f'{product_xpath}/div[{self._index + 1}]/{path}'
+
+    def vendor_code(self):
+        return self.driver.wait.until(EC.visibility_of_element_located(
+            (By.XPATH, self._build_xpath('div[2]/div[1]'))
+        )).text.split(' ')[1]
 
     def add_to_cart(self):
-        Button(self.driver, (By.XPATH, f'{self.xpath}button')).click()
+        Button(self.driver, (By.XPATH, self._build_xpath('div[2]/div[5]/button'))).click()
 
 
 class ProductCard(Product):
@@ -50,10 +94,27 @@ class ProductCard(Product):
 
 class CartPosition(Product):
 
-    def __init__(self, driver: SiteDriver, pos_index: int):
+    def __init__(self, driver: SiteDriver, index: int):
         self.driver = driver
         # xpath indexes starts from 1
-        self.xpath = f'//ul[@id="basket-list"]/li[{pos_index + 1}]/'
+        self.xpath = f'//ul[@id="basket-list"]/li[{index + 1}]/'
+
+    def __hash__(self):
+        el = self._data_element()
+        return hash(
+            el.get_attribute('data-product-id')
+            + '/'
+            + el.get_attribute('data-product-count')
+        )
+
+    def __eq__(self, other: 'CartPosition'):
+        return hash(self) == hash(other)
+
+    def _data_element(self):
+        # use short_wait, because a position could be stale
+        return self.driver.short_wait.until(EC.presence_of_element_located(
+            (By.XPATH, f'{self.xpath}i')
+        ))
 
     def name(self):
         raise Unavailable('determine the position name.')
@@ -62,7 +123,7 @@ class CartPosition(Product):
         raise Unavailable('determine the position price.')
 
     def quantity(self):
-        raise Unavailable('determine the position quantity.')
+        return self._data_element().get_attribute('data-product-count')
 
     def remove_from_cart(self):
         Button(self.driver, (By.XPATH, f'{self.xpath}i')).click()
