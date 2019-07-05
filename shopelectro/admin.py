@@ -287,6 +287,11 @@ class OrderAdmin(mixins.PermissionsControl):
         return obj.fake_order_number
 
 
+class MatrixBlockAdmin(mixins.PermissionsControl):
+
+    list_display = ['category', 'block_size']
+
+
 se_admin = SEAdminSite(name='se_admin')
 se_admin.register(CustomPage, models.CustomPageAdmin)
 se_admin.register(FlatPage, models.FlatPageAdmin)
@@ -298,5 +303,6 @@ se_admin.register(se_models.ProductPage, ProductPageAdmin)
 se_admin.register(se_models.ProductFeedback, ProductFeedbackPageAdmin)
 se_admin.register(se_models.TagGroup, TagGroupAdmin)
 se_admin.register(se_models.Tag, TagAdmin)
+se_admin.register(se_models.MatrixBlock, MatrixBlockAdmin)
 
 se_admin.register(Redirect)

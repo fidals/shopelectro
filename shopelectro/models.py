@@ -89,7 +89,7 @@ class MatrixBlock(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
         verbose_name=_('category'),
-        related_name=_('matrix_block'),
+        related_name='matrix_block',
         limit_choices_to={'level': 0},
     )
 

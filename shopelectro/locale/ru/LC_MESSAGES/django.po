@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-03 10:00+0000\n"
+"POT-Creation-Date: 2019-07-05 12:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,279 +20,309 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: shopelectro/admin.py:25
+#: shopelectro/admin.py:45
 msgid "has tags"
 msgstr "По тегам"
 
-#: shopelectro/admin.py:30
+#: shopelectro/admin.py:50
 msgid "Has tags"
 msgstr "С тегами"
 
-#: shopelectro/admin.py:31
+#: shopelectro/admin.py:51
 msgid "Has no tags"
 msgstr "Без тегов"
 
-#: shopelectro/admin.py:47
+#: shopelectro/admin.py:65
 msgid "has category"
 msgstr "По категориями"
 
-#: shopelectro/admin.py:52
+#: shopelectro/admin.py:70
 msgid "Has category"
 msgstr "С категориями"
 
-#: shopelectro/admin.py:53
+#: shopelectro/admin.py:71
 msgid "Has no category"
 msgstr "Без категорий"
 
-#: shopelectro/admin.py:146
-msgid "Link"
-msgstr "Ссылка"
-
-#: shopelectro/admin.py:189
-msgid "Group"
-msgstr "Группа тегов"
-
-#: shopelectro/models.py:81
-msgid "category"
-msgstr "категория"
-
-#: shopelectro/models.py:88
-msgid "tags"
-msgstr "теги"
-
-#: shopelectro/models.py:91
-msgid "vendor_code"
+#: shopelectro/admin.py:178
+#, fuzzy
+#| msgid "vendor_code"
+msgid "Vendor code"
 msgstr "артикул"
 
-#: shopelectro/models.py:93
-msgid "purchase_price"
-msgstr "закупочная цена"
-
-#: shopelectro/models.py:94
-msgid "wholesale_small"
-msgstr "мелкий опт"
-
-#: shopelectro/models.py:95
-msgid "wholesale_medium"
-msgstr "средний опт"
-
-#: shopelectro/models.py:96
-msgid "wholesale_large"
-msgstr "крупный опт"
-
-#: shopelectro/models.py:118
-msgid "date"
-msgstr "дата"
-
-#: shopelectro/models.py:119 shopelectro/models.py:167
-#: shopelectro/models.py:206
-msgid "name"
-msgstr "название"
-
-#: shopelectro/models.py:120
-msgid "rating"
-msgstr "рейтинг"
-
-#: shopelectro/models.py:121
-msgid "dignities"
-msgstr "достоинства"
-
-#: shopelectro/models.py:122 shopelectro/models.py:123
-msgid "limitations"
-msgstr "недостатки"
-
-#: shopelectro/models.py:169 shopelectro/models.py:208
-msgid "position"
-msgstr "позиция"
-
-msgid "catalog"
-msgstr "каталог"
-
-msgid "Category"
-msgstr "Категория"
-
-msgid "Categories"
-msgstr "Категории"
-
-msgid "parent"
-msgstr "родитель"
-
-msgid "Product"
-msgstr "Товар"
-
-msgid "Products"
-msgstr "Товары"
-
-msgid "price"
-msgstr "цена"
-
-msgid "in stock"
-msgstr "наличие"
-
-msgid "is popular"
-msgstr "популярность"
-
-msgid "rub"
-msgstr "руб"
-
-msgid "has images"
-msgstr "По картинкам"
-
-msgid "Has images"
-msgstr "С картинками"
-
-msgid "Has no images"
-msgstr "Без картинок"
-
-msgid "has content"
-msgstr "По контенту"
-
-msgid "Has content"
-msgstr "С контентом"
-
-msgid "Has no content"
-msgstr "Без контента"
-
-msgid "Category ID"
-msgstr "ID категории"
-
-msgid "Parent ID"
-msgstr "ID родителя"
-
-msgid "Image"
-msgstr "картинка"
-
-msgid "current image"
-msgstr "текущая картинка"
-
-msgid "item was"
-msgstr "сущность была"
-
-msgid "items were"
-msgstr "сущностей было"
-
-msgid "marked as active"
-msgstr "сделать активным"
-
-msgid "marked as non-active"
-msgstr "сделать не активным"
-
-msgid "Make active"
-msgstr "Сделать активными"
-
-msgid "Make inactive"
-msgstr "Сделать неактивными"
-
-msgid "Parent"
-msgstr "Родитель"
-
+#: shopelectro/admin.py:184
 msgid "Price"
 msgstr "Цена"
 
-msgid "Table editor"
-msgstr "Табличный редактор"
+#: shopelectro/admin.py:210
+msgid "Link"
+msgstr "Ссылка"
 
-msgid "Show filters"
-msgstr "Показать фильтры"
+#: shopelectro/admin.py:253
+msgid "Group"
+msgstr "Группа тегов"
 
-msgid "Filter fields"
-msgstr "Поля фильтра"
+#: shopelectro/admin.py:274
+msgid "Sends email notifications about placed orders"
+msgstr "Отправить письмо"
 
-msgid "Sorting fields"
-msgstr "Поля сортировки"
+#: shopelectro/models.py:81
+msgid "Matrix block"
+msgstr "Блок на странице каталога"
 
-msgid "Update table editor"
-msgstr "Обновить табличный редактор"
+#: shopelectro/models.py:82
+msgid "Matrix blocks"
+msgstr "Блоки на странице каталога"
 
-msgid "Drop filters"
-msgstr "Сбросить фильтры"
+#: shopelectro/models.py:91 shopelectro/models.py:132
+msgid "category"
+msgstr "категория"
 
-msgid "Search"
-msgstr "Поиск"
+#: shopelectro/models.py:98
+msgid "block size"
+msgstr "размер блока"
 
-msgid "Enter product name, product ID, category name or price..."
-msgstr "Введите название продукта, id продукта, название категории или цену"
+#: shopelectro/models.py:139
+msgid "tags"
+msgstr "теги"
 
-msgid "Add new product"
-msgstr "Добавить новый товар"
+#: shopelectro/models.py:149
+msgid "vendor_code"
+msgstr "артикул"
 
-msgid "Are you sure, that you want to delete"
-msgstr "Вы уверены, что хотите удалить"
+#: shopelectro/models.py:152
+msgid "purchase_price"
+msgstr "закупочная цена"
 
-msgid "Accept"
-msgstr "Подтвердить"
+#: shopelectro/models.py:154
+msgid "wholesale_small"
+msgstr "мелкий опт"
 
-msgid "Cancel"
-msgstr "Отменить"
+#: shopelectro/models.py:156
+msgid "wholesale_medium"
+msgstr "средний опт"
 
-msgid "New product was successfully added"
-msgstr "Новый продукт был успешно сохранён"
+#: shopelectro/models.py:158
+msgid "wholesale_large"
+msgstr "крупный опт"
 
-msgid "Name"
-msgstr "Имя"
+#: shopelectro/models.py:162
+msgid "in pack"
+msgstr "в упаковке"
 
-msgid "Refresh table editor"
-msgstr "Обновить табличный редактор"
+#: shopelectro/models.py:198
+msgid "date"
+msgstr "дата"
 
-msgid "Save product"
-msgstr "Сохранить товар"
+#: shopelectro/models.py:200
+msgid "name"
+msgstr "название"
 
-msgid "image"
-msgstr "картинка"
+#: shopelectro/models.py:202
+msgid "rating"
+msgstr "рейтинг"
 
-msgid "images"
-msgstr "картинки"
+#: shopelectro/models.py:204
+msgid "dignities"
+msgstr "достоинства"
 
-msgid "title"
-msgstr "заголовок"
+#: shopelectro/models.py:206 shopelectro/models.py:208
+msgid "limitations"
+msgstr "недостатки"
 
-msgid "description"
-msgstr "описание"
+#: shopelectro/models.py:248
+msgid "revenue"
+msgstr "прибыль"
 
-msgid "created"
-msgstr "дата создания"
+#: shopelectro/tests/tests_views.py:754
+msgid "Product"
+msgstr "Товар"
 
-msgid "is main"
-msgstr "главная"
+#~ msgid "position"
+#~ msgstr "позиция"
 
-msgid "pages"
-msgstr "страницы"
+#~ msgid "catalog"
+#~ msgstr "каталог"
 
-msgid "keywords"
-msgstr "ключевые слова"
+#~ msgid "Category"
+#~ msgstr "Категория"
 
-msgid "seo text"
-msgstr "seo текст"
+#~ msgid "Categories"
+#~ msgstr "Категории"
 
-msgid "Page"
-msgstr "Страница"
+#~ msgid "parent"
+#~ msgstr "родитель"
 
-msgid "Pages"
-msgstr "Страницы"
+#~ msgid "Products"
+#~ msgstr "Товары"
 
-msgid "is active"
-msgstr "активность"
+#~ msgid "price"
+#~ msgstr "цена"
 
-msgid "content"
-msgstr "контент"
+#~ msgid "in stock"
+#~ msgstr "наличие"
 
-msgid "date published"
-msgstr "дата публикации"
+#~ msgid "is popular"
+#~ msgstr "популярность"
 
-msgid "This field will be shown in the breadcrumbs, menu items and etc."
-msgstr "Это поле будет отображаться в хлебных крошках, меню и т.д."
+#~ msgid "rub"
+#~ msgstr "руб"
 
-msgid "menu title"
-msgstr "заголовок в меню"
+#~ msgid "has images"
+#~ msgstr "По картинкам"
 
-msgid "Custom Page"
-msgstr "Служебная страница"
+#~ msgid "Has images"
+#~ msgstr "С картинками"
 
-msgid "Custom Pages"
-msgstr "Служебные страницы"
+#~ msgid "Has no images"
+#~ msgstr "Без картинок"
 
-msgid "Flat Page"
-msgstr "Простая страница"
+#~ msgid "has content"
+#~ msgstr "По контенту"
 
-msgid "Flat Pages"
-msgstr "Простые страницы"
+#~ msgid "Has content"
+#~ msgstr "С контентом"
+
+#~ msgid "Has no content"
+#~ msgstr "Без контента"
+
+#~ msgid "Category ID"
+#~ msgstr "ID категории"
+
+#~ msgid "Parent ID"
+#~ msgstr "ID родителя"
+
+#~ msgid "Image"
+#~ msgstr "картинка"
+
+#~ msgid "current image"
+#~ msgstr "текущая картинка"
+
+#~ msgid "item was"
+#~ msgstr "сущность была"
+
+#~ msgid "items were"
+#~ msgstr "сущностей было"
+
+#~ msgid "marked as active"
+#~ msgstr "сделать активным"
+
+#~ msgid "marked as non-active"
+#~ msgstr "сделать не активным"
+
+#~ msgid "Make active"
+#~ msgstr "Сделать активными"
+
+#~ msgid "Make inactive"
+#~ msgstr "Сделать неактивными"
+
+#~ msgid "Parent"
+#~ msgstr "Родитель"
+
+#~ msgid "Table editor"
+#~ msgstr "Табличный редактор"
+
+#~ msgid "Show filters"
+#~ msgstr "Показать фильтры"
+
+#~ msgid "Filter fields"
+#~ msgstr "Поля фильтра"
+
+#~ msgid "Sorting fields"
+#~ msgstr "Поля сортировки"
+
+#~ msgid "Update table editor"
+#~ msgstr "Обновить табличный редактор"
+
+#~ msgid "Drop filters"
+#~ msgstr "Сбросить фильтры"
+
+#~ msgid "Search"
+#~ msgstr "Поиск"
+
+#~ msgid "Enter product name, product ID, category name or price..."
+#~ msgstr "Введите название продукта, id продукта, название категории или цену"
+
+#~ msgid "Add new product"
+#~ msgstr "Добавить новый товар"
+
+#~ msgid "Are you sure, that you want to delete"
+#~ msgstr "Вы уверены, что хотите удалить"
+
+#~ msgid "Accept"
+#~ msgstr "Подтвердить"
+
+#~ msgid "Cancel"
+#~ msgstr "Отменить"
+
+#~ msgid "New product was successfully added"
+#~ msgstr "Новый продукт был успешно сохранён"
+
+#~ msgid "Name"
+#~ msgstr "Имя"
+
+#~ msgid "Refresh table editor"
+#~ msgstr "Обновить табличный редактор"
+
+#~ msgid "Save product"
+#~ msgstr "Сохранить товар"
+
+#~ msgid "image"
+#~ msgstr "картинка"
+
+#~ msgid "images"
+#~ msgstr "картинки"
+
+#~ msgid "title"
+#~ msgstr "заголовок"
+
+#~ msgid "description"
+#~ msgstr "описание"
+
+#~ msgid "created"
+#~ msgstr "дата создания"
+
+#~ msgid "is main"
+#~ msgstr "главная"
+
+#~ msgid "pages"
+#~ msgstr "страницы"
+
+#~ msgid "keywords"
+#~ msgstr "ключевые слова"
+
+#~ msgid "seo text"
+#~ msgstr "seo текст"
+
+#~ msgid "Page"
+#~ msgstr "Страница"
+
+#~ msgid "Pages"
+#~ msgstr "Страницы"
+
+#~ msgid "is active"
+#~ msgstr "активность"
+
+#~ msgid "content"
+#~ msgstr "контент"
+
+#~ msgid "date published"
+#~ msgstr "дата публикации"
+
+#~ msgid "This field will be shown in the breadcrumbs, menu items and etc."
+#~ msgstr "Это поле будет отображаться в хлебных крошках, меню и т.д."
+
+#~ msgid "menu title"
+#~ msgstr "заголовок в меню"
+
+#~ msgid "Custom Page"
+#~ msgstr "Служебная страница"
+
+#~ msgid "Custom Pages"
+#~ msgstr "Служебные страницы"
+
+#~ msgid "Flat Page"
+#~ msgstr "Простая страница"
+
+#~ msgid "Flat Pages"
+#~ msgstr "Простые страницы"
