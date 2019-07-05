@@ -889,14 +889,33 @@ class SitePage(helpers.SeleniumTestCase):
 @tag('slow')
 class MainPage(helpers.SeleniumTestCase):
 
+    def info(self):
+        return self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '.tile-about .row')
+        ))
+
     def test_info_slider_is_desktop(self):
         """Informational slider should appear only on mobile devices."""
         self.browser.get('/')
         self.wait_page_loading()
-        page = self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, '.tile-about .row')
-        ))
-        self.assertNotIn('slick-slider', page.get_attribute('class'))
+        self.assertNotIn('slick-slider', self.info().get_attribute('class'))
+
+    def test_info_slider_on_resize(self):
+        """Informational slider should appear/disappear on resize."""
+        self.browser.get('/')
+        self.wait_page_loading()
+
+        condition = EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '.tile-about .slick-initialized')
+        )
+
+        self.browser.set_window_size(400, 400)
+        info = self.wait.until(condition)
+        self.assertIn('slick-slider', info.get_attribute('class'))
+
+        self.browser.set_window_size(1920, 1080)
+        self.wait.until_not(condition)
+        self.assertNotIn('slick-slider', self.info().get_attribute('class'))
 
 
 @tag('slow')

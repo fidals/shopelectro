@@ -15,6 +15,14 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
     orderSuccess: '/shop/order-success',
   };
 
+  // variables.less contains the same values
+  const screenSizes = {
+    xs: 480,
+    sm: 768,
+    md: 992,
+    lg: 1200,
+  };
+
   const labels = {
     callTime: 'callTime',
     phone: 'phone',
@@ -141,6 +149,7 @@ const configs = (() => {  // Ignore ESLintBear (no-unused-vars)
   return {
     $menu,
     plugins,
+    screenSizes,
     labels,
     initScrollbar,
     initTouchspin,
