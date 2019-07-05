@@ -39,7 +39,7 @@
     );
     window.addEventListener(
       'resize',
-      helpers.debounce(() => initSlider(), 200),
+      helpers.debounce(initSlider, 200),
     );
   }
 
