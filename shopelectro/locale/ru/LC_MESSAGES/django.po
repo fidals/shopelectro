@@ -68,11 +68,11 @@ msgstr "Отправить письмо"
 
 #: shopelectro/models.py:81
 msgid "Matrix block"
-msgstr "Блок на странице каталога"
+msgstr "Раздел на странице каталога"
 
 #: shopelectro/models.py:82
 msgid "Matrix blocks"
-msgstr "Блоки на странице каталога"
+msgstr "Разделы на странице каталога"
 
 #: shopelectro/models.py:91 shopelectro/models.py:132
 msgid "category"
@@ -80,7 +80,7 @@ msgstr "категория"
 
 #: shopelectro/models.py:98
 msgid "block size"
-msgstr "размер блока"
+msgstr "размер раздела"
 
 #: shopelectro/models.py:139
 msgid "tags"
@@ -138,191 +138,191 @@ msgstr "прибыль"
 msgid "Product"
 msgstr "Товар"
 
-#~ msgid "position"
-#~ msgstr "позиция"
+msgid "position"
+msgstr "позиция"
 
-#~ msgid "catalog"
-#~ msgstr "каталог"
+msgid "catalog"
+msgstr "каталог"
 
-#~ msgid "Category"
-#~ msgstr "Категория"
+msgid "Category"
+msgstr "Категория"
 
-#~ msgid "Categories"
-#~ msgstr "Категории"
+msgid "Categories"
+msgstr "Категории"
 
-#~ msgid "parent"
-#~ msgstr "родитель"
+msgid "parent"
+msgstr "родитель"
 
-#~ msgid "Products"
-#~ msgstr "Товары"
+msgid "Products"
+msgstr "Товары"
 
-#~ msgid "price"
-#~ msgstr "цена"
+msgid "price"
+msgstr "цена"
 
-#~ msgid "in stock"
-#~ msgstr "наличие"
+msgid "in stock"
+msgstr "наличие"
 
-#~ msgid "is popular"
-#~ msgstr "популярность"
+msgid "is popular"
+msgstr "популярность"
 
-#~ msgid "rub"
-#~ msgstr "руб"
+msgid "rub"
+msgstr "руб"
 
-#~ msgid "has images"
-#~ msgstr "По картинкам"
+msgid "has images"
+msgstr "По картинкам"
 
-#~ msgid "Has images"
-#~ msgstr "С картинками"
+msgid "Has images"
+msgstr "С картинками"
 
-#~ msgid "Has no images"
-#~ msgstr "Без картинок"
+msgid "Has no images"
+msgstr "Без картинок"
 
-#~ msgid "has content"
-#~ msgstr "По контенту"
+msgid "has content"
+msgstr "По контенту"
 
-#~ msgid "Has content"
-#~ msgstr "С контентом"
+msgid "Has content"
+msgstr "С контентом"
 
-#~ msgid "Has no content"
-#~ msgstr "Без контента"
+msgid "Has no content"
+msgstr "Без контента"
 
-#~ msgid "Category ID"
-#~ msgstr "ID категории"
+msgid "Category ID"
+msgstr "ID категории"
 
-#~ msgid "Parent ID"
-#~ msgstr "ID родителя"
+msgid "Parent ID"
+msgstr "ID родителя"
 
-#~ msgid "Image"
-#~ msgstr "картинка"
+msgid "Image"
+msgstr "картинка"
 
-#~ msgid "current image"
-#~ msgstr "текущая картинка"
+msgid "current image"
+msgstr "текущая картинка"
 
-#~ msgid "item was"
-#~ msgstr "сущность была"
+msgid "item was"
+msgstr "сущность была"
 
-#~ msgid "items were"
-#~ msgstr "сущностей было"
+msgid "items were"
+msgstr "сущностей было"
 
-#~ msgid "marked as active"
-#~ msgstr "сделать активным"
+msgid "marked as active"
+msgstr "сделать активным"
 
-#~ msgid "marked as non-active"
-#~ msgstr "сделать не активным"
+msgid "marked as non-active"
+msgstr "сделать не активным"
 
-#~ msgid "Make active"
-#~ msgstr "Сделать активными"
+msgid "Make active"
+msgstr "Сделать активными"
 
-#~ msgid "Make inactive"
-#~ msgstr "Сделать неактивными"
+msgid "Make inactive"
+msgstr "Сделать неактивными"
 
-#~ msgid "Parent"
-#~ msgstr "Родитель"
+msgid "Parent"
+msgstr "Родитель"
 
-#~ msgid "Table editor"
-#~ msgstr "Табличный редактор"
+msgid "Table editor"
+msgstr "Табличный редактор"
 
-#~ msgid "Show filters"
-#~ msgstr "Показать фильтры"
+msgid "Show filters"
+msgstr "Показать фильтры"
 
-#~ msgid "Filter fields"
-#~ msgstr "Поля фильтра"
+msgid "Filter fields"
+msgstr "Поля фильтра"
 
-#~ msgid "Sorting fields"
-#~ msgstr "Поля сортировки"
+msgid "Sorting fields"
+msgstr "Поля сортировки"
 
-#~ msgid "Update table editor"
-#~ msgstr "Обновить табличный редактор"
+msgid "Update table editor"
+msgstr "Обновить табличный редактор"
 
-#~ msgid "Drop filters"
-#~ msgstr "Сбросить фильтры"
+msgid "Drop filters"
+msgstr "Сбросить фильтры"
 
-#~ msgid "Search"
-#~ msgstr "Поиск"
+msgid "Search"
+msgstr "Поиск"
 
-#~ msgid "Enter product name, product ID, category name or price..."
-#~ msgstr "Введите название продукта, id продукта, название категории или цену"
+msgid "Enter product name, product ID, category name or price..."
+msgstr "Введите название продукта, id продукта, название категории или цену"
 
-#~ msgid "Add new product"
-#~ msgstr "Добавить новый товар"
+msgid "Add new product"
+msgstr "Добавить новый товар"
 
-#~ msgid "Are you sure, that you want to delete"
-#~ msgstr "Вы уверены, что хотите удалить"
+msgid "Are you sure, that you want to delete"
+msgstr "Вы уверены, что хотите удалить"
 
-#~ msgid "Accept"
-#~ msgstr "Подтвердить"
+msgid "Accept"
+msgstr "Подтвердить"
 
-#~ msgid "Cancel"
-#~ msgstr "Отменить"
+msgid "Cancel"
+msgstr "Отменить"
 
-#~ msgid "New product was successfully added"
-#~ msgstr "Новый продукт был успешно сохранён"
+msgid "New product was successfully added"
+msgstr "Новый продукт был успешно сохранён"
 
-#~ msgid "Name"
-#~ msgstr "Имя"
+msgid "Name"
+msgstr "Имя"
 
-#~ msgid "Refresh table editor"
-#~ msgstr "Обновить табличный редактор"
+msgid "Refresh table editor"
+msgstr "Обновить табличный редактор"
 
-#~ msgid "Save product"
-#~ msgstr "Сохранить товар"
+msgid "Save product"
+msgstr "Сохранить товар"
 
-#~ msgid "image"
-#~ msgstr "картинка"
+msgid "image"
+msgstr "картинка"
 
-#~ msgid "images"
-#~ msgstr "картинки"
+msgid "images"
+msgstr "картинки"
 
-#~ msgid "title"
-#~ msgstr "заголовок"
+msgid "title"
+msgstr "заголовок"
 
-#~ msgid "description"
-#~ msgstr "описание"
+msgid "description"
+msgstr "описание"
 
-#~ msgid "created"
-#~ msgstr "дата создания"
+msgid "created"
+msgstr "дата создания"
 
-#~ msgid "is main"
-#~ msgstr "главная"
+msgid "is main"
+msgstr "главная"
 
-#~ msgid "pages"
-#~ msgstr "страницы"
+msgid "pages"
+msgstr "страницы"
 
-#~ msgid "keywords"
-#~ msgstr "ключевые слова"
+msgid "keywords"
+msgstr "ключевые слова"
 
-#~ msgid "seo text"
-#~ msgstr "seo текст"
+msgid "seo text"
+msgstr "seo текст"
 
-#~ msgid "Page"
-#~ msgstr "Страница"
+msgid "Page"
+msgstr "Страница"
 
-#~ msgid "Pages"
-#~ msgstr "Страницы"
+msgid "Pages"
+msgstr "Страницы"
 
-#~ msgid "is active"
-#~ msgstr "активность"
+msgid "is active"
+msgstr "активность"
 
-#~ msgid "content"
-#~ msgstr "контент"
+msgid "content"
+msgstr "контент"
 
-#~ msgid "date published"
-#~ msgstr "дата публикации"
+msgid "date published"
+msgstr "дата публикации"
 
-#~ msgid "This field will be shown in the breadcrumbs, menu items and etc."
-#~ msgstr "Это поле будет отображаться в хлебных крошках, меню и т.д."
+msgid "This field will be shown in the breadcrumbs, menu items and etc."
+msgstr "Это поле будет отображаться в хлебных крошках, меню и т.д."
 
-#~ msgid "menu title"
-#~ msgstr "заголовок в меню"
+msgid "menu title"
+msgstr "заголовок в меню"
 
-#~ msgid "Custom Page"
-#~ msgstr "Служебная страница"
+msgid "Custom Page"
+msgstr "Служебная страница"
 
-#~ msgid "Custom Pages"
-#~ msgstr "Служебные страницы"
+msgid "Custom Pages"
+msgstr "Служебные страницы"
 
-#~ msgid "Flat Page"
-#~ msgstr "Простая страница"
+msgid "Flat Page"
+msgstr "Простая страница"
 
-#~ msgid "Flat Pages"
-#~ msgstr "Простые страницы"
+msgid "Flat Pages"
+msgstr "Простые страницы"

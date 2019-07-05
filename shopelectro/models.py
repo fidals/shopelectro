@@ -71,12 +71,6 @@ class MatrixBlockManager(models.Manager):
 class MatrixBlock(models.Model):
     """It is an UI element of catalog matrix."""
 
-    # @todo #880:30m Add MatrixBlock to the admin panel.
-    #  Inline it on Category Edit page.
-
-    # @todo #880:60m Use MatrixBlock in the matrix view.
-    #  Get the block_size data from the matrix view and fill out the model.
-
     class Meta:
         verbose_name = _('Matrix block')
         verbose_name_plural = _('Matrix blocks')
