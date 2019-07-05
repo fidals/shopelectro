@@ -92,18 +92,13 @@ class YandexEcommerce(Ecommerce):
 
     def tearDown(self):
         # delete the session to clear the cart
-        self.browser.delete_cookie('sessionid')
-        self.browser.execute_script('localStorage.clear();')
+        self.browser.delete_session()
         super().tearDown()
 
-    # @todo #808:30m Create Goals class for tests.
-    #  Remove these utility functions in favor of the class.
-    def get_goals(self):
-        return self.browser.execute_script('return window.dataLayer.results;')
-
-    def get_goal(self, reached, index=0):
-        """Get a goal with the given index and unfold it."""
-        return reached[index][0]['ecommerce']
+    def get_goals(self) -> selenium.Goals:
+        goals = selenium.YandexEcommerceGoals(self.browser)
+        goals.fetch()
+        return goals
 
     def test_purchase(self):
         self.buy()
@@ -113,7 +108,7 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_goal(reached_goals)
+        reached = reached_goals[0]
         self.assertIn('purchase', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
@@ -140,7 +135,7 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_goal(reached_goals)
+        reached = reached_goals[0]
         self.assertIn('detail', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
@@ -171,7 +166,7 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_goal(reached_goals, 2)
+        reached = reached_goals[2]
         self.assertIn('remove', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
@@ -200,7 +195,7 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_goal(reached_goals, 2)
+        reached = reached_goals[2]
         self.assertIn('remove', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
@@ -227,7 +222,7 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_goal(reached_goals, 1)  # Ignore CPDBear
+        reached = reached_goals[1]  # Ignore CPDBear
         self.assertIn('add', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
@@ -258,7 +253,7 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = self.get_goal(reached_goals)
+        reached = reached_goals[0]
         self.assertIn('add', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 

@@ -26,3 +26,7 @@ class SiteDriver(Remote):
 
     def get(self, url):
         super().get(urljoin(self.site_url, url))
+
+    def delete_session(self):
+        self.delete_cookie('sessionid')
+        self.execute_script('localStorage.clear();')
