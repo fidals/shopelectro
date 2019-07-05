@@ -9,9 +9,8 @@ def migrate_forward(apps, schema_editor):
     MatrixBlock = apps.get_model('shopelectro', 'MatrixBlock')
     Category = apps.get_model('shopelectro', 'Category')
 
-    # only default managers work in migration, so we can't use .active()
-    for c in Category.objects.filter(page__is_active=True, level=0):
-        MatrixBlock.objects.create(category=c)
+    for c in Category.objects.filter(level=0):
+        MatrixBlock.objects.get_or_create(category=c)
 
 
 def migrate_backward(apps, schema_editor):

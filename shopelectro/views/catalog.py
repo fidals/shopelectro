@@ -18,10 +18,6 @@ from shopelectro import context as se_context, models, request_data
 from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
 
-# block numeric indexes to limit
-MATRIX_BLOCKS_TO_LIMIT = [3, 5]
-MATRIX_BLOCK_SIZE = 7
-
 
 def category_matrix(request, page: str):
     context_ = {

@@ -127,12 +127,14 @@ class MatrixBlockModel(TestCase):
     def test_sized_rows_count(self):
         sized_block, oversized_block = MatrixBlock.objects.all()[:2]
 
+        count_all_rows = lambda block: block.category.children.active().count()
+
         # block_size < category's children quantity
-        sized_block.block_size = sized_block.category.children.count() - 1
+        sized_block.block_size = count_all_rows(sized_block) - 1
         sized_block.save()
 
-        self.assertNotEquals(
-            sized_block.category.children.active().count(),
+        self.assertGreater(
+            count_all_rows(sized_block),
             sized_block.rows().count(),
         )
         self.assertEquals(
@@ -141,14 +143,14 @@ class MatrixBlockModel(TestCase):
         )
 
         # block_size > category's children quantity
-        oversized_block.block_size = oversized_block.category.children.count() + 1
+        oversized_block.block_size = count_all_rows(oversized_block) + 1
         oversized_block.save()
 
         self.assertEquals(
-            oversized_block.category.children.active().count(),
+            count_all_rows(oversized_block),
             oversized_block.rows().count(),
         )
-        self.assertNotEquals(
+        self.assertGreater(
             oversized_block.block_size,
             oversized_block.rows().count(),
         )
