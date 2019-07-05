@@ -110,6 +110,9 @@ class MatrixBlockModel(TestCase):
 
     fixtures = ['dump.json']
 
+    def count_all_rows(self, block: MatrixBlock) -> int:
+        return block.category.children.active().count()
+
     def test_block_category_relation_uniqueness(self):
         block = MatrixBlock.objects.first()
 
@@ -120,21 +123,19 @@ class MatrixBlockModel(TestCase):
         block = MatrixBlock.objects.filter(block_size=None).first()
 
         self.assertEquals(
-            block.category.children.active().count(),
+            self.count_all_rows(block),
             block.rows().count(),
         )
 
     def test_sized_rows_count(self):
         sized_block, oversized_block = MatrixBlock.objects.all()[:2]
 
-        count_all_rows = lambda block: block.category.children.active().count()
-
         # block_size < category's children quantity
-        sized_block.block_size = count_all_rows(sized_block) - 1
+        sized_block.block_size = self.count_all_rows(sized_block) - 1
         sized_block.save()
 
         self.assertGreater(
-            count_all_rows(sized_block),
+            self.count_all_rows(sized_block),
             sized_block.rows().count(),
         )
         self.assertEquals(
@@ -143,11 +144,11 @@ class MatrixBlockModel(TestCase):
         )
 
         # block_size > category's children quantity
-        oversized_block.block_size = count_all_rows(oversized_block) + 1
+        oversized_block.block_size = self.count_all_rows(oversized_block) + 1
         oversized_block.save()
 
         self.assertEquals(
-            count_all_rows(oversized_block),
+            self.count_all_rows(oversized_block),
             oversized_block.rows().count(),
         )
         self.assertGreater(
