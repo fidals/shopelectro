@@ -253,7 +253,7 @@ class YandexEcommerce(Ecommerce):
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
 
-        reached = reached_goals[1]
+        reached = reached_goals[0]
         self.assertIn('add', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 

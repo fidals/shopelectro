@@ -14,4 +14,4 @@ https://selenium-python.readthedocs.io/page-objects.html
 
 from .driver import SiteDriver
 from .pages import *
-from .analytics_goals import YandexEcommerceGoals
+from .analytics_goals import Goals, YandexEcommerceGoals
