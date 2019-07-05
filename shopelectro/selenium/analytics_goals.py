@@ -6,7 +6,7 @@ from shopelectro.selenium import SiteDriver
 
 
 class Goals(abc.ABC):
-    """Front-end reached goalss."""
+    """Front-end reached goals."""
 
     def __init__(self, driver: SiteDriver):
         self.driver = driver
@@ -24,14 +24,13 @@ class Goals(abc.ABC):
         raise NotImplementedError
 
 
-class YandexEcommerceGoals(Goals):
+class YandexEcommerceGoals(Goals):  # Ignore PyDocStyleBear
     """
-    Represent reached Yandex ecommerce goals.
-
     Unwrap an excess nesting level common for every goal:
     [{"ecommerce": ...}] -> ...
     Structure docs: https://yandex.com/support/metrica/data/e-commerce.html
     """
+
     def __init__(self, driver: SiteDriver):
         super().__init__(driver)
         self.goals = []
