@@ -9,13 +9,13 @@
 
   <div class="container container-fluid">
     <div class="row around-xs">
-      {% for root, children in matrix.items %}
+      {% for block in matrix_blocks %}
         <div class="category-block">
-          <h2><a href="{{ root.1 }}" class="h2">{{ root.0 }}</a></h2>
+          <h2><a href="{{ block.url }}" class="h2">{{ block.name }}</a></h2>
           <ul>
-            {% for category in children %}
+            {% for row in block.rows %}
               <li class="second-level-category">
-                <a href="{{ category.url }}">{{ category.name }}</a>
+                <a href="{{ row.url }}">{{ row.name }}</a>
               </li>
             {% endfor %}
           </ul>

@@ -63,6 +63,8 @@ class Command(BaseCommand):
         children = self.create_children(2, roots)
         deep_children = self.create_children(2, children)
 
+        self.create_matrix(roots)
+
         groups = self.create_tag_groups()
         tags = self.create_tags(groups)
 
@@ -111,6 +113,11 @@ class Command(BaseCommand):
             se_models.Category.objects.create(name=get_name(i))
             for i in range(count)
         ]
+
+    @staticmethod
+    def create_matrix(categories):
+        for c in categories:
+            se_models.MatrixBlock.objects.create(category=c)
 
     @staticmethod
     def create_children(count, parents):

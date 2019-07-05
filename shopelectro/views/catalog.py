@@ -1,5 +1,4 @@
 import typing
-from collections import OrderedDict
 
 from django import http
 from django.conf import settings
@@ -18,39 +17,13 @@ from shopelectro import context as se_context, models, request_data
 from shopelectro.exception import Http400
 from shopelectro.views.helpers import set_csrf_cookie
 
-# block numeric indexes to limit
-MATRIX_BLOCKS_TO_LIMIT = [3, 5]
-MATRIX_BLOCK_SIZE = 7
-
 
 def category_matrix(request, page: str):
-    assert page == 'catalog'
-    roots = (
-        models.Category.objects
-        .bind_fields()
-        .active()
-        .filter(level=0)
-        .order_by('page__position', 'name')
-    )
-    matrix = OrderedDict()
-    for i, root in enumerate(roots):
-        children = root.children.active()
-        # Categories matrix is UI element supposed to preview
-        # the whole catalog structure at with a single page.
-        # The matrix consists of blocks.
-        # Every block is a list of categories with links.
-        # How the matrix looks like:
-        # https://github.com/fidals/shopelectro/issues/837#issuecomment-501161967
-
-        matrix[(root.name, root.url)] = (
-            children
-            if i not in MATRIX_BLOCKS_TO_LIMIT
-            else children[:MATRIX_BLOCK_SIZE]
-        )
     context_ = {
-        'matrix': matrix,
+        'matrix_blocks': models.MatrixBlock.objects.blocks(),
         'page': pages_models.CustomPage.objects.get(slug=page),
     }
+
     return render(request, 'catalog/catalog.html', context_)
 
 
