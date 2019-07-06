@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-03 10:00+0000\n"
+"POT-Creation-Date: 2019-07-05 12:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,88 +20,124 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: shopelectro/admin.py:25
+#: shopelectro/admin.py:45
 msgid "has tags"
 msgstr "По тегам"
 
-#: shopelectro/admin.py:30
+#: shopelectro/admin.py:50
 msgid "Has tags"
 msgstr "С тегами"
 
-#: shopelectro/admin.py:31
+#: shopelectro/admin.py:51
 msgid "Has no tags"
 msgstr "Без тегов"
 
-#: shopelectro/admin.py:47
+#: shopelectro/admin.py:65
 msgid "has category"
 msgstr "По категориями"
 
-#: shopelectro/admin.py:52
+#: shopelectro/admin.py:70
 msgid "Has category"
 msgstr "С категориями"
 
-#: shopelectro/admin.py:53
+#: shopelectro/admin.py:71
 msgid "Has no category"
 msgstr "Без категорий"
 
-#: shopelectro/admin.py:146
+#: shopelectro/admin.py:178
+#, fuzzy
+#| msgid "vendor_code"
+msgid "Vendor code"
+msgstr "артикул"
+
+#: shopelectro/admin.py:184
+msgid "Price"
+msgstr "Цена"
+
+#: shopelectro/admin.py:210
 msgid "Link"
 msgstr "Ссылка"
 
-#: shopelectro/admin.py:189
+#: shopelectro/admin.py:253
 msgid "Group"
 msgstr "Группа тегов"
 
+#: shopelectro/admin.py:274
+msgid "Sends email notifications about placed orders"
+msgstr "Отправить письмо"
+
 #: shopelectro/models.py:81
+msgid "Matrix block"
+msgstr "Раздел на странице каталога"
+
+#: shopelectro/models.py:82
+msgid "Matrix blocks"
+msgstr "Разделы на странице каталога"
+
+#: shopelectro/models.py:91 shopelectro/models.py:132
 msgid "category"
 msgstr "категория"
 
-#: shopelectro/models.py:88
+#: shopelectro/models.py:98
+msgid "block size"
+msgstr "размер раздела"
+
+#: shopelectro/models.py:139
 msgid "tags"
 msgstr "теги"
 
-#: shopelectro/models.py:91
+#: shopelectro/models.py:149
 msgid "vendor_code"
 msgstr "артикул"
 
-#: shopelectro/models.py:93
+#: shopelectro/models.py:152
 msgid "purchase_price"
 msgstr "закупочная цена"
 
-#: shopelectro/models.py:94
+#: shopelectro/models.py:154
 msgid "wholesale_small"
 msgstr "мелкий опт"
 
-#: shopelectro/models.py:95
+#: shopelectro/models.py:156
 msgid "wholesale_medium"
 msgstr "средний опт"
 
-#: shopelectro/models.py:96
+#: shopelectro/models.py:158
 msgid "wholesale_large"
 msgstr "крупный опт"
 
-#: shopelectro/models.py:118
+#: shopelectro/models.py:162
+msgid "in pack"
+msgstr "в упаковке"
+
+#: shopelectro/models.py:198
 msgid "date"
 msgstr "дата"
 
-#: shopelectro/models.py:119 shopelectro/models.py:167
-#: shopelectro/models.py:206
+#: shopelectro/models.py:200
 msgid "name"
 msgstr "название"
 
-#: shopelectro/models.py:120
+#: shopelectro/models.py:202
 msgid "rating"
 msgstr "рейтинг"
 
-#: shopelectro/models.py:121
+#: shopelectro/models.py:204
 msgid "dignities"
 msgstr "достоинства"
 
-#: shopelectro/models.py:122 shopelectro/models.py:123
+#: shopelectro/models.py:206 shopelectro/models.py:208
 msgid "limitations"
 msgstr "недостатки"
 
-#: shopelectro/models.py:169 shopelectro/models.py:208
+#: shopelectro/models.py:248
+msgid "revenue"
+msgstr "прибыль"
+
+#: shopelectro/tests/tests_views.py:754
+msgid "Product"
+msgstr "Товар"
+
 msgid "position"
 msgstr "позиция"
 
@@ -116,9 +152,6 @@ msgstr "Категории"
 
 msgid "parent"
 msgstr "родитель"
-
-msgid "Product"
-msgstr "Товар"
 
 msgid "Products"
 msgstr "Товары"
@@ -185,9 +218,6 @@ msgstr "Сделать неактивными"
 
 msgid "Parent"
 msgstr "Родитель"
-
-msgid "Price"
-msgstr "Цена"
 
 msgid "Table editor"
 msgstr "Табличный редактор"
