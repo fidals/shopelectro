@@ -1,8 +1,7 @@
 const customColModels = [
   {
     name: 'in_pack',
-    // @todo #858:15m Localize Product.in_pack field
-    label: 'in pack',
+    label: 'в упаковке',
     editable: true,
     editoptions: {
       type: 'number',
