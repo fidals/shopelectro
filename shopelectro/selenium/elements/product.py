@@ -21,11 +21,17 @@ class Product(abc.ABC):
     def quantity(self):
         raise Unavailable('determine the product quantity.')
 
-    def add_to_cart(self):
+    def add(self):
         raise Unavailable('add the product to the card.')
 
-    def remove_from_cart(self):
+    def remove(self):
         raise Unavailable('remove the product from the card.')
+
+    def __hash__(self):
+        raise NotImplementedError('Provide __hash__ implementation for the class.')
+
+    def __eq__(self, other: 'Product'):
+        return hash(self) == hash(other)
 
 
 class CatalogCard(Product):
@@ -79,7 +85,7 @@ class CatalogCard(Product):
             (By.XPATH, self._build_xpath('div[2]/div[1]'))
         )).text.split(' ')[1]
 
-    def add_to_cart(self):
+    def add(self):
         Button(self.driver, (By.XPATH, self._build_xpath('div[2]/div[5]/button'))).click()
 
 
@@ -88,7 +94,7 @@ class ProductCard(Product):
     def __init__(self, driver: SiteDriver):
         self.driver = driver
 
-    def add_to_cart(self):
+    def add(self):
         Button(self.driver, (By.CLASS_NAME, 'js-to-cart-on-product-page')).click()
 
 
@@ -107,9 +113,6 @@ class CartPosition(Product):
             + el.get_attribute('data-product-count')
         )
 
-    def __eq__(self, other: 'CartPosition'):
-        return hash(self) == hash(other)
-
     def _data_element(self):
         # use short_wait, because a position could be stale
         return self.driver.short_wait.until(EC.presence_of_element_located(
@@ -125,5 +128,43 @@ class CartPosition(Product):
     def quantity(self):
         return self._data_element().get_attribute('data-product-count')
 
-    def remove_from_cart(self):
+    def remove(self):
         Button(self.driver, (By.XPATH, f'{self.xpath}i')).click()
+
+
+class OrderPosition(Product):
+    """Represent a product position on order page."""
+
+    def __init__(self, driver: SiteDriver, index: int):
+        self.driver = driver
+        # xpath indexes starts from 1
+        self.xpath = f'//div[@id="js-order-list"]/div[2]/div[{index + 1}]/'
+
+    def __hash__(self):
+        return hash(
+            self.vendor_code()
+            + '/'
+            + self.quantity()
+        )
+
+    def vendor_code(self):
+        return self.driver.short_wait.until(EC.visibility_of_element_located(
+            (By.XPATH, f'{self.xpath}div[1]')
+        )).text
+
+    def quantity(self):
+        return self.driver.short_wait.until(EC.visibility_of_element_located(
+            (By.XPATH, f'{self.xpath}div[4]/div[2]/input')
+        )).value
+
+    def set(self, quantity: int):
+        raise NotImplementedError
+
+    def increase(self):
+        raise NotImplementedError
+
+    def decrease(self):
+        raise NotImplementedError
+
+    def remove(self):
+        Button(self.driver, (By.XPATH, f'{self.xpath}div[6]/div')).click()
