@@ -100,6 +100,53 @@ class YandexEcommerce(Ecommerce):
         goals.fetch()
         return goals
 
+    def assert_add(self, product: Product, goal_position: int):
+        reached_goals = self.get_goals()
+        self.assertTrue(reached_goals)
+        reached = reached_goals[goal_position]  # Ignore CPDBear
+
+        self.assertIn('add', reached)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_detail = reached['add']
+        self.assertEqual(
+            len(reached_detail['products']),
+            1,
+        )
+
+        self.assertEqual(
+            reached_detail['products'][0],
+            {
+                'id': product.id,
+                'name': product.name,
+                'brand': product.get_brand_name(),
+                'quantity': 1,
+                'category': product.category.name,
+            }
+        )
+
+    def assert_remove(self, product: Product, goal_position: int):
+        reached_goals = self.get_goals()
+        self.assertTrue(reached_goals)
+
+        reached = reached_goals[goal_position]
+        self.assertIn('remove', reached)
+        self.assertEqual(reached['currencyCode'], 'RUB')
+
+        reached_remove = reached['remove']
+        self.assertEqual(
+            len(reached_remove['products']),
+            1,
+        )
+
+        self.assertEqual(
+            reached_remove['products'][0],
+            {
+                'id': product.id,
+                'quantity': 1,
+            }
+        )
+
     def test_purchase(self):
         self.buy()
         order = self.last_order()
@@ -163,26 +210,7 @@ class YandexEcommerce(Ecommerce):
         page.add_to_cart()
         page.cart().clear()  # Ignore CPDBear
 
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
-
-        reached = reached_goals[2]
-        self.assertIn('remove', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
-
-        reached_remove = reached['remove']
-        self.assertEqual(
-            len(reached_remove['products']),
-            1,
-        )
-
-        self.assertEqual(
-            reached_remove['products'][0],
-            {
-                'id': product.id,
-                'quantity': 1,
-            }
-        )
+        self.assert_remove(product, 2)
 
     def test_remove_from_cart(self):
         product = Product.objects.first()
@@ -190,28 +218,9 @@ class YandexEcommerce(Ecommerce):
         page.load()
         page.add_to_cart()
         cart = page.cart()
-        cart.remove(cart.positions()[0])
+        cart.remove(cart.positions.first())
 
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
-
-        reached = reached_goals[2]
-        self.assertIn('remove', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
-
-        reached_remove = reached['remove']
-        self.assertEqual(
-            len(reached_remove['products']),
-            1,
-        )
-
-        self.assertEqual(
-            reached_remove['products'][0],
-            {
-                'id': product.id,
-                'quantity': 1,
-            }
-        )
+        self.assert_remove(product, 2)
 
     def test_add_from_product_page(self):
         product = Product.objects.first()
@@ -219,29 +228,7 @@ class YandexEcommerce(Ecommerce):
         page.load()
         page.add_to_cart()
 
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
-
-        reached = reached_goals[1]  # Ignore CPDBear
-        self.assertIn('add', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
-
-        reached_detail = reached['add']
-        self.assertEqual(
-            len(reached_detail['products']),
-            1,
-        )
-
-        self.assertEqual(
-            reached_detail['products'][0],
-            {
-                'id': product.id,
-                'name': product.name,
-                'brand': product.get_brand_name(),
-                'quantity': 1,
-                'category': product.category.name,
-            }
-        )
+        self.assert_add(product, 1)
 
     def test_add_from_category_page(self):
         product = Product.objects.first()
@@ -250,29 +237,28 @@ class YandexEcommerce(Ecommerce):
         card = page.find_card(product.id)
         page.add_to_cart([card])
 
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
+        self.assert_add(product, 0)
 
-        reached = reached_goals[0]
-        self.assertIn('add', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
+    def test_remove_from_order_page(self):
+        product = Product.objects.first()
+        product_page = selenium.Product(self.browser, product.vendor_code)
+        product_page.load()
+        product_page.add_to_cart()
 
-        reached_detail = reached['add']
-        self.assertEqual(
-            len(reached_detail['products']),
-            1,
-        )
+        order_page = selenium.OrderPage(self.browser)
+        order_page.load()
+        order_page.remove(order_page.positions.first())
 
-        self.assertEqual(
-            reached_detail['products'][0],
-            {
-                'id': product.id,
-                'name': product.name,
-                'brand': product.get_brand_name(),
-                'quantity': 1,
-                'category': product.category.name,
-            }
-        )
+        self.assert_remove(product, 0)
+
+    def test_increase_from_order_page(self):
+        pass
+
+    def test_decrease_from_order_page(self):
+        pass
+
+    def test_set_from_order_page(self):
+        pass
 
 
 @tag('slow')
