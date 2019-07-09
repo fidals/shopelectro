@@ -11,7 +11,7 @@ class Positions:
     def __init__(self, driver: SiteDriver, position_type: elements.Product, locator):
         self.driver = driver
         self.position_type = position_type
-        self.locator = locator
+        self.condition = EC.presence_of_all_elements_located(self.locator)
 
     @contextmanager
     def wait_changes(self):
@@ -19,9 +19,9 @@ class Positions:
             try:
                 return positions_before != self.all()
             except TimeoutException:
-            # An exception can be raised from a position's equality method.
-            # In most cases this means that some positions are stale,
-            # so we return False in order to continue wait changes.
+                # An exception can be raised from a position's equality method.
+                # In most cases this means that some positions are stale,
+                # so we continue waiting changes.
                 return False
 
         positions_before = self.all()
@@ -34,9 +34,9 @@ class Positions:
     def all(self) -> [elements.Product]:
         try:
             # use short_wait to avoid long pauses in case of the empty cart
-            positions_count = len(self.driver.short_wait.until(EC.presence_of_all_elements_located(
-                self.locator
-            )))
+            positions_count = len(self.driver.short_wait.until(
+                self.condition
+            ))
         except TimeoutException:
             positions_count = 0
 

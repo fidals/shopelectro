@@ -87,8 +87,7 @@ class YandexEcommerce(Ecommerce):
 
     fixtures = ['dump.json']
 
-    # @todo #820:120m Test Yandex ecommerce add and remove goals from the order page.
-    #  Get rid of code duplications.
+    # @todo #939:120m Test Yandex ecommerce increase/decrease/set goals from the order page.
 
     def tearDown(self):
         # delete the session to clear the cart
@@ -100,15 +99,15 @@ class YandexEcommerce(Ecommerce):
         goals.fetch()
         return goals
 
-    def assert_add(self, product: Product, goal_position: int):
+    def assert_add(self, product: Product, goal_position: int):  # Ignore CPDBear
         reached_goals = self.get_goals()
         self.assertTrue(reached_goals)
-        reached = reached_goals[goal_position]  # Ignore CPDBear
+        reached = reached_goals[goal_position]
 
         self.assertIn('add', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
-        reached_detail = reached['add']
+        reached_detail = reached['add']  # Ignore CPDBear
         self.assertEqual(
             len(reached_detail['products']),
             1,
@@ -186,7 +185,7 @@ class YandexEcommerce(Ecommerce):
         self.assertIn('detail', reached)
         self.assertEqual(reached['currencyCode'], 'RUB')
 
-        reached_detail = reached['detail']  # Ignore CPDBear
+        reached_detail = reached['detail']
         self.assertEqual(
             len(reached_detail['products']),
             1,
@@ -203,12 +202,12 @@ class YandexEcommerce(Ecommerce):
             }
         )
 
-    def test_clear_cart(self):  # Ignore CPDBear
+    def test_clear_cart(self):
         product = Product.objects.first()
         page = selenium.Product(self.browser, product.vendor_code)
         page.load()
         page.add_to_cart()
-        page.cart().clear()  # Ignore CPDBear
+        page.cart().clear()
 
         self.assert_remove(product, 2)
 
