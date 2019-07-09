@@ -18,5 +18,5 @@ class Product(Page):
         return reverse('product', args=(self.vendor_code,))
 
     def add_to_cart(self):
-        with self.cart().wait_changes():
-            elements.ProductCard(self.driver).add_to_cart()
+        with self.cart().positions.wait_changes():
+            elements.ProductCard(self.driver).add()
