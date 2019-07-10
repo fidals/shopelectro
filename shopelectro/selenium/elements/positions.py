@@ -11,7 +11,7 @@ class Positions:
     def __init__(self, driver: SiteDriver, position_type: elements.Product, locator):
         self.driver = driver
         self.position_type = position_type
-        self.condition = EC.presence_of_all_elements_located(self.locator)
+        self.condition = EC.presence_of_all_elements_located(locator)
 
     @contextmanager
     def wait_changes(self):
