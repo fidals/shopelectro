@@ -203,7 +203,7 @@ class YandexEcommerce(Ecommerce):
             }
         )
 
-    def test_clear_cart(self):
+    def test_clear_cart(self):  # Ignore CPDBear
         product = Product.objects.first()
         page = selenium.Product(self.browser, product.vendor_code)
         page.load()
