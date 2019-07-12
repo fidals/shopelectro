@@ -1,6 +1,3 @@
-from contextlib import contextmanager
-
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,6 +12,11 @@ class Cart:
 
     def __init__(self, driver: SiteDriver):
         self.driver = driver
+        self.positions = elements.Positions(
+            driver,
+            elements.CartPosition,
+            (By.CLASS_NAME, 'basket-item'),
+        )
 
     def _hover(self):
         cart = self.driver.wait.until(EC.visibility_of_element_located(
@@ -25,36 +27,10 @@ class Cart:
             (By.CLASS_NAME, 'js-cart-wrapper')
         ))
 
-    # @todo #920:15m Document the Cart.wait_changes.
-    #  Cover corner cases with TimeoutException.
-
-    @contextmanager
-    def wait_changes(self):
-        def wait_changes(browser):
-            try:
-                return positions_before != self.positions()
-            except TimeoutException:
-                return False
-
-        positions_before = self.positions()
-        yield
-        self.driver.wait.until(wait_changes)
-
-    def positions(self) -> [elements.CartPosition]:
-        try:
-            # use short_wait to avoid long pauses in case of the empty cart
-            positions_count = len(self.driver.short_wait.until(EC.presence_of_all_elements_located(
-                (By.CLASS_NAME, 'basket-item')
-            )))
-        except TimeoutException:
-            positions_count = 0
-
-        return [elements.CartPosition(self.driver, i) for i in range(positions_count)]
-
     def remove(self, position: elements.CartPosition):
-        with self.wait_changes():
+        with self.positions.wait_changes():
             self._hover()
-            position.remove_from_cart()
+            position.remove()
 
     def clear(self):
         self._hover()

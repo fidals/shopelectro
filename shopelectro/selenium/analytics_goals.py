@@ -23,6 +23,9 @@ class Goals(abc.ABC):
     def __getitem__(self, index: int):
         raise NotImplementedError
 
+    def __bool__(self):
+        return bool(list(self))
+
 
 class YandexEcommerceGoals(Goals):  # Ignore PyDocStyleBear
     """

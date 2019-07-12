@@ -51,6 +51,6 @@ class CategoryPage(Page):
         default = [elements.CatalogCard.with_index(self.driver, i) for i in range(6)]
         products = products or default
 
-        with self.cart().wait_changes():
+        with self.cart().positions.wait_changes():
             for product in products:
-                product.add_to_cart()
+                product.add()
