@@ -88,6 +88,7 @@ class YandexEcommerce(Ecommerce):
     fixtures = ['dump.json']
 
     # @todo #939:120m Test Yandex ecommerce increase/decrease/set goals from the order page.
+    #  Create assertion for cart clear goal.
 
     def tearDown(self):
         # delete the session to clear the cart
