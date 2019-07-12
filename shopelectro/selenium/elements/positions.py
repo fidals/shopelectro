@@ -19,9 +19,11 @@ class Positions:
             try:
                 return positions_before != self.all()
             except TimeoutException:
-                # An exception can be raised from a position's equality method.
-                # In most cases this means that some positions are stale,
-                # so we continue waiting changes.
+                """
+                An exception can be raised from a position's equality method.
+                In most cases this means that some positions are stale,
+                so we continue waiting changes.
+                """
                 return False
 
         positions_before = self.all()

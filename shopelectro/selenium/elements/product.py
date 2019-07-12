@@ -154,16 +154,16 @@ class OrderPosition(Product):
 
     def quantity(self):
         return self.driver.short_wait.until(EC.visibility_of_element_located(
-            (By.XPATH, f'{self.xpath}div[4]/div[2]/input')
+            (By.XPATH, f'{self.xpath}//input')
         )).value
 
     def set(self, quantity: int):
         raise NotImplementedError
 
-    def increase(self):
+    def increase(self, times=1):
         raise NotImplementedError
 
-    def decrease(self):
+    def decrease(self, times=1):
         raise NotImplementedError
 
     def remove(self):
