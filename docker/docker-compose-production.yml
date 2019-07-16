@@ -143,23 +143,6 @@ services:
     volumes:
       - /dev/shm:/dev/shm
 
-  # Контейнер делает бэкапы по крону.
-  # Бэкап - это несколько архивов: database.tar.gz, media.tar.gz, static.tar.gz
-  # в директории /opt/backup/shopelectro
-  backup-data:
-    build:
-      context: ..
-      dockerfile: docker/cron/Dockerfile
-    container_name: se-backup-data
-    environment:
-      - DAYS_TO_STORE=2
-    volumes_from:
-      - app
-    volumes:
-      - ../etc/backup/backup-entrypoint.sh:/usr/bin/entrypoint.sh
-      - ../etc/backup/crontab:/etc/cron.d/crontab
-      - /opt/backup/shopelectro:/opt/backup
-      - /opt/database/shopelectro:/usr/app/src/database
 
 networks:
   se-backend:
