@@ -1,9 +1,9 @@
 {% autoescape off %}
   {% if content|length > 150 %}
-    <span>
+    <span class="js-content-less">
       {{ content|truncatechars_html:140|linebreaksbr }}
     </span>
-    <span class="content-more">
+    <span class="content-more js-content-more">
       {{ content|linebreaksbr }}
     </span>
     <a href="#" class="more-text js-more-text">
