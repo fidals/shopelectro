@@ -77,13 +77,13 @@ const helpers = (() => {  // Ignore ESLintBear (no-unused-vars)
     if ($this.hasClass('less')) {
       $this.removeClass('less');
       $this.html('Развернуть описание <i class="fa fa-chevron-down"></i>');
-      $this.prev().toggle();
-      $this.prev().prev().fadeToggle(1000);
+      $('.js-content-more').toggle(500);
+      $('.js-content-less').toggle(500);
     } else {
       $this.addClass('less');
       $this.html('Свернуть <i class="fa fa-chevron-up"></i>');
-      $this.prev().prev().toggle();
-      $this.prev().fadeToggle(1000);
+      $('.js-content-less').toggle(500);
+      $('.js-content-more').toggle(500);
     }
 
     return false;

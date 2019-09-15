@@ -40,8 +40,13 @@
          {% endif %}
       </div>
       <div class="js-order order row">
+        {% comment %}
+          The input below should have type "number" by it's semantic.
+          But Firefox worked bad with our custom increase/decrease buttons.
+          On of the comments at #952 contains illustrating screen.
+        {% endcomment %}
         <input class="col-xs-4 input-number category-prods-count js-product-count js-touchspin"
-               type="number" value="1">
+               type="text" value="1">
         {% with brand=product_brands|get_item:product.id %}
           <button class="btn btn-blue btn-category-buy js-product-to-cart"
                   data-product-id="{{ product.id }}" data-product-price="{{ product.price }}"
