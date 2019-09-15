@@ -6,6 +6,7 @@ They all should be using Django's TestClient.
 """
 import json
 import re
+import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -542,6 +543,16 @@ class Category(ViewsTestCase):
             )
         )
 
+    # @todo #887:60m  Repair category siblings mech.
+    @unittest.expectedFailure
+    def test_crumb_siblings_presented(self):
+        """Category should contain it's crumb siblings."""
+        roots = models.Category.objects.active().filter(parent=None)
+        self.assertGreater(roots.count(), 1)
+        soup = self.get_category_soup(roots.first())
+        siblings = soup.select('.breadcrumbs-siblings-links a')
+        self.assertIn(roots.last().name, [s.text.strip() for s in siblings])
+
     def test_crumb_siblings_are_active(self):
         """Category should have only active crumb siblings."""
         parent = (
@@ -564,7 +575,7 @@ class Category(ViewsTestCase):
             .exists()
         )
 
-    def test_roots_crumb_siblings(self):
+    def test_roots_crumb_siblings_are_active(self):
         """Root category should have only active crumb siblings."""
         roots = models.Category.objects.active().filter(parent=None)
         self.assertGreater(roots.count(), 1)
