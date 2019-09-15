@@ -82,6 +82,15 @@ lint:
 upd-dev:
 	$(dc) up -d app
 
+stop-prod-celery:
+	$(dcp) stop celery-beat celery-command-worker celery-default-worker celery-mail-worker
+
+upd-prod-celery:
+	$(dcp) up -d celery-beat celery-command-worker celery-default-worker celery-mail-worker
+
+upd-prod:
+	$(dcp) up -d app nginx && $(MAKE) upd-prod-celery
+
 deploy-dev:
 	$(MAKE) create-env
 	$(MAKE) create-config
@@ -129,10 +138,10 @@ prepare-deploy:
 	$(dcb) push python-dev python-prod
 
 deploy:
-	$(dcp) pull
 	$(dcp) stop
 	# to flush nginx's inner static caches
-	$(dcp) rm -f app nginx && $(dcp) up -d app nginx
+	$(dcp) rm -f app nginx && $(MAKE) upd-prod
+	$(dcp) stop-prod-celery
 	$(dcp) exec app python manage.py migrate
 	$(dcp) exec app python manage.py custom_pages
 	$(MAKE) -j generate-production-static-data
