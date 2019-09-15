@@ -148,4 +148,4 @@ deploy:
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(dcp) exec app python manage.py collectstatic --noinput
 	# to make fresh collected static visible immediately
-	$(dcp) stop && $(dcp) up -d
+	$(dcp) stop app nginx && $(dcp) up -d app nginx
