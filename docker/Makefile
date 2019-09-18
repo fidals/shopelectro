@@ -82,6 +82,15 @@ lint:
 upd-dev:
 	$(dc) up -d app
 
+stop-prod-celery:
+	$(dcp) stop celery-beat celery-command-worker celery-default-worker celery-mail-worker
+
+upd-prod-celery:
+	$(dcp) up -d celery-beat celery-command-worker celery-default-worker celery-mail-worker
+
+upd-prod: upd-prod-celery
+	$(dcp) up -d app nginx
+
 deploy-dev:
 	$(MAKE) create-env
 	$(MAKE) create-config
@@ -129,14 +138,14 @@ prepare-deploy:
 	$(dcb) push python-dev python-prod
 
 deploy:
-	$(dcp) pull
 	$(dcp) stop
 	# to flush nginx's inner static caches
-	$(dcp) rm -f app nginx && $(dcp) up -d app nginx
+	$(dcp) rm -f app nginx && $(MAKE) upd-prod
+	$(MAKE) stop-prod-celery
 	$(dcp) exec app python manage.py migrate
 	$(dcp) exec app python manage.py custom_pages
 	$(MAKE) -j generate-production-static-data
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(dcp) exec app python manage.py collectstatic --noinput
 	# to make fresh collected static visible immediately
-	$(dcp) stop && $(dcp) up -d
+	$(dcp) stop app nginx && $(dcp) up -d app nginx

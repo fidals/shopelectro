@@ -9,6 +9,12 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
+[*.py]
+# it's slightly differs from the same
+# .coafile linter value because it's recommended value,
+# while linter's value is the strict barrier
+max_line_length = 80
+
 [*.{js,es6}]
 indent_size = 2
 
