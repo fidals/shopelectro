@@ -88,8 +88,8 @@ stop-prod-celery:
 upd-prod-celery:
 	$(dcp) up -d celery-beat celery-command-worker celery-default-worker celery-mail-worker
 
-upd-prod:
-	$(dcp) up -d app nginx && $(MAKE) upd-prod-celery
+upd-prod: upd-prod-celery
+	$(dcp) up -d app nginx
 
 deploy-dev:
 	$(MAKE) create-env
@@ -141,7 +141,7 @@ deploy:
 	$(dcp) stop
 	# to flush nginx's inner static caches
 	$(dcp) rm -f app nginx && $(MAKE) upd-prod
-	$(dcp) stop-prod-celery
+	$(MAKE) stop-prod-celery
 	$(dcp) exec app python manage.py migrate
 	$(dcp) exec app python manage.py custom_pages
 	$(MAKE) -j generate-production-static-data
