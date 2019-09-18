@@ -6,6 +6,7 @@ They all should be using Django's TestClient.
 """
 import json
 import re
+import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -24,7 +25,8 @@ from catalog.helpers import reverse_catalog_url
 from pages import models as pages_models
 from pages.urls import reverse_custom_page
 from shopelectro import models, views
-from shopelectro.views.service import generate_md5_for_ya_kassa, YANDEX_REQUEST_PARAM
+from shopelectro.views.service import generate_md5_for_ya_kassa, \
+    YANDEX_REQUEST_PARAM
 
 CANONICAL_HTML_TAG = '<link rel="canonical" href="{base_url}{path}">'
 
@@ -541,8 +543,23 @@ class Category(ViewsTestCase):
             )
         )
 
+    # @todo #887:60m  Repair category siblings mech.
+    @unittest.expectedFailure
+    def test_crumb_siblings_presented(self):
+        """Category should contain it's crumb siblings."""
+        roots = models.Category.objects.active().filter(parent=None)
+        self.assertGreater(roots.count(), 1)
+        soup = self.get_category_soup(roots.first())
+        siblings = soup.select('.breadcrumbs-siblings-links a')
+        self.assertIn(roots.last().name, [s.text.strip() for s in siblings])
+
     def test_crumb_siblings_are_active(self):
-        parent = models.Category.objects.annotate(c=Count('children')).filter(c__gt=1).first()
+        """Category should have only active crumb siblings."""
+        parent = (
+            models.Category.objects
+            .annotate(c=Count('children'))
+            .filter(c__gt=1).first()
+        )
         (
             pages_models.Page.objects
             .filter(id=parent.children.first().page.id)
@@ -557,6 +574,18 @@ class Category(ViewsTestCase):
             .filter(page__is_active=False)
             .exists()
         )
+
+    def test_roots_crumb_siblings_are_active(self):
+        """Root category should have only active crumb siblings."""
+        roots = models.Category.objects.active().filter(parent=None)
+        self.assertGreater(roots.count(), 1)
+        disabled, enabled = roots.first(), roots.last()
+        disabled.page.is_active = False
+        disabled.save()
+
+        soup = self.get_category_soup(enabled)
+        siblings = soup.select('.breadcrumbs-siblings-links a')
+        self.assertNotIn(disabled.name, [s.text.strip() for s in siblings])
 
 
 @tag('fast', 'catalog')
