@@ -931,3 +931,20 @@ class InPack(ViewsTestCase):
 
         self.assertEqual(len(results), 1, results)
         self.assertIn(str(int(product.price)), results[0], results[0])
+
+
+@tag('fast')
+class ErrorPageContent(TestCase):
+    """Test just error page content, but not it's response status code."""
+
+    def test_404(self):
+        self.assertContains(
+            self.client.get('/404/'),
+            text='Запрашиваемая страница не найдена'
+        )
+
+    def test_500(self):
+        self.assertContains(
+            self.client.get('/500/'),
+            text='Ошибка на стороне сервера'
+        )

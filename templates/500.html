@@ -1,0 +1,31 @@
+{% extends 'layout/inner_page.html' %}
+
+{% load static %}
+
+{% block content %}
+  <div class="container">
+    <div class="container m-content">
+      <div class="error-page-message">
+        <h1 class="not-found-text">Ошибка на стороне сервера</h1>
+        <p>
+          Приносим извинения за неполадки.<br>
+          Если вы не смогли завершить заказ, свяжитесь с нашими менеджерами,
+          они помогут собрать корзину.
+          <ul>
+            <li>Телефон: <a href="tel:+78124163200">8 812 416-32-00</a></li>
+            <li>
+              Почта: <a href="mailto:info@shopelectro.ru" class="header-mail">
+                info@shopelectro.ru
+              </a>
+            </li>
+          </ul>
+        </p>
+        <p>
+          <a class="main-link btn btn-blue" href="/">
+            Вернуться на главную
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
