@@ -1,12 +1,12 @@
 from collections import OrderedDict
 from datetime import timedelta
 
-from django import views as dj_views
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.views.decorators.cache import cache_page, never_cache
+from django.views.generic import TemplateView
 
 from pages.urls import custom_page_url
 from pages.views import RobotsView, SitemapPage
@@ -133,11 +133,10 @@ if settings.DEBUG:
         *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     ]
 
+# Test and Debug environments replace real 404 and 500 error with stack traces.
+# We expose real 404 and 500 pages with separated urls to test them.
 if settings.TEST_ENV or settings.DEBUG:
-    def template_view(name: str):
-        return dj_views.generic.TemplateView.as_view(template_name=name)
-
     urlpatterns += [
-        url(r'^404/$', template_view('404.html')),
-        url(r'^500/$', template_view('500.html')),
+        url(r'^404/$', TemplateView.as_view(template_name='404.html')),
+        url(r'^500/$', TemplateView.as_view(template_name='500.html')),
     ]
