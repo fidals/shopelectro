@@ -6,7 +6,6 @@ They all should be using Django's TestClient.
 """
 import json
 import re
-import unittest
 from functools import partial
 from itertools import chain
 from operator import attrgetter
@@ -22,6 +21,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from catalog.helpers import reverse_catalog_url
+from pages import logic as pages_logic
 from pages import models as pages_models
 from pages.urls import reverse_custom_page
 from shopelectro import models, views
@@ -543,8 +543,21 @@ class Category(ViewsTestCase):
             )
         )
 
-    # @todo #887:60m  Repair category siblings mech.
-    @unittest.expectedFailure
+    def test_crumbs(self):
+        """Every DB sided breadcrumb should be rendered."""
+        roots = models.Category.objects.active().filter(parent=None)
+        category = roots.first()
+        self.assertGreater(roots.count(), 1)
+        soup = self.get_category_soup(roots.first())
+        db_crumbs = set([
+            c.model.display_menu_title
+            for c in pages_logic.Page(category.page).breadcrumbs
+        ])
+        page_crumbs = set(
+            [s.text.strip() for s in soup.select('.breadcrumbs-item span')]
+        )
+        self.assertFalse(db_crumbs - page_crumbs, page_crumbs)
+
     def test_crumb_siblings_presented(self):
         """Category should contain it's crumb siblings."""
         roots = models.Category.objects.active().filter(parent=None)

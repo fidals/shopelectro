@@ -4,7 +4,7 @@
 {% load se_extras %}
 
 {% block content %}
-  {% breadcrumbs_with_siblings page '' base_url %}
+  {% breadcrumbs page '' True %}
   <h1 class="category-title" data-name="{{ category.name }}">{{ page.display.h1|capfirst }}</h1>
 
   <div class="row overflow-anchor-control">
