@@ -4,7 +4,7 @@
 {% load pages_extras %}
 
 {% block content %}
-  {% breadcrumbs page '' True %}
+  {% breadcrumbs_with_siblings page separator='' %}
   <h1>{{ page.display.h1 }}</h1>
 
   <div class="container container-fluid">

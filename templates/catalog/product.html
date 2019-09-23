@@ -21,7 +21,7 @@
             href="https://schema.org/{{ product.in_stock | yesno:'InStock,PreOrder' }}">
     </div>
 
-    {% breadcrumbs page '' True %}
+    {% breadcrumbs_with_siblings page separator='' %}
     <h1 class="product-h1" itemprop="name">{{ product.page.display.h1 }}</h1>
     <span class="product-article">Арт. {{ product.vendor_code }}</span>
 
