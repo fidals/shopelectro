@@ -21,8 +21,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from catalog.helpers import reverse_catalog_url
-from pages import logic as pages_logic
-from pages import models as pages_models
+from pages import logic as pages_logic, models as pages_models
 from pages.urls import reverse_custom_page
 from shopelectro import models, views
 from shopelectro.views.service import generate_md5_for_ya_kassa, \
@@ -549,13 +548,13 @@ class Category(ViewsTestCase):
         category = roots.first()
         self.assertGreater(roots.count(), 1)
         soup = self.get_category_soup(roots.first())
-        db_crumbs = set([
+        db_crumbs = {
             c.model.display_menu_title
             for c in pages_logic.Page(category.page).breadcrumbs
-        ])
-        page_crumbs = set(
-            [s.text.strip() for s in soup.select('.breadcrumbs-item span')]
-        )
+        }
+        page_crumbs = {
+            s.text.strip() for s in soup.select('.breadcrumbs-item span')
+        }
         self.assertFalse(db_crumbs - page_crumbs, page_crumbs)
 
     def test_crumb_siblings_presented(self):
