@@ -7,6 +7,7 @@
   <div class="product-card col-xs-6 col-md-4" data-product-id="{{ product.id }}"
        itemscope itemtype="https://schema.org/Product">
     <meta property="name" itemprop="name" content="{{ product.name }}">
+    <meta property="description" itemprop="description" content="{{ product.page.display.description }}">
     <div class="category-image-wrapper">
       <a class="category-product-link js-browse-product" href="{{ product.url }}"
          {% if not request|is_mobile %}target="_blank"{% endif %}>
@@ -26,7 +27,6 @@
         </a>
       </div>
       <div class="product-card-price">{{ product.price|humanize_price }} {{ product|show_price_in_units }}</div>
-      <meta property="description" itemprop="description" content="{{ product.page.display.description }}">
       <meta property="price" itemprop="price" content="{{ product.price }}">
       <meta property="priceCurrency" itemprop="priceCurrency" content="RUB">
       <div class="stock">
