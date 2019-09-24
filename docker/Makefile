@@ -107,12 +107,7 @@ deploy-dev:
 
 # update internationalization messages
 i18n:
-	# @todo #934:15m Wait user approval for `make i18n`
-	#  See the parent issue for details
-	$(dc) run --rm app bash -c "\
-		python manage.py makemessages --ignore 'venv/**' \
-		&& python manage.py compilemessages -l ru \
-	"
+	@bash do-i18n.sh
 
 
 # ---------------------- Production deploy section ----------------------
