@@ -1,20 +1,32 @@
 {% load pages_extras %}
 
-<div class="hidden-xs hidden-sm breadcrumbs-wrapper"
-     itemscope itemtype="https://schema.org/BreadcrumbList">
-  {% for name, url in crumbs_list %}
-      {% if url %}
-        <span class="breadcrumbs-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <a href="{{ base_url }}{{ url }}" itemprop="item" class="breadcrumbs-link">
-            <span itemprop="name">{{ name }}</span>
-          </a>
-        </span>
-        <meta itemprop="position" content="{{ forloop.counter }}">
-        {% if not forloop.last %}
-          <span class="breadcrumbs-separator">{{ separator }}</span>
-        {% endif %}
+<div class="hidden-xs hidden-sm breadcrumbs-wrapper" itemscope itemtype="https://schema.org/BreadcrumbList">
+  {% for logic_page in breadcrumbs %}
+    <span class="breadcrumbs-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+      {% if not forloop.last %}
+        <a href="{{ logic_page.model.url }}" itemprop="item" class="breadcrumbs-link">
+          <span itemprop="name">{{ logic_page.model.display_menu_title }}</span>
+        </a>
       {% else %}
-        <span class="breadcrumbs-item-last" >{{ name }}</span>
+        <span class="breadcrumbs-item-last" itemprop="name">{{ logic_page.model.display_menu_title }}</span>
       {% endif %}
+
+      {% if show_siblings and logic_page.siblings %}
+        <ul class="breadcrumbs-siblings-links list-white">
+          {% for page in logic_page.siblings %}
+            <li>
+              <a href="{{ page.url }}" class="list-white-link">
+                {{ page.display_menu_title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <meta itemprop="position" content="{{ forloop.counter }}">
+      {% if not forloop.last %}
+        <span class="breadcrumbs-separator">{{ separator }}</span>
+      {% endif %}
+    </span>
   {% endfor %}
 </div>
