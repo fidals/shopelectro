@@ -190,14 +190,14 @@ class CategoryPage(helpers.SeleniumTestCase):
         self.browser.get(self.root_category)
         self.wait_page_loading()
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
-
-        self.assertEqual(len(crumbs), 2)
+        # Crumbs list: Main -> Catalog -> RootCategory
+        self.assertEqual(len(crumbs), 3)
 
         # In 'deep category' there should be more crumbs
         self.browser.get(self.children_category)
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
-
-        self.assertEqual(len(crumbs), 3)
+        # Crumbs list: Main -> Catalog -> RootCategory -> ChildCategory
+        self.assertEqual(len(crumbs), 4)
 
     def test_loaded_products_count(self):
         """Any CategoryPage should contain predefined products count by default."""
@@ -431,7 +431,8 @@ class ProductPage(helpers.SeleniumTestCase):
         """
         # There should be 6 items in breadcrumbs for this case
         crumbs = self.browser.find_elements_by_class_name('breadcrumbs-item')
-        self.assertEqual(len(crumbs), 5)
+        # Crumbs list: Main -> Catalog -> RootCategory -> MiddleCategory -> LeastCategory -> Product
+        self.assertEqual(len(crumbs), 6)
 
     def test_ui_elements(self):
         """
