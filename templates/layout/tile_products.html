@@ -17,14 +17,18 @@
           {% endif %}
         {% endwith %}
       </p>
-      <div class="stuff-top-item">
+      <div class="stuff-top-item index-page product-card">
         <a href="{{ product.url }}" class="stuff-top-img js-browse-product" itemprop="url">
           {% with image=product_images|get_item:product.id %}
             {% include 'index/product_thumbnail.html' with image=image dimensions='x174' only %}
           {% endwith %}
         </a>
 
-        <div class="stuff-top-description">
+        {% comment %}
+          @todo #971:60m  Remove product tile cards code doubling.
+           Both in html templates and styles.
+        {% endcomment %}
+        <div class="stuff-top-description product-card-text">
           <div class="stuff-top-wrap">
             <a class="stuff-top-name js-browse-product"
                href="{{ product.url }}" itemprop="name">
@@ -36,6 +40,20 @@
             <meta itemprop="description" content="{{ product.page.display.description }}">
             <meta itemprop="priceCurrency" content="RUB" />
             <span itemprop="price">{{ product.price|humanize_price }}</span> руб
+          </div>
+          <div class="js-order order row">
+            {% comment %}
+              The input below should have type "number" by it's semantic.
+              But Firefox worked bad with our custom increase/decrease buttons.
+              On of the comments at #952 contains illustrating screen.
+            {% endcomment %}
+            <input class="col-xs-4 input-number category-prods-count js-product-count js-touchspin"
+                   type="text" value="1">
+            <button class="btn btn-blue btn-category-buy js-product-to-cart"
+                    data-product-id="{{ product.id }}" data-product-price="{{ product.price }}"
+                    data-product-name="{{ product.name }}">
+              В корзину
+            </button>
           </div>
         </div>
       </div>

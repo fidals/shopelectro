@@ -1,6 +1,23 @@
 @import "../common/variables";
 @import "../common/utilities/mixins";
 
+.index-page .product-card {
+  &-text {
+    padding-bottom: 15px;
+
+    .input-group {
+      display: none;
+    }
+
+    .btn-category-buy {
+      height: 44px;
+      font-size: @f-size-base + 3;
+      margin: 5px 6% 0 6%;
+      width: 88%;
+    }
+  }
+}
+
 .page-front {
   margin: -20px 0 0;
 
@@ -365,7 +382,6 @@
   &-description {
     .sub-plate;
     font-size: @f-size-base - 2;
-    height: 150px;
     padding: 5px 12px;
   }
 
