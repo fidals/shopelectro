@@ -10,7 +10,6 @@ from django.urls import reverse
 
 from images.models import ImageMixin
 from pages.models import Page
-
 from shopelectro.models import CategoryPage
 
 register = template.Library()
@@ -18,6 +17,8 @@ register = template.Library()
 
 @register.simple_tag
 def roots():
+    # @todo #974:60m  Reuse the logic.header.menu_qs menu menu query.
+    #  And test HEADER_LINKS "exclude/add" settings option.
     return sorted(
         chain(
             Page.objects.filter(slug__in=settings.HEADER_LINKS['add']),
