@@ -1,6 +1,6 @@
-{% if not category.is_leaf_node %}
+{% if children %}
   <ul class="subcategory-list list-unstyled">
-    {% for child in category.get_children_sorted_by_position %}
+    {% for child in children %}
       <li class="subcategory-list-item">
         <a class="subcategory-list-link" href="{{ child.url }}">
           {{ child.name }}

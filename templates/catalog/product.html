@@ -14,7 +14,8 @@
         {% endif %}
       {% endwith %}
     </p>
-    <div itemprop="offers" itemscope itemtype="https://schema.org/Offer" class="hide">
+    <div class="hidden" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+      <a href="{{ product.url }}" itemprop="url"></a>
       <span itemprop="price">{{ product.price|humanize_price }}</span>
       <span itemprop="priceCurrency">RUB</span>
       <link itemprop="availability"

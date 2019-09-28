@@ -97,7 +97,7 @@
                     </div>
 
                     <div class="col-md-1">
-                      <button type="submit" class="btn btn-blue btn-search fa fa-search" id="search-submit"></button>
+                      <button type="submit" class="btn btn-blue btn-search" id="search-submit"><i class=" fa fa-search"></i></button>
                     </div>
                   </div>
                 </form>
@@ -110,7 +110,7 @@
           </div>
         </div>
 
-        {% comment %}Cache for a day{% endcomment %}
+        {# Cache for a day #}
         {% cache 86400 categories_menu %}
           <div class="nav-category-wrapper hidden-xs hidden-sm">
             <ul class="nav-category list-unstyled">
@@ -154,6 +154,7 @@
             </a>
             {% if root.get_children %}
               <ul class="mobile-catalog-sub-list list-unstyled" style="display: none">
+                {# @todo #971:60m  Sort top menu subcategories by name #}
                 {% for child in root.get_children %}
                   <li>
                     <a class="mobile-catalog-sub-link" href="{{ child.url }}">

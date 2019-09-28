@@ -480,6 +480,38 @@ class Category(ViewsTestCase):
 
     fixtures = ['dump.json']
 
+    def get_url(
+        self,
+        category: models.Category = None,
+        tags: models.TagQuerySet = None,
+        sorting: int = None,
+        query_string: dict = None,
+    ):
+        category = category or self.category
+        return reverse_catalog_url(
+            'category', {'slug': category.page.slug}, tags, sorting, query_string,
+        )
+
+    def get_page(self, *args, **kwargs):
+        return self.client.get(self.get_category_url(*args, **kwargs))
+
+    def get_soup(self, *args, **kwargs) -> BeautifulSoup:
+        category_page = self.get_page(*args, **kwargs)
+        return BeautifulSoup(
+            category_page.content.decode('utf-8'),
+            'html.parser'
+        )
+
+    def test_subcategories_presented(self):
+        child = models.Category.objects.active().exclude(parent=None).first()
+        category = child.parent
+        soup = self.get_soup(category)
+        db_names = list(category.get_children().values_list('name', flat=True))
+        soup_names = [
+            t.text.strip() for t in soup.find_all(class_='subcategory-list-link')
+        ]
+        self.assertEqual(db_names, soup_names)
+
     def test_page_db_template_with_special_chars(self):
         """
         DB template works with many cyrillic chars in string.
