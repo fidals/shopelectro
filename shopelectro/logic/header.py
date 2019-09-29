@@ -14,7 +14,7 @@ def menu_qs() -> pages_models.PageQuerySet:
             | (
                 # @todo #974:30m  Optimize the header menu query.
                 #  Fetch catalog page for the header menu at the same query.
-                # root category pages
+                #  root category pages.
                 Q(parent=pages_models.CustomPage.objects.filter(slug='catalog'))
                 & Q(related_model_name=models.Category._meta.db_table)
                 & Q(parent=pages_models.CustomPage.objects.filter(slug='catalog'))
