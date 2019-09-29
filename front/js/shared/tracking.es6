@@ -32,9 +32,16 @@
   };
 
   function setUpListeners() {
-    mediator.subscribe('onOneClickBuy', () => {
+    mediator.subscribe('onOneClickBuy', (_, phone) => {
       reachGoal('CMN_BUY_SEND');
       reachGoal('FAST_BUY_SEND');
+      // @todo #977:120m  Create some lazy() wrapper for counters.
+      //  `lazy(my_counter).reachGoal()` should asynchronous delay reaching
+      //  until my_counter object won't be fully loaded.
+
+      // @todo #977:30m  Create mock class for carrotquest.
+      //  Fill it's methods with console logs.
+      carrotquest.identify({'$phone': phone});
     });
     mediator.subscribe('onOrderSend', () => {
       reachGoal('CMN_BUY_SEND');
@@ -52,7 +59,10 @@
       yaTracker.remove([data]);
     });
     mediator.subscribe('onProductDetail', (_, data) => yaTracker.detail([data]));
-    mediator.subscribe('onBackCallSend', () => reachGoal('BACK_CALL_SEND'));
+    mediator.subscribe('onBackCallSend', (_, phone) => {
+      reachGoal('BACK_CALL_SEND');
+      carrotquest.identify({'$phone': phone});
+    });
     mediator.subscribe('onSuccessOrder', (_, orderPositions, orderData) => {
       yaTracker.purchase(orderPositions, orderData);
       gaTracker.purchase(orderPositions, orderData);

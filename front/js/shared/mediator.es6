@@ -1,5 +1,5 @@
 /**
- * We implements mediator pattern via jQuery's global events
+ * We implement mediator pattern via jQuery's global events
  * on empty object (it could be a window or a documents, also)
  */
 const mediator = {

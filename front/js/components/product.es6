@@ -96,9 +96,10 @@
     helpers.setDisabledState(DOM.$oneClick, 'Ожидайте...');
     const { id, quantity } = getProductData();
 
-    server.oneClickBuy(id, quantity, DOM.$phone.val())
+    const phone = DOM.$phone.val();
+    server.oneClickBuy(id, quantity, phone)
       .then(() => {
-        mediator.publish('onOneClickBuy');
+        mediator.publish('onOneClickBuy', phone);
         // Set timeout to wait handling of onOneClickBuy
         setTimeout(() => {
           window.location.href = configs.hrefs.orderSuccess;
