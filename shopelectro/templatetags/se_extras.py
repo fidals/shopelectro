@@ -1,6 +1,5 @@
 import datetime
 import math
-from itertools import chain
 
 from django import template
 from django.conf import settings
@@ -10,27 +9,14 @@ from django.urls import reverse
 
 from images.models import ImageMixin
 from pages.models import Page
-from shopelectro.models import CategoryPage
+from shopelectro import logic
 
 register = template.Library()
 
 
 @register.simple_tag
 def roots():
-    # @todo #974:60m  Reuse the logic.header.menu_qs menu menu query.
-    #  And test HEADER_LINKS "exclude/add" settings option.
-    return sorted(
-        chain(
-            Page.objects.filter(slug__in=settings.HEADER_LINKS['add']),
-            filter(
-                lambda x: x.is_active,
-                CategoryPage.objects.exclude(slug__in=settings.HEADER_LINKS['exclude'])
-                # about get_cached_trees: https://goo.gl/rFKiku
-                .get_cached_trees()
-            ),
-        ),
-        key=lambda x: x.position,
-    )
+    return logic.header.menu_qs()
 
 
 @register.simple_tag
