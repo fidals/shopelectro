@@ -6,7 +6,8 @@ They all should be using Django's TestClient.
 """
 import json
 import re
-from functools import partial
+import typing
+from functools import lru_cache, partial
 from itertools import chain
 from operator import attrgetter
 from urllib.parse import urlparse, quote
@@ -16,6 +17,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Count, Q
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 from django.test import override_settings, TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -23,7 +25,7 @@ from django.utils.translation import ugettext as _
 from catalog.helpers import reverse_catalog_url
 from pages import logic as pages_logic, models as pages_models
 from pages.urls import reverse_custom_page
-from shopelectro import models, views
+from shopelectro import logic, models, views
 from shopelectro.views.service import generate_md5_for_ya_kassa, \
     YANDEX_REQUEST_PARAM
 
@@ -36,6 +38,13 @@ def get_page_number(response):
 
 def json_to_dict(response: HttpResponse) -> dict:
     return json.loads(response.content)
+
+
+def get_soup(page: TemplateResponse):
+    return BeautifulSoup(
+        page.content.decode('utf-8'),
+        'html.parser'
+    )
 
 
 class ViewsTestCase(TestCase):
@@ -992,3 +1001,51 @@ class ErrorPageContent(TestCase):
             self.client.get('/500/'),
             text='Ошибка на стороне сервера'
         )
+
+
+class HeaderMenu:
+    def __init__(self, soup: BeautifulSoup):
+        self.soup = soup
+
+    @lru_cache(maxsize=1)
+    def as_dict(self) -> typing.Dict[str, list]:
+        # i assume that dict is ordered there. It's py3.6
+        top_menu = {}
+        for container in self.soup.find_all(class_='nav-category-item'):
+            root = container.find(class_='nav-category-link').text.strip()
+            categories = [
+                category.text.strip()
+                for category in container.find_all(class_='list-white-link')
+            ]
+            top_menu.update({root: categories})
+        return top_menu
+
+    def roots(self) -> typing.List[str]:
+        return list(self.as_dict().keys())
+
+    def children(self, root: str) -> typing.List[str]:
+        return self.as_dict()[root]
+
+
+@tag('fast', 'catalog')
+class Header(ViewsTestCase):
+
+    fixtures = ['dump.json']
+
+    def test_menu_roots(self):
+        soup = get_soup(page=self.client.get('/'))
+        from_page = HeaderMenu(soup).roots()
+        from_logic = list(
+            logic.header.menu_qs().values_list('name', flat=True)
+        )
+        self.assertEqual(from_logic, from_page)
+
+    def test_menu_children(self):
+        soup = get_soup(page=self.client.get('/'))
+        menu = HeaderMenu(soup)
+        for root in logic.header.menu_qs().iterator():
+            from_page = menu.children(root.name)
+            from_logic = list(
+                root.get_children().values_list('name', flat=True)
+            )
+            self.assertEqual(from_logic, from_page)
