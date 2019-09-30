@@ -86,17 +86,11 @@ class ViewsTestCase(TestCase):
         return self.client.get(product.url)
 
     def get_category_soup(self, *args, **kwargs):
-        return BeautifulSoup(
-            self.get_category_page(*args, **kwargs).content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(self.get_category_page(*args, **kwargs))
 
     def get_product_soup(self, product: models.Product=None) -> BeautifulSoup:
         product_page = self.get_product_page(product)
-        return BeautifulSoup(
-            product_page.content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(product_page)
 
 
 @tag('fast', 'catalog')
@@ -329,10 +323,7 @@ class LoadMore(ViewsTestCase):
     def get_load_more_soup(self, *args, **kwargs) -> BeautifulSoup:
         """Use interface of `self.load_more` method."""
         load_more_response = self.load_more(*args, **kwargs)
-        return BeautifulSoup(
-            load_more_response.content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(load_more_response)
 
     def test_pagination_numbering_first_page(self):
         self.assertEqual(get_page_number(self.load_more()), 1)
@@ -506,10 +497,7 @@ class Category(ViewsTestCase):
 
     def get_soup(self, *args, **kwargs) -> BeautifulSoup:
         category_page = self.get_page(*args, **kwargs)
-        return BeautifulSoup(
-            category_page.content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(category_page)
 
     def test_subcategories_presented(self):
         child = models.Category.objects.active().exclude(parent=None).first()
@@ -652,10 +640,7 @@ class CategoriesMatrix(ViewsTestCase):
         )
 
     def get_soup(self) -> BeautifulSoup:
-        return BeautifulSoup(
-            self.get_page().content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(self.get_page())
 
     def test_roots_sorting(self):
         soup = self.get_soup()
@@ -895,9 +880,7 @@ class TestSearch(TestCase):
             f'/search/?term={self.QUOTED_SIGNLE_RESULT_TERM}',
             follow=True,
         )
-        result_links = BeautifulSoup(
-            response.content.decode('utf-8'), 'html.parser'
-        ).find_all(class_='search-result-link')
+        result_links = get_soup(response).find_all(class_='search-result-link')
         self.assertTrue(len(result_links) == 1)
 
     def test_autocomplete_has_no_model_pages(self):
