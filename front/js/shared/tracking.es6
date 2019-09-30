@@ -40,7 +40,7 @@
       //  until my_counter object won't be fully loaded.
       //  See our custom the Google Analytics code as reference implementation:
       //  https://github.com/fidals/refarm-site/pull/314/files
-      carrotquest.identify({'$phone': phone});
+      carrotquest.identify({ $phone: phone });  // Ignore ESLintBear (no-undef)
     });
     mediator.subscribe('onOrderSend', () => {
       reachGoal('CMN_BUY_SEND');
@@ -60,7 +60,7 @@
     mediator.subscribe('onProductDetail', (_, data) => yaTracker.detail([data]));
     mediator.subscribe('onBackCallSend', (_, phone) => {
       reachGoal('BACK_CALL_SEND');
-      carrotquest.identify({'$phone': phone});
+      carrotquest.identify({ $phone: phone });  // Ignore ESLintBear (no-undef)
     });
     mediator.subscribe('onSuccessOrder', (_, orderPositions, orderData) => {
       yaTracker.purchase(orderPositions, orderData);
