@@ -465,6 +465,7 @@ MAIN_PAGE_TILE = {
     ],
 }
 
+# add/exclude logic works only for root items
 HEADER_LINKS = {
     'exclude': ['radiopriiomniki'],
     'add': ['remont-akkumulyatorov'],

@@ -10,7 +10,6 @@ def menu_qs() -> pages_models.PageQuerySet:
         pages_models.Page.objects.active()
         .filter(
             Q(slug__in=settings.HEADER_LINKS['add'])
-            & ~Q(slug__in=settings.HEADER_LINKS['exclude'])
             | (
                 # @todo #974:30m  Optimize the header menu query.
                 #  Fetch catalog page for the header menu at the same query.
@@ -18,6 +17,7 @@ def menu_qs() -> pages_models.PageQuerySet:
                 Q(parent=pages_models.CustomPage.objects.filter(slug='catalog'))
                 & Q(related_model_name=models.Category._meta.db_table)
                 & Q(parent=pages_models.CustomPage.objects.filter(slug='catalog'))
+                & ~Q(slug__in=settings.HEADER_LINKS['exclude'])
             )
         )
         .order_by('position')
