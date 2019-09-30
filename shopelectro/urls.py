@@ -121,6 +121,7 @@ urlpatterns = [
     url(r'^shop/', include(ecommerce_urls)),
     url(r'^search/', include(search_urls)),
     url(r'^service/', include(service_urls)),
+    url(r'^sms/$', TemplateView.as_view(template_name='sms_landing.html'), name='sms_lending'),
     url(r'^sitemap\.xml$', cached_60d(sitemap), {'sitemaps': sitemaps}, name='sitemap'),
 ]
 
