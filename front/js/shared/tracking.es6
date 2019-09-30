@@ -38,9 +38,12 @@
       // @todo #977:120m  Create some lazy() wrapper for counters.
       //  `lazy(my_counter).reachGoal()` should asynchronous delay reaching
       //  until my_counter object won't be fully loaded.
+      //  See our custom the Google Analytics code as reference implementation:
+      //  https://github.com/fidals/refarm-site/pull/314/files
 
       // @todo #977:30m  Create mock class for carrotquest.
       //  Fill it's methods with console logs.
+      //  We'll use the class for tests created with se#978 issue.
       carrotquest.identify({'$phone': phone});
     });
     mediator.subscribe('onOrderSend', () => {
