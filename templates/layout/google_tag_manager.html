@@ -66,6 +66,20 @@
           goals: goals,
         }
       }());
+
+      var carrotquest = (function() {
+        var data_ = [];
+
+        var identify = function(data) {
+          data_.push(data);
+          console.log(data);
+        };
+
+        return {
+          identify: identify,
+          data: data_,
+        }
+      }());
     </script>
   {% endif %}
 {% endif %}
