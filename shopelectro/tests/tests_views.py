@@ -6,7 +6,8 @@ They all should be using Django's TestClient.
 """
 import json
 import re
-from functools import partial
+import typing
+from functools import lru_cache, partial
 from itertools import chain
 from operator import attrgetter
 from urllib.parse import urlparse, quote
@@ -16,6 +17,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Count, Q
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 from django.test import override_settings, TestCase, tag
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -23,7 +25,7 @@ from django.utils.translation import ugettext as _
 from catalog.helpers import reverse_catalog_url
 from pages import logic as pages_logic, models as pages_models
 from pages.urls import reverse_custom_page
-from shopelectro import models, views
+from shopelectro import logic, models, views
 from shopelectro.views.service import generate_md5_for_ya_kassa, \
     YANDEX_REQUEST_PARAM
 
@@ -36,6 +38,13 @@ def get_page_number(response):
 
 def json_to_dict(response: HttpResponse) -> dict:
     return json.loads(response.content)
+
+
+def get_soup(page: TemplateResponse):
+    return BeautifulSoup(
+        page.content.decode('utf-8'),
+        'html.parser'
+    )
 
 
 class ViewsTestCase(TestCase):
@@ -77,17 +86,11 @@ class ViewsTestCase(TestCase):
         return self.client.get(product.url)
 
     def get_category_soup(self, *args, **kwargs):
-        return BeautifulSoup(
-            self.get_category_page(*args, **kwargs).content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(self.get_category_page(*args, **kwargs))
 
     def get_product_soup(self, product: models.Product=None) -> BeautifulSoup:
         product_page = self.get_product_page(product)
-        return BeautifulSoup(
-            product_page.content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(product_page)
 
 
 @tag('fast', 'catalog')
@@ -320,10 +323,7 @@ class LoadMore(ViewsTestCase):
     def get_load_more_soup(self, *args, **kwargs) -> BeautifulSoup:
         """Use interface of `self.load_more` method."""
         load_more_response = self.load_more(*args, **kwargs)
-        return BeautifulSoup(
-            load_more_response.content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(load_more_response)
 
     def test_pagination_numbering_first_page(self):
         self.assertEqual(get_page_number(self.load_more()), 1)
@@ -497,10 +497,7 @@ class Category(ViewsTestCase):
 
     def get_soup(self, *args, **kwargs) -> BeautifulSoup:
         category_page = self.get_page(*args, **kwargs)
-        return BeautifulSoup(
-            category_page.content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(category_page)
 
     def test_subcategories_presented(self):
         child = models.Category.objects.active().exclude(parent=None).first()
@@ -643,10 +640,7 @@ class CategoriesMatrix(ViewsTestCase):
         )
 
     def get_soup(self) -> BeautifulSoup:
-        return BeautifulSoup(
-            self.get_page().content.decode('utf-8'),
-            'html.parser'
-        )
+        return get_soup(self.get_page())
 
     def test_roots_sorting(self):
         soup = self.get_soup()
@@ -886,9 +880,7 @@ class TestSearch(TestCase):
             f'/search/?term={self.QUOTED_SIGNLE_RESULT_TERM}',
             follow=True,
         )
-        result_links = BeautifulSoup(
-            response.content.decode('utf-8'), 'html.parser'
-        ).find_all(class_='search-result-link')
+        result_links = get_soup(response).find_all(class_='search-result-link')
         self.assertTrue(len(result_links) == 1)
 
     def test_autocomplete_has_no_model_pages(self):
@@ -992,3 +984,52 @@ class ErrorPageContent(TestCase):
             self.client.get('/500/'),
             text='Ошибка на стороне сервера'
         )
+
+
+class HeaderMenu:
+    def __init__(self, soup: BeautifulSoup):
+        self.soup = soup
+
+    @lru_cache(maxsize=1)
+    def as_dict(self) -> typing.Dict[str, list]:
+        # i assume that dict is ordered there. It's py3.6
+        top_menu = {}
+        for container in self.soup.find_all(class_='nav-category-item'):
+            root = container.find(class_='nav-category-link').text.strip()
+            categories = [
+                category.text.strip()
+                for category in container.find_all(class_='list-white-link')
+            ]
+            top_menu.update({root: categories})
+        return top_menu
+
+    def roots(self) -> typing.List[str]:
+        return list(self.as_dict().keys())
+
+    def children(self, root: str) -> typing.List[str]:
+        return self.as_dict()[root]
+
+
+@tag('fast', 'catalog')
+class Header(ViewsTestCase):
+
+    fixtures = ['dump.json']
+
+    def test_menu_roots(self):
+        soup = get_soup(page=self.client.get('/'))
+        from_page = HeaderMenu(soup).roots()
+        from_logic = list(
+            logic.header.menu_qs().values_list('name', flat=True)
+        )
+        self.assertEqual(from_logic, from_page)
+
+    def test_menu_children(self):
+        soup = get_soup(page=self.client.get('/'))
+        menu = HeaderMenu(soup)
+        for root in logic.header.menu_qs().iterator():
+            from_page = menu.children(root.name)
+            from_logic = list(
+                root.get_children().values_list('name', flat=True)
+            )
+            self.assertEqual(from_logic, from_page)
+
