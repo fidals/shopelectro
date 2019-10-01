@@ -16,6 +16,14 @@ class HeaderMenu(TestCase):
         from_logic = set(logic.header.menu_qs())
         self.assertEqual(from_db, from_logic)
 
+    def test_children_contains_no_products(self):
+        root = models.CategoryPage.objects.get_cached_trees()[0]
+        product = models.ProductPage.objects.first()
+        product.parent = root
+        product.save()
+        children = logic.header.menu_qs().get(id=root.id).get_children()
+        self.assertNotIn(product, children)
+
     @override_settings(HEADER_LINKS={'exclude': [to_exclude.slug], 'add': []})
     def test_exclude_option(self):
         self.assertNotIn(self.to_exclude, logic.header.menu_qs())

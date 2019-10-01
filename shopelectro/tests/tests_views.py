@@ -1032,4 +1032,3 @@ class Header(ViewsTestCase):
                 root.get_children().values_list('name', flat=True)
             )
             self.assertEqual(from_logic, from_page)
-
