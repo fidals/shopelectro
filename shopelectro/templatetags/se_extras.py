@@ -15,8 +15,8 @@ register = template.Library()
 
 
 @register.simple_tag
-def roots():
-    return logic.header.menu_qs()
+def header_menu() -> logic.header.Menu:
+    return logic.header.Menu()
 
 
 @register.simple_tag
