@@ -43,6 +43,7 @@ class Menu:
                 root.get_children()
                 .filter(type='model')
                 .filter(related_model_name=models.Category._meta.db_table)
+                .order_by('name')
             )
             for root in self.roots().iterator()
         }

@@ -135,8 +135,8 @@ prepare-deploy:
 deploy:
 	$(dcp) stop
 	# to flush nginx's inner static caches
-	$(dcp) rm -f app nginx && $(MAKE) upd-prod
 	$(MAKE) stop-prod-celery
+	$(dcp) rm -f app nginx && $(MAKE) upd-prod
 	$(dcp) exec app python manage.py migrate
 	$(dcp) exec app python manage.py custom_pages
 	$(MAKE) -j generate-production-static-data
