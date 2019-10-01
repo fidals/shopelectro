@@ -3,7 +3,6 @@
 {% load se_extras %}
 {% load static %}
 {% load user_agents %}
-{% roots as root_categories %}
 
 <div class="header">
   <div class="top-header">
@@ -114,12 +113,12 @@
         {% cache 86400 categories_menu %}
           <div class="nav-category-wrapper hidden-xs hidden-sm">
             <ul class="nav-category list-unstyled">
-              {% for root in root_categories %}
+              {% for root, children in header_menu.as_dict.items %}
                 <li class="nav-category-item js-menu-item">
                   <a class="nav-category-link" href="{{ root.url }}">{{ root.name }}</a>
-                  {% if root.get_children %}
+                  {% if children %}
                     <ul class="list-white nav-menu-dropdown">
-                      {% for child in root.get_children %}
+                      {% for child in children %}
                         <li>
                           <a href="{{ child.url }}" class="list-white-link">
                             {{ child.name }}

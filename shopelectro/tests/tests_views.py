@@ -1018,17 +1018,15 @@ class Header(ViewsTestCase):
     def test_menu_roots(self):
         soup = get_soup(page=self.client.get('/'))
         from_page = HeaderMenu(soup).roots()
-        from_logic = list(
-            logic.header.menu_qs().values_list('name', flat=True)
-        )
+        from_logic = [
+            root.name for root in logic.header.Menu().as_dict().keys()
+        ]
         self.assertEqual(from_logic, from_page)
 
     def test_menu_children(self):
         soup = get_soup(page=self.client.get('/'))
         menu = HeaderMenu(soup)
-        for root in logic.header.menu_qs().iterator():
+        for root, children in logic.header.Menu().as_dict().items():
             from_page = menu.children(root.name)
-            from_logic = list(
-                root.get_children().values_list('name', flat=True)
-            )
+            from_logic = [p.name for p in children]
             self.assertEqual(from_logic, from_page)
