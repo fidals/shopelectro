@@ -46,7 +46,7 @@ def create_image_models():
             is_main=(file_short_name == 'main')
         )
 
-    if not os.path.isdir(IMAGES_ROOT_FOLDER_NAME) or len(Image.objects.all()):
+    if not os.path.isdir(IMAGES_ROOT_FOLDER_NAME):
         return
 
     # run over every image in every folder
@@ -61,6 +61,5 @@ def create_image_models():
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **kwargs):
         create_image_models()
