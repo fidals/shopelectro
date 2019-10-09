@@ -9,7 +9,6 @@ from images.models import Image
 from pages.models import Page
 from shopelectro.models import Product
 
-
 IMAGES_ROOT_FOLDER_NAME = os.path.join(settings.MEDIA_ROOT, 'products')
 
 
@@ -22,7 +21,7 @@ def create_image_models():
         return (file_ for file_ in os.scandir(path) if file_.is_file())
 
     def get_page(product_id: int) -> Page:
-        product_ = Product.objects.filter(id=product_id).first()
+        product_ = Product.objects.filter(vendor_code=product_id).first()
         return product_.page if product_ else None
 
     def create_image_model(file_, product_id: int, slug):
@@ -42,6 +41,7 @@ def create_image_models():
             model=page,
             # autoincrement file names: '1.jpg', '2.jpg' and so on
             slug=slug,
+            # copies file with to the new path on create
             image=ImageFile(open(file_.path, mode='rb')),
             is_main=(file_short_name == 'main')
         )
