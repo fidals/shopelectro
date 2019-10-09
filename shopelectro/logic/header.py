@@ -14,7 +14,7 @@ class Menu:
     @staticmethod
     def roots() -> pages_models.PageQuerySet:
         """
-        QuerySet with header menu items.
+        Queryset with header menu items.
 
         Contains root categories.
         Result can be tuned HEADER_LINKS settings option.
