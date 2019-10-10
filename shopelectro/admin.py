@@ -6,14 +6,12 @@ from django.db import models as django_models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
-
 from django_select2.forms import ModelSelect2Widget
 
 from ecommerce import mailer
 from ecommerce.models import Position
-from pages.models import CustomPage, FlatPage, PageTemplate
 from generic_admin import inlines, mixins, models, sites, filters
-
+from pages.models import CustomPage, FlatPage, PageTemplate
 from shopelectro import models as se_models
 from shopelectro.views.admin import TableEditor
 
@@ -22,16 +20,6 @@ class SEAdminSite(sites.SiteWithTableEditor):
 
     site_header = 'Shopelectro administration'
     table_editor_view = TableEditor
-
-
-def prepare_has_filter_queryset(value, db_table, queryset):
-    if not value:
-        return
-
-    query = '{}__tags__isnull'.format(db_table)
-
-    # Use brackets, because `Explicit is better than implicit`.
-    return queryset.filter(**{query: value != 'yes'})
 
 
 class ProductPriceFilter(filters.PriceRange):
@@ -52,11 +40,10 @@ class HasTagsFilter(admin.SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        return prepare_has_filter_queryset(
-            self.value(),
-            self.product_model._meta.db_table,
-            queryset
-        )
+        db_table = self.product_model._meta.db_table
+        return queryset.filter(
+            **{f'{db_table}__tags__isnull': self.value() != 'yes'}
+        ) if self.value() else None
 
 
 class HasCategoryFilter(admin.SimpleListFilter):
@@ -71,12 +58,13 @@ class HasCategoryFilter(admin.SimpleListFilter):
             ('no', _('Has no category')),
         )
 
+    # @todo #996:30m  Test category filtering at the admin page.
+    #  Use standard django test client, without selenium.
     def queryset(self, request, queryset):
-        return prepare_has_filter_queryset(
-            self.value(),
-            self.product_model._meta.db_table,
-            queryset
-        )
+        db_table = self.product_model._meta.db_table
+        return queryset.filter(
+            **{f'{db_table}__category__isnull': self.value() != 'yes'}
+        ) if self.value() else None
 
 
 class TagInline(admin.StackedInline):
