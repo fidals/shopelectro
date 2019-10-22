@@ -1,3 +1,4 @@
+# Config reference: https://github.com/yegor256/0pdd#how-to-configure
 errors:
   - wertins71@gmail.com
   - duker33@gmail.com
@@ -5,3 +6,7 @@ alerts:
   github:
     - artemiyds2
     - duker33
+  suppress:
+    - on-scope
+format:
+  - short-title
