@@ -23,13 +23,14 @@ logger = logging.getLogger(__name__)
 
 # --- files processing ---
 class File:
-    def __init__(self, path: str, context: dict):
+    def __init__(self, path: str, context: dict, template_path: str):
         self.path = path
         self.context = context
+        self.template_path = template_path
 
     def create(self):
         with open(self.path, 'w', encoding='utf-8') as file:
-            file.write(render_to_string('prices/price.yml', self.context).strip())
+            file.write(render_to_string(self.template_path, self.context).strip())
         logger.info(f'{self.path} generated.')
 
 
@@ -208,9 +209,16 @@ class Command(BaseCommand):
     BASE_DIR = settings.ASSETS_DIR
 
     def handle(self, *args, **options):
-        Files(
-            [File(
+        Files([
+            *[File(
                 path=os.path.join(self.BASE_DIR, filename),
-                context=Context(target).context()
-            ) for target, filename in settings.UTM_PRICE_MAP.items()]
-        ).create()
+                context=Context(target).context(),
+                template_path='prices/price.yml',
+            ) for target, filename in settings.UTM_PRICE_MAP.items()],
+            # TODO - launch the price
+            # File(
+            #     path=os.path.join(self.BASE_DIR, 'gm.rss'),
+            #     context=Context('GM').context(),
+            #     template_path='prices/price.rss',
+            # )
+        ]).create()
