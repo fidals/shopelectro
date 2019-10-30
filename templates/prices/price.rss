@@ -3,8 +3,11 @@
 <?xml version="1.0"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
 <channel>
-  {# TODO - avoid hardcoded values #}
-  <title>Интернет магазин Элементов питания с доставкой по России<</title>
+  {% comment %}
+    @todo #1004:30m Avoid hardcoded values in RSS template.
+     Take values like site's title and description from DB.
+  {% endcomment %}
+  <title>Интернет магазин Элементов питания с доставкой по России</title>
   <link>{{ base_url }}</link>
   <description>Элементы питания в СПб с доставкой по России - интернет магазин элементов питания ShopElectro</description>
   {% for product in products %}
@@ -13,16 +16,19 @@
       <link>{{ product.utm_url }}</link>
       <description>{{ product.page.display.description }}</description>
       <g:id>{{ product.vendor_code }}</g:id>
-      {# TODO - clarify condition #}
       <g:condition>new</g:condition>
       <g:price>{{ product.price }}</g:price>
-      {# TODO - clarify in stock values. "in stock" was in the example #}
       <g:availability>{{ product.in_stock|yesno:'true,false' }}</g:availability>
       <g:image_link>http://images.example.com/TV_123456.png</g:image_link>
       <g:brand>{{ product.brand.name }}</g:brand>
       <g:product_type>{{ product.crumbs }}</g:product_type>
 
-      {# TODO - clarify the set of labels #}
+      {% comment %}
+        @todo #1004:30m Implement specific to GM set of RSS labels.
+         See the main set of them below.
+         And take to account values from ahead code:
+         "g:condition" and "g:availability".
+      {% endcomment %}
       <g:google_product_category>Электроника &amp;gt; Телевизоры &amp;gt; Жидкокристаллические панели и LCD
       </g:google_product_category>
       <g:mpn>LCC3525G</g:mpn>

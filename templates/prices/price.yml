@@ -36,13 +36,11 @@
           <delivery>true</delivery>
           {% if product.price > shop.local_delivery_cost %}<local_delivery_cost>0</local_delivery_cost>{% endif %}
           <name>{{ product.name }}</name>
-          # TODO - try to uncomment it
-          {% comment "Description in an issue #257" %}
+          <description>
             {% if product.page.display.description and not utm == 'GM' %}
-              <description>{{ product.page.display.description }}</description>
+              {{ product.page.display.description }}
             {% endif %}
-          {% endcomment %}
-          <description></description>
+          </description>
           {% if not utm == 'GM' and not utm == 'YM' %}
             <sales_notes>При заказе от {{ shop.local_delivery_cost_threshold }} руб. доставка по СПб бесплатно</sales_notes>
           {% endif %}
