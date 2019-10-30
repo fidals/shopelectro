@@ -18,6 +18,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings, tag
 
 from shopelectro.exception import UpdateCatalogException
+from shopelectro.management.commands import price
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags, update_pack,
 )
@@ -269,7 +270,7 @@ class Prices(dict):
 
 
 @tag('fast')
-class GeneratePrices(TestCase):
+class PricesTest(TestCase):
 
     fixtures = ['dump.json']
     CATEGORY_TO_EXCLUDE = 'Category #1 of #Category #0 of #Category #1'
@@ -288,13 +289,13 @@ class GeneratePrices(TestCase):
     def setUpTestData(cls):
         with cls.ignore_categories, cls.ignore_products:
             call_command('price')
-        super(GeneratePrices, cls).setUpTestData()
+        super().setUpTestData()
         cls.prices = Prices(settings.UTM_PRICE_MAP.keys())
 
     @classmethod
     def tearDownClass(cls):
         cls.prices.remove()
-        super(GeneratePrices, cls).tearDownClass()
+        super().tearDownClass()
 
     def test_prices_exists(self):
         """Price command should generate various price-list files."""
@@ -308,6 +309,20 @@ class GeneratePrices(TestCase):
     def test_categories_in_price(self):
         categories_in_price = self.prices['priceru'].categories_node
         self.assertEqual(len(categories_in_price), Category.objects.count())
+
+    # @todo #1004:30m  Organize yml and rss prices testing in the right way.
+    #  Now rss price has no clear class separation, like yml prices have.
+    #  Prices filename is hardcoded.
+    #  Depends from #714.
+    @ignore_categories
+    @ignore_products
+    def test_items_in_price_rss(self):
+        filename = 'gm.rss'
+        file_path = os.path.join(settings.ASSETS_DIR, filename)
+        root_node = ElementTree.parse(file_path)
+        items: list = root_node.getroot().find('channel').findall('item')
+        db_count = len(price.Context('GM').context()['products'])
+        self.assertEqual(len(items), db_count)
 
     def test_categories_in_yandex_price(self):
         categories = self.prices['YM'].categories_node

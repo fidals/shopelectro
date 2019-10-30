@@ -215,10 +215,9 @@ class Command(BaseCommand):
                 context=Context(target).context(),
                 template_path='prices/price.yml',
             ) for target, filename in settings.UTM_PRICE_MAP.items()],
-            # TODO - launch the price
-            # File(
-            #     path=os.path.join(self.BASE_DIR, 'gm.rss'),
-            #     context=Context('GM').context(),
-            #     template_path='prices/price.rss',
-            # )
+            File(
+                path=os.path.join(self.BASE_DIR, 'gm.rss'),
+                context=Context('GM').context(),
+                template_path='prices/price.rss',
+            )
         ]).create()
