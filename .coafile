@@ -24,4 +24,3 @@ bears = CPDBear,ESLintBear
 files = front/js/**/*.es6
 eslint_config = ./.eslintrc
 language = JavaScript
-sdd
