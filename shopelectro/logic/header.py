@@ -12,7 +12,7 @@ class Menu:
     DICT_TYPE = typing.Dict[models.CategoryPage, typing.List[models.CategoryPage]]
 
     @staticmethod
-    def roots() -> pages_models.PageQuerySet:
+    def roots() -> pages_models.PageQuerySet:  # Ignore PyDocStyleBear
         """
         Queryset with header menu items.
 
