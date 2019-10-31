@@ -28,10 +28,8 @@ bash alias dcp="docker-compose -f docker-compose-production.yml"
 
 #### Готовим код к работе
 ```bash
-mkdir fidals && cd fidals
-# clone outer dependency repository
+# clone repositories
 git clone git@github.com:fidals/refarm-site.git
-# clone shopelectro repository
 git clone git@github.com:fidals/shopelectro.git
 cd shopelectro/docker/
 # this command will ask you to fill some files.
@@ -49,10 +47,9 @@ dc exec app python manage.py price
 
 Пару рекомендаций по заполнению:
 - Генерим случайные: Django secret key, пароли к локальным базам
-- В файлах `shopelectro/docker/env_files/paths` и `shopelectro/docker/.env` определяем путь `REFARM_DIR=../../refarm-site`. Интерфейс refarm-site нестабилен, поэтому иногда при разработке фичи сайта
+- В файлах `shopelectro/docker/env_files/paths` и `shopelectro/docker/.env` определяем путь `REFARM_DIR=path_to_refarm-site`. Интерфейс refarm-site нестабилен, поэтому иногда при разработке фичи сайта
 нужно поправить код refarm-site вместе с кодом сайта.
 - Запрашиваем у Архитектора: Пароль к FTP и почтовому серву
-
 
 Проверяем адрес `http://127.0.0.1:8010` - загружается сайт.
 Вместо порта `8010` может быть другой - переменная окружения (env var) `VIRTUAL_HOST_EXPOSE_PORT`.
