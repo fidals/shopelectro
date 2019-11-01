@@ -3,13 +3,9 @@
 <?xml version="1.0"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
 <channel>
-  {% comment %}
-    @todo #1004:30m Avoid hardcoded values in RSS template.
-     Take values like site's title and description from DB.
-  {% endcomment %}
-  <title>Интернет магазин Элементов питания с доставкой по России</title>
+  <title>{{ title }}</title>
   <link>{{ base_url }}</link>
-  <description>Элементы питания в СПб с доставкой по России - интернет магазин элементов питания ShopElectro</description>
+  <description>{{ description }}</description>
   {% for product in products %}
     <item>
       <title>{{ product.name }}</title>
