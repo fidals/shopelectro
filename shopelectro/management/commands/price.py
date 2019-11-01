@@ -57,6 +57,8 @@ class Context(context.Context):
         ).products()
 
         return {
+            'title': settings.CUSTOM_PAGES['index']['title'],
+            'description': settings.CUSTOM_PAGES['index']['description'],
             'base_url': settings.BASE_URL,
             'categories': categories,
             'products': products,
@@ -221,3 +223,4 @@ class Command(BaseCommand):
                 template_path='prices/price.rss',
             )
         ]).create()
+        print('context',Context('GM').context())
