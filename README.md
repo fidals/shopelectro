@@ -47,7 +47,8 @@ dc exec app python manage.py price
 
 Пару рекомендаций по заполнению:
 - Генерим случайные: Django secret key, пароли к локальным базам
-- В файлах `shopelectro/docker/env_files/paths` и `shopelectro/docker/.env` определяем путь `REFARM_DIR=path_to_refarm-site`. Интерфейс refarm-site нестабилен, поэтому иногда при разработке фичи сайта
+- В файлах `shopelectro/docker/env_files/paths` и `shopelectro/docker/.env`
+определяем путь `REFARM_DIR=../../refarm-site` (или другой путь куда вы сделали git clone репозитория refarm-site). Интерфейс refarm-site нестабилен, поэтому иногда при разработке фичи сайта
 нужно поправить код refarm-site вместе с кодом сайта.
 - Запрашиваем у Архитектора: Пароль к FTP и почтовому серву
 
