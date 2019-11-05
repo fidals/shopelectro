@@ -28,6 +28,8 @@ bash alias dcp="docker-compose -f docker-compose-production.yml"
 
 #### Готовим код к работе
 ```bash
+# clone repositories
+git clone git@github.com:fidals/refarm-site.git
 git clone git@github.com:fidals/shopelectro.git
 cd shopelectro/docker/
 # this command will ask you to fill some files.
@@ -42,21 +44,17 @@ dc exec app python manage.py price
 #### Файлы env
 `make deploy-dev` создаст файлы для окружения (env) со стандартными значениями.
 А затем попросит заполнить их.
+
 Пару рекомендаций по заполнению:
 - Генерим случайные: Django secret key, пароли к локальным базам
+- В файлах `shopelectro/docker/env_files/paths` и `shopelectro/docker/.env`
+определяем путь `REFARM_DIR=../../refarm-site` (или другой путь куда вы сделали git clone репозитория refarm-site). Интерфейс refarm-site нестабилен, поэтому иногда при разработке фичи сайта
+нужно поправить код refarm-site вместе с кодом сайта.
 - Запрашиваем у Архитектора: Пароль к FTP и почтовому серву
 
 Проверяем адрес `http://127.0.0.1:8010` - загружается сайт.
 Вместо порта `8010` может быть другой - переменная окружения (env var) `VIRTUAL_HOST_EXPOSE_PORT`.
 
-#### Установка refarm-site
-Сайт использует refarm-site как внешнюю зависимость.
-Интерфейс refarm-site нестабилен,
-поэтому иногда при разработке фичи сайта
-нужно поправить код refarm-site вместе с кодом сайта.
-Для этого можно установить его как зависимость для разработки (`pip -e`).
-И примонтировать внутрь контейнера app.
-Смотрите на переменную окружения `REFARM_SITE`.
 
 #### Makefile
 `docker/Makefile` - единственная и полная инструкция для работы с локальным dev-окружением.
