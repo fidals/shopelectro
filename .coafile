@@ -1,6 +1,5 @@
-# https://github.com/coala/bear-docs/blob/master/README.rst#python
-
 [all]
+# https://github.com/coala/bear-docs/blob/master/README.rst
 # @todo #665:30m Resurrect InvalidLinkBear.
 #  Now it failed on CI.
 #  https://ci.fidals.com/fidals/shopelectro/1108/11

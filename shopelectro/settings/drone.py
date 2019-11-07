@@ -5,6 +5,15 @@ from .base import *
 
 DEBUG = True
 
+# Header categories menu uses cache in templates.
+# Disable cache to avoid stale menu testing.
+# See #991 for details.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
 # http://bit.ly/sorl-thumbnail-docs
 THUMBNAIL_DEBUG = True
 
