@@ -1,3 +1,8 @@
+{% comment %}
+  Fields specification is there: `doc/google_merchant_rss_fields_spec.pdf`
+  Google Merchant has no official one as a webpage.
+{% endcomment %}
+
 {% load se_extras %}
 
 <?xml version="1.0"?>
