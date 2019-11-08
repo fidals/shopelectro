@@ -324,6 +324,13 @@ class PricesTest(TestCase):
         db_count = len(price.Context('GM').context()['products'])
         self.assertEqual(len(items), db_count)
 
+    def test_title_in_price_rss(self):
+        filename = 'gm.rss'
+        file_path = os.path.join(settings.ASSETS_DIR, filename)
+        root_node = ElementTree.parse(file_path)
+        title = root_node.getroot().find('channel').find('title').text
+        self.assertEqual(settings.CUSTOM_PAGES['index']['title'], title)
+
     def test_categories_in_yandex_price(self):
         categories = self.prices['YM'].categories_node
         self.assertEqual(
