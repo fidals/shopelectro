@@ -223,4 +223,3 @@ class Command(BaseCommand):
                 template_path='prices/price.rss',
             )
         ]).create()
-        print('context',Context('GM').context())
