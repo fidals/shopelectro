@@ -4,6 +4,7 @@ View tests.
 Note: there should be tests, subclassed from TestCase.
 They all should be using Django's TestClient.
 """
+import hashlib
 import json
 import re
 import typing
@@ -902,6 +903,18 @@ class TestSearch(TestCase):
             f'?term={self.QUOTED_SIGNLE_RESULT_TERM}&pageType=category'
         )
         self.assertTrue(len(json_to_dict(response)) == 1)
+
+    def test_no_products_with_empty_category(self):
+        """Test search should contain no products with empty category."""
+        product = models.Product.objects.active().first()
+        product.category = None
+        product.name = str(hashlib.md5())  # unique name
+        product.save()
+        response = self.client.get(
+            f'/search/?term={product.name}',
+            follow=True,
+        )
+        self.assertNotContains(response, '<div class="search-result-item">')
 
 
 @tag('fast')

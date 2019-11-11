@@ -1,9 +1,7 @@
 from django.conf import settings
 
-from search import views as search_views, search as search_engine
-
 from pages.models import Page
-
+from search import views as search_views, search as search_engine
 from shopelectro.models import Category, Product
 
 
@@ -21,14 +19,14 @@ class Search(search_views.SearchView):
         ),
         search_engine.Search(
             name='product',
-            qs=Product.objects.active(),
+            qs=Product.objects.active().exclude(category__isnull=True),
             fields=['name'],
             redirect_field='vendor_code',
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         ),
         search_engine.Search(
             name='page',  # Ignore CPDBear
-            qs=Page.objects.filter(is_active=True).exclude(type=Page.MODEL_TYPE),
+            qs=Page.objects.active().exclude(type=Page.MODEL_TYPE),
             fields=['name'],
             min_similarity=settings.TRIGRAM_MIN_SIMILARITY,
         )
