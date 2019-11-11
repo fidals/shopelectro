@@ -1,3 +1,8 @@
+{% comment %}
+  Fields specification is there: `doc/google_merchant_rss_fields_spec.pdf`
+  Google Merchant has no official one as a webpage.
+{% endcomment %}
+
 {% load se_extras %}
 
 <?xml version="1.0"?>
@@ -18,22 +23,17 @@
       <g:id>{{ product.vendor_code }}</g:id>
       <g:condition>new</g:condition>
       <g:price>{{ product.price }}</g:price>
-      <g:availability>{{ product.in_stock|yesno:'true,false' }}</g:availability>
-      <g:image_link>http://images.example.com/TV_123456.png</g:image_link>
+      <g:availability>{{ product.in_stock|yesno:'in stock,out of stock' }}</g:availability>
+      <g:image_link>{{ base_url }}{{ product.page.main_image.url }}</g:image_link>
       <g:brand>{{ product.brand.name }}</g:brand>
       <g:product_type>{{ product.crumbs }}</g:product_type>
 
-      {% comment %}
-        @todo #1004:30m Implement specific to GM set of RSS labels.
-         See the main set of them below.
-         And take to account values from ahead code:
-         "g:condition" and "g:availability".
-      {% endcomment %}
-      <g:google_product_category>Электроника &amp;gt; Телевизоры &amp;gt; Жидкокристаллические панели и LCD
-      </g:google_product_category>
-      <g:mpn>LCC3525G</g:mpn>
-      <g:custom_label_0>high_margin</g:custom_label_0>
-      <g:custom_label_1>Msk</g:custom_label_1>
+      <g:google_product_category>{{ product.crumbs }}</g:google_product_category>
+      {# We have no "Mark" or similar TagGroup, so we using id field for mpn. #}
+      <g:mpn>{{ product.vendor_code }}</g:mpn>
+      {% for tag in product.tags.all %}
+        <g:custom_label_{{ forloop.counter }}>{{ tag.name }}</g:custom_label_{{ forloop.counter }}>
+      {% endfor %}
     </item>
   {% endfor %}
 </channel>
