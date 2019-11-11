@@ -32,7 +32,7 @@
       {# We have no "Mark" or similar TagGroup, so we using id field for mpn. #}
       <g:mpn>{{ product.vendor_code }}</g:mpn>
       {% for tag in product.tags.all %}
-        <g:custom_label_{{ forloop.counter }}>{{ tag.name }}</g:custom_label_0>
+        <g:custom_label_{{ forloop.counter }}>{{ tag.name }}</g:custom_label_{{ forloop.counter }}>
       {% endfor %}
     </item>
   {% endfor %}
