@@ -12,7 +12,7 @@ class Menu:
     DICT_TYPE = typing.Dict[models.CategoryPage, typing.List[models.CategoryPage]]
 
     @staticmethod
-    def roots() -> pages_models.PageQuerySet:
+    def roots() -> pages_models.PageQuerySet:  # Ignore PyDocStyleBear
         """
         Queryset with header menu items.
 
@@ -43,6 +43,7 @@ class Menu:
                 root.get_children()
                 .filter(type='model')
                 .filter(related_model_name=models.Category._meta.db_table)
+                .order_by('name')
             )
             for root in self.roots().iterator()
         }
