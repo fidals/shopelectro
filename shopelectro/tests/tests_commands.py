@@ -317,7 +317,7 @@ class PricesTest(TestCase):
     @ignore_categories
     @ignore_products
     def test_items_in_price_rss(self):
-        filename = 'gm.rss'
+        filename = 'gm.xml'
         file_path = os.path.join(settings.ASSETS_DIR, filename)
         root_node = ElementTree.parse(file_path)
         items: list = root_node.getroot().find('channel').findall('item')

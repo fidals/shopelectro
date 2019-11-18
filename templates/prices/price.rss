@@ -27,7 +27,6 @@
       <g:image_link>{{ base_url }}{{ product.page.main_image.url }}</g:image_link>
       <g:brand>{{ product.brand.name }}</g:brand>
       <g:product_type>{{ product.crumbs }}</g:product_type>
-
       <g:google_product_category>{{ product.crumbs }}</g:google_product_category>
       {# We have no "Mark" or similar TagGroup, so we using id field for mpn. #}
       <g:mpn>{{ product.vendor_code }}</g:mpn>
