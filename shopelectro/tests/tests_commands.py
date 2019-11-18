@@ -325,7 +325,7 @@ class PricesTest(TestCase):
         self.assertEqual(len(items), db_count)
 
     def test_title_in_price_rss(self):
-        filename = 'gm.rss'
+        filename = 'gm.xml'
         file_path = os.path.join(settings.ASSETS_DIR, filename)
         root_node = ElementTree.parse(file_path)
         title = root_node.getroot().find('channel').find('title').text
