@@ -181,7 +181,7 @@ class ProductsPatch:
     def put_crumbs(self, product):  # Ignore PyDocStyleBear
         """Crumbs for google merchant. https://goo.gl/b0UJQp"""
         product.crumbs = ' > '.join(
-            product.page.get_ancestors_fields('h1', include_self=False)[1:]
+            product.page.get_ancestors_fields('name', include_self=False)[1:]
         )
         return product
 
@@ -216,7 +216,7 @@ class Command(BaseCommand):
                 template_path='prices/price.yml',
             ) for target, filename in settings.UTM_PRICE_MAP.items()],
             File(
-                path=os.path.join(self.BASE_DIR, 'gm.rss'),
+                path=os.path.join(self.BASE_DIR, 'gm.xml'),
                 context=Context('GM').context(),
                 template_path='prices/price.rss',
             )

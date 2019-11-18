@@ -45,6 +45,11 @@ Disallow: /*?from=market
 Disallow: /*?from=priceru
 Clean-param: from&utm_source&utm_medium&utm_campaign&block&keyword&position&k50id /
 
+User-agent: Googlebot
+Disallow:
+User-agent: Googlebot-image
+Disallow:
+
 User-agent: Googlebot-image
 Disallow:
 
