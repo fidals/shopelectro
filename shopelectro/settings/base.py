@@ -100,10 +100,11 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'shopelectro.urls'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+TEMPLATE_ASSETS_DIR = os.path.join(BASE_DIR, 'shopelectro/tests/assets')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR],
+        'DIRS': [TEMPLATE_DIR, TEMPLATE_ASSETS_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -11,7 +11,7 @@ from html5validate import validate
 @tag('fast')
 class TemplateTests(TestCase):
 
-    @unittest.skip
+    @unittest.skip('should fix html templates')
     def test_templates(self):
         for dir, _, filenames in os.walk(settings.TEMPLATE_DIR):
             for filename in filenames:
@@ -21,4 +21,16 @@ class TemplateTests(TestCase):
                     validate(render_to_string(filepath))
 
     def test_valid_example(self):
-        validate(render_to_string('/usr/app/src/templates/valid_example.html'))
+        filepath = os.path.join(
+            settings.TEMPLATE_ASSETS_DIR,
+            'valid_markup_example.html'
+        )
+        validate(render_to_string(filepath))
+
+    @unittest.expectedFailure
+    def test_invalid_example(self):
+        filepath = os.path.join(
+            settings.TEMPLATE_ASSETS_DIR,
+            'invalid_markup_example.html'
+        )
+        validate(render_to_string(filepath))
