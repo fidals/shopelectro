@@ -28,7 +28,6 @@ class TemplateTests(TestCase):
         )
         validate(render_to_string(filepath))
 
-    #@unittest.expectedFailure
     def test_invalid_example(self):
         filepath = os.path.join(
             settings.TEMPLATE_ASSETS_DIR,
