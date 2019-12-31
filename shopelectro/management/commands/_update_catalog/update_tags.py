@@ -4,12 +4,12 @@ from typing import Iterator, Dict
 from xml.etree.ElementTree import Element
 
 from django.db import transaction
+from django.db.models import Q
 
 from shopelectro.management.commands._update_catalog.utils import (
     Data, is_correct_uuid, UUID_TYPE, XmlFile
 )
 from shopelectro.models import Tag, TagGroup
-
 
 logger = logging.getLogger(__name__)
 
@@ -79,10 +79,15 @@ def create_or_update(data: Dict[UUID_TYPE, Data]):
         created_groups_count += int(group_created)
 
         for tag_uuid, tag_data in tags.items():
-            _, tag_created = Tag.objects.update_or_create(
-                uuid=tag_uuid,
-                defaults={**tag_data, 'group': group}
+            tag = Tag(group=group, **tag_data)
+            # does not fetch tag uuid from 1C xml files,
+            # because it changes randomly on the 1C side
+            # and have no real sense.
+            tag_created = not Tag.objects.filter(
+                Q(group=group) & Q(slug=tag._get_slug()) | Q(name=tag.name)
             )
+            if tag_created:
+                tag.save()
 
             created_tags_count += int(tag_created)
 
