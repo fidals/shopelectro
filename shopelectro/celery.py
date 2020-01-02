@@ -39,6 +39,10 @@ beat_schedule = {
         'task': 'shopelectro.tasks.update_catalog',
         'schedule': timedelta(hours=2).total_seconds(),
     },
+    'update-prices': {
+        'task': 'shopelectro.tasks.update_prices',
+        'schedule': timedelta(hours=1).total_seconds(),
+    },
     'check-purchase': {
         'task': 'shopelectro.tasks.check_purchase',
         'schedule': timedelta(days=1).total_seconds(),
@@ -51,6 +55,11 @@ task_routes = {
         'queue': 'command',
         'routing_key': 'utils.command',
         'priority': 30,
+    },
+    'shopelectro.tasks.update_prices': {
+        'queue': 'command',
+        'routing_key': 'utils.command',
+        'priority': 50,
     },
     'shopelectro.tasks.check_purchase': {
         'queue': 'command',

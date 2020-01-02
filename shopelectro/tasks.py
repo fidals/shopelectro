@@ -58,9 +58,16 @@ def update_catalog():
     return [
         update_catalog_command(),
         update_default_templates(),
+        collect_static(),
+    ]
+
+
+@app.task(autoretry_for=(Exception,), max_retries=3, default_retry_delay=60*10)  # Ignore PycodestyleBear (E226)
+def update_prices():
+    return [
         generate_price_files(),
         generate_excel_file(),
-        collect_static()
+        collect_static(),
     ]
 
 
