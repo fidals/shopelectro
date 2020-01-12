@@ -60,17 +60,17 @@ services:
       - selenium
     volumes_from:
       - app
-    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.command@%%h -l info -Q command
+    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.command@%%h -c 2 -l info -Q command
 
   celery-default-worker:
     <<: *celery-worker
     container_name: se-celery-default-worker
-    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.default@%%h -l info -Q default
+    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.default@%%h -c 1 -l info -Q default
 
   celery-mail-worker:
     <<: *celery-worker
     container_name: se-celery-mail-worker
-    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.mail@%%h -c 1 -l info -Q mail
+    command: docker/wait-for.sh rabbitmq:5672 -- celery -A shopelectro worker -E -n worker.mail@%%h -c 2 -l info -Q mail
 
   nginx:
     image: fidals/se-nginx:prod
