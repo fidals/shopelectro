@@ -108,3 +108,24 @@
   text-align: center;
   top: 0;
 }
+
+// New Year mixins
+.site-body-bg() when (@season = NewYear) {
+  background: @new-year-background-pattern;
+}
+.site-body-bg() when (@season = Usual) {
+  background: @c-body-bg;
+}
+
+.index-news-items() when (@season = NewYear) {
+  .Q(@lg; {
+    background-color: #fafafa;
+    min-height: 365px;
+    padding: 32px;
+    border-radius: 8px;
+  });
+}
+
+.index-news-bg() when (@season = Usual) {
+  background: url("@{img-path}/services-map.jpg") no-repeat center 0;
+}

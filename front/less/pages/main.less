@@ -55,8 +55,7 @@
     text-align: justify;
 
     .Q(@lg; {
-      // Comment when new year starts
-      background: url("@{img-path}/services-map.jpg") no-repeat center 0;
+      .index-news-bg();
       min-height: 371px;
       padding: 67px 17px 0;
     });
@@ -95,14 +94,7 @@
       width: 30%;
     });
 
-
-    // Uncomment when new year starts
-    .Q(@lg; {
-      background-color: #fafafa;
-       min-height: 365px;
-       padding: 32px;
-       border-radius: 8px;
-     });
+    .index-news-items()
   }
 
   &-img {

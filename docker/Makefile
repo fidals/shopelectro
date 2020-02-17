@@ -58,6 +58,9 @@ build-static:
 watch-static:
 	$(dc) run --rm nodejs
 
+toggle-front-theme:
+	@./toggle-theme.sh
+
 collectstatic:
 	$(dc) exec app python manage.py collectstatic --noinput
 
