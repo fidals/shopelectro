@@ -44,39 +44,6 @@ class Ecommerce(helpers.SeleniumTestCase):
 @tag('slow')
 @helpers.disable_celery
 @override_settings(DEBUG=True, INTERNAL_IPS=tuple())
-class GoogleEcommerce(Ecommerce):
-
-    fixtures = ['dump.json']
-
-    def test_purchase(self):
-        self.buy()
-        order = self.last_order()
-        order_positions = order.positions.all()
-        reached = self.browser.execute_script('return gaObject.results;')
-        require, transaction, *positions, send = reached
-
-        self.assertEqual(require, ['require', 'ecommerce'])
-        self.assertEqual(
-            transaction,
-            ['ecommerce:addTransaction', {
-                'id': order.fake_order_number, 'revenue': order.revenue,
-            }],
-        )
-        for pos, order_pos in zip(positions, order_positions):
-            self.assertEqual(
-                pos,
-                ['ecommerce:addItem', {
-                    'name': order_pos.name,
-                    'price': order_pos.price,
-                    'quantity': order_pos.quantity,
-                }],
-            )
-        self.assertEqual(send, ['ecommerce:send', None])
-
-
-@tag('slow')
-@helpers.disable_celery
-@override_settings(DEBUG=True, INTERNAL_IPS=tuple())
 class YandexEcommerce(Ecommerce):
     """
     Test reaching of goals.
@@ -101,14 +68,16 @@ class YandexEcommerce(Ecommerce):
         return goals
 
     def assert_add(self, product: Product, goal_position: int):  # Ignore CPDBear
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
-        reached = reached_goals[goal_position]
+        goals = self.get_goals()
+        self.assertTrue(goals)
+        reached = goals[goal_position]
+        self.assertEqual(reached['event'], 'addToCart')
 
-        self.assertIn('add', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
+        ecommerce = reached['ecommerce']
+        self.assertIn('add', ecommerce)
+        self.assertEqual(ecommerce['currencyCode'], 'RUB')
 
-        reached_detail = reached['add']  # Ignore CPDBear
+        reached_detail = ecommerce['add']  # Ignore CPDBear
         self.assertEqual(
             len(reached_detail['products']),
             1,
@@ -126,14 +95,17 @@ class YandexEcommerce(Ecommerce):
         )
 
     def assert_remove(self, product: Product, goal_position: int):
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
+        goals = self.get_goals()
+        self.assertTrue(goals)
 
-        reached = reached_goals[goal_position]
-        self.assertIn('remove', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
+        reached = goals[goal_position]
+        self.assertEqual(reached['event'], 'removeFromCart')
 
-        reached_remove = reached['remove']
+        ecommerce = reached['ecommerce']
+        self.assertIn('remove', ecommerce)
+        self.assertEqual(ecommerce['currencyCode'], 'RUB')
+
+        reached_remove = ecommerce['remove']
         self.assertEqual(
             len(reached_remove['products']),
             1,
@@ -152,20 +124,21 @@ class YandexEcommerce(Ecommerce):
         order = self.last_order()
         positions = order.positions.all()
 
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
+        goals = self.get_goals()
+        self.assertTrue(goals)
+        self.assertEqual(goals[0]['event'], 'Purchase')
 
-        reached = reached_goals[0]
-        self.assertIn('purchase', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
+        ecommerce = goals[0]['ecommerce']
+        self.assertIn('purchase', ecommerce)
+        self.assertEqual(ecommerce['currencyCode'], 'RUB')
 
-        reached_purchase = reached['purchase']
+        purchase = ecommerce['purchase']
         self.assertEqual(
-            reached_purchase['actionField'],
+            purchase['actionField'],
             {'id': order.fake_order_number, 'revenue': order.revenue},
         )
 
-        for reached_pos, order_pos in zip(reached_purchase['products'], positions):
+        for reached_pos, order_pos in zip(purchase['products'], positions):
             self.assertEqual(
                 reached_pos,
                 {
@@ -179,21 +152,21 @@ class YandexEcommerce(Ecommerce):
         product = Product.objects.first()
         selenium.Product(self.browser, product.vendor_code).load()
 
-        reached_goals = self.get_goals()
-        self.assertTrue(reached_goals)
+        goals = self.get_goals()
+        self.assertTrue(goals)
+        self.assertEqual(goals[0]['event'], 'Detail')
+        ecommerce = goals[0]['ecommerce']
+        self.assertIn('detail', ecommerce)
+        self.assertEqual(ecommerce['currencyCode'], 'RUB')
 
-        reached = reached_goals[0]
-        self.assertIn('detail', reached)
-        self.assertEqual(reached['currencyCode'], 'RUB')
-
-        reached_detail = reached['detail']
+        detail = ecommerce['detail']
         self.assertEqual(
-            len(reached_detail['products']),
+            len(detail['products']),
             1,
         )
 
         self.assertEqual(
-            reached_detail['products'][0],
+            detail['products'][0],
             {
                 'id': product.id,
                 'name': product.name,
