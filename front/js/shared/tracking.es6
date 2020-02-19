@@ -15,17 +15,9 @@
     $purchasedOrder: $('.js-purchased-order'),
   };
 
-  // @todo #759:60m Create tests for eCommerce tracking.
-  //  Test all events, these perform tracking operations.
-
   // Sync container for yaTracker
   window.dataLayer = window.dataLayer || [];
   const yaTracker = new YATracker(window.dataLayer, 'RUB');  // Ignore ESLintBear (no-undef)
-
-  // load google analytics scripts and enable ecommerce plugin
-  const loadedGa = loadGaTransport();  // Ignore ESLintBear (no-undef)
-  loadedGa('require', 'ecommerce');
-  const gaTracker = new GATracker(loadedGa, 'ecommerce');  // Ignore ESLintBear (block-scoped-var)
 
   const init = () => {
     setUpListeners();
@@ -64,7 +56,6 @@
     });
     mediator.subscribe('onSuccessOrder', (_, orderPositions, orderData) => {
       yaTracker.purchase(orderPositions, orderData);
-      gaTracker.purchase(orderPositions, orderData);
     });
 
     DOM.$searchForm.submit(() => reachGoal('USE_SEARCH_FORM'));

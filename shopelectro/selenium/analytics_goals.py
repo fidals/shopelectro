@@ -42,8 +42,8 @@ class YandexEcommerceGoals(Goals):  # Ignore PyDocStyleBear
         self.goals = self.driver.execute_script('return window.dataLayer.results;')
 
     def __getitem__(self, index: int):
-        return self.goals[index][0]['ecommerce']
+        return self.goals[index][0]
 
     def __iter__(self):
         for g in self.goals:
-            yield g[0]['ecommerce']
+            yield g[0]
