@@ -14,4 +14,5 @@ def shop(request):
         'TEST_ENV': settings.TEST_ENV,
         'base_url': settings.BASE_URL,
         'SENTRY_FRONT_DSN': settings.SENTRY_FRONT_DSN,
+        'WORKING_HOURS': settings.WORKING_HOURS,
     }

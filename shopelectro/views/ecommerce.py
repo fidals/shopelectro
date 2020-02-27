@@ -84,7 +84,7 @@ class OrderSuccess(ec_views.OrderSuccess):
         return {
             **context,
             'positions_json': positions_json,
-            'total_revenue': order.revenue,
+            'total_revenue': order.total_price,
         }
 
 

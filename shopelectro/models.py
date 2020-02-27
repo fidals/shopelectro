@@ -238,8 +238,6 @@ class Order(ecommerce_models.Order):
         default=PaymentOptions.default().name,
     )
     comment = models.TextField(blank=True, default='')
-    # total price - total purchase price
-    revenue = models.FloatField(default=0, null=True, verbose_name=_('revenue'))
 
     @property
     def payment_type_label(self):
@@ -253,7 +251,6 @@ class Order(ecommerce_models.Order):
         @todo #589:60m Create Cart model.
          See details here: https://github.com/fidals/shopelectro/pull/590#discussion_r222544672
         """
-        self.revenue = cart.total_revenue()
         self.save()
         for id_, position in cart:
             self.positions.create(
