@@ -135,7 +135,7 @@ class YandexEcommerce(Ecommerce):
         purchase = ecommerce['purchase']
         self.assertEqual(
             purchase['actionField'],
-            {'id': order.fake_order_number, 'revenue': order.revenue},
+            {'id': order.fake_order_number, 'revenue': order.total_price},
         )
 
         for reached_pos, order_pos in zip(purchase['products'], positions):
