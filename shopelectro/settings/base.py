@@ -544,3 +544,8 @@ if SENTRY_DSN:
 # At 17.05.2019 it's relevant pack group data
 PACK_GROUP_UUID = 'ae30f766-0bb8-11e6-80ea-02d2cc20e118'
 PACK_GROUP_NAME = 'Упаковка'
+
+WORKING_HOURS = {
+    'ELIZ': 'пн-чт 10:00-18:00, пт 10:00-17:00',
+    'JUNO': 'пн 11:00-17:00, вт-вс 10:00-18:00',
+}
