@@ -12,15 +12,17 @@
       {% endif %}
 
       {% if show_siblings and logic_page.siblings %}
-        <ul class="breadcrumbs-siblings-links list-white">
-          {% for page in logic_page.siblings %}
-            <li>
-              <a href="{{ page.url }}" class="list-white-link">
-                {{ page.display_menu_title }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
+        {% if show_last_page_siblings or not forloop.last %}
+          <ul class="breadcrumbs-siblings-links list-white">
+            {% for page in logic_page.siblings %}
+              <li>
+                <a href="{{ page.url }}" class="list-white-link">
+                  {{ page.display_menu_title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
       {% endif %}
 
       <meta itemprop="position" content="{{ forloop.counter }}">
