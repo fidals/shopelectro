@@ -243,7 +243,7 @@ def delete(data: Dict[UUID, Data]):
     """
     uuids = list(data)
     pages_to_deactivate = ProductPage.objects.exclude(
-        shopelectro_product__uuid__in=uuids)
+        shopelectro_product__uuid__in=uuids).exclude(is_active=False)
     pages_to_deactivate.update(is_active=False)
     deactivated_count = pages_to_deactivate.count()
     logger.info(f'{deactivated_count} products and {deactivated_count} pages were deleted.')
