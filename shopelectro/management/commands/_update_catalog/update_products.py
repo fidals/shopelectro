@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 from shopelectro.management.commands._update_catalog.utils import (
     XmlFile, is_correct_uuid, NOT_SAVE_TEMPLATE, UUID, Data, floor
 )
-from shopelectro.models import Product, ProductPage, Tag
+from shopelectro.models import Product, ProductPage, Tag, TagGroup
 
 
 logger = logging.getLogger(__name__)
@@ -33,18 +33,32 @@ def fetch_products(root: Element, config: XmlFile) -> Iterator:
         ).text.lstrip('0')
         content = product_el.find(config.xpaths['page_content']).text or ''
 
-        tag_value_els = (
-            tag_el.find(config.xpaths['tag_value_uuid'])
+        tag_value_els = [
+            (tag_el.find(config.xpaths['tag_group_uuid']),
+             tag_el.find(config.xpaths['tag_value_or_uuid']))
             for tag_el in product_el.findall(config.xpaths['tags'])
             if tag_el is not None
-        )
+        ]
 
         tag_uuids = list(filter(is_correct_uuid, (
             tag_value.text
-            for tag_value in tag_value_els
+            for tag_group, tag_value in tag_value_els
             # should use 'is not None', because __bool__ does not defined
             if tag_value is not None
         )))
+
+        for tag_group, tag_value in tag_value_els:
+            if (tag_value is None
+                    or tag_value.text is None
+                    or is_correct_uuid(tag_value.text)):
+                continue
+
+            try:
+                tg = TagGroup.objects.get(uuid=tag_group.text)
+                tag_by_value = Tag.objects.get_or_create(name=tag_value.text, group=tg)[0]
+                tag_uuids.append(str(tag_by_value.uuid))
+            except TagGroup.DoesNotExist:
+                pass
 
         tags = Tag.objects.filter(uuid__in=tag_uuids)
 
@@ -110,7 +124,8 @@ product_file = XmlFile(
         'uuid': '.{}Ид',
         'page_content': '.{}Описание',
         'tags': '.{}ЗначенияСвойств/',
-        'tag_value_uuid': '.{}Значение',
+        'tag_group_uuid': '.{}Ид',
+        'tag_value_or_uuid': '.{}Значение',
         'vendor_code': '.{0}ЗначенияРеквизитов/{0}ЗначениеРеквизита'
                        '[{0}Наименование="Код"]/{0}Значение',
     },
