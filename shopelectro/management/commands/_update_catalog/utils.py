@@ -3,7 +3,7 @@ import logging
 import math
 import os
 import shutil
-import subprocess
+import subprocess as sb
 import time
 from contextlib import contextmanager
 from itertools import chain
@@ -113,8 +113,8 @@ def download_catalog(destination):
     )
 
     try:
-        subprocess.run(wget_command, timeout=DOWNLOAD_FILES_TIMEOUT, shell=True)
-    except subprocess.TimeoutExpired as e:
+        sb.run(wget_command, timeout=DOWNLOAD_FILES_TIMEOUT, shell=True)
+    except sb.TimeoutExpired as e:
         raise DownloadFilesError(str(e))
 
     assert os.path.exists(os.path.join(
