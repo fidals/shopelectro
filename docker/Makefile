@@ -136,7 +136,7 @@ prepare-deploy:
 	$(dcb) push python-dev python-prod
 
 deploy:
-	$(dcp) stop
+	$(dcp) down
 	# to flush nginx's inner static caches
 	$(MAKE) stop-prod-celery
 	$(dcp) rm -f app nginx && $(MAKE) upd-prod
@@ -147,3 +147,24 @@ deploy:
 	$(dcp) exec app python manage.py collectstatic --noinput
 	# to make fresh collected static visible immediately
 	$(dcp) stop app nginx && $(dcp) up -d app nginx
+
+build-python-dev:
+	$(dcb) build python-dev
+
+# prod docker image depends on the dev's one
+build-python-prod: build-python-dev
+	$(dcb) build python-prod
+
+push-python-dev:
+	$(dcb) push python-dev
+
+# prod docker image depends on the dev's one
+push-python-prod: push-python-dev
+	$(dcb) push python-prod
+
+pull-python-dev:
+	$(dcb) pull python-dev
+
+# prod docker image depends on the dev's one
+pull-python-prod: pull-python-dev
+	$(dcb) pull python-prod
