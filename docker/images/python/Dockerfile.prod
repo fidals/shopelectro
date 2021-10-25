@@ -3,6 +3,9 @@ FROM fidals/se:dev
 RUN pip install gunicorn
 
 COPY ./etc/gunicorn.py /etc/
+
+COPY . .
+
 # drone already built static to this folder at previous step.
 # See npm section of `.drone.yml` file
 COPY ./front_build ./front_build
