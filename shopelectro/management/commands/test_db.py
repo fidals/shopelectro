@@ -43,6 +43,7 @@ class Command(BaseCommand):
             'Напряжение',
             'Сила тока',
             'Мощность',
+            'Вес',
             settings.BRAND_TAG_GROUP_NAME,
             settings.PACK_GROUP_NAME,
         ]
@@ -50,6 +51,7 @@ class Command(BaseCommand):
             ['6 В', '24 В'],
             ['1.2 А', '10 А'],
             ['7.2 Вт', '240 Вт'],
+            ['2 кг', '20 г'],
             ['Apple', 'Microsoft'],
             ['2 в блистере', '2 в стяжке'],
         ]

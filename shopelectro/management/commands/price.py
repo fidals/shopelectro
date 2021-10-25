@@ -157,12 +157,23 @@ class ProductsPatch:
         self._products = products
 
     def put_params(self, product):
+        def tag_type_name(tag: models.Tag) -> str:
+            weight_groups = models.TagGroup.objects.filter(name__icontains='вес')
+            weight_tags = models.Tag.objects.filter(group__in=weight_groups).filter(uuid=tag.uuid)
+            if weight_tags:
+                name = 'weight'
+            else:
+                name = ''
+            return name
+
         product.prepared_params = [
-            (group, tags[0].name)
-            for (group, tags) in filter(
-                lambda x: x[0].name != 'Производитель',
-                product.get_params().items()
-            ) if tags
+            (
+                group,
+                tags[0].name,
+                tag_type_name(tags[0])
+            )
+            for group, tags in product.get_params().items()
+            if tags and tags[0].name != 'Производитель'
         ]
         return product
 

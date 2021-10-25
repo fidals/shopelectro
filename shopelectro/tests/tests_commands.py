@@ -22,6 +22,7 @@ from shopelectro.management.commands import price
 from shopelectro.management.commands._update_catalog import (
     update_products, update_tags, update_pack,
 )
+from shopelectro import models
 from shopelectro.models import Category, Product, ProductPage, Tag, TagGroup
 
 """
@@ -421,3 +422,24 @@ class PricesTest(TestCase):
         offer = self.prices['YM'].offers_node[0]
         product = Product.objects.get(vendor_code=offer.attrib['id'])
         self.assertEqual(product.price, float(offer.find('price').text))
+
+    def test_tag_type_name(self):
+        """Special tag types like weight should have special tag type name."""
+        # - check if any offer has any tag
+        offers = self.prices['YM'].offers_node.findall('offer')
+        self.assertTrue(any(o.find('weight') for o in offers))
+        #
+        weight_groups = models.TagGroup.objects.filter(name__icontains='вес')
+        tags = models.Tag.objects.filter(group__in=weight_groups)
+        # - get one product with the special tag
+        p = None
+        for tag in tags:
+            p = models.Product.objects.filter(tags__id=tag.id)
+            if p:
+                break
+        # - check if some tag from DB is reflected at the price
+        #   - find the offer like p
+        assert any(
+            (offer for offer in offers
+             if offer.attrib['id'] == p.id)
+        )

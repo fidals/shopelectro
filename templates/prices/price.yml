@@ -47,8 +47,12 @@
           {% if product.brand %}<vendor>{{ product.brand.name }}</vendor>{% endif %}
           {# product_type tag in google merchant doc : https://goo.gl/b0UJQp #}
           {% if utm == 'GM' %}<product_type>{{ product.crumbs }}</product_type>{% endif %}
-          {% for name, value in product.prepared_params %}
-            <param name="{{ name }}">{{ value }}</param>
+          {% for name, value, tag_type_name in product.prepared_params %}
+            {% if tag_type_name == '' %}
+              <param name="{{ name }}">{{ value }}</param>
+            {% else %}
+              <{{ tag_type_name }}>{{ value }}</{{ tag_type_name }}>
+            {% endif %}
           {% endfor %}
         </offer>
       {% endfor %}
