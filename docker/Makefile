@@ -142,11 +142,12 @@ deploy:
 	$(dcp) rm -f app nginx && $(MAKE) upd-prod
 	$(dcp) exec app python manage.py migrate
 	$(dcp) exec app python manage.py custom_pages
-	$(MAKE) -j generate-production-static-data
+	$(MAKE) generate-production-static-data
 	# Launch "collectstatic" not in static recipe because ManifestStaticStorage writes to db
 	$(dcp) exec app python manage.py collectstatic --noinput
 	# to make fresh collected static visible immediately
 	$(dcp) stop app nginx && $(dcp) up -d app nginx
+	$(dcp) exec -T app bash -c 'rm -rf assets/1c_data && rm -rf static/1c_data'
 
 build-python-dev:
 	$(dcb) build python-dev

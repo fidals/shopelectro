@@ -36,10 +36,9 @@ services:
       - $VIRTUAL_HOST_PORT
     volumes:
       - ../shopelectro/settings/local.py:$SRC_DIR/shopelectro/settings/local.py
+      - ../shopelectro/:$SRC_DIR/shopelectro/
       # contains refarm-site modules
       - $DEPS_DIR
-      # source code volume
-      - $SRC_DIR
       # contains media files
       - /opt/media/shopelectro/:$SRC_DIR/media/
     networks:
