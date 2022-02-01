@@ -147,7 +147,8 @@ deploy:
 	$(dcp) exec app python manage.py collectstatic --noinput
 	# to make fresh collected static visible immediately
 	$(dcp) stop app nginx && $(dcp) up -d app nginx
-	$(dcp) exec -T app bash -c 'rm -rf assets/1c_data && rm -rf static/1c_data'
+	$(dcp) exec app bash -c 'rm -rf assets/1c_data && rm -rf static/1c_data'
+	$(dcp) exec app python manage.py update_catalog
 
 build-python-dev:
 	$(dcb) build python-dev
