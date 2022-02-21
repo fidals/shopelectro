@@ -125,7 +125,8 @@ def download_catalog(destination):
         yield
     finally:
         # remove downloaded data
-        shutil.rmtree(os.path.join(destination, settings.FTP_IP))
+        # shutil.rmtree(os.path.join(destination, settings.FTP_IP))
+        pass
 
 
 def report(error):

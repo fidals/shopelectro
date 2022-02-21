@@ -115,9 +115,13 @@ def fetch_in_stock(root: Element, config: XmlFile) -> Iterator:
         }
 
 
+DEST = '/usr/app/src/'
+# DEST = '/home/andre/prog/shopelectro/'
+
 product_file = XmlFile(
     fetch_callback=fetch_products,
-    xml_path_pattern='**/webdata/**/goods/**/import*.xml',
+    # destination = '/usr/app/src'
+    xml_path_pattern=DEST + '**/webdata/**/goods/**/import*.xml',
     xpath_queries={
         'products': './/{}Товары/',
         'name': '.{}Наименование',
@@ -133,7 +137,7 @@ product_file = XmlFile(
 
 price_file = XmlFile(
     fetch_callback=fetch_prices,
-    xml_path_pattern='**/webdata/**/goods/**/prices*.xml',
+    xml_path_pattern=DEST + '**/webdata/**/goods/**/prices*.xml',
     xpath_queries={
         'product_prices': './/{}Предложения/',
         'product_uuid': '.{}Ид',
@@ -151,7 +155,7 @@ price_file = XmlFile(
 
 in_stock_file = XmlFile(
     fetch_callback=fetch_in_stock,
-    xml_path_pattern='**/webdata/**/goods/**/rests*.xml',
+    xml_path_pattern=DEST + '**/webdata/**/goods/**/rests*.xml',
     xpath_queries={
         'products': './/{}Предложения/',
         'product_uuid': '.{}Ид',

@@ -42,6 +42,7 @@ def collect_static():
 
 @app.task
 def update_catalog_command():
+    call_command('rm -rf assets/1c_data && rm -rf static/1c_data')
     with report():
         call_command('update_catalog')
 

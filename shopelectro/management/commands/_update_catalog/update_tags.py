@@ -48,9 +48,11 @@ def fetch_tags(root: Element, config: XmlFile):
         }
 
 
+DEST = '/usr/app/src/assets/'
+
 tag_file = XmlFile(
     fetch_callback=fetch_tags,
-    xml_path_pattern='**/webdata/**/properties/**/import*.xml',
+    xml_path_pattern=DEST + '**/webdata/**/properties/**/import*.xml',
     xpath_queries={
         'tag_groups': './/{}Свойства/',
         'tag_group_uuid': '.{}Ид',
